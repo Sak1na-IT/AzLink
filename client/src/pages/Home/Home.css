@@ -168,47 +168,6 @@
   color: var(--color-primary);
 }
 
-/* =========================================================
-   OVERVIEW STRIP
-   ========================================================= */
-
-.overview-strip {
-  width: 100%;
-  margin: 8px 0 36px;
-  padding: 15px 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-xs);
-}
-
-.overview-strip__item {
-  min-width: 190px;
-  padding: 5px 28px;
-  text-align: center;
-}
-
-.overview-strip__item + .overview-strip__item {
-  border-left: 1px solid var(--color-border);
-}
-
-.overview-strip__item strong {
-  display: block;
-  color: var(--color-primary);
-  font-size: var(--font-size-2xl);
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
-}
-
-.overview-strip__item span {
-  display: block;
-  margin-top: 3px;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
-}
 
 /* =========================================================
    HOME SECTION
@@ -625,20 +584,6 @@
 
   .quick-searches__item {
     flex: 0 0 auto;
-  }
-
-  .overview-strip {
-    margin-bottom: 28px;
-  }
-
-  .overview-strip__item {
-    min-width: 0;
-    flex: 1;
-    padding: 4px 8px;
-  }
-
-  .overview-strip__item strong {
-    font-size: 18px;
   }
 
   .popular-list {
