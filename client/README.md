@@ -1,76 +1,3 @@
-# AzLink
-
-## 1. AzLink haqqında
-
-AzLink Bakı üzrə xidmət göstərən mütəxəssisləri (gözəllik, ev xidmətləri, avtomobil, təhsil, tədbir, heyvanlar, texnologiya, fitness) tapmaq və onlara onlayn rezerv etmək üçün veb platformadır.
-
-Platformada iki cür hesab nəzərdə tutulur:
-
-- **İstifadəçi (müştəri):** usta axtarır, profilə baxır, rezerv edir, seçilmişlərə əlavə edir, öz rezervlərini idarə edir, tamamlanmış xidmətə rəy yazır.
-- **Biznes sahibi (usta):** öz profilini, xidmətlərini və iş qrafikini idarə edir, gələn rezervləri təsdiqləyir, tamamlayır və ya ləğv edir, müştərilərini və rəylərini görür.
-
-**Qonaq** (giriş etməmiş istifadəçi) sərbəst axtara və profillərə baxa bilər — bu, qəsdən belədir: platforma məzmunu hər kəsə açıqdır, giriş yalnız rezerv, seçilmişlər və şəxsi bölmələr üçün lazımdır.
-
-Rol yalnız **qeydiyyat zamanı** seçilir (bir hesab = bir rol). Biznes qeydiyyatı adi sahələrdən (ad, email, şifrə) əlavə olaraq biznes adı, xidmət kateqoriyası, rayon və telefon tələb edir.
-
-> **Vəziyyət:** layihə hazırda **frontend** mərhələsindədir. Bütün əsas funksionallıq (müştəri və biznes tərəfi) işləkdir, məlumatlar isə mock data və brauzerin `localStorage`-indən gəlir. Backend hələ yazılmayıb.
-
----
-
-## 2. Texnologiyalar
-
-### Frontend (hazırdır, `client/`)
-
-| Texnologiya                                                                                      | Nə üçün                                 |
-| ------------------------------------------------------------------------------------------------ | --------------------------------------- |
-| **React + TypeScript**                                                                           | Komponent əsaslı UI, tip təhlükəsizliyi |
-| **Vite**                                                                                         | Sürətli development server və build     |
-| **React Router** (`react-router-dom`)                                                            | Səhifələr arası naviqasiya              |
-| **lucide-react**                                                                                 | İkonlar                                 |
-| **Sadə CSS** (hər səhifə/komponent üçün ayrı `.css`, ortaq dəyişənlər `styles/variables.css`-də) | Açıq/tünd tema və ardıcıl görünüş       |
-| **oxlint**                                                                                       | Kod yoxlaması                           |
-
-### Backend (planlaşdırılır, `server/`)
-
-| Texnologiya           | Nə üçün                                              |
-| --------------------- | ---------------------------------------------------- |
-| **Node.js + Express** | REST API                                             |
-| **Prisma**            | Verilənlər bazası sxemi və sorğular                  |
-| **Auth və rollar**    | Müştəri və biznes sahibi rolları, sahiblik yoxlaması |
-
-`shared/` qovluğu client və server üçün ortaq tip təyinatlarına ayrılıb (`User`, `Booking`, `Provider`).
-
----
-
-## 3. Layihə strukturu
-
-```
-AzLink/
-├── client/                    # React + Vite frontend
-│   └── src/
-│       ├── components/        # AreaSelector, layout, ortaq UI hissələri
-│       ├── data/               # categories.ts, providers.ts (mock ustalar)
-│       ├── hooks/              # useTheme
-│       ├── pages/
-│       │   ├── Home, Explore, SearchResults, Provider   # müştəri: kəşf
-│       │   ├── Booking, BookingStart, Bookings          # müştəri: rezerv
-│       │   ├── Saved, Profile                           # müştəri: şəxsi
-│       │   ├── AccountType, Register, Login             # giriş axını
-│       │   └── Business*                                # biznes paneli
-│       │       (Dashboard, Bookings, Services, Profile,
-│       │        Portfolio, Customers)
-│       ├── services/           # bookingStorage, serviceStorage,
-│       │                       # reviewStorage, portfolioStorage,
-│       │                       # businessProfileStorage,
-│       │                       # demoCustomer, demoBusiness
-│       ├── store/
-│       ├── styles/             # variables.css
-│       └── types/              # area.ts, provider.ts, portfolio.ts, schedule.ts
-├── server/                    # backend (hələ boşdur)
-├── shared/                    # ortaq tiplər (hələ boşdur)
-└── README.md
-```
-
 ---
 
 ## 4. İşləyən funksiyalar
@@ -83,9 +10,9 @@ AzLink/
 
 **Müştəri tərəfi**
 
-- Ana səhifə, ərazi seçimi, kəşf et və axtarış nəticələri
+- Ana səhifə: axtarış, ərazi seçimi, yaxın rezervlər, yaxınlıqda populyar profillər
 - Usta profili: xidmətlər, iş nümunələri (portfolio), rəylər, orta reytinq
-- Rezerv axını: xidmət, tarix, saat seçimi — saatlar xidmətin müddətinə görə hesablanır, dolu/keçmiş saatlar bağlanır, eyni vaxta ikinci rezerv serverdə (hazırda frontend-də) əngəllənir
+- Rezerv axını: xidmət, tarix, saat seçimi — saatlar xidmətin müddətinə görə hesablanır, dolu/keçmiş saatlar bağlanır
 - Rezervlərim: statusa görə filtr (Hamısı / Aktiv / Tamamlanmış / Ləğv edilənlər), aktiv rezervi ləğv etmə
 - Tamamlanmış rezervə rəy yazma (ulduz + şərh), bir rezerv üçün bir rəy
 - Seçilmişlər, profil səhifələri
@@ -141,27 +68,28 @@ Brauzerdə Vite-in göstərdiyi ünvanı açın (adətən `http://localhost:5173
 
 ## 7. Yol xəritəsi
 
-**Addım 2: Biznes paneli — ✅ Tamamlandı**
+**Addım 1–2: Frontend ekranları və biznes paneli — ✅ Tamamlandı**
 
-- [x] Rezervlər (təsdiq, tamamla, ləğv)
-- [x] Xidmətlər (əlavə/redaktə/sil)
-- [x] Dashboard (bütün sayğaclar real məlumatdan)
-- [x] Xidmətlərin müştəri tərəfində görünməsi
-- [x] Biznes profili
-- [x] İş saatları
-- [x] Müştərilər, portfolio, rəylər
+- [x] Bütün müştəri və biznes ekranları
+- [x] Rezerv axını, statuslar, filtrlər
+- [x] Xidmətlər, profil, portfolio, rəylər, müştərilər
 - [x] Onboarding (qeydiyyat axını)
+
+**Addım 3: Kod səliqəsi — 🟡 Davam edir**
+
+- [x] İstifadə olunmayan komponentlər silindi (`OverviewStrip`)
+- [x] Boş/istifadəsiz qovluqlar silindi (`pages/Dashboard`, `pages/Auth`, `components/auth`, `components/business`, `components/common`, `components/provider`, `components/search`)
+- [ ] Qalan dublikat/istifadəsiz faylların yoxlanılması
+- [ ] `App.css`-in son hala uyğunlaşdırılması
 
 **Sonrakı addımlar**
 
-| Addım | İş                                                                                | Vəziyyət                        |
-| ----- | --------------------------------------------------------------------------------- | ------------------------------- |
-| 3     | Kod səliqəsi: CSS dublikat sinif adları                                           | ✅ Yoxlanıldı, təkrar tapılmadı |
-| 3     | Kod səliqəsi: istifadəsiz köhnə fayllar (`components/booking/Booking.tsx` və s.)  | ⬜ Yoxlanılır                   |
-| 4     | Ortaq tiplər: `User`, `Booking`, `Provider` `shared/` qovluğuna                   | ⬜                              |
-| 5     | Backend: Express + Prisma, auth, rollar, bütün API-lər                            | ⬜                              |
-| 6     | Birləşmə: mock data və `localStorage` əvəzinə real API                            | ⬜                              |
-| 7     | Son işlənmə: loading/xəta halları, validasiya, responsive, təhlükəsizlik, testlər | ⬜                              |
+| Addım | İş                                                                                | Vəziyyət |
+| ----- | --------------------------------------------------------------------------------- | -------- |
+| 4     | Ortaq tiplər: `User`, `Booking`, `Provider` → `shared/` qovluğuna                 | ⬜       |
+| 5     | Backend: Express + Prisma, auth, rollar, bütün API-lər                            | ⬜       |
+| 6     | Birləşmə: mock data və `localStorage` əvəzinə real API                            | ⬜       |
+| 7     | Son işlənmə: loading/xəta halları, validasiya, responsive, təhlükəsizlik, testlər | ⬜       |
 
 ---
 
