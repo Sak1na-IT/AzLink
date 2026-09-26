@@ -1,0 +1,219 @@
+.business-customers {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+.business-customers__top {
+  margin-bottom: 20px;
+}
+
+.business-customers__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--color-text-muted, var(--color-text));
+  font: inherit;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.business-customers__header h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.business-customers__header p {
+  margin: 0;
+  color: var(--color-text-muted, var(--color-text));
+}
+
+.business-customers__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin: 20px 0;
+  background: var(--color-surface);
+}
+
+.business-customers__search input {
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  width: 100%;
+}
+
+.business-customers__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.business-customer-card {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  padding: 16px;
+  background: var(--color-surface);
+}
+
+.business-customer-card__top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.business-customer-card__avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-accent-soft, var(--color-border));
+  color: var(--color-accent, var(--color-text));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.business-customer-card__name {
+  flex: 1;
+  min-width: 0;
+}
+
+.business-customer-card__name h3 {
+  margin: 0 0 2px;
+  font-size: 15px;
+}
+
+.business-customer-card__name span {
+  font-size: 13px;
+  color: var(--color-text-muted, var(--color-text));
+}
+
+.business-customer-card__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.business-customer-card__status--confirmed,
+.business-customer-card__status--completed {
+  background: rgba(46, 125, 91, 0.12);
+  color: #2e7d5b;
+}
+
+.business-customer-card__status--pending {
+  background: rgba(200, 150, 0, 0.12);
+  color: #a67c00;
+}
+
+.business-customer-card__status--cancelled {
+  background: rgba(200, 60, 60, 0.12);
+  color: #c33c3c;
+}
+
+.business-customer-card__stats {
+  display: flex;
+  gap: 20px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.business-customer-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-muted, var(--color-text));
+}
+
+.business-customer-card__stat span {
+  display: block;
+  font-size: 12px;
+}
+
+.business-customer-card__stat strong {
+  display: block;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.business-customers__empty {
+  text-align: center;
+  padding: 60px 20px;
+  border: 1px dashed var(--color-border);
+  border-radius: 14px;
+}
+
+.business-customers__empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.business-customers__top {
+  margin-bottom: 24px;
+}
+
+.business-customers__top-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--color-text-secondary, var(--color-text));
+}
+
+.business-customers__top-header h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.business-customers__top-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.business-customers__top-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 12px;
+  background: var(--color-surface);
+}
+
+.business-customers__top-card strong {
+  display: block;
+  font-size: 14px;
+}
+
+.business-customers__top-card span {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-muted, var(--color-text));
+}
+
+@media (max-width: 600px) {
+  .business-customers__top-grid {
+    grid-template-columns: 1fr;
+  }
+}

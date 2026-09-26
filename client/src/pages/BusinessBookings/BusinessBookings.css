@@ -1,0 +1,379 @@
+.business-bookings {
+  width: min(880px, 100%);
+  margin: 0 auto;
+  padding: 35px 24px 70px;
+}
+
+.business-bookings__top {
+  margin-bottom: 25px;
+}
+
+.business-bookings__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.business-bookings__back:hover {
+  color: var(--color-primary);
+  transform: translateX(-2px);
+}
+
+.business-bookings__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.business-bookings__eyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--color-primary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.business-bookings__header h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.business-bookings__header p {
+  max-width: 520px;
+  margin: 9px 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+.business-bookings__summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+}
+
+.business-bookings__summary svg {
+  color: var(--color-primary);
+}
+
+/* Status sekmeleri */
+.business-bookings__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.business-bookings__tab {
+  all: unset;
+  box-sizing: border-box;
+  padding: 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-family: inherit;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.business-bookings__tab:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.business-bookings__tab.is-active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* Tamamlanmış içindəki dövr sekmeleri (Bu həftə / Bu ay / Ümumi) */
+.business-bookings__subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.business-bookings__subtab {
+  all: unset;
+  box-sizing: border-box;
+  padding: 6px 13px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.business-bookings__subtab:hover {
+  color: var(--color-text);
+}
+
+.business-bookings__subtab.is-active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+/* Boş vəziyyət */
+.business-bookings__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 50px 20px;
+  border: 1px dashed var(--color-border);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.business-bookings__empty-icon {
+  width: 46px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.business-bookings__empty h3 {
+  margin: 6px 0 0;
+  color: var(--color-text);
+  font-size: 16px;
+}
+
+.business-bookings__empty p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+}
+
+/* Siyahı */
+.business-bookings__list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.business-booking-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+}
+
+.business-booking-card__main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 220px;
+}
+
+.business-booking-card__date {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.business-booking-card__date svg {
+  color: var(--color-primary);
+}
+
+.business-booking-card__date span:first-of-type {
+  margin-right: 8px;
+}
+
+.business-booking-card__content {
+  min-width: 0;
+}
+
+.business-booking-card__content h3 {
+  margin: 0;
+  overflow: hidden;
+  color: var(--color-text);
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.business-booking-card__content span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.business-booking-card__status {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  white-space: nowrap;
+}
+
+.business-booking-card__status--confirmed {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.business-booking-card__status--pending {
+  background: var(--color-surface-muted);
+  color: var(--color-text-secondary);
+}
+
+.business-booking-card__status--cancelled {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+}
+
+.business-booking-card__status--completed {
+  background: rgba(42, 111, 143, 0.14);
+  color: #2a6f8f;
+}
+
+/* Təsdiqlə / Tamamla / Ləğv et düymələri.
+   all: unset brauzerin standart <button> stilini sıfırlayır. */
+.business-booking-card__actions {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 12px;
+  margin-top: 2px;
+  border-top: 1px solid var(--color-border);
+}
+
+.business-booking-card__action {
+  all: unset;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.business-booking-card__action--confirm {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.business-booking-card__action--confirm:hover {
+  filter: brightness(0.92);
+}
+
+.business-booking-card__action--complete {
+  background: #2a6f8f;
+  color: #fff;
+}
+
+.business-booking-card__action--complete:hover {
+  background: #235c76;
+}
+
+.business-booking-card__action--cancel {
+  background: transparent;
+  color: #d1554a;
+  border-color: rgba(209, 85, 74, 0.4);
+}
+
+.business-booking-card__action--cancel:hover {
+  background: rgba(209, 85, 74, 0.1);
+}
+
+.business-booking-card__action:focus-visible,
+.business-bookings__tab:focus-visible,
+.business-bookings__subtab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .business-bookings {
+    padding: 28px 14px 50px;
+  }
+
+  .business-bookings__header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .business-bookings__header h1 {
+    font-size: 26px;
+  }
+
+  .business-bookings__summary {
+    align-self: flex-start;
+  }
+
+  .business-booking-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .business-booking-card__status {
+    align-self: flex-start;
+  }
+}

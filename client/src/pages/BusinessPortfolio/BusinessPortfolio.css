@@ -1,0 +1,155 @@
+.business-portfolio {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+.business-portfolio__top {
+  margin-bottom: 20px;
+}
+
+.business-portfolio__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, var(--color-text));
+  font: inherit;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.business-portfolio__header h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+}
+
+.business-portfolio__header p {
+  margin: 0;
+  color: var(--color-text-secondary, var(--color-text));
+}
+
+.business-portfolio__upload {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 20px 0;
+  background: var(--color-surface);
+}
+
+.business-portfolio__upload input[type="text"] {
+  flex: 1;
+  min-width: 200px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: var(--color-bg, transparent);
+  color: var(--color-text);
+  font: inherit;
+}
+
+.business-portfolio__upload-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 16px;
+  background: var(--color-primary);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.business-portfolio__upload-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.business-portfolio__error {
+  width: 100%;
+  color: #c33c3c;
+}
+
+.business-portfolio__hint {
+  width: 100%;
+  color: var(--color-text-secondary, var(--color-text));
+}
+
+.business-portfolio__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
+}
+
+.business-portfolio-item {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  aspect-ratio: 1;
+}
+
+.business-portfolio-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.business-portfolio-item__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 8px 10px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.65));
+  color: #fff;
+  font-size: 12px;
+}
+
+.business-portfolio-item__delete {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.business-portfolio__empty {
+  text-align: center;
+  padding: 60px 20px;
+  border: 1px dashed var(--color-border);
+  border-radius: 14px;
+}
+
+.business-portfolio__empty-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-bg, transparent);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.business-portfolio__empty-cta {
+  display: none;
+}

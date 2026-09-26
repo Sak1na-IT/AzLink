@@ -1,0 +1,257 @@
+:root {
+  /* =========================
+     COLORS — LIGHT MODE
+     ========================= */
+
+  --color-bg: #F3F7F3;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #EAF4EE;
+  --color-surface-muted: #F7FAF8;
+
+  --color-primary: #2E7D5B;
+  --color-primary-hover: #256A4D;
+  --color-primary-soft: #E1F0E8;
+
+  --color-text: #183328;
+  --color-text-secondary: #64746C;
+  --color-text-muted: #849189;
+
+  --color-border: #D9E5DE;
+  --color-border-strong: #C7D8CE;
+
+  --color-success: #2E7D5B;
+  --color-warning: #B98422;
+  --color-danger: #C94B4B;
+  --color-info: #4D78A8;
+
+  /* =========================
+     SHADOWS
+     ========================= */
+
+  --shadow-xs: 0 1px 2px rgba(24, 51, 40, 0.04);
+  --shadow-sm: 0 4px 14px rgba(24, 51, 40, 0.06);
+  --shadow-md: 0 8px 24px rgba(24, 51, 40, 0.08);
+  --shadow-lg: 0 16px 40px rgba(24, 51, 40, 0.12);
+
+  /* =========================
+     BORDER RADIUS
+     ========================= */
+
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 999px;
+
+  /* =========================
+     SPACING
+     ========================= */
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* =========================
+     TYPOGRAPHY
+     ========================= */
+
+  --font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-base: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 24px;
+  --font-size-4xl: 30px;
+  --font-size-5xl: 38px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.15;
+  --line-height-normal: 1.45;
+  --line-height-relaxed: 1.65;
+
+  /* =========================
+     LAYOUT
+     ========================= */
+
+  --container-sm: 720px;
+  --container-md: 960px;
+  --container-lg: 1180px;
+  --container-xl: 1320px;
+
+  --nav-height: 72px;
+
+  /* =========================
+     COMPONENT HEIGHTS
+     ========================= */
+
+  --button-height-sm: 36px;
+  --button-height-md: 42px;
+  --button-height-lg: 48px;
+  --button-height-xl: 54px;
+
+  --input-height: 50px;
+
+  /* =========================
+     TRANSITIONS
+     ========================= */
+
+  --transition-fast: 120ms ease;
+  --transition-normal: 180ms ease;
+  --transition-slow: 250ms ease;
+
+
+    /* =========================
+     CARD GRADIENTS
+     ========================= */
+
+  --gradient-teal: linear-gradient(135deg, #6DBFA0, #3E8F72);
+  --gradient-pink: linear-gradient(135deg, #D98A93, #B75C67);
+  --gradient-blue: linear-gradient(135deg, #6E8FC4, #4F6FA8);
+  --gradient-purple: linear-gradient(135deg, #8B7FC7, #6558A8);
+}
+
+
+/* =========================================
+   DARK MODE
+   ========================================= */
+
+[data-theme="dark"] {
+  --color-bg: #121915;
+  --color-surface: #1B241F;
+  --color-surface-soft: #22372C;
+  --color-surface-muted: #19211C;
+
+  --color-primary: #63BE8C;
+  --color-primary-hover: #74C99A;
+  --color-primary-soft: #254133;
+
+  --color-text: #EEF6F1;
+  --color-text-secondary: #A4B1AA;
+  --color-text-muted: #84918A;
+
+  --color-border: #2C3932;
+  --color-border-strong: #3A4A41;
+
+  --color-success: #63BE8C;
+  --color-warning: #D6A647;
+  --color-danger: #E06B6B;
+  --color-info: #6F9BCB;
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.12);
+  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.24);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.32);
+}
+
+
+/* =========================================
+   GLOBAL BOX SIZING
+   ========================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+/* =========================================
+   BODY BASE
+   ========================================= */
+
+html {
+  min-width: 320px;
+  background: var(--color-bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+
+  background: var(--color-bg);
+  color: var(--color-text);
+
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-normal);
+
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+
+/* =========================================
+   BUTTONS / LINKS / INPUTS
+   ========================================= */
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* =========================================
+   ACCESSIBILITY
+   ========================================= */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
+}
+
+
+/* =========================================
+   SELECTION
+   ========================================= */
+
+::selection {
+  background: var(--color-primary-soft);
+  color: var(--color-text);
+}
