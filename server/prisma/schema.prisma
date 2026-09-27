@@ -71,6 +71,7 @@ model Business {
   reviews       Review[]
   portfolio     Portfolio[]
   availability  Availability[]
+  savedBy       SavedProvider[]
 
   @@index([areaId])
 }
@@ -199,11 +200,12 @@ model SavedProvider {
   userId     String
   businessId String
 
-  // Relations
-  user User @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  business Business @relation(fields: [businessId], references: [id])
 
   @@unique([userId, businessId])
   @@index([userId])
+  @@index([businessId])
 }
 
 // =========================================================

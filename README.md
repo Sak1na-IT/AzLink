@@ -21,9 +21,10 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 7. [Mock data](#mock-data)
 8. [Dizayn sistemi](#dizayn-sistemi)
 9. [Backend planı](#backend-planı)
-10. [Yol xəritəsi (addım-addım)](#yol-xəritəsi-addım-addım)
-11. [Kod qaydaları](#kod-qaydaları)
-12. [Git iş qaydası](#git-iş-qaydası)
+10. [Hazırkı vəziyyət](#hazırkı-vəziyyət)
+11. [Yol xəritəsi (addım-addım)](#yol-xəritəsi-addım-addım)
+12. [Kod qaydaları](#kod-qaydaları)
+13. [Git iş qaydası](#git-iş-qaydası)
 
 ---
 
@@ -37,13 +38,14 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 - Lucide (`lucide-react`) ikonlar üçün
 - Sadə CSS (səhifə və komponent CSS faylları)
 
-### Backend (planlaşdırılır)
+### Backend
 
 - Node.js + TypeScript
 - Express (REST API)
 - Prisma ORM
-- Database (Prisma ilə uyğun olan SQL database)
-- JWT: access token və refresh token
+- SQLite (development üçün)
+- JWT: access token və refresh token (hələ yazılmayıb)
+- Şifrə hash-ləmə: bcryptjs
 
 ---
 
@@ -51,7 +53,7 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 
 Tələb olunan: **Node.js 20 və ya daha yeni versiya**.
 
-Frontend-i işə salmaq üçün:
+### Frontend
 
 ```bash
 cd client
@@ -68,111 +70,124 @@ cd client
 npm run build
 ```
 
-Backend başlayandan sonra bu bölməyə `server/` üçün əmrlər əlavə olunacaq.
+### Backend
+
+```bash
+cd server
+npm install
+npm run dev
+```
+
+Server `http://localhost:4000` ünvanında işə düşür.
+
+Yoxlama üçün:
+
+- `http://localhost:4000/api/health` → `{"status":"ok","time":"..."}`
+- `http://localhost:4000/api/categories` → `[]` (kateqoriya hələ yoxdur, boş massiv normaldır)
+
+Verilənlər bazası dəyişikliyi etdikdən sonra (schema.prisma-nı redaktə edəndə):
+
+```bash
+npx prisma migrate dev --name <qısa-təsvir>
+```
 
 ---
 
 ## Layihə strukturu
 
-### Hazırkı struktur
+### Client (`client/`)
 
 ```text
-AzLink/
-│
-├── client/                       ← React + Vite
-│   ├── public/
-│   └── src/
-│       ├── assets/
-│       │
-│       ├── components/
-│       │   ├── AreaSelector/     ← ərazi seçimi modalı
-│       │   ├── auth/
-│       │   ├── booking/
-│       │   ├── business/
-│       │   ├── common/
-│       │   ├── home/             ← HomeHero, OverviewStrip, PopularNearby, TodayOverview
-│       │   ├── layout/           ← AppLayout, TopNav
-│       │   ├── provider/
-│       │   └── search/
-│       │
-│       ├── data/
-│       │   └── providers.ts      ← mock provider-lər
-│       │
-│       ├── hooks/
-│       │   └── useTheme.ts       ← light/dark mode
-│       │
-│       ├── pages/
-│       │   ├── AccountType/
-│       │   ├── Auth/
-│       │   ├── Booking/
-│       │   ├── BookingStart/
-│       │   ├── Bookings/
-│       │   ├── BusinessBookings/
-│       │   ├── BusinessDashboard/
-│       │   ├── BusinessProfile/
-│       │   ├── BusinessServices/
-│       │   ├── Dashboard/
-│       │   ├── Explore/
-│       │   ├── Home/
-│       │   ├── Login/
-│       │   ├── Profile/
-│       │   ├── Provider/
-│       │   ├── Register/
-│       │   ├── Saved/
-│       │   └── SearchResults/
-│       │
-│       ├── services/
-│       ├── store/
-│       ├── styles/
-│       │   └── variables.css     ← rənglər və ölçülər
-│       ├── types/
-│       │   ├── area.ts           ← Area tipi + ərazilər siyahısı
-│       │   └── provider.ts
-│       ├── utils/
-│       │   └── areaMatch.ts      ← ərazi uyğunluğu məntiqi (tək yerdə)
-│       │
-│       ├── App.tsx
-│       ├── App.css
-│       ├── index.css
-│       └── main.tsx
-│
-├── server/                       ← backend (planlaşdırılır)
-├── shared/                       ← ortaq type-lar (planlaşdırılır)
-├── .gitignore
-└── README.md
+client/
+├── public/
+└── src/
+    ├── assets/
+    │
+    ├── components/
+    │   ├── AreaSelector/     ← ərazi seçimi modalı
+    │   ├── auth/
+    │   ├── booking/
+    │   ├── business/
+    │   ├── common/
+    │   ├── home/             ← HomeHero, OverviewStrip, PopularNearby, TodayOverview, RecentlyViewed, HowItWorks, HelpfulInfo
+    │   ├── layout/           ← AppLayout, TopNav
+    │   ├── provider/
+    │   └── search/
+    │
+    ├── data/
+    │   └── providers.ts      ← mock provider-lər
+    │
+    ├── hooks/
+    │   └── useTheme.ts       ← light/dark mode
+    │
+    ├── pages/
+    │   ├── AccountType/
+    │   ├── Auth/
+    │   ├── Booking/
+    │   ├── BookingStart/
+    │   ├── Bookings/
+    │   ├── BusinessBookings/
+    │   ├── BusinessDashboard/
+    │   ├── BusinessProfile/
+    │   ├── BusinessServices/
+    │   ├── Dashboard/
+    │   ├── Explore/
+    │   ├── Home/
+    │   ├── Login/
+    │   ├── Profile/
+    │   ├── Provider/
+    │   ├── Register/
+    │   ├── Saved/
+    │   └── SearchResults/
+    │
+    ├── services/              ← localStorage-based demo storage (bookingStorage, reviewStorage, favoriteStorage, serviceStorage, portfolioStorage, demoCustomer)
+    ├── store/
+    ├── styles/
+    │   └── variables.css      ← rənglər və ölçülər
+    ├── types/
+    │   ├── area.ts            ← Area tipi + ərazilər siyahısı
+    │   └── provider.ts
+    ├── utils/
+    │   ├── areaMatch.ts       ← ərazi uyğunluğu məntiqi (tək yerdə)
+    │   └── categoryVisual.ts  ← kateqoriya üzrə ikon/rəng
+    │
+    ├── App.tsx
+    ├── App.css                ← qlobal reset + shell + nav
+    ├── index.css
+    └── main.tsx
 ```
 
-### Planlaşdırılan struktur (backend gəldikdən sonra)
+### Server (`server/`) — qurulub, əsas skelet hazırdır
 
 ```text
 server/
 ├── src/
 │   ├── config/
-│   ├── middleware/
-│   ├── modules/
-│   │   ├── auth/
-│   │   ├── users/
-│   │   ├── businesses/
-│   │   ├── categories/
-│   │   ├── services/
-│   │   ├── areas/
-│   │   ├── providers/
-│   │   ├── bookings/
-│   │   ├── reviews/
-│   │   ├── portfolio/
-│   │   ├── availability/
-│   │   └── notifications/
-│   ├── database/
-│   ├── routes/
-│   ├── utils/
-│   ├── types/
-│   ├── app.ts
-│   └── server.ts
+│   │   └── prisma.ts         ← Prisma Client singleton
+│   ├── middleware/            ← hələ boş
+│   ├── modules/                ← hələ boş (auth, users, businesses və s. buraya gələcək)
+│   ├── routes/                 ← hələ boş
+│   ├── types/                  ← hələ boş
+│   ├── utils/                  ← hələ boş
+│   ├── app.ts                 ← Express app, middleware, route-lar
+│   └── index.ts                ← dotenv, server-i başladır
 ├── prisma/
-│   ├── schema.prisma
-│   └── seed.ts
+│   ├── schema.prisma           ← tam entity modeli yazılıb (aşağıya bax)
+│   └── migrations/
+├── .env                        ← DATABASE_URL, PORT (Git-ə düşmür)
 └── package.json
+```
 
+**Hazırda işləyən endpoint-lər:**
+
+```text
+GET  /api/health        → server statusu
+GET  /api/categories    → Prisma-dan kateqoriyalar (hələ boş, seed yazılmayıb)
+```
+
+### Shared (`shared/`) — planlaşdırılır, hələ boşdur
+
+```text
 shared/
 ├── types/
 │   ├── user.ts
@@ -214,7 +229,7 @@ shared/
 
 ### Rol və icazə
 
-Backend hər istifadəçiyə rol təyin edəcək: `USER` və ya `BUSINESS`. User biznes dashboard-a daxil ola bilməməlidir. Bu yoxlama yalnız frontend-də yox, **backend-də də məcburidir**.
+Backend hər istifadəçiyə rol təyin edəcək: `USER` və ya `BUSINESS` (Prisma schema-da `Role` enum-u artıq var). User biznes dashboard-a daxil ola bilməməlidir. Bu yoxlama yalnız frontend-də yox, **backend-də də məcburidir** (hələ yazılmayıb — auth ilə birlikdə gələcək).
 
 ---
 
@@ -291,9 +306,9 @@ Bu hissə ən çox qarışdırılan hissədir, ona görə ayrıca yazılıb.
 
 ## Mock data
 
-Backend olmadığı üçün provider-lər `client/src/data/providers.ts` faylındadır.
+Backend hələ tam qoşulmadığı üçün provider-lər `client/src/data/providers.ts` faylındadır. Rezerv, rəy, seçilmiş və portfolio kimi istifadəçi fəaliyyəti isə `client/src/services/` altındakı `localStorage`-based demo modullarda saxlanır (`bookingStorage.ts`, `reviewStorage.ts`, `favoriteStorage.ts`, `serviceStorage.ts`, `portfolioStorage.ts`).
 
-Backend gələndə bu fayl birbaşa silinməyəcək. Əvvəlcə `services/` qovluğunda API çağırışları yazılacaq, komponentlər mock datanın əvəzinə həmin service-lərdən istifadə edəcək. Bu şəkildə UI kodu dəyişmir.
+Backend tam qoşulanda bu fayllar birbaşa silinməyəcək — hər biri tədricən API çağırışları ilə əvəz olunacaq, komponentlər isə dəyişməyəcək (funksiya imzaları eyni saxlanacaq).
 
 ---
 
@@ -306,6 +321,7 @@ Backend gələndə bu fayl birbaşa silinməyəcək. Əvvəlcə `services/` qovl
 - Düymələr yuvarlaq, amma həddindən artıq pill formasında olmamalıdır.
 - Light və Dark mode dəstəklənir. Seçim brauzerin yaddaşında saxlanır (`hooks/useTheme.ts`).
 - Rənglər və ölçülər `styles/variables.css` faylında toplanıb. Yeni rəng lazım olsa, əvvəlcə orada dəyişən yarat.
+- Kateqoriya kartları üçün gradient fonlar `--gradient-teal`, `--gradient-pink`, `--gradient-blue`, `--gradient-purple` dəyişənləri ilə idarə olunur, hansı kateqoriyaya hansı gradient/ikon düşdüyü `utils/categoryVisual.ts`-dədir.
 
 ---
 
@@ -315,36 +331,36 @@ Backend gələndə bu fayl birbaşa silinməyəcək. Əvvəlcə `services/` qovl
 
 authentication, authorization, users, businesses, services, categories, areas, bookings, reviews, saved providers, portfolio, availability, notifications.
 
-### API (REST)
+### API (REST) — planlaşdırılan tam siyahı
 
 ```text
-Auth
+Auth                                    [yazılmayıb]
 POST   /api/auth/signup
 POST   /api/auth/signin
 POST   /api/auth/refresh
 POST   /api/auth/logout
 
 Ümumi
-GET    /api/providers
-GET    /api/providers/:id
-GET    /api/categories
-GET    /api/areas
+GET    /api/providers                   [yazılmayıb]
+GET    /api/providers/:id               [yazılmayıb]
+GET    /api/categories                  ✅ işləyir (boş nəticə, seed yoxdur)
+GET    /api/areas                       [yazılmayıb]
 
-Rezerv
+Rezerv                                  [yazılmayıb]
 POST   /api/bookings
 GET    /api/bookings
 GET    /api/bookings/:id
 PATCH  /api/bookings/:id
 
-Seçilmişlər
+Seçilmişlər                             [yazılmayıb]
 POST   /api/saved/:providerId
 DELETE /api/saved/:providerId
 
-Rəylər
+Rəylər                                  [yazılmayıb]
 GET    /api/reviews
 POST   /api/reviews
 
-Business
+Business                                [yazılmayıb]
 GET    /api/business/dashboard
 GET    /api/business/profile
 PATCH  /api/business/profile
@@ -363,34 +379,50 @@ DELETE /api/business/portfolio/:id
 
 Axtarış nəticələri həm axtarış sözünə, həm də seçilmiş ərazilərə görə qaytarılmalıdır.
 
-### Database entity-ləri
+### Database entity-ləri — ✅ `schema.prisma`-da tam yazılıb
 
 ```text
 User, Business, Category, Service, Area, Booking,
 Review, Portfolio, SavedProvider, Availability, Notification
 ```
 
-Qeyd: `Category` cədvəlində `parentId` olmalıdır (məsələn Gözəllik → Dırnaq).
+Qeyd: `Category` cədvəlində `parentId` var (məsələn Gözəllik → Dırnaq). `SavedProvider` istifadəçi ↔ biznes arasında əlaqə cədvəlidir (seçilmişlər), `@@unique([userId, businessId])` ilə təkrar qeyd qarşısı alınır.
 
 ### Təhlükəsizlik
 
-- Şifrələr plain text saxlanmır, hash olunur.
-- Access token və refresh token mexanizmi.
-- Rol yoxlaması backend tərəfində məcburidir.
-- `.env` faylı Git-ə düşmür. Yalnız dəyərsiz `.env.example` commit olunur.
+- Şifrələr plain text saxlanmır, `bcryptjs` ilə hash olunacaq (paket quraşdırılıb, auth yazılanda istifadə olunacaq).
+- Access token və refresh token mexanizmi — hələ yazılmayıb.
+- Rol yoxlaması backend tərəfində məcburidir — hələ yazılmayıb (auth-dan sonra gələcək).
+- `.env` faylı Git-ə düşmür, `.gitignore`-dadır.
+
+---
+
+## Hazırkı vəziyyət
+
+**Frontend:** əsas ekranların hamısı hazırdır (Home, SearchResults, Provider, Booking axını, Profil, Seçilmişlər, Biznes paneli). Backend olmadığı üçün data `localStorage`-based demo servislərdən gəlir.
+
+**Backend:** skelet qurulub və işləyir.
+
+- ✅ `server/` strukturu (`config`, `middleware`, `modules`, `routes`, `types`, `utils`, `app.ts`, `index.ts`)
+- ✅ Prisma qoşulub, SQLite ilə (`dev.db`)
+- ✅ `schema.prisma`-da bütün entity-lər yazılıb, migration tətbiq olunub
+- ✅ `GET /api/health`, `GET /api/categories` işləyir
+- ⏳ Auth (`signup`/`signin`/`refresh`/`logout`) — **növbəti addım**
+- ⏳ Qalan bütün resurs endpoint-ləri (providers, bookings, saved, reviews, business/\*) — auth-dan sonra
+- ⏳ Frontend-in `services/` qatının API çağırışları ilə əvəzlənməsi (Addım 6) — backend hazır olandan sonra
 
 ---
 
 ## Yol xəritəsi (addım-addım)
 
-### Addım 1 — Layihənin qurulması
+### Addım 1 — Layihənin qurulması ✅
 
 - `client/` (React + TypeScript + Vite)
 - `server/` və `shared/` qovluqları
 - Git və `.gitignore`
 - Mühit dəyişənləri (`.env`, `.env.example`)
 
-### Addım 2 — Frontend ekranları
+### Addım 2 — Frontend ekranları ✅
 
 - Ana səhifə
 - Axtarış və nəticələr
@@ -403,9 +435,7 @@ Qeyd: `Category` cədvəlində `parentId` olmalıdır (məsələn Gözəllik →
 - Giriş / Qeydiyyat və hesab tipi seçimi
 - Biznes paneli: dashboard, profil, xidmətlər, rezervlər, müştərilər, portfolio, rəylər, əlçatanlıq
 
-### Addım 3 — Kod səliqəsi
-
-Frontend bitəndən sonra, backend-dən əvvəl edilir. Backend qoşulanda `services/` və `types/` dəyişəcək, ona görə qarışıq struktur üzərinə backend qoşmaq sonra iki dəfə iş çıxarar.
+### Addım 3 — Kod səliqəsi ✅
 
 - Kökdə tam `.gitignore` (`node_modules`, `dist`, `.env`, `uploads/`)
 - Dublikat və istifadə olunmayan faylların silinməsi
@@ -413,33 +443,32 @@ Frontend bitəndən sonra, backend-dən əvvəl edilir. Backend qoşulanda `serv
 - `App.css`-in hissələrə bölünməsi: hər səhifənin stili öz `.css` faylında
 - `pages/` qovluğunun struktura uyğunlaşdırılması
 
-Qayda: hər dəfə bir şey dəyiş, Problems panelinə bax, xəta varsa geri qaytar.
-
-### Addım 4 — Shared type-lar
+### Addım 4 — Shared type-lar ⏳ (hələ başlanmayıb)
 
 - `shared/types`: user, business, service, booking, review, area
 - `shared/constants`: roles, booking-status
 - `client/src/types` faylları (`area.ts`, `provider.ts`) buraya köçürülür
 
-### Addım 5 — Backend
+### Addım 5 — Backend ⏳ (davam edir)
 
-- `server/` qurulması (Express + TypeScript)
-- Prisma schema və seed data
-- Authentication: qeydiyyat, giriş, token yenilənməsi
-- Authorization: `USER` və `BUSINESS` rolları, middleware
-- Provider, category, area API-ləri
-- Booking API
-- Saved və Review API-ləri
-- Business API-ləri: dashboard, profil, xidmətlər, rezervlər, müştərilər, portfolio
+- ✅ `server/` qurulması (Express + TypeScript)
+- ✅ Prisma schema
+- ⏳ Seed data
+- ⏳ Authentication: qeydiyyat, giriş, token yenilənməsi — **indiki addım**
+- ⏳ Authorization: `USER` və `BUSINESS` rolları, middleware
+- ⏳ Provider, category, area API-ləri
+- ⏳ Booking API
+- ⏳ Saved və Review API-ləri
+- ⏳ Business API-ləri: dashboard, profil, xidmətlər, rezervlər, müştərilər, portfolio
 
-### Addım 6 — Frontend və backend birləşməsi
+### Addım 6 — Frontend və backend birləşməsi ⏳
 
 - `services/` qatında API çağırışları
 - Mock datanın əvəzinə API datası
 - Protected route-lar (rola görə yönləndirmə)
 - Giriş vəziyyətinin saxlanması (`store/`)
 
-### Addım 7 — Son işlənmə və test
+### Addım 7 — Son işlənmə və test ⏳
 
 - Loading, error və empty state-lər
 - Form validasiyası
@@ -465,7 +494,9 @@ Real ödəniş, mürəkkəb AI, canlı xəritə, Instagram/WhatsApp inteqrasiyas
 - API çağırışları yalnız `services/` qatında olmalıdır.
 - Fayl adı komponentin adı ilə eyni olmalıdır (`AreaSelector.tsx` → `AreaSelector.css`).
 - Eyni adlı iki fayl fərqli işlər görürsə, adları fərqləndirilməlidir.
-- Yeni faylı VS Code-un içindəki `client/src/...` qovluğunda aç. Faylı `Downloads` kimi kənar qovluqdan açsan, TypeScript minlərlə yalançı xəta göstərəcək.
+- Yeni faylı VS Code-un içindəki `client/src/...` və ya `server/src/...` qovluğunda aç. Faylı `Downloads` kimi kənar qovluqdan açsan, TypeScript minlərlə yalançı xəta göstərəcək.
+- Backend-də `app.ts` Express app-ın özüdür (middleware + route-lar), `index.ts` isə yalnız `.env`-i yükləyib serveri başladır — ikisini qarışdırma, route-ları həmişə `app.ts`-ə (və ya ordan çağırılan modullara) yaz.
+- `schema.prisma`-da dəyişiklik etdikdən sonra mütləq `npx prisma migrate dev --name <təsvir>` işlət.
 
 ---
 
@@ -484,6 +515,8 @@ Nümunə mesajlar:
 areaMatch util, remove duplicate area logic
 booking flow: date and time steps
 business dashboard: today's bookings
+server: prisma schema + savedprovider relation fix
+server: split app.ts and index.ts
 ```
 
-Böyük dəyişiklikdən (fayl silmək, qovluq köçürmək, backend qoşmaq) əvvəl mütləq commit et. Beləcə istənilən vaxt geri qayıtmaq olar.
+Böyük dəyişiklikdən (fayl silmək, qovluq köçürmək, backend qoşmaq, migration işlətmək) əvvəl mütləq commit et. Beləcə istənilən vaxt geri qayıtmaq olar.
