@@ -91,3 +91,9 @@ export const refresh = async (refreshToken: string) => {
     accessToken: signAccessToken({ userId: user.id, role: user.role }),
   };
 };
+
+export const getUserById = async (userId: string) => {
+  return prisma.user.findUnique({
+    where: { id: userId },
+  });
+};

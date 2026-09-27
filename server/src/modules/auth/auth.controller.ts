@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 
 import * as authService from "./auth.service";
+import type { AuthenticatedRequest } from "../../middleware/authenticate";
 
 type PublicUser = {
   id: string;
@@ -112,4 +113,29 @@ export const logoutHandler = async (_req: Request, res: Response) => {
    * (localStorage / state) silməlidir.
    */
   res.json({ message: "Çıxış edildi" });
+};
+
+export const meHandler = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    const user = await authService.getUserById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "İstifadəçi tapılmadı" });
+    }
+
+    res.json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      phone: user.phone,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Verilənlər bazası xətası" });
+  }
 };
