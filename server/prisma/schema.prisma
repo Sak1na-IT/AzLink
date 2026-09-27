@@ -9,3 +9,233 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
+
+// =========================================================
+// ENUMS
+// =========================================================
+
+enum Role {
+  USER
+  BUSINESS
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// =========================================================
+// USER
+// =========================================================
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  business       Business?
+  bookings       Booking[]      @relation("CustomerBookings")
+  reviews        Review[]
+  savedProviders SavedProvider[]
+  notifications  Notification[]
+}
+
+// =========================================================
+// BUSINESS
+// =========================================================
+
+model Business {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  description String?
+  areaId      String
+  phone       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [id])
+  area          Area           @relation(fields: [areaId], references: [id])
+  categories    Category[]     @relation("BusinessCategories")
+  services      Service[]
+  bookings      Booking[]      @relation("BusinessBookings")
+  reviews       Review[]
+  portfolio     Portfolio[]
+  availability  Availability[]
+
+  @@index([areaId])
+}
+
+// =========================================================
+// CATEGORY
+// =========================================================
+
+model Category {
+  id       String     @id @default(cuid())
+  name     String
+  parentId String?
+
+  // Relations
+  parent    Category?   @relation("CategoryChildren", fields: [parentId], references: [id])
+  children  Category[]  @relation("CategoryChildren")
+  services  Service[]
+  businesses Business[] @relation("BusinessCategories")
+
+  @@index([parentId])
+}
+
+// =========================================================
+// SERVICE
+// =========================================================
+
+model Service {
+  id          String  @id @default(cuid())
+  businessId  String
+  categoryId  String
+  name        String
+  description String?
+  price       Float
+  duration    Int      // dəqiqə ilə
+
+  // Relations
+  business Business @relation(fields: [businessId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+  bookings Booking[]
+
+  @@index([businessId])
+  @@index([categoryId])
+}
+
+// =========================================================
+// AREA
+// =========================================================
+
+model Area {
+  id   String @id @default(cuid())
+  name String @unique
+  type String // "district" | "metro" | "custom"
+
+  // Relations
+  businesses Business[]
+}
+
+// =========================================================
+// BOOKING
+// =========================================================
+
+model Booking {
+  id         String        @id @default(cuid())
+  customerId String
+  businessId String
+  serviceId  String
+  date       DateTime
+  status     BookingStatus @default(PENDING)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relations
+  customer User     @relation("CustomerBookings", fields: [customerId], references: [id])
+  business Business @relation("BusinessBookings", fields: [businessId], references: [id])
+  service  Service  @relation(fields: [serviceId], references: [id])
+  review   Review?
+
+  @@index([customerId])
+  @@index([businessId])
+  @@index([serviceId])
+}
+
+// =========================================================
+// REVIEW
+// =========================================================
+
+model Review {
+  id         String   @id @default(cuid())
+  bookingId  String   @unique
+  userId     String
+  businessId String
+  rating     Int      // 1-5
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  // Relations
+  booking  Booking  @relation(fields: [bookingId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([userId])
+  @@index([businessId])
+}
+
+// =========================================================
+// PORTFOLIO
+// =========================================================
+
+model Portfolio {
+  id         String @id @default(cuid())
+  businessId String
+  imageUrl   String
+
+  // Relations
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+}
+
+// =========================================================
+// SAVED PROVIDER (seçilmişlər)
+// =========================================================
+
+model SavedProvider {
+  id         String @id @default(cuid())
+  userId     String
+  businessId String
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, businessId])
+  @@index([userId])
+}
+
+// =========================================================
+// AVAILABILITY (iş saatları)
+// =========================================================
+
+model Availability {
+  id         String @id @default(cuid())
+  businessId String
+  dayOfWeek  Int    // 0 = Bazar, 1 = Bazar ertəsi, ... 6 = Şənbə
+  startTime  String // "09:00"
+  endTime    String // "18:00"
+
+  // Relations
+  business Business @relation(fields: [businessId], references: [id])
+
+  @@index([businessId])
+}
+
+// =========================================================
+// NOTIFICATION
+// =========================================================
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
