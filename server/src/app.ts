@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import { prisma } from "./config/prisma";
+import authRoutes from "./modules/auth/auth.routes";
 
 const app = express();
 
@@ -21,5 +22,7 @@ app.get("/api/categories", async (_req, res) => {
     res.status(500).json({ message: "Verilənlər bazası xətası" });
   }
 });
+
+app.use("/api/auth", authRoutes);
 
 export default app;
