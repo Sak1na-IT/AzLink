@@ -10,8 +10,10 @@ const round1 = (value: number) => Math.round(value * 10) / 10;
  *
  * Qeyd: sxemdə areaId/area MƏCBURİDİR (qeydiyyat zamanı Register.tsx
  * rayonu artıq tələb edir), ona görə burada null ehtimalı yoxdur.
+ *
+ * Bu funksiya export olunur: Saved API da eyni kart formatını qaytarır.
  */
-const toProviderDTO = (business: {
+export const toProviderDTO = (business: {
   id: string;
   name: string;
   areaId: string;

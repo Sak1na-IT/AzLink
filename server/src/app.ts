@@ -7,6 +7,7 @@ import providersRoutes from "./modules/providers/providers.routes";
 import areasRoutes from "./modules/areas/areas.routes";
 import businessRoutes from "./modules/business/business.routes";
 import bookingsRoutes from "./modules/bookings/bookings.routes";
+import savedRoutes from "./modules/saved/saved.routes";
 
 const app = express();
 
@@ -32,5 +33,6 @@ app.use("/api/providers", providersRoutes);
 app.use("/api/areas", areasRoutes);
 app.use("/api/business", businessRoutes);
 app.use("/api/bookings", bookingsRoutes);
+app.use("/api/saved", savedRoutes);
 
 export default app;
