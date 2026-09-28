@@ -6,6 +6,7 @@ import authRoutes from "./modules/auth/auth.routes";
 import providersRoutes from "./modules/providers/providers.routes";
 import areasRoutes from "./modules/areas/areas.routes";
 import businessRoutes from "./modules/business/business.routes";
+import bookingsRoutes from "./modules/bookings/bookings.routes";
 
 const app = express();
 
@@ -30,5 +31,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/providers", providersRoutes);
 app.use("/api/areas", areasRoutes);
 app.use("/api/business", businessRoutes);
+app.use("/api/bookings", bookingsRoutes);
 
 export default app;
