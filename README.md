@@ -44,8 +44,8 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 - Express (REST API)
 - Prisma ORM
 - SQLite (development üçün)
-- JWT: access token və refresh token (hələ yazılmayıb)
-- Şifrə hash-ləmə: bcryptjs
+- JWT: access token və refresh token (`jsonwebtoken`) — işləyir
+- Şifrə hash-ləmə: `bcryptjs` — işləyir
 
 ---
 
@@ -83,7 +83,8 @@ Server `http://localhost:4000` ünvanında işə düşür.
 Yoxlama üçün:
 
 - `http://localhost:4000/api/health` → `{"status":"ok","time":"..."}`
-- `http://localhost:4000/api/categories` → `[]` (kateqoriya hələ yoxdur, boş massiv normaldır)
+- `http://localhost:4000/api/categories` → kateqoriyalar (seed işlədilibsə)
+- `http://localhost:4000/api/areas` → ərazilər siyahısı
 
 Verilənlər bazası dəyişikliyi etdikdən sonra (schema.prisma-nı redaktə edəndə):
 
@@ -140,16 +141,21 @@ client/
     │   ├── Saved/
     │   └── SearchResults/
     │
-    ├── services/              ← localStorage-based demo storage (bookingStorage, reviewStorage, favoriteStorage, serviceStorage, portfolioStorage, demoCustomer)
+    ├── services/              ← localStorage-based demo storage (bookingStorage, reviewStorage, favoriteStorage, serviceStorage, portfolioStorage, demoCustomer, demoBusiness, businessProfileStorage)
     ├── store/
     ├── styles/
     │   └── variables.css      ← rənglər və ölçülər
     ├── types/
     │   ├── area.ts            ← Area tipi + ərazilər siyahısı
-    │   └── provider.ts
+    │   ├── provider.ts
+    │   ├── booking.ts
+    │   ├── portfolio.ts
+    │   └── schedule.ts
     ├── utils/
     │   ├── areaMatch.ts       ← ərazi uyğunluğu məntiqi (tək yerdə)
-    │   └── categoryVisual.ts  ← kateqoriya üzrə ikon/rəng
+    │   ├── categoryVisual.ts  ← kateqoriya üzrə ikon/rəng
+    │   ├── formatDuration.ts
+    │   └── getBusinessCustomers.ts
     │
     ├── App.tsx
     ├── App.css                ← qlobal reset + shell + nav
@@ -157,32 +163,46 @@ client/
     └── main.tsx
 ```
 
-### Server (`server/`) — qurulub, əsas skelet hazırdır
+### Server (`server/`) — skelet + auth + areas + providers hazırdır
 
 ```text
 server/
 ├── src/
 │   ├── config/
-│   │   └── prisma.ts         ← Prisma Client singleton
-│   ├── middleware/            ← hələ boş
-│   ├── modules/                ← hələ boş (auth, users, businesses və s. buraya gələcək)
-│   ├── routes/                 ← hələ boş
-│   ├── types/                  ← hələ boş
-│   ├── utils/                  ← hələ boş
-│   ├── app.ts                 ← Express app, middleware, route-lar
-│   └── index.ts                ← dotenv, server-i başladır
+│   │   └── prisma.ts             ← Prisma Client singleton
+│   ├── middleware/
+│   │   └── authenticate.ts       ← JWT yoxlaması (authenticate, requireRole) — işləyir, test edilib
+│   ├── modules/
+│   │   ├── auth/                 ← signup, signin, refresh, logout, me — işləyir, test edilib
+│   │   ├── areas/                ← GET /api/areas, GET /api/areas/:id — işləyir, test edilib
+│   │   └── providers/            ← GET /api/providers, GET /api/providers/:id — yazılıb
+│   ├── routes/                   ← hələ boş (route-lar hələlik modul daxilində)
+│   ├── types/                    ← hələ boş
+│   ├── utils/
+│   │   └── jwt.ts                ← token sign/verify (access + refresh)
+│   ├── app.ts                    ← Express app, middleware, route-lar
+│   └── index.ts                  ← dotenv, server-i başladır
 ├── prisma/
-│   ├── schema.prisma           ← tam entity modeli yazılıb (aşağıya bax)
+│   ├── schema.prisma              ← tam entity modeli, `Business.verified` sahəsi əlavə olunub
 │   └── migrations/
-├── .env                        ← DATABASE_URL, PORT (Git-ə düşmür)
+├── .env                          ← DATABASE_URL, JWT_ACCESS_SECRET, JWT_REFRESH_SECRET, PORT (Git-ə düşmür)
 └── package.json
 ```
 
 **Hazırda işləyən endpoint-lər:**
 
 ```text
-GET  /api/health        → server statusu
-GET  /api/categories    → Prisma-dan kateqoriyalar (hələ boş, seed yazılmayıb)
+GET    /api/health              → server statusu
+GET    /api/categories          → Prisma-dan kateqoriyalar
+GET    /api/areas               → ərazilər siyahısı                    ✅ test edilib
+GET    /api/areas/:id           → tək ərazi                            ✅ test edilib
+POST   /api/auth/signup         → qeydiyyat, tokenlər qaytarır         ✅ test edilib
+POST   /api/auth/signin         → giriş, tokenlər qaytarır             ✅ test edilib
+POST   /api/auth/refresh        → access token yeniləmə                ✅
+POST   /api/auth/logout         → stateless, klient tərəfdə silinir    ✅
+GET    /api/auth/me             → cari istifadəçi (authenticate ilə)   ✅ test edilib
+GET    /api/providers           → provider siyahısı (axtarış/filtr)    ✅ yazılıb
+GET    /api/providers/:id       → tək provider (xidmət, rəy, portfolio)✅ yazılıb
 ```
 
 ### Shared (`shared/`) — planlaşdırılır, hələ boşdur
@@ -229,7 +249,7 @@ shared/
 
 ### Rol və icazə
 
-Backend hər istifadəçiyə rol təyin edəcək: `USER` və ya `BUSINESS` (Prisma schema-da `Role` enum-u artıq var). User biznes dashboard-a daxil ola bilməməlidir. Bu yoxlama yalnız frontend-də yox, **backend-də də məcburidir** (hələ yazılmayıb — auth ilə birlikdə gələcək).
+Backend hər istifadəçiyə rol təyin edir: `USER` və ya `BUSINESS` (Prisma schema-da `Role` enum-u var, JWT payload-a da yazılır). `authenticate` middleware-i qorunan route-larda tələb olunan girişi yoxlayır, `requireRole` isə rola görə əlavə məhdudiyyət qoyur — hər ikisi yazılıb və test edilib.
 
 ---
 
@@ -300,13 +320,13 @@ Bu hissə ən çox qarışdırılan hissədir, ona görə ayrıca yazılıb.
 
 **Uyğunluq məntiqi (`areaMatch.ts`):** provider bir rayonda qeydiyyatdadır (məsələn, Nərimanov). İstifadəçi isə "Gənclik" və ya "Gənclik metrosu" seçə bilər. Bu ərazilər `areaToDistrict` cədvəlində rayona bağlanır. Yeni ərazi əlavə edəndə yalnız bu cədvələ bir sətir yazmaq kifayətdir. Məntiq başqa yerdə təkrarlanmamalıdır.
 
-**Diqqət:** `types/area.ts`-dəki id-lər və `areaMatch.ts`-dəki adlar eyni yazılışla uyğun olmalıdır (məsələn `inşaatçılar metrosu`).
+**Diqqət:** `types/area.ts`-dəki id-lər və `areaMatch.ts`-dəki adlar eyni yazılışla uyğun olmalıdır (məsələn `inşaatçılar metrosu`). Backend-dəki `Area` cədvəli (`id`, `name`, `type`) hazırda bu frontend siyahısından ayrıca, `seed.ts` vasitəsilə doldurulur — iki tərəf uyğunlaşdırılmalıdır.
 
 ---
 
 ## Mock data
 
-Backend hələ tam qoşulmadığı üçün provider-lər `client/src/data/providers.ts` faylındadır. Rezerv, rəy, seçilmiş və portfolio kimi istifadəçi fəaliyyəti isə `client/src/services/` altındakı `localStorage`-based demo modullarda saxlanır (`bookingStorage.ts`, `reviewStorage.ts`, `favoriteStorage.ts`, `serviceStorage.ts`, `portfolioStorage.ts`).
+Backend tədricən qoşulur. Provider-lər hələlik `client/src/data/providers.ts` faylındadır (backend-dəki `GET /api/providers` yazılıb, amma frontend hələ ona keçməyib). Rezerv, rəy, seçilmiş və portfolio kimi istifadəçi fəaliyyəti isə `client/src/services/` altındakı `localStorage`-based demo modullarda saxlanır (`bookingStorage.ts`, `reviewStorage.ts`, `favoriteStorage.ts`, `serviceStorage.ts`, `portfolioStorage.ts`, `businessProfileStorage.ts`).
 
 Backend tam qoşulanda bu fayllar birbaşa silinməyəcək — hər biri tədricən API çağırışları ilə əvəz olunacaq, komponentlər isə dəyişməyəcək (funksiya imzaları eyni saxlanacaq).
 
@@ -334,17 +354,19 @@ authentication, authorization, users, businesses, services, categories, areas, b
 ### API (REST) — planlaşdırılan tam siyahı
 
 ```text
-Auth                                    [yazılmayıb]
+Auth                                    ✅ işləyir, test edilib
 POST   /api/auth/signup
 POST   /api/auth/signin
 POST   /api/auth/refresh
 POST   /api/auth/logout
+GET    /api/auth/me                     ← authenticate middleware ilə qorunur
 
 Ümumi
-GET    /api/providers                   [yazılmayıb]
-GET    /api/providers/:id               [yazılmayıb]
-GET    /api/categories                  ✅ işləyir (boş nəticə, seed yoxdur)
-GET    /api/areas                       [yazılmayıb]
+GET    /api/providers                   ✅ yazılıb
+GET    /api/providers/:id               ✅ yazılıb
+GET    /api/categories                  ✅ işləyir
+GET    /api/areas                       ✅ işləyir, test edilib
+GET    /api/areas/:id                   ✅ işləyir, test edilib
 
 Rezerv                                  [yazılmayıb]
 POST   /api/bookings
@@ -360,7 +382,7 @@ Rəylər                                  [yazılmayıb]
 GET    /api/reviews
 POST   /api/reviews
 
-Business                                [yazılmayıb]
+Business                                [yazılmayıb — indiki addım]
 GET    /api/business/dashboard
 GET    /api/business/profile
 PATCH  /api/business/profile
@@ -377,7 +399,7 @@ POST   /api/business/portfolio
 DELETE /api/business/portfolio/:id
 ```
 
-Axtarış nəticələri həm axtarış sözünə, həm də seçilmiş ərazilərə görə qaytarılmalıdır.
+Axtarış nəticələri həm axtarış sözünə, həm də seçilmiş ərazilərə görə qaytarılmalıdır (`providers.service.ts`-də artıq `search`/`area`/`service` filtri var).
 
 ### Database entity-ləri — ✅ `schema.prisma`-da tam yazılıb
 
@@ -386,29 +408,34 @@ User, Business, Category, Service, Area, Booking,
 Review, Portfolio, SavedProvider, Availability, Notification
 ```
 
-Qeyd: `Category` cədvəlində `parentId` var (məsələn Gözəllik → Dırnaq). `SavedProvider` istifadəçi ↔ biznes arasında əlaqə cədvəlidir (seçilmişlər), `@@unique([userId, businessId])` ilə təkrar qeyd qarşısı alınır.
+Qeyd: `Category` cədvəlində `parentId` var (məsələn Gözəllik → Dırnaq). `SavedProvider` istifadəçi ↔ biznes arasında əlaqə cədvəlidir (seçilmişlər), `@@unique([userId, businessId])` ilə təkrar qeyd qarşısı alınır. `Business` cədvəlinə `verified` (boolean) sahəsi əlavə olunub və migration tətbiq edilib.
 
 ### Təhlükəsizlik
 
-- Şifrələr plain text saxlanmır, `bcryptjs` ilə hash olunacaq (paket quraşdırılıb, auth yazılanda istifadə olunacaq).
-- Access token və refresh token mexanizmi — hələ yazılmayıb.
-- Rol yoxlaması backend tərəfində məcburidir — hələ yazılmayıb (auth-dan sonra gələcək).
-- `.env` faylı Git-ə düşmür, `.gitignore`-dadır.
+- Şifrələr plain text saxlanmır, `bcryptjs` ilə hash olunur. ✅
+- Access token (15 dəq) və refresh token (7 gün) — stateless JWT, `utils/jwt.ts`. ✅
+  - Qeyd: refresh token DB-də saxlanmadığı üçün logout onu server tərəfindən ləğv edə bilmir (yalnız öz-özünə bitir). Real production üçün `RefreshToken` cədvəli əlavə edib logout-da silmək daha təhlükəsiz olardı.
+- Rol yoxlaması backend tərəfində: `authenticate` (giriş tələbi) və `requireRole` (rol tələbi) middleware-ləri yazılıb və test edilib. ✅
+- `.env` faylı Git-ə düşmür, `.gitignore`-dadır. ✅
 
 ---
 
 ## Hazırkı vəziyyət
 
-**Frontend:** əsas ekranların hamısı hazırdır (Home, SearchResults, Provider, Booking axını, Profil, Seçilmişlər, Biznes paneli). Backend olmadığı üçün data `localStorage`-based demo servislərdən gəlir.
+**Frontend:** əsas ekranların hamısı hazırdır (Home, SearchResults, Provider, Booking axını, Profil, Seçilmişlər, Biznes paneli). Backend hələ tam qoşulmadığı üçün data əsasən `localStorage`-based demo servislərdən gəlir.
 
-**Backend:** skelet qurulub və işləyir.
+**Backend:** skelet qurulub, auth və bir neçə ümumi endpoint işləyir.
 
 - ✅ `server/` strukturu (`config`, `middleware`, `modules`, `routes`, `types`, `utils`, `app.ts`, `index.ts`)
 - ✅ Prisma qoşulub, SQLite ilə (`dev.db`)
-- ✅ `schema.prisma`-da bütün entity-lər yazılıb, migration tətbiq olunub
+- ✅ `schema.prisma`-da bütün entity-lər yazılıb, migration tətbiq olunub (`Business.verified` daxil)
 - ✅ `GET /api/health`, `GET /api/categories` işləyir
-- ⏳ Auth (`signup`/`signin`/`refresh`/`logout`) — **növbəti addım**
-- ⏳ Qalan bütün resurs endpoint-ləri (providers, bookings, saved, reviews, business/\*) — auth-dan sonra
+- ✅ Auth modulu (`signup`/`signin`/`refresh`/`logout`/`me`) — yazılıb və test edilib
+- ✅ `authenticate` / `requireRole` middleware — yazılıb və test edilib
+- ✅ Areas API (`GET /api/areas`, `GET /api/areas/:id`) — yazılıb və test edilib
+- ✅ Providers API (`GET /api/providers`, `GET /api/providers/:id`) — yazılıb
+- ⏳ Business profil API — **növbəti addım** (schedule tipi gözlənilir)
+- ⏳ Services, Bookings, Saved, Reviews, Portfolio, Dashboard API-ləri — Business profildən sonra
 - ⏳ Frontend-in `services/` qatının API çağırışları ilə əvəzlənməsi (Addım 6) — backend hazır olandan sonra
 
 ---
@@ -452,14 +479,17 @@ Qeyd: `Category` cədvəlində `parentId` var (məsələn Gözəllik → Dırnaq
 ### Addım 5 — Backend ⏳ (davam edir)
 
 - ✅ `server/` qurulması (Express + TypeScript)
-- ✅ Prisma schema
-- ⏳ Seed data
-- ⏳ Authentication: qeydiyyat, giriş, token yenilənməsi — **indiki addım**
-- ⏳ Authorization: `USER` və `BUSINESS` rolları, middleware
-- ⏳ Provider, category, area API-ləri
+- ✅ Prisma schema (+ `Business.verified`)
+- ⏳ Seed data (qismən — kateqoriya/ərazi/provider seed-i var, davam edir)
+- ✅ Authentication: qeydiyyat, giriş, token yenilənməsi, `me` — test edilib
+- ✅ Authorization: `authenticate` / `requireRole` middleware — test edilib
+- ✅ Area API
+- ✅ Provider API
+- ⏳ **Business profil API — indiki addım**
+- ⏳ Services API
 - ⏳ Booking API
 - ⏳ Saved və Review API-ləri
-- ⏳ Business API-ləri: dashboard, profil, xidmətlər, rezervlər, müştərilər, portfolio
+- ⏳ Business API-lərin qalanı: dashboard, portfolio, müştərilər
 
 ### Addım 6 — Frontend və backend birləşməsi ⏳
 
@@ -496,6 +526,7 @@ Real ödəniş, mürəkkəb AI, canlı xəritə, Instagram/WhatsApp inteqrasiyas
 - Eyni adlı iki fayl fərqli işlər görürsə, adları fərqləndirilməlidir.
 - Yeni faylı VS Code-un içindəki `client/src/...` və ya `server/src/...` qovluğunda aç. Faylı `Downloads` kimi kənar qovluqdan açsan, TypeScript minlərlə yalançı xəta göstərəcək.
 - Backend-də `app.ts` Express app-ın özüdür (middleware + route-lar), `index.ts` isə yalnız `.env`-i yükləyib serveri başladır — ikisini qarışdırma, route-ları həmişə `app.ts`-ə (və ya ordan çağırılan modullara) yaz.
+- Backend modulları `modules/<ad>/` altında üç fayla bölünür: `<ad>.service.ts` (Prisma sorğuları), `<ad>.controller.ts` (request/response, status kodları), `<ad>.routes.ts` (Router, endpoint-lərin qoşulması). Bu nümunə `auth`, `areas`, `providers` modullarında artıq izlənilir.
 - `schema.prisma`-da dəyişiklik etdikdən sonra mütləq `npx prisma migrate dev --name <təsvir>` işlət.
 
 ---
@@ -507,6 +538,7 @@ Hər tamamlanmış işdən sonra commit et:
 ```bash
 git add .
 git commit -m "qısa təsvir"
+git push
 ```
 
 Nümunə mesajlar:
@@ -517,6 +549,7 @@ booking flow: date and time steps
 business dashboard: today's bookings
 server: prisma schema + savedprovider relation fix
 server: split app.ts and index.ts
+server: areas API, auth/me endpoint, authenticate middleware tested
 ```
 
 Böyük dəyişiklikdən (fayl silmək, qovluq köçürmək, backend qoşmaq, migration işlətmək) əvvəl mütləq commit et. Beləcə istənilən vaxt geri qayıtmaq olar.
