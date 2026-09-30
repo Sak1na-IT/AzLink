@@ -182,9 +182,10 @@ model Review {
 // =========================================================
 
 model Portfolio {
-  id         String @id @default(cuid())
+  id         String  @id @default(cuid())
   businessId String
   imageUrl   String
+  caption    String?
 
   // Relations
   business Business @relation(fields: [businessId], references: [id])

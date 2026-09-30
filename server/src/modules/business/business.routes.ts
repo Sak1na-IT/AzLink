@@ -5,6 +5,7 @@ import {
   patchBusinessProfileHandler,
 } from "./business.controller";
 import businessServicesRoutes from "./business-services.routes";
+import businessPortfolioRoutes from "./business-portfolio.routes";
 import { authenticate, requireRole } from "../../middleware/authenticate";
 
 const router = Router();
@@ -27,6 +28,13 @@ router.use(
   authenticate,
   requireRole("BUSINESS"),
   businessServicesRoutes
+);
+
+router.use(
+  "/portfolio",
+  authenticate,
+  requireRole("BUSINESS"),
+  businessPortfolioRoutes
 );
 
 export default router;
