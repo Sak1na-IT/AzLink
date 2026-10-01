@@ -10,6 +10,8 @@ import {
   Mail,
 } from "lucide-react";
 
+import { signin } from "../../services/authService";
+import { ApiError } from "../../services/api";
 import "./Login.css";
 
 function Login() {
@@ -22,24 +24,29 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (
+  const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+    setError("");
+    setIsSubmitting(true);
 
-    console.log("Login məlumatları:", {
-      email,
-      password,
-      role,
-    });
+    try {
+      const { user } = await signin({ email, password });
 
-    /*
-     * Demo rejimində auth yoxdur: rola görə sadəcə
-     * uyğun panelə yönləndiririk. Backend gələndə
-     * (Addım 5) bura real giriş yoxlaması gələcək.
-     */
-    navigate(isBusiness ? "/business" : "/");
+      navigate(user.role === "BUSINESS" ? "/business" : "/");
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Giriş zamanı xəta baş verdi. Yenidən cəhd edin."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRegister = () => {
@@ -55,15 +62,10 @@ function Login() {
       <div className="login-card">
         <div className="login-header">
           <div className="login-icon">
-            <LockKeyhole
-              size={24}
-              strokeWidth={1.8}
-            />
+            <LockKeyhole size={24} strokeWidth={1.8} />
           </div>
 
-          <span className="login-eyebrow">
-            AzLink
-          </span>
+          <span className="login-eyebrow">AzLink</span>
 
           <h1>
             {isBusiness
@@ -78,26 +80,18 @@ function Login() {
           </p>
         </div>
 
-        <form
-          className="login-form"
-          onSubmit={handleSubmit}
-        >
+        <form className="login-form" onSubmit={handleSubmit}>
           <label className="login-field">
             <span>Email</span>
 
             <div className="login-input-wrapper">
-              <Mail
-                size={18}
-                strokeWidth={1.8}
-              />
+              <Mail size={18} strokeWidth={1.8} />
 
               <input
                 type="email"
                 placeholder="email@example.com"
                 value={email}
-                onChange={(event) =>
-                  setEmail(event.target.value)
-                }
+                onChange={(event) => setEmail(event.target.value)}
                 required
               />
             </div>
@@ -107,66 +101,46 @@ function Login() {
             <span>Şifrə</span>
 
             <div className="login-input-wrapper">
-              <LockKeyhole
-                size={18}
-                strokeWidth={1.8}
-              />
+              <LockKeyhole size={18} strokeWidth={1.8} />
 
               <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
+                type={showPassword ? "text" : "password"}
                 placeholder="Şifrənizi daxil edin"
                 value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
-                }
+                onChange={(event) => setPassword(event.target.value)}
                 required
               />
 
               <button
                 type="button"
                 className="login-password-button"
-                onClick={() =>
-                  setShowPassword(
-                    (current) => !current
-                  )
-                }
+                onClick={() => setShowPassword((current) => !current)}
                 aria-label={
-                  showPassword
-                    ? "Şifrəni gizlət"
-                    : "Şifrəni göstər"
+                  showPassword ? "Şifrəni gizlət" : "Şifrəni göstər"
                 }
               >
                 {showPassword ? (
-                  <EyeOff
-                    size={18}
-                    strokeWidth={1.8}
-                  />
+                  <EyeOff size={18} strokeWidth={1.8} />
                 ) : (
-                  <Eye
-                    size={18}
-                    strokeWidth={1.8}
-                  />
+                  <Eye size={18} strokeWidth={1.8} />
                 )}
               </button>
             </div>
           </label>
 
+          {error && <p className="login-error">{error}</p>}
+
           <button
             type="submit"
             className="login-submit-button"
+            disabled={isSubmitting}
           >
-            Daxil ol
+            {isSubmitting ? "Daxil olunur..." : "Daxil ol"}
           </button>
         </form>
 
         <div className="login-footer">
-          <span>
-            Hesabınız yoxdur?
-          </span>
+          <span>Hesabınız yoxdur?</span>
 
           <button
             type="button"

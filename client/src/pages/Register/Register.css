@@ -178,6 +178,13 @@
   color: var(--color-text);
 }
 
+.register-error {
+  margin: 0;
+  color: #d64545;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+}
+
 .register-submit-button {
   width: 100%;
   min-height: 46px;
@@ -197,6 +204,11 @@
 .register-submit-button:hover {
   border-color: var(--color-primary-hover);
   background: var(--color-primary-hover);
+}
+
+.register-submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .register-footer {

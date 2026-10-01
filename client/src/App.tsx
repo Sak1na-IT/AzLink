@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
 import AppLayout from "./components/layout/AppLayout";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Home from "./pages/Home/Home";
 import SearchResults from "./pages/SearchResults/SearchResults";
@@ -30,40 +31,71 @@ function App() {
         {/* HOME */}
         <Route
           path="/"
-          element={<Home />}
+          element={
+            <ProtectedRoute role="USER">
+              <Home />
+            </ProtectedRoute>
+          }
         />
 
         {/* SEARCH RESULTS */}
         <Route
           path="/search"
-          element={<SearchResults />}
+          element={
+            <ProtectedRoute role="USER">
+              <SearchResults />
+            </ProtectedRoute>
+          }
         />
 
         {/* EXPLORE */}
         <Route
           path="/explore"
-          element={<ExplorePage />}
+          element={
+            <ProtectedRoute role="USER">
+              <ExplorePage />
+            </ProtectedRoute>
+          }
         />
 
         {/* BOOKINGS */}
         <Route
           path="/bookings"
-          element={<Bookings />}
+          element={
+            <ProtectedRoute role="USER">
+              <Bookings />
+            </ProtectedRoute>
+          }
         />
-        
+
         {/*BOOKING START*/}
-        <Route path="/booking" element={<BookingStart />} />
+        <Route
+          path="/booking"
+          element={
+            <ProtectedRoute role="USER">
+              <BookingStart />
+            </ProtectedRoute>
+          }
+        />
 
         {/* SAVED */}
         <Route
           path="/saved"
-          element={<Saved />}
+          element={
+            <ProtectedRoute role="USER">
+              <Saved />
+            </ProtectedRoute>
+          }
         />
 
         {/* PROFILE */}
         <Route
           path="/profile"
-          element={<Profile />}
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
         />
 
         {/* ACCOUNT TYPE */}
@@ -75,37 +107,61 @@ function App() {
         {/* BUSINESS PORTFOLIO */}
         <Route
           path="/business-portfolio"
-          element={<BusinessPortfolio />}
+          element={
+            <ProtectedRoute role="BUSINESS">
+              <BusinessPortfolio />
+            </ProtectedRoute>
+          }
         />
 
         {/* BUSINESS DASHBOARD */}
         <Route
           path="/business"
-          element={<BusinessDashboard />}
+          element={
+            <ProtectedRoute role="BUSINESS">
+              <BusinessDashboard />
+            </ProtectedRoute>
+          }
         />
 
         {/* BUSINESS PROFILE */}
         <Route
           path="/business-profile"
-          element={<BusinessProfile />}
+          element={
+            <ProtectedRoute role="BUSINESS">
+              <BusinessProfile />
+            </ProtectedRoute>
+          }
         />
 
         {/* BUSINESS SERVICES */}
         <Route
           path="/business-services"
-          element={<BusinessServices />}
+          element={
+            <ProtectedRoute role="BUSINESS">
+              <BusinessServices />
+            </ProtectedRoute>
+          }
         />
 
         {/* BUSINESS BOOKINGS */}
         <Route
           path="/business-bookings"
-          element={<BusinessBookings />}
+          element={
+            <ProtectedRoute role="BUSINESS">
+              <BusinessBookings />
+            </ProtectedRoute>
+          }
         />
 
         {/* BUSINESS CUSTOMERS */}
         <Route
           path="/business-customers"
-          element={<BusinessCustomers />}
+          element={
+            <ProtectedRoute role="BUSINESS">
+              <BusinessCustomers />
+            </ProtectedRoute>
+          }
         />
 
         {/* LOGIN */}
@@ -123,13 +179,21 @@ function App() {
         {/* PROVIDER PROFILE */}
         <Route
           path="/provider/:providerId"
-          element={<Provider />}
+          element={
+            <ProtectedRoute role="USER">
+              <Provider />
+            </ProtectedRoute>
+          }
         />
 
         {/* NEW BOOKING */}
         <Route
           path="/booking/:providerId"
-          element={<Booking />}
+          element={
+            <ProtectedRoute role="USER">
+              <Booking />
+            </ProtectedRoute>
+          }
         />
 
       </Route>
