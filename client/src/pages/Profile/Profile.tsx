@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Bell,
@@ -14,6 +14,8 @@ import { getBookingsByCustomer } from "../../services/bookingStorage";
 import { hasReviewed } from "../../services/reviewStorage";
 import { getSavedProviderIds } from "../../services/favoriteStorage";
 import { CURRENT_CUSTOMER } from "../../services/demoCustomer";
+import { getMe, logout } from "../../services/authService";
+import { getStoredUser, type AuthUser } from "../../services/api";
 import "./Profile.css";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -28,8 +30,21 @@ function Profile() {
 
   const [isEditing, setIsEditing] = useState(false);
 
-  const [name, setName] = useState("AzLink istifadəçisi");
-  const [email, setEmail] = useState("user@azlink.az");
+  const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
+  const [name, setName] = useState(user?.name ?? "");
+  const [email, setEmail] = useState(user?.email ?? "");
+
+  useEffect(() => {
+    getMe()
+      .then((freshUser) => {
+        setUser(freshUser);
+        setName(freshUser.name);
+        setEmail(freshUser.email);
+      })
+      .catch(() => {
+        /* saxlanmış istifadəçi ilə davam edirik */
+      });
+  }, []);
 
   /* ========================================================
      FƏALİYYƏT
@@ -66,6 +81,11 @@ function Profile() {
 
   const handleSave = () => {
     setIsEditing(false);
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/account-type");
   };
 
   return (
@@ -123,7 +143,11 @@ function Profile() {
                   <button
                     type="button"
                     className="profile-secondary-button"
-                    onClick={() => setIsEditing(false)}
+                    onClick={() => {
+                      setName(user?.name ?? "");
+                      setEmail(user?.email ?? "");
+                      setIsEditing(false);
+                    }}
                   >
                     Ləğv et
                   </button>
@@ -162,6 +186,7 @@ function Profile() {
             className="profile-card__logout"
             title="Çıxış"
             aria-label="Çıxış"
+            onClick={handleLogout}
           >
             <LogOut size={18} strokeWidth={1.8} />
           </button>
