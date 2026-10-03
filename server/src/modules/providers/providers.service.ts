@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../config/prisma";
 
 const round1 = (value: number) => Math.round(value * 10) / 10;
@@ -8,10 +9,8 @@ const round1 = (value: number) => Math.round(value * 10) / 10;
  * əlaqəsindən hesablanır (hələ rəy yoxdursa 0 qayıdır).
  * distance hələlik null-dur — coğrafi hesablama sonra əlavə olunacaq.
  *
- * Qeyd: sxemdə areaId/area MƏCBURİDİR (qeydiyyat zamanı Register.tsx
- * rayonu artıq tələb edir), ona görə burada null ehtimalı yoxdur.
- *
  * Bu funksiya export olunur: Saved API da eyni kart formatını qaytarır.
+ * (Ona görə toxunmuruq — Saved-in include-ları dəyişməsin.)
  */
 export const toProviderDTO = (business: {
   id: string;
@@ -50,6 +49,64 @@ export const toProviderDTO = (business: {
   };
 };
 
+/* Axtarış kartı üçün lazım olan bütün əlaqələr */
+const cardInclude = {
+  area: true,
+  categories: { include: { parent: true } },
+  services: { include: { category: { include: { parent: true } } } },
+  reviews: true,
+  portfolio: { take: 1 },
+} satisfies Prisma.BusinessInclude;
+
+type BusinessCard = Prisma.BusinessGetPayload<{
+  include: typeof cardInclude;
+}>;
+
+/* Biznesin bütün kateqoriya adları (alt-kateqoriya + onun valideyni) */
+const getCategoryNames = (business: BusinessCard) => {
+  const names = new Set<string>();
+
+  const add = (category: {
+    name: string;
+    parent?: { name: string } | null;
+  }) => {
+    names.add(category.name);
+
+    if (category.parent) {
+      names.add(category.parent.name);
+    }
+  };
+
+  business.categories.forEach(add);
+  business.services.forEach((service) => add(service.category));
+
+  return Array.from(names);
+};
+
+/*
+ * Axtarış/kəşf kartı: frontend-in "Provider" tipinə uyğundur.
+ * - service: kartda göstərilən kateqoriya adı (məs. "Dırnaq")
+ * - categories: kateqoriya filtri üçün bütün adlar
+ * - ownerId: biznes sahibinin user id-si (öz biznesini gizlətmək üçün)
+ */
+export const toProviderCard = (business: BusinessCard) => ({
+  ...toProviderDTO(business),
+  service:
+    business.services[0]?.category.name ??
+    business.categories[0]?.name ??
+    "",
+  ownerId: business.userId,
+  categories: getCategoryNames(business),
+  image: business.portfolio[0]?.imageUrl,
+  services: business.services.map((service) => ({
+    id: service.id,
+    name: service.name,
+    description: service.description ?? "",
+    price: service.price,
+    duration: service.duration,
+  })),
+});
+
 export const getProviders = async (filters: {
   search?: string;
   area?: string;
@@ -57,46 +114,48 @@ export const getProviders = async (filters: {
 }) => {
   const businesses = await prisma.business.findMany({
     where: {
-      ...(filters.area && {
-        area: { name: { equals: filters.area } },
-      }),
-      ...(filters.service && {
-        services: {
-          some: { name: { contains: filters.service } },
-        },
-      }),
-      ...(filters.search && {
-        OR: [
-          { name: { contains: filters.search } },
-          {
+      AND: [
+        /* Xidməti olmayan biznesə rezerv etmək olmur — siyahıda çıxmasın */
+        { services: { some: {} } },
+        {
+          ...(filters.area && {
+            area: { name: { equals: filters.area } },
+          }),
+          ...(filters.service && {
             services: {
-              some: { name: { contains: filters.search } },
+              some: { name: { contains: filters.service } },
             },
-          },
-        ],
-      }),
+          }),
+          ...(filters.search && {
+            OR: [
+              { name: { contains: filters.search } },
+              {
+                services: {
+                  some: { name: { contains: filters.search } },
+                },
+              },
+            ],
+          }),
+        },
+      ],
     },
-    include: {
-      area: true,
-      services: true,
-      reviews: true,
-    },
+    include: cardInclude,
   });
 
-  return businesses.map(toProviderDTO);
+  return businesses.map(toProviderCard);
 };
 
 export const getProviderById = async (id: string) => {
   const business = await prisma.business.findUnique({
     where: { id },
     include: {
-      area: true,
-      services: true,
+      ...cardInclude,
       reviews: {
         include: { user: { select: { name: true } } },
         orderBy: { createdAt: "desc" },
       },
       portfolio: true,
+      availability: true,
     },
   });
 
@@ -105,15 +164,9 @@ export const getProviderById = async (id: string) => {
   }
 
   return {
-    ...toProviderDTO(business),
+    ...toProviderCard(business),
     description: business.description,
-    services: business.services.map((s) => ({
-      id: s.id,
-      name: s.name,
-      description: s.description,
-      price: s.price,
-      duration: s.duration,
-    })),
+    phone: business.phone,
     reviews: business.reviews.map((r) => ({
       id: r.id,
       rating: r.rating,
@@ -124,6 +177,12 @@ export const getProviderById = async (id: string) => {
     portfolio: business.portfolio.map((p) => ({
       id: p.id,
       imageUrl: p.imageUrl,
+    })),
+    /* İş saatları: dayOfWeek 0 = Bazar ... 6 = Şənbə (rezerv addımında lazım olacaq) */
+    availability: business.availability.map((a) => ({
+      dayOfWeek: a.dayOfWeek,
+      startTime: a.startTime,
+      endTime: a.endTime,
     })),
   };
 };

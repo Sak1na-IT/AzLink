@@ -25,6 +25,9 @@ import type {
 import { CURRENT_CUSTOMER } from "../../services/demoCustomer";
 import { addReview, hasReviewed } from "../../services/reviewStorage";
 import { formatDuration } from "../../utils/formatDuration";
+import BusinessBookings from "../BusinessBookings/BusinessBookings";
+import { getStoredUser } from "../../services/api";
+import "./BookingsSwitch.css";
 import "./Bookings.css";
 
 const statusLabels: Record<BookingStatus, string> = {
@@ -43,7 +46,7 @@ const statusClasses: Record<BookingStatus, string> = {
 
 const loadBookings = () => getBookingsByCustomer(CURRENT_CUSTOMER.id);
 
-function Bookings() {
+function MyBookings() {
   const navigate = useNavigate();
 
   const [bookings, setBookings] = useState<StoredBooking[]>(() =>
@@ -530,6 +533,48 @@ function Bookings() {
         </div>
       )}
     </main>
+  );
+}
+
+function Bookings() {
+  const isBusiness = getStoredUser()?.role === "BUSINESS";
+  const [tab, setTab] = useState<"mine" | "business">("mine");
+
+  /* User hesabı: əvvəlki kimi, tab yoxdur */
+  if (!isBusiness) {
+    return <MyBookings />;
+  }
+
+  return (
+    <>
+      <div className="bookings-switch">
+        <button
+          type="button"
+          className={
+            tab === "mine"
+              ? "bookings-switch__tab is-active"
+              : "bookings-switch__tab"
+          }
+          onClick={() => setTab("mine")}
+        >
+          Mənim rezervlərim
+        </button>
+
+        <button
+          type="button"
+          className={
+            tab === "business"
+              ? "bookings-switch__tab is-active"
+              : "bookings-switch__tab"
+          }
+          onClick={() => setTab("business")}
+        >
+          Biznes rezervlərim
+        </button>
+      </div>
+
+      {tab === "mine" ? <MyBookings /> : <BusinessBookings embedded />}
+    </>
   );
 }
 

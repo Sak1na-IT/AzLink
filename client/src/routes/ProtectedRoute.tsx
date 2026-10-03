@@ -22,7 +22,10 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
 
   if (role && user?.role !== role) {
     return (
-      <Navigate to={user?.role === "BUSINESS" ? "/business" : "/"} replace />
+      <Navigate
+        to={user?.role === "BUSINESS" ? "/business" : "/home"}
+        replace
+      />
     );
   }
 

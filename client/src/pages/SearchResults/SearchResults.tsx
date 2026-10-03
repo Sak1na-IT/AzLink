@@ -9,21 +9,22 @@ import {
   Star,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import AreaSelector from "../../components/AreaSelector/AreaSelector";
-import { providers } from "../../data/providers";
+import { getStoredUser } from "../../services/api";
+import { getProviders } from "../../services/providersService";
 import { areas, type Area } from "../../types/area";
+import type { Provider } from "../../types/provider";
 import { matchesArea } from "../../utils/areaMatch";
 
 import "./SearchResults.css";
-import { categories } from "../../data/categories";
+import { categories, type ServiceCategory } from "../../data/categories";
 import {
   isProviderSaved,
   toggleSavedProvider,
 } from "../../services/favoriteStorage";
-
 
 type PriceFilter = "all" | "under-20" | "20-30" | "30-50" | "50-plus";
 
@@ -35,12 +36,100 @@ const priceLabels: Record<PriceFilter, string> = {
   "50-plus": "50 ₼+",
 };
 
+/*
+ * Mətnləri müqayisə etmək üçün standart formaya salırıq.
+ */
+const normalize = (value: string) => value.toLocaleLowerCase("az").trim();
+
+const isSimilar = (a: string, b: string) =>
+  a === b || a.includes(b) || b.includes(a);
+
+/*
+ * Xidmət uyğunluğu: service=Dırnaq gəlirsə, kateqoriya adı və ya
+ * xidmət adı "Dırnaq"a uyğun olan bizneslər göstərilir.
+ */
+const matchesService = (provider: Provider, wanted: string) => {
+  const wantedService = normalize(wanted);
+
+  const names = [
+    provider.service,
+    ...(provider.categories ?? []),
+    ...(provider.services ?? []).map((service) => service.name),
+  ]
+    .map(normalize)
+    .filter(Boolean);
+
+  return names.some((name) => isSimilar(name, wantedService));
+};
+
+/*
+ * Kateqoriya uyğunluğu (Explore-dan gələndə):
+ * biznesin kateqoriya adlarından biri seçilmiş kateqoriyanın adı
+ * və ya onun alt xidmətlərindən biri ilə üst-üstə düşməlidir.
+ */
+const matchesCategory = (provider: Provider, category: ServiceCategory) => {
+  const wanted = [category.name, ...category.services].map(normalize);
+
+  const names = [provider.service, ...(provider.categories ?? [])]
+    .map(normalize)
+    .filter(Boolean);
+
+  return names.some((name) => wanted.includes(name));
+};
+
 function SearchResults() {
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [isAreaSelectorOpen, setIsAreaSelectorOpen] = useState(false);
+
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [savedIds, setSavedIds] = useState<Set<string>>(() => new Set());
+
+  const currentUserId = getStoredUser()?.id;
+
+  /*
+   * Bizneslər backend-dən bir dəfə yüklənir.
+   */
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const result = await getProviders();
+
+        if (cancelled) {
+          return;
+        }
+
+        setProviders(result);
+        setSavedIds(
+          new Set(
+            result
+              .filter((provider) => isProviderSaved(provider.id))
+              .map((provider) => provider.id)
+          )
+        );
+      } catch {
+        if (!cancelled) {
+          setLoadError("Bizneslər yüklənmədi. Bir az sonra yenidən cəhd edin.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /*
    * URL-dən məlumatları oxuyuruq.
@@ -61,18 +150,8 @@ function SearchResults() {
   const minimumRating = Number(searchParams.get("rating") ?? "0");
 
   /*
-   * Mətnləri müqayisə etmək üçün
-   * standart formaya salırıq.
-   */
-
-  const normalize = (value: string) => value.toLocaleLowerCase("az").trim();
-
-  /*
    * URL-dəki ərazi adlarını Area obyektlərinə çeviririk.
-   * AreaSelector modalı Area obyektləri ilə işləyir.
-   *
-   * Siyahıda tapılmayan ad istifadəçinin
-   * özü yazdığı ərazi sayılır (custom).
+   * Siyahıda tapılmayan ad istifadəçinin özü yazdığı ərazi sayılır (custom).
    */
 
   const selectedAreaObjects: Area[] = selectedAreas.map(
@@ -84,86 +163,38 @@ function SearchResults() {
       }
   );
 
-  /*
-   * Xidmət uyğunluğu
-   *
-   * Məsələn:
-   *
-   * service=Dırnaq
-   *
-   * gəlirsə yalnız Dırnaq xidməti olan
-   * biznesləri göstəririk.
-   */
+  const handleToggleSave = (providerId: string) => {
+    const nowSaved = toggleSavedProvider(providerId);
 
-  const matchesService = (provider: (typeof providers)[number]) => {
-    if (!selectedService) {
-      return true;
-    }
+    setSavedIds((current) => {
+      const next = new Set(current);
 
-    const wantedService = normalize(selectedService);
+      if (nowSaved) {
+        next.add(providerId);
+      } else {
+        next.delete(providerId);
+      }
 
-    const providerMainService = normalize(provider.service);
-
-    /*
-     * Əsas provider xidməti
-     *
-     * Məsələn:
-     * provider.service = "Dırnaq"
-     */
-
-    if (
-      providerMainService === wantedService ||
-      providerMainService.includes(wantedService) ||
-      wantedService.includes(providerMainService)
-    ) {
-      return true;
-    }
-
-    /*
-     * Provider-in əlavə xidmətlərini də
-     * yoxlayırıq.
-     */
-
-    const hasService = provider.services?.some((service) => {
-      const serviceName = normalize(service.name);
-
-      return (
-        serviceName === wantedService ||
-        serviceName.includes(wantedService) ||
-        wantedService.includes(serviceName)
-      );
+      return next;
     });
-
-    return Boolean(hasService);
   };
 
   /*
    * PROVIDER-LƏRİ FİLTRLƏ
    */
-  const [savedIds, setSavedIds] = useState<Set<string>>(
-  () => new Set(providers.filter((p) => isProviderSaved(p.id)).map((p) => p.id))
-);
-
-const handleToggleSave = (providerId: string) => {
-  const nowSaved = toggleSavedProvider(providerId);
-
-  setSavedIds((current) => {
-    const next = new Set(current);
-
-    if (nowSaved) {
-      next.add(providerId);
-    } else {
-      next.delete(providerId);
-    }
-
-    return next;
-  });
-};
 
   const filteredProviders = useMemo(() => {
     const normalizedQuery = normalize(query);
 
     return providers.filter((provider) => {
+      /*
+       * Öz biznesim axtarışda görünməsin
+       */
+
+      if (currentUserId && provider.ownerId === currentUserId) {
+        return false;
+      }
+
       /*
        * SEARCH
        */
@@ -173,12 +204,7 @@ const handleToggleSave = (providerId: string) => {
           provider.name,
           provider.service,
           provider.area,
-
-          /*
-           * Xidmət adlarını da axtarışa
-           * daxil edirik.
-           */
-
+          ...(provider.categories ?? []),
           ...(provider.services ?? []).map((service) => service.name),
         ].join(" ")
       );
@@ -194,27 +220,27 @@ const handleToggleSave = (providerId: string) => {
       }
 
       /*
-       * CATEGORY + SERVICE
+       * SERVICE
        */
 
-      if (selectedService && !matchesService(provider)) {
+      if (selectedService && !matchesService(provider, selectedService)) {
         return false;
       }
 
       /*
-      * CATEGORY (yalnız konkret xidmət seçilməyibsə tətbiq olunur —
-      * Explore-dan gəlir, BookingStart isə birbaşa service göndərir)
-      */
+       * CATEGORY (yalnız konkret xidmət seçilməyibsə tətbiq olunur —
+       * Explore-dan gəlir, BookingStart isə birbaşa service göndərir)
+       */
 
       if (selectedCategory && !selectedService) {
         if (!activeCategory) {
           return false;
         }
 
-  if (!activeCategory.services.includes(provider.service)) {
-    return false;
-  }
-}
+        if (!matchesCategory(provider, activeCategory)) {
+          return false;
+        }
+      }
 
       /*
        * AREA
@@ -267,9 +293,12 @@ const handleToggleSave = (providerId: string) => {
       return true;
     });
   }, [
+    providers,
+    currentUserId,
     query,
     selectedService,
     selectedCategory,
+    activeCategory,
     selectedAreas,
     selectedPrice,
     minimumRating,
@@ -350,9 +379,8 @@ const handleToggleSave = (providerId: string) => {
   /*
    * FİLTRLƏRİ TƏMİZLƏ
    *
-   * service/category qalır.
-   * Çünki istifadəçi hələ də həmin
-   * xidmət üzrə axtarış edir.
+   * service/category qalır, çünki istifadəçi hələ də
+   * həmin xidmət üzrə axtarış edir.
    */
 
   const clearFilters = () => {
@@ -380,6 +408,18 @@ const handleToggleSave = (providerId: string) => {
   const openProvider = (providerId: string) => {
     navigate(`/provider/${providerId}`);
   };
+
+  if (isLoading || loadError) {
+    return (
+      <main className="search-results-page">
+        <div className="search-results-container">
+          <section className="search-empty">
+            <h2>{loadError || "Yüklənir..."}</h2>
+          </section>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <>
@@ -565,9 +605,13 @@ const handleToggleSave = (providerId: string) => {
 
                         <span>{provider.area}</span>
 
-                        <span>·</span>
+                        {provider.distance != null && (
+                          <>
+                            <span>·</span>
 
-                        <span>{provider.distance} km</span>
+                            <span>{provider.distance} km</span>
+                          </>
+                        )}
                       </div>
 
                       <div className="search-provider-card__rating">

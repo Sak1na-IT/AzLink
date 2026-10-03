@@ -4,30 +4,6 @@
   padding: 35px 24px 70px;
 }
 
-.business-bookings__top {
-  margin-bottom: 25px;
-}
-
-.business-bookings__back {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-  cursor: pointer;
-  transition:
-    color var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.business-bookings__back:hover {
-  color: var(--color-primary);
-  transform: translateX(-2px);
-}
-
 .business-bookings__header {
   display: flex;
   align-items: flex-end;
@@ -77,6 +53,13 @@
 
 .business-bookings__summary svg {
   color: var(--color-primary);
+}
+
+.business-bookings__message {
+  padding: 60px 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
 }
 
 /* Status sekmeleri */
@@ -343,11 +326,26 @@
   background: rgba(209, 85, 74, 0.1);
 }
 
+.business-booking-card__action:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .business-booking-card__action:focus-visible,
 .business-bookings__tab:focus-visible,
 .business-bookings__subtab:focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+/* Rezervlər səhifəsinin tabı içində */
+.business-bookings--embedded {
+  width: min(1100px, 100%);
+  padding-top: 12px;
+}
+
+.business-bookings__header--compact {
+  justify-content: flex-end;
 }
 
 @media (max-width: 600px) {

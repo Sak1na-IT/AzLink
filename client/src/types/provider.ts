@@ -9,14 +9,20 @@ export interface ProviderService {
 export interface Provider {
   id: string;
   name: string;
+  /* Kartda göstərilən kateqoriya adı, məs. "Dırnaq" */
   service: string;
   area: string;
-  distance: number;
+  /* Backend hələ hesablamır (null); mock-da rəqəmdir */
+  distance?: number | null;
   rating: number;
   reviewCount: number;
   priceFrom: number;
   verified: boolean;
   image?: string;
+
+  /* Backend-dən gələnlər */
+  ownerId?: string;
+  categories?: string[];
 
   services: ProviderService[];
 }

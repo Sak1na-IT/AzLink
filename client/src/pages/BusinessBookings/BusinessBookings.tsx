@@ -1,25 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  CalendarDays,
-  Check,
-  Clock3,
-  UserRound,
-  X,
-} from "lucide-react";
+import { CalendarDays, Check, Clock3, UserRound, X } from "lucide-react";
 
 import "./BusinessBookings.css";
+import { getStoredUser } from "../../services/api";
 import {
-  getBookingsByProvider,
+  getBookings,
   updateBookingStatus,
+  type Booking,
   type BookingStatus,
-  type StoredBooking,
-} from "../../services/bookingStorage";
-import { CURRENT_PROVIDER_ID } from "../../services/demoBusiness";
+} from "../../services/bookingsService";
 
 type StatusFilter = "all" | BookingStatus;
 type PeriodFilter = "week" | "month" | "all";
+
+interface BusinessBookingsProps {
+  /* Rezervlər səhifəsinin tabı içində göstəriləndə başlıq gizlədilir */
+  embedded?: boolean;
+}
 
 const statusText: Record<BookingStatus, string> = {
   PENDING: "Gözləyir",
@@ -82,24 +79,35 @@ const isDateInRange = (dateKey: string, start: Date, end: Date) => {
   return date >= start && date <= end;
 };
 
-function BusinessBookings() {
-  const navigate = useNavigate();
+function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
+  const currentUserId = getStoredUser()?.id;
 
-  const [bookings, setBookings] = useState<StoredBooking[]>(() =>
-    getBookingsByProvider(CURRENT_PROVIDER_ID)
-  );
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("all");
 
-  const reload = useCallback(() => {
-    setBookings(getBookingsByProvider(CURRENT_PROVIDER_ID));
-  }, []);
+  const reload = useCallback(async () => {
+    try {
+      setError("");
+      const result = await getBookings();
 
-  /* Başqa tabda dəyişiklik olarsa (məs. müştəri yeni rezerv edib) yenilə */
+      /* yalnız sizin biznesinizə gələnlər (özünüzün müştəri kimi etdikləriniz yox) */
+      setBookings(
+        result.filter((booking) => booking.customerId !== currentUserId)
+      );
+    } catch {
+      setError("Rezervləri yükləmək mümkün olmadı.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentUserId]);
+
   useEffect(() => {
-    window.addEventListener("storage", reload);
-    return () => window.removeEventListener("storage", reload);
+    reload();
   }, [reload]);
 
   const pendingCount = bookings.filter(
@@ -131,59 +139,81 @@ function BusinessBookings() {
     );
   }, [bookings, statusFilter, periodFilter]);
 
-  const handleConfirm = (id: number) => {
-    updateBookingStatus(id, "CONFIRMED");
-    reload();
+  const changeStatus = async (id: string, status: BookingStatus) => {
+    try {
+      setBusyId(id);
+      await updateBookingStatus(id, status);
+      await reload();
+    } catch {
+      alert("Statusu dəyişmək mümkün olmadı.");
+    } finally {
+      setBusyId(null);
+    }
   };
 
-  const handleComplete = (id: number) => {
-    updateBookingStatus(id, "COMPLETED");
-    reload();
-  };
-
-  const handleCancel = (id: number) => {
+  const handleCancel = (id: string) => {
     if (!window.confirm("Bu rezervi ləğv etmək istəyirsiniz?")) {
       return;
     }
 
-    updateBookingStatus(id, "CANCELLED");
-    reload();
+    changeStatus(id, "CANCELLED");
   };
 
+  const summary = (
+    <div className="business-bookings__summary">
+      <CalendarDays size={19} strokeWidth={1.8} />
+
+      <span>
+        {activeCount} rezerv
+        {pendingCount > 0 ? ` · ${pendingCount} gözləyir` : ""}
+      </span>
+    </div>
+  );
+
+  if (isLoading) {
+    return (
+      <main className="business-bookings">
+        <p className="business-bookings__message">Yüklənir...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="business-bookings">
+        <p className="business-bookings__message">{error}</p>
+      </main>
+    );
+  }
+
   return (
-    <main className="business-bookings">
-      <div className="business-bookings__top">
-        <button
-          type="button"
-          className="business-bookings__back"
-          onClick={() => navigate("/business")}
-        >
-          <ArrowLeft size={18} strokeWidth={1.8} />
-          Biznes panelinə qayıt
-        </button>
-      </div>
+    <main
+      className={
+        embedded
+          ? "business-bookings business-bookings--embedded"
+          : "business-bookings"
+      }
+    >
+      {embedded ? (
+        <section className="business-bookings__header business-bookings__header--compact">
+          {summary}
+        </section>
+      ) : (
+        <section className="business-bookings__header">
+          <div>
+            <span className="business-bookings__eyebrow">Rezervlər</span>
 
-      <section className="business-bookings__header">
-        <div>
-          <span className="business-bookings__eyebrow">Rezervlər</span>
+            <h1>Rezervləri idarə edin</h1>
 
-          <h1>Rezervləri idarə edin</h1>
+            <p>
+              Statusa görə seçin: gözləyən rezervi təsdiqləyin, təsdiqlənmiş
+              işi tamamlayın.
+            </p>
+          </div>
 
-          <p>
-            Statusa görə seçin: gözləyən rezervi təsdiqləyin, təsdiqlənmiş
-            işi tamamlayın.
-          </p>
-        </div>
-
-        <div className="business-bookings__summary">
-          <CalendarDays size={19} strokeWidth={1.8} />
-
-          <span>
-            {activeCount} rezerv
-            {pendingCount > 0 ? ` · ${pendingCount} gözləyir` : ""}
-          </span>
-        </div>
-      </section>
+          {summary}
+        </section>
+      )}
 
       <section className="business-bookings__tabs">
         {statusTabs.map((tab) => (
@@ -267,7 +297,8 @@ function BusinessBookings() {
                     <button
                       type="button"
                       className="business-booking-card__action business-booking-card__action--confirm"
-                      onClick={() => handleConfirm(booking.id)}
+                      disabled={busyId === booking.id}
+                      onClick={() => changeStatus(booking.id, "CONFIRMED")}
                     >
                       <Check size={15} strokeWidth={2} />
                       Təsdiqlə
@@ -278,7 +309,8 @@ function BusinessBookings() {
                     <button
                       type="button"
                       className="business-booking-card__action business-booking-card__action--complete"
-                      onClick={() => handleComplete(booking.id)}
+                      disabled={busyId === booking.id}
+                      onClick={() => changeStatus(booking.id, "COMPLETED")}
                     >
                       <Check size={15} strokeWidth={2} />
                       Tamamla
@@ -288,6 +320,7 @@ function BusinessBookings() {
                   <button
                     type="button"
                     className="business-booking-card__action business-booking-card__action--cancel"
+                    disabled={busyId === booking.id}
                     onClick={() => handleCancel(booking.id)}
                   >
                     <X size={15} strokeWidth={2} />

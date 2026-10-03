@@ -4,30 +4,87 @@ import {
   CalendarDays,
   Compass,
   Home,
+  LayoutDashboard,
   Moon,
-  Store,
   Sun,
   UserRound,
 } from "lucide-react";
 
-import { useTheme } from "../../hooks/useTheme";
 import { getStoredUser } from "../../services/api";
 
-function TopNav() {
-  const { isDark, toggleTheme } = useTheme();
+interface TopNavProps {
+  isDark: boolean;
+  toggleTheme: () => void;
+}
 
+function TopNav({ isDark, toggleTheme }: TopNavProps) {
   const user = getStoredUser();
   const isBusiness = user?.role === "BUSINESS";
 
-  /*
-   * Business hesabı: Biznesim, Kəşf et, Rezervlər, Seçilmişlər, Profil.
-   * User hesabı: Ana səhifə, Kəşf et, Rezervlər, Seçilmişlər, Profil.
-   * Biznesim birinci gəlir, çünki business sahibinin əsas işi odur.
-   */
+  const themeButton = (
+    <button
+      type="button"
+      className="top-nav__theme"
+      onClick={toggleTheme}
+      aria-label={isDark ? "Ağ moda keç" : "Qaranlıq moda keç"}
+      title={isDark ? "Ağ moda keç" : "Qaranlıq moda keç"}
+    >
+      {isDark ? (
+        <Sun size={18} strokeWidth={1.8} />
+      ) : (
+        <Moon size={18} strokeWidth={1.8} />
+      )}
+    </button>
+  );
+
+  if (isBusiness) {
+    return (
+      <header className="top-nav">
+        <div className="top-nav__inner">
+          <NavLink to="/business" className="top-nav__brand">
+            AzLink
+          </NavLink>
+
+          <nav className="top-nav__links" aria-label="Əsas menyu">
+            <NavLink
+              to="/business"
+              className={({ isActive }) =>
+                `top-nav__link ${isActive ? "is-active" : ""}`
+              }
+            >
+              <LayoutDashboard size={18} strokeWidth={1.8} />
+              <span>Biznesim</span>
+            </NavLink>
+
+            <NavLink
+              to="/explore"
+              className={({ isActive }) =>
+                `top-nav__link ${isActive ? "is-active" : ""}`
+              }
+            >
+              <Compass size={18} strokeWidth={1.8} />
+              <span>Rezerv et</span>
+            </NavLink>
+
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `top-nav__link ${isActive ? "is-active" : ""}`
+              }
+            >
+              <UserRound size={18} strokeWidth={1.8} />
+              <span>Profil</span>
+            </NavLink>
+          </nav>
+
+          {themeButton}
+        </div>
+      </header>
+    );
+  }
+
   const navItems = [
-    isBusiness
-      ? { to: "/business", label: "Biznesim", icon: Store, end: false }
-      : { to: "/", label: "Ana səhifə", icon: Home, end: true },
+    { to: "/home", label: "Ana səhifə", icon: Home, end: true },
     { to: "/explore", label: "Kəşf et", icon: Compass, end: false },
     { to: "/bookings", label: "Rezervlər", icon: CalendarDays, end: false },
     { to: "/saved", label: "Seçilmişlər", icon: Bookmark, end: false },
@@ -37,10 +94,7 @@ function TopNav() {
   return (
     <header className="top-nav">
       <div className="top-nav__inner">
-        <NavLink
-          to={isBusiness ? "/business" : "/"}
-          className="top-nav__brand"
-        >
+        <NavLink to="/home" className="top-nav__brand">
           AzLink
         </NavLink>
 
@@ -60,19 +114,7 @@ function TopNav() {
           ))}
         </nav>
 
-        <button
-          type="button"
-          className="top-nav__theme"
-          onClick={toggleTheme}
-          aria-label={isDark ? "Ağ moda keç" : "Qaranlıq moda keç"}
-          title={isDark ? "Ağ moda keç" : "Qaranlıq moda keç"}
-        >
-          {isDark ? (
-            <Sun size={18} strokeWidth={1.8} />
-          ) : (
-            <Moon size={18} strokeWidth={1.8} />
-          )}
-        </button>
+        {themeButton}
       </div>
     </header>
   );

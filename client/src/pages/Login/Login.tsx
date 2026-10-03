@@ -37,7 +37,7 @@ function Login() {
     try {
       const { user } = await signin({ email, password });
 
-      navigate(user.role === "BUSINESS" ? "/business" : "/");
+      navigate(user.role === "BUSINESS" ? "/business" : "/home");
     } catch (err) {
       setError(
         err instanceof ApiError

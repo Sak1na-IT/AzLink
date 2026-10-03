@@ -29,9 +29,15 @@ function App() {
   return (
     <Routes>
       <Route element={<AppLayout />}>
-        {/* HOME — yalnız USER (biznes hesabının əsas səhifəsi /business-dir) */}
+        {/*
+          ACCOUNT TYPE — "/" giriş vəziyyətindən asılı olmayaraq həmişə
+          bu səhifəni göstərir. Müştərinin əsas səhifəsi "/home"-dadır.
+        */}
+        <Route path="/" element={<AccountType />} />
+
+        {/* HOME — yalnız USER */}
         <Route
-          path="/"
+          path="/home"
           element={
             <ProtectedRoute role="USER">
               <Home />
