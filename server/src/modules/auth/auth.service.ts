@@ -14,6 +14,11 @@ const SALT_ROUNDS = 10;
  * Qeydiyyat: yalnız User yaradılır. Biznes sahibləri (role: BUSINESS)
  * eyni User cədvəlində saxlanır, amma Business profili (ad, ərazi,
  * telefon) sonra BusinessProfile səhifəsindən ayrıca doldurulur.
+ *
+ * Email unikaldır: eyni email ilə ikinci hesab (başqa rolla belə)
+ * açıla bilməz. Əgər artıq varsa, hansı rolla qeydiyyatdan keçdiyi
+ * "EMAIL_TAKEN:<ROL>" formatında bildirilir ki, controller istifadəçiyə
+ * dəqiq mesaj göstərə bilsin.
  */
 export const signup = async (input: SignupInput) => {
   const existing = await prisma.user.findUnique({
@@ -21,7 +26,7 @@ export const signup = async (input: SignupInput) => {
   });
 
   if (existing) {
-    throw new Error("EMAIL_TAKEN");
+    throw new Error(`EMAIL_TAKEN:${existing.role}`);
   }
 
   const hashedPassword = await bcrypt.hash(input.password, SALT_ROUNDS);

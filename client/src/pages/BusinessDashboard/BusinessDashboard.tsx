@@ -1,97 +1,131 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
+  ArrowRight,
   CalendarDays,
-  CheckCheck,
-  ChevronRight,
-  CircleCheck,
+  Check,
   Clock3,
   ImagePlus,
   Plus,
   Settings,
   Store,
-  Wallet,
   Users,
 } from "lucide-react";
 
 import "./BusinessDashboard.css";
-import { useNavigate } from "react-router-dom";
-import { getBookingsByProvider } from "../../services/bookingStorage";
-import { getServicesByProvider } from "../../services/serviceStorage";
-import { getProfileCompletion } from "../../services/businessProfileStorage";
-import { CURRENT_PROVIDER_ID } from "../../services/demoBusiness";
+import { getStoredUser } from "../../services/api";
+import {
+  getDashboardStats,
+  getServicesPreview,
+  type BusinessDashboardStats,
+  type BusinessServicePreview,
+} from "../../services/businessDashboardService";
+import {
+  getBookings,
+  updateBookingStatus,
+  type Booking,
+} from "../../services/bookingsService";
+
+const statusText: Record<Booking["status"], string> = {
+  PENDING: "Gözləyir",
+  CONFIRMED: "Təsdiqlənib",
+  CANCELLED: "Ləğv edilib",
+  COMPLETED: "Tamamlanıb",
+};
+
+const todayKey = () => {
+  const now = new Date();
+  const pad = (value: number) => String(value).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
 
 function BusinessDashboard() {
   const navigate = useNavigate();
+  const currentUser = getStoredUser();
 
-  const [bookings] = useState(() =>
-    getBookingsByProvider(CURRENT_PROVIDER_ID)
-  );
+  const [stats, setStats] = useState<BusinessDashboardStats | null>(null);
+  const [todayBookings, setTodayBookings] = useState<Booking[]>([]);
+  const [services, setServices] = useState<BusinessServicePreview[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const [serviceCount] = useState(
-    () => getServicesByProvider(CURRENT_PROVIDER_ID).length
-  );
+  const reload = useCallback(async () => {
+    try {
+      setError("");
 
-  const [profileCompletion] = useState(() =>
-    getProfileCompletion(CURRENT_PROVIDER_ID)
-  );
+      const [statsResult, bookingsResult, servicesResult] =
+        await Promise.all([
+          getDashboardStats(),
+          getBookings(),
+          getServicesPreview(),
+        ]);
 
-  const activeCount = bookings.filter(
-    (booking) => booking.status !== "CANCELLED"
-  ).length;
+      setStats(statsResult);
+      setServices(servicesResult);
 
-  const pendingCount = bookings.filter(
-    (booking) => booking.status === "PENDING"
-  ).length;
+      const today = todayKey();
 
-  const confirmedCount = bookings.filter(
-    (booking) => booking.status === "CONFIRMED"
-  ).length;
+      /* yalnız sizə gələnlər (siz müştəri kimi etdiyiniz rezervlər yox) */
+      const incoming = bookingsResult.filter(
+        (booking) => booking.customerId !== currentUser?.id
+      );
 
-  /* Tamamlanmış işlər ayrıca göstərilir, əks halda
-     "Təsdiqlənmiş" sayğacından çıxandan sonra heç yerdə görünmür */
-  const completedCount = bookings.filter(
-    (booking) => booking.status === "COMPLETED"
-  ).length;
+      const todays = incoming
+        .filter(
+          (booking) =>
+            booking.date === today && booking.status !== "CANCELLED"
+        )
+        .sort((a, b) => a.time.localeCompare(b.time));
 
-  const revenue = bookings
-    .filter(
-      (booking) =>
-        booking.status === "CONFIRMED" ||
-        booking.status === "COMPLETED"
-    )
-    .reduce((total, booking) => total + booking.priceFrom, 0);
+      setTodayBookings(todays);
+    } catch {
+      setError("Panel məlumatlarını yükləmək mümkün olmadı.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [currentUser?.id]);
 
-  const uniqueCustomerCount = new Set(
-    bookings.map((booking) => booking.customerId)
-  ).size;
+  useEffect(() => {
+    reload();
+  }, [reload]);
+
+  const handleConfirm = async (id: string) => {
+    try {
+      await updateBookingStatus(id, "CONFIRMED");
+      reload();
+    } catch {
+      alert("Rezervi təsdiqləmək mümkün olmadı.");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <main className="business-dashboard">
+        <p className="business-dashboard__loading">Yüklənir...</p>
+      </main>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <main className="business-dashboard">
+        <p className="business-dashboard__loading">
+          {error || "Məlumat tapılmadı."}
+        </p>
+      </main>
+    );
+  }
+
+  const firstName = currentUser?.name?.split(" ")[0] ?? "";
 
   return (
     <main className="business-dashboard">
+      {/* ===== BAŞLIQ ===== */}
       <section className="business-dashboard__hero">
         <div>
-          <span className="business-dashboard__eyebrow">
-            Biznes paneli
-          </span>
-
-          <h1>Xoş gəlmisiniz</h1>
-
-          <p>
-            Biznesinizi, xidmətlərinizi və rezervlərinizi
-            buradan idarə edə bilərsiniz.
-          </p>
+          <h1>Salam, {firstName} 👋</h1>
+          <p>Bu gün biznesinizdə baş verənlərə ümumi baxış.</p>
         </div>
-
-        <button
-          type="button"
-          className="business-dashboard__action"
-          onClick={() => navigate("/business-portfolio")}
-        >
-          <div>
-            <ImagePlus size={19} strokeWidth={1.8} />
-            <span>Portfolio şəkli əlavə et</span>
-          </div>
-          <ChevronRight size={18} strokeWidth={1.8} />
-        </button>
 
         <button
           type="button"
@@ -103,41 +137,15 @@ function BusinessDashboard() {
         </button>
       </section>
 
+      {/* ===== KPI ===== */}
       <section className="business-dashboard__stats">
         <div className="business-stat-card">
           <div className="business-stat-card__icon">
-            <Store size={20} strokeWidth={1.8} />
-          </div>
-
-          <div>
-            <span>Xidmətlər</span>
-            <strong>{serviceCount}</strong>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="business-stat-card business-stat-card--clickable"
-          onClick={() => navigate("/business-bookings")}
-        >
-          <div className="business-stat-card__icon">
             <CalendarDays size={20} strokeWidth={1.8} />
           </div>
-
           <div>
-            <span>Rezervlər</span>
-            <strong>{activeCount}</strong>
-          </div>
-        </button>
-
-        <div className="business-stat-card">
-          <div className="business-stat-card__icon">
-            <CircleCheck size={20} strokeWidth={1.8} />
-          </div>
-
-          <div>
-            <span>Təsdiqlənmiş</span>
-            <strong>{confirmedCount}</strong>
+            <span>Bu gün</span>
+            <strong>{todayBookings.length} rezerv</strong>
           </div>
         </div>
 
@@ -147,25 +155,27 @@ function BusinessDashboard() {
           onClick={() => navigate("/business-bookings")}
         >
           <div className="business-stat-card__icon">
-            <CheckCheck size={20} strokeWidth={1.8} />
+            <Clock3 size={20} strokeWidth={1.8} />
           </div>
-
           <div>
-            <span>Tamamlanmış</span>
-            <strong>{completedCount}</strong>
+            <span>Gözləyən</span>
+            <strong>{stats.pendingCount} rezerv</strong>
           </div>
         </button>
 
-        <div className="business-stat-card">
+        <button
+          type="button"
+          className="business-stat-card business-stat-card--clickable"
+          onClick={() => navigate("/business-services")}
+        >
           <div className="business-stat-card__icon">
-            <Wallet size={20} strokeWidth={1.8} />
+            <Store size={20} strokeWidth={1.8} />
           </div>
-
           <div>
-            <span>Gəlir</span>
-            <strong>{revenue} ₼</strong>
+            <span>Xidmətlər</span>
+            <strong>{stats.serviceCount}</strong>
           </div>
-        </div>
+        </button>
 
         <button
           type="button"
@@ -175,114 +185,192 @@ function BusinessDashboard() {
           <div className="business-stat-card__icon">
             <Users size={20} strokeWidth={1.8} />
           </div>
-
           <div>
             <span>Müştərilər</span>
-            <strong>{uniqueCustomerCount}</strong>
+            <strong>{stats.uniqueCustomerCount}</strong>
           </div>
         </button>
       </section>
 
+      {/* ===== BUGÜNKÜ REZERVLƏR + PROFİL ===== */}
       <section className="business-dashboard__content">
-        {profileCompletion < 100 && (
-          <div className="business-dashboard__main-card">
-            <div className="business-card-header">
-              <div>
-                <span className="business-card-header__eyebrow">
-                  Başlamaq üçün
-                </span>
-
-                <h2>Biznes profilinizi tamamlayın</h2>
-              </div>
-
-              <Settings size={21} strokeWidth={1.8} />
-            </div>
-
-            <p className="business-dashboard__description">
-              Müştərilərin sizi daha asan tapması üçün
-              biznes məlumatlarınızı əlavə edin və ilk
-              xidmətinizi yaradın.
-            </p>
-
-            <div className="business-dashboard__progress">
-              <div className="business-dashboard__progress-top">
-                <span>Profil tamamlanması</span>
-                <strong>{profileCompletion}%</strong>
-              </div>
-
-              <div className="business-dashboard__progress-bar">
-                <div style={{ width: `${profileCompletion}%` }} />
-              </div>
-            </div>
-
-            <div className="business-dashboard__actions">
-              <button
-                type="button"
-                className="business-dashboard__action"
-                onClick={() => navigate("/business-services")}
-              >
-                <div>
-                  <Plus size={19} strokeWidth={1.8} />
-
-                  <span>İlk xidməti əlavə et</span>
-                </div>
-
-                <ChevronRight size={18} strokeWidth={1.8} />
-              </button>
-
-              <button
-                type="button"
-                className="business-dashboard__action"
-                onClick={() => navigate("/business-profile")}
-              >
-                <div>
-                  <Settings size={19} strokeWidth={1.8} />
-
-                  <span>Biznes məlumatlarını doldur</span>
-                </div>
-
-                <ChevronRight size={18} strokeWidth={1.8} />
-              </button>
-            </div>
+        <div className="business-dashboard__main-card">
+          <div className="business-card-header">
+            <h2>Bugünkü rezervlər</h2>
           </div>
-        )}
+
+          {todayBookings.length === 0 ? (
+            <p className="business-dashboard__empty-text">
+              Bu gün üçün rezerv yoxdur.
+            </p>
+          ) : (
+            <div className="business-today-list">
+              {todayBookings.map((booking) => (
+                <div className="business-today-item" key={booking.id}>
+                  <div className="business-today-item__time">
+                    {booking.time}
+                  </div>
+
+                  <div className="business-today-item__info">
+                    <strong>{booking.customerName}</strong>
+                    <span>{booking.service}</span>
+                  </div>
+
+                  <div className="business-today-item__price">
+                    {booking.priceFrom} ₼
+                  </div>
+
+                  <div className="business-today-item__right">
+                    <span
+                      className={`business-today-item__status business-today-item__status--${booking.status.toLowerCase()}`}
+                    >
+                      {statusText[booking.status]}
+                    </span>
+
+                    {booking.status === "PENDING" ? (
+                      <button
+                        type="button"
+                        className="business-dashboard__chip-button"
+                        onClick={() => handleConfirm(booking.id)}
+                      >
+                        <Check size={14} strokeWidth={2} />
+                        Təsdiqlə
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        className="business-dashboard__chip-button business-dashboard__chip-button--ghost"
+                        onClick={() => navigate("/business-bookings")}
+                      >
+                        Bax
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="business-dashboard__link-button"
+            onClick={() => navigate("/business-bookings")}
+          >
+            Bütün rezervlərə bax
+            <ArrowRight size={15} strokeWidth={1.8} />
+          </button>
+        </div>
 
         <aside className="business-dashboard__side-card">
-          <div className="business-side-card__icon">
-            <Clock3 size={21} strokeWidth={1.8} />
+          <h2>Profiliniz</h2>
+
+          <div className="business-dashboard__progress-top">
+            <strong>{stats.profileCompletion}% tamamlanıb</strong>
           </div>
 
-          <span className="business-side-card__eyebrow">
-            Son fəaliyyət
-          </span>
+          <div className="business-dashboard__progress-bar">
+            <div style={{ width: `${stats.profileCompletion}%` }} />
+          </div>
 
-          {pendingCount > 0 ? (
-            <>
-              <h2>{pendingCount} gözləyən rezerv</h2>
+          <p>
+            Müştərilərin sizi daha asan tapması üçün profilinizi
+            tamamlayın.
+          </p>
 
-              <p>
-                Müştərilər təsdiqinizi gözləyir. Rezervi
-                təsdiqləyəndə müştəri də dərhal görəcək.
-              </p>
-
-              <button
-                type="button"
-                className="business-dashboard__primary-button"
-                onClick={() => navigate("/business-bookings")}
-              >
-                Rezervlərə bax
-              </button>
-            </>
-          ) : (
-            <>
-              <h2>Gözləyən rezerv yoxdur</h2>
-
-              <p>
-                Yeni rezerv gələndə burada görünəcək.
-              </p>
-            </>
-          )}
+          <button
+            type="button"
+            className="business-dashboard__secondary-button"
+            onClick={() => navigate("/business-profile")}
+          >
+            Profili tamamla
+            <ArrowRight size={15} strokeWidth={1.8} />
+          </button>
         </aside>
+      </section>
+
+      {/* ===== XİDMƏTLƏR + SÜRƏTLİ ƏMƏLİYYATLAR ===== */}
+      <section className="business-dashboard__content">
+        <div className="business-dashboard__panel">
+          <div className="business-card-header">
+            <h2>Xidmətləriniz</h2>
+          </div>
+
+          {services.length === 0 ? (
+            <p className="business-dashboard__empty-text">
+              Hələ xidmət əlavə etməmisiniz.
+            </p>
+          ) : (
+            <div className="business-service-list">
+              {services.slice(0, 4).map((service) => (
+                <div className="business-service-row" key={service.id}>
+                  <span>{service.name}</span>
+                  <strong>{service.price} ₼</strong>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <button
+            type="button"
+            className="business-dashboard__link-button"
+            onClick={() => navigate("/business-services")}
+          >
+            Bütün xidmətlər
+            <ArrowRight size={15} strokeWidth={1.8} />
+          </button>
+        </div>
+
+        <div className="business-dashboard__panel">
+          <div className="business-card-header">
+            <h2>Sürətli əməliyyatlar</h2>
+          </div>
+
+          <div className="business-dashboard__actions">
+            <button
+              type="button"
+              className="business-dashboard__action"
+              onClick={() => navigate("/business-services")}
+            >
+              <div>
+                <Plus size={18} strokeWidth={1.8} />
+                <span>Yeni xidmət əlavə et</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              className="business-dashboard__action"
+              onClick={() => navigate("/business-portfolio")}
+            >
+              <div>
+                <ImagePlus size={18} strokeWidth={1.8} />
+                <span>Portfolioya şəkil əlavə et</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              className="business-dashboard__action"
+              onClick={() => navigate("/business-profile")}
+            >
+              <div>
+                <Settings size={18} strokeWidth={1.8} />
+                <span>Biznes profilini redaktə et</span>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              className="business-dashboard__action"
+              onClick={() => navigate("/business-profile")}
+            >
+              <div>
+                <Clock3 size={18} strokeWidth={1.8} />
+                <span>İş saatlarını dəyiş</span>
+              </div>
+            </button>
+          </div>
+        </div>
       </section>
     </main>
   );

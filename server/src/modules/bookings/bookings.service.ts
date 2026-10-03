@@ -167,32 +167,39 @@ export const createBooking = async (
 };
 
 /*
- * USER → öz rezervləri, BUSINESS → öz biznesinə gələn rezervlər.
+ * Hər iki tərəfi birləşdirir: istifadəçinin ÖZ müştəri kimi etdiyi
+ * rezervlər + (əgər hesabının biznesi varsa) o biznesə gələn
+ * rezervlər. Beləcə biznes sahibi də başqa ustalara rezerv edə bilir
+ * və hər iki növ rezervini eyni siyahıda görür.
  */
 export const listBookings = async (user: TokenPayload) => {
-  let where: Prisma.BookingWhereInput;
-
-  if (user.role === "BUSINESS") {
-    const business = await prisma.business.findUnique({
-      where: { userId: user.userId },
-    });
-
-    if (!business) {
-      return [];
-    }
-
-    where = { businessId: business.id };
-  } else {
-    where = { customerId: user.userId };
-  }
-
-  const bookings = await prisma.booking.findMany({
-    where,
+  const customerBookings = await prisma.booking.findMany({
+    where: { customerId: user.userId },
     include: bookingInclude,
-    orderBy: { date: "desc" },
   });
 
-  return bookings.map(toBookingDTO);
+  const business = await prisma.business.findUnique({
+    where: { userId: user.userId },
+  });
+
+  const businessBookings = business
+    ? await prisma.booking.findMany({
+        where: { businessId: business.id },
+        include: bookingInclude,
+      })
+    : [];
+
+  const merged = new Map<string, BookingWithRelations>();
+
+  for (const booking of [...customerBookings, ...businessBookings]) {
+    merged.set(booking.id, booking);
+  }
+
+  const sorted = Array.from(merged.values()).sort(
+    (a, b) => b.date.getTime() - a.date.getTime()
+  );
+
+  return sorted.map(toBookingDTO);
 };
 
 const findAccessibleBooking = async (user: TokenPayload, id: string) => {

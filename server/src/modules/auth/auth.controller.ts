@@ -54,10 +54,13 @@ export const signupHandler = async (req: Request, res: Response) => {
       ...tokens,
     });
   } catch (error) {
-    if (error instanceof Error && error.message === "EMAIL_TAKEN") {
-      return res
-        .status(409)
-        .json({ message: "Bu email artıq qeydiyyatdan keçib" });
+    if (error instanceof Error && error.message.startsWith("EMAIL_TAKEN")) {
+      const existingRole = error.message.split(":")[1];
+      const roleLabel = existingRole === "BUSINESS" ? "biznes" : "istifadəçi";
+
+      return res.status(409).json({
+        message: `Bu email artıq ${roleLabel} hesabı kimi qeydiyyatdan keçib. Həmin hesabla daxil olun.`,
+      });
     }
 
     console.error(error);
@@ -107,11 +110,6 @@ export const refreshHandler = async (req: Request, res: Response) => {
 };
 
 export const logoutHandler = async (_req: Request, res: Response) => {
-  /*
-   * Stateless JWT: server tərəfində heç nə silinmir. Frontend logout
-   * çağıranda öz tərəfindən access/refresh tokenləri yaddaşdan
-   * (localStorage / state) silməlidir.
-   */
   res.json({ message: "Çıxış edildi" });
 };
 

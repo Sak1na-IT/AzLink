@@ -6,13 +6,13 @@ import {
   getBookingHandler,
   updateBookingStatusHandler,
 } from "./bookings.controller";
-import { authenticate, requireRole } from "../../middleware/authenticate";
+import { authenticate } from "../../middleware/authenticate";
 
 const router = Router();
 
 router.use(authenticate);
 
-router.post("/", requireRole("USER"), createBookingHandler);
+router.post("/", createBookingHandler);
 router.get("/", listBookingsHandler);
 router.get("/:id", getBookingHandler);
 router.patch("/:id", updateBookingStatusHandler);

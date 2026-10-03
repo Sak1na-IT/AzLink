@@ -1,13 +1,13 @@
-/* Rəngləri aşağıdakı lokal dəyişənlərdən dəyiş, ya da
-   styles/variables.css-dəki öz dəyişənlərinə bağla. */
+/* Lokal dəyişənlər saytın qlobal dizayn sisteminə (variables.css)
+   bağlanıb — işıq/qaranlıq mod avtomatik işləyir. */
 .business-services {
-  --bs-accent: #2f6b4f;
-  --bs-accent-hover: #275a42;
-  --bs-danger: #b3372f;
-  --bs-text: #1d1f1e;
-  --bs-muted: #6a6f6c;
-  --bs-surface: #ffffff;
-  --bs-border: rgba(0, 0, 0, 0.1);
+  --bs-accent: var(--color-primary);
+  --bs-accent-hover: var(--color-primary-hover);
+  --bs-danger: var(--color-danger);
+  --bs-text: var(--color-text);
+  --bs-muted: var(--color-text-muted);
+  --bs-surface: var(--color-surface);
+  --bs-border: var(--color-border);
 
   max-width: 880px;
   margin: 0 auto;
@@ -93,7 +93,7 @@
 }
 
 .business-services__secondary:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--color-surface-muted);
 }
 
 .business-services__primary:focus-visible,
@@ -234,16 +234,16 @@
 }
 
 .business-service-card__button:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--color-surface-muted);
 }
 
 .business-service-card__button--danger {
   color: var(--bs-danger);
-  border-color: rgba(179, 55, 47, 0.35);
+  border-color: var(--color-danger-soft);
 }
 
 .business-service-card__button--danger:hover {
-  background: rgba(179, 55, 47, 0.08);
+  background: var(--color-danger-soft);
 }
 
 /* Boş vəziyyət */
@@ -263,7 +263,7 @@
   width: 52px;
   height: 52px;
   border-radius: 14px;
-  background: rgba(47, 107, 79, 0.1);
+  background: var(--color-primary-soft);
   color: var(--bs-accent);
 }
 

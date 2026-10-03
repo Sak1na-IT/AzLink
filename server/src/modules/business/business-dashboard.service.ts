@@ -18,6 +18,10 @@ export const getDashboard = async (userId: string) => {
     where: { businessId: business.id },
   });
 
+  const portfolioCount = await prisma.portfolio.count({
+    where: { businessId: business.id },
+  });
+
   const bookings = await prisma.booking.findMany({
     where: { businessId: business.id },
     include: { service: true },
@@ -43,25 +47,28 @@ export const getDashboard = async (userId: string) => {
   let profileCompletion = 0;
 
   if (profile) {
-    const requiredTextFields = [
+    const textFields = [
       profile.businessName,
       profile.category,
       profile.areaId,
       profile.phone,
     ];
 
-    const filledTextCount = requiredTextFields.filter(
-      (value) => value.trim().length > 0
-    ).length;
-
     const hasOpenDay = Object.values(profile.schedule).some(
       (day) => day.isOpen
     );
 
-    const totalRequired = requiredTextFields.length + 1;
-    const filledTotal = filledTextCount + (hasOpenDay ? 1 : 0);
+    /* 7 şərt: ad, kateqoriya, ərazi, telefon, açıq gün, xidmət, portfolio */
+    const checks = [
+      ...textFields.map((value) => value.trim().length > 0),
+      hasOpenDay,
+      serviceCount > 0,
+      portfolioCount > 0,
+    ];
 
-    profileCompletion = Math.round((filledTotal / totalRequired) * 100);
+    profileCompletion = Math.round(
+      (checks.filter(Boolean).length / checks.length) * 100
+    );
   }
 
   return {

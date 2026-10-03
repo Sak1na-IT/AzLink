@@ -5,56 +5,51 @@ import {
   Compass,
   Home,
   Moon,
+  Store,
   Sun,
   UserRound,
 } from "lucide-react";
 
 import { useTheme } from "../../hooks/useTheme";
-
-const navItems = [
-  {
-    to: "/",
-    label: "Ana səhifə",
-    icon: Home,
-  },
-  {
-    to: "/explore",
-    label: "Kəşf et",
-    icon: Compass,
-  },
-  {
-    to: "/bookings",
-    label: "Rezervlər",
-    icon: CalendarDays,
-  },
-  {
-    to: "/saved",
-    label: "Seçilmişlər",
-    icon: Bookmark,
-  },
-  {
-    to: "/profile",
-    label: "Profil",
-    icon: UserRound,
-  },
-];
+import { getStoredUser } from "../../services/api";
 
 function TopNav() {
   const { isDark, toggleTheme } = useTheme();
 
+  const user = getStoredUser();
+  const isBusiness = user?.role === "BUSINESS";
+
+  /*
+   * Business hesabı: Biznesim, Kəşf et, Rezervlər, Seçilmişlər, Profil.
+   * User hesabı: Ana səhifə, Kəşf et, Rezervlər, Seçilmişlər, Profil.
+   * Biznesim birinci gəlir, çünki business sahibinin əsas işi odur.
+   */
+  const navItems = [
+    isBusiness
+      ? { to: "/business", label: "Biznesim", icon: Store, end: false }
+      : { to: "/", label: "Ana səhifə", icon: Home, end: true },
+    { to: "/explore", label: "Kəşf et", icon: Compass, end: false },
+    { to: "/bookings", label: "Rezervlər", icon: CalendarDays, end: false },
+    { to: "/saved", label: "Seçilmişlər", icon: Bookmark, end: false },
+    { to: "/profile", label: "Profil", icon: UserRound, end: false },
+  ];
+
   return (
     <header className="top-nav">
       <div className="top-nav__inner">
-        <NavLink to="/" className="top-nav__brand">
+        <NavLink
+          to={isBusiness ? "/business" : "/"}
+          className="top-nav__brand"
+        >
           AzLink
         </NavLink>
 
         <nav className="top-nav__links" aria-label="Əsas menyu">
-          {navItems.map(({ to, label, icon: Icon }) => (
+          {navItems.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
-              end={to === "/"}
+              end={end}
               className={({ isActive }) =>
                 `top-nav__link ${isActive ? "is-active" : ""}`
               }

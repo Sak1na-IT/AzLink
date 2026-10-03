@@ -1,89 +1,105 @@
-import { useState } from "react";
-import {
-  ArrowLeft,
-  Building2,
-  Clock3,
-  Phone,
-  Save,
-} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
+import { ArrowRight, Building2, Phone, Save } from "lucide-react";
+import { Link } from "react-router-dom";
 
+import "./BusinessProfile.css";
+import { getAreas } from "../../services/areasService";
 import {
-  areaOptions,
-  categoryOptions,
+  getCategories,
+  type CategoryOption,
+} from "../../services/categoriesService";
+import {
   getBusinessProfile,
   saveBusinessProfile,
-} from "../../services/businessProfileStorage";
-import { CURRENT_PROVIDER_ID } from "../../services/demoBusiness";
-import {
-  weekDays,
-  weekDayLabels,
-  type WeekDay,
-  type DaySchedule,
-} from "../../types/schedule";
-import "./BusinessProfile.css";
+  type BusinessProfile as BusinessProfileData,
+} from "../../services/businessService";
+
+type AreaOption = Awaited<ReturnType<typeof getAreas>>[number];
 
 function BusinessProfile() {
-  const navigate = useNavigate();
+  const [profile, setProfile] = useState<BusinessProfileData | null>(null);
+  const [areas, setAreas] = useState<AreaOption[]>([]);
+  const [categories, setCategories] = useState<CategoryOption[]>([]);
 
-  const [profile, setProfile] = useState(() =>
-    getBusinessProfile(CURRENT_PROVIDER_ID)
-  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [status, setStatus] = useState<"idle" | "saved" | "error">("idle");
 
-  const updateDaySchedule = (
-    day: WeekDay,
-    changes: Partial<DaySchedule>
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [profileResult, areasResult, categoriesResult] =
+          await Promise.all([
+            getBusinessProfile(),
+            getAreas(),
+            getCategories(),
+          ]);
+
+        setProfile(profileResult);
+        setAreas(areasResult);
+        /* yalnız əsas kateqoriyalar (alt-kateqoriyalar yox) */
+        setCategories(categoriesResult.filter((item) => !item.parentId));
+      } catch {
+        setLoadError("Biznes profilini yükləmək mümkün olmadı.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    load();
+  }, []);
+
+  const update = <K extends keyof BusinessProfileData>(
+    key: K,
+    value: BusinessProfileData[K]
   ) => {
-    setProfile((current) => ({
-      ...current,
-      schedule: {
-        ...current.schedule,
-        [day]: { ...current.schedule[day], ...changes },
-      },
-    }));
+    setStatus("idle");
+    setProfile((current) => (current ? { ...current, [key]: value } : current));
   };
 
-  const handleSubmit = (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!profile) return;
 
-    saveBusinessProfile(CURRENT_PROVIDER_ID, profile);
-
-    navigate("/business");
+    try {
+      setIsSaving(true);
+      setStatus("idle");
+      await saveBusinessProfile(profile);
+      setStatus("saved");
+    } catch {
+      setStatus("error");
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <main className="business-profile">
+        <p className="business-profile__message">Yüklənir...</p>
+      </main>
+    );
+  }
+
+  if (loadError || !profile) {
+    return (
+      <main className="business-profile">
+        <p className="business-profile__message">
+          {loadError || "Məlumat tapılmadı."}
+        </p>
+      </main>
+    );
+  }
 
   return (
     <main className="business-profile">
-      <div className="business-profile__top">
-        <button
-          type="button"
-          className="business-profile__back"
-          onClick={() => navigate("/business")}
-        >
-          <ArrowLeft size={18} strokeWidth={1.8} />
-          Biznes panelinə qayıt
-        </button>
-      </div>
-
       <section className="business-profile__header">
-        <div className="business-profile__header-icon">
-          <Building2 size={24} strokeWidth={1.8} />
-        </div>
-
-        <div>
-          <span className="business-profile__eyebrow">
-            Biznes profili
-          </span>
-
-          <h1>Biznes məlumatlarını tamamlayın</h1>
-
-          <p>
-            Müştərilərin sizi daha asan tapması üçün
-            biznesiniz haqqında əsas məlumatları əlavə
-            edin.
-          </p>
-        </div>
+        <h1>Biznes profili</h1>
+        <p>
+          Müştərilərin gördüyü biznes məlumatlarını buradan idarə edin.
+        </p>
       </section>
 
       <form className="business-profile__form" onSubmit={handleSubmit}>
@@ -103,16 +119,12 @@ function BusinessProfile() {
 
               <div className="business-profile__input-wrapper">
                 <Building2 size={18} strokeWidth={1.8} />
-
                 <input
                   type="text"
                   placeholder="Məsələn, Bakı Beauty Studio"
                   value={profile.businessName}
                   onChange={(event) =>
-                    setProfile((current) => ({
-                      ...current,
-                      businessName: event.target.value,
-                    }))
+                    update("businessName", event.target.value)
                   }
                   required
                 />
@@ -124,19 +136,14 @@ function BusinessProfile() {
 
               <select
                 value={profile.category}
-                onChange={(event) =>
-                  setProfile((current) => ({
-                    ...current,
-                    category: event.target.value,
-                  }))
-                }
+                onChange={(event) => update("category", event.target.value)}
                 required
               >
                 <option value="">Kateqoriya seçin</option>
 
-                {categoryOptions.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+                {categories.map((category) => (
+                  <option key={category.id} value={category.name}>
+                    {category.name}
                   </option>
                 ))}
               </select>
@@ -147,17 +154,11 @@ function BusinessProfile() {
 
               <div className="business-profile__input-wrapper">
                 <Phone size={18} strokeWidth={1.8} />
-
                 <input
                   type="tel"
                   placeholder="+994 50 000 00 00"
                   value={profile.phone}
-                  onChange={(event) =>
-                    setProfile((current) => ({
-                      ...current,
-                      phone: event.target.value,
-                    }))
-                  }
+                  onChange={(event) => update("phone", event.target.value)}
                   required
                 />
               </div>
@@ -168,17 +169,12 @@ function BusinessProfile() {
 
               <select
                 value={profile.areaId}
-                onChange={(event) =>
-                  setProfile((current) => ({
-                    ...current,
-                    areaId: event.target.value,
-                  }))
-                }
+                onChange={(event) => update("areaId", event.target.value)}
                 required
               >
                 <option value="">Ərazi seçin</option>
 
-                {areaOptions.map((area) => (
+                {areas.map((area) => (
                   <option key={area.id} value={area.id}>
                     {area.name}
                   </option>
@@ -191,92 +187,46 @@ function BusinessProfile() {
         <section className="business-profile__card">
           <div className="business-profile__card-header">
             <div>
-              <span>İş qrafiki</span>
-              <h2>Hansı günlər açıqsınız</h2>
+              <span>Təsvir</span>
+              <h2>Biznes haqqında</h2>
             </div>
-
-            <Clock3 size={20} strokeWidth={1.8} />
-          </div>
-
-          <div className="business-profile__schedule">
-            {weekDays.map((day) => {
-              const daySchedule = profile.schedule[day];
-
-              return (
-                <div className="business-profile__schedule-row" key={day}>
-                  <label className="business-profile__schedule-day">
-                    <input
-                      type="checkbox"
-                      checked={daySchedule.isOpen}
-                      onChange={(event) =>
-                        updateDaySchedule(day, {
-                          isOpen: event.target.checked,
-                        })
-                      }
-                    />
-
-                    <span>{weekDayLabels[day]}</span>
-                  </label>
-
-                  <div className="business-profile__schedule-times">
-                    <input
-                      type="time"
-                      value={daySchedule.start}
-                      disabled={!daySchedule.isOpen}
-                      onChange={(event) =>
-                        updateDaySchedule(day, {
-                          start: event.target.value,
-                        })
-                      }
-                    />
-
-                    <span>—</span>
-
-                    <input
-                      type="time"
-                      value={daySchedule.end}
-                      disabled={!daySchedule.isOpen}
-                      onChange={(event) =>
-                        updateDaySchedule(day, {
-                          end: event.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              );
-            })}
           </div>
 
           <label className="business-profile__field business-profile__field--full">
-            <span>Biznes haqqında</span>
-
             <textarea
               placeholder="Biznesiniz və göstərdiyiniz xidmətlər haqqında qısa məlumat yazın..."
               value={profile.description}
-              onChange={(event) =>
-                setProfile((current) => ({
-                  ...current,
-                  description: event.target.value,
-                }))
-              }
+              onChange={(event) => update("description", event.target.value)}
               rows={5}
             />
           </label>
+
+          <Link to="/business/hours" className="business-profile__link">
+            İş saatlarını dəyiş
+            <ArrowRight size={15} strokeWidth={1.8} />
+          </Link>
         </section>
 
         <div className="business-profile__footer">
-          <button
-            type="button"
-            className="business-profile__cancel"
-            onClick={() => navigate("/business")}
-          >
-            Ləğv et
-          </button>
+          {status === "saved" && (
+            <span className="business-profile__status business-profile__status--ok">
+              Dəyişikliklər yadda saxlanıldı.
+            </span>
+          )}
 
-          <button type="submit" className="business-profile__save">
+          {status === "error" && (
+            <span className="business-profile__status business-profile__status--error">
+              Yadda saxlamaq mümkün olmadı.
+            </span>
+          )}
+
+          <button
+            type="submit"
+            className="business-profile__save"
+            disabled={isSaving}
+          >
             <Save size={18} strokeWidth={1.9} />
-            Məlumatları yadda saxla
+            {isSaving ? "Saxlanılır..." : "Dəyişiklikləri yadda saxla"}
           </button>
         </div>
       </form>
