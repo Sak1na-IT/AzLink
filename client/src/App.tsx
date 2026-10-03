@@ -12,7 +12,7 @@ import Booking from "./pages/Booking/Booking";
 import Bookings from "./pages/Bookings/Bookings";
 import BookingStart from "./pages/BookingStart/BookingStart";
 import Saved from "./pages/Saved/Saved";
-import Profile from "./pages/Profile/Profile";
+import ProfileRoute from "./pages/Profile/ProfileRoute";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import AccountType from "./pages/AccountType/AccountType";
@@ -86,14 +86,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* PROFİL — business hesabı yeni səhifəni, user köhnəsini görür */}
         <Route
           path="/profile"
           element={
             <ProtectedRoute>
-              <Profile />
+              <ProfileRoute />
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/provider/:providerId"
           element={

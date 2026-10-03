@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowRight, Building2, Phone, Save } from "lucide-react";
+import { ArrowRight, Clock3, MapPin, Phone, Save, Tag } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import "./BusinessProfile.css";
@@ -14,11 +14,17 @@ import {
   saveBusinessProfile,
   type BusinessProfile as BusinessProfileData,
 } from "../../services/businessService";
+import { weekDays, weekDayLabels } from "../../types/schedule";
 
 type AreaOption = Awaited<ReturnType<typeof getAreas>>[number];
 
+/* Backend profilə id əlavə edəndə "Profilə bax" düyməsi avtomatik görünəcək */
+type ProfileWithId = BusinessProfileData & { id?: string };
+
+const DESCRIPTION_LIMIT = 500;
+
 function BusinessProfile() {
-  const [profile, setProfile] = useState<BusinessProfileData | null>(null);
+  const [profile, setProfile] = useState<ProfileWithId | null>(null);
   const [areas, setAreas] = useState<AreaOption[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
 
@@ -93,42 +99,95 @@ function BusinessProfile() {
     );
   }
 
+  const description = profile.description ?? "";
+  const areaName =
+    areas.find((area) => area.id === profile.areaId)?.name ?? "";
+  const initial = profile.businessName.trim().charAt(0).toUpperCase() || "B";
+
   return (
     <main className="business-profile">
       <section className="business-profile__header">
-        <h1>Biznes profili</h1>
-        <p>
-          Müştərilərin gördüyü biznes məlumatlarını buradan idarə edin.
-        </p>
+        <div>
+          <h1>Biznes profili</h1>
+          <p>Müştərilərin sizin haqqınızda gördüyü məlumatlar.</p>
+        </div>
+
+        {profile.id && (
+          <Link
+            to={`/provider/${profile.id}`}
+            className="business-profile__view"
+          >
+            Profilə bax
+            <ArrowRight size={15} strokeWidth={1.8} />
+          </Link>
+        )}
+      </section>
+
+      {/* ===== CANLI ÖNBAXIŞ ===== */}
+      <section
+        className="business-profile__preview"
+        aria-label="Müştərilər sizi belə görür"
+      >
+        <div className="business-profile__cover">
+          <span>Müştərilər sizi belə görür</span>
+        </div>
+
+        <div className="business-profile__preview-body">
+          <div className="business-profile__avatar">{initial}</div>
+
+          <div className="business-profile__preview-info">
+            <h2>{profile.businessName.trim() || "Biznes adı"}</h2>
+
+            <div className="business-profile__chips">
+              {profile.category && (
+                <span className="business-profile__chip">
+                  <Tag size={13} strokeWidth={1.8} />
+                  {profile.category}
+                </span>
+              )}
+
+              {areaName && (
+                <span className="business-profile__chip">
+                  <MapPin size={13} strokeWidth={1.8} />
+                  {areaName}
+                </span>
+              )}
+
+              {profile.phone && (
+                <span className="business-profile__chip">
+                  <Phone size={13} strokeWidth={1.8} />
+                  {profile.phone}
+                </span>
+              )}
+            </div>
+
+            {description.trim() && (
+              <p className="business-profile__preview-text">{description}</p>
+            )}
+          </div>
+        </div>
       </section>
 
       <form className="business-profile__form" onSubmit={handleSubmit}>
+        {/* ===== ƏSAS MƏLUMATLAR ===== */}
         <section className="business-profile__card">
           <div className="business-profile__card-header">
-            <div>
-              <span>Əsas məlumatlar</span>
-              <h2>Biznesiniz haqqında</h2>
-            </div>
-
-            <Building2 size={20} strokeWidth={1.8} />
+            <h2>Əsas məlumatlar</h2>
           </div>
 
           <div className="business-profile__fields">
             <label className="business-profile__field">
               <span>Biznes adı</span>
 
-              <div className="business-profile__input-wrapper">
-                <Building2 size={18} strokeWidth={1.8} />
-                <input
-                  type="text"
-                  placeholder="Məsələn, Bakı Beauty Studio"
-                  value={profile.businessName}
-                  onChange={(event) =>
-                    update("businessName", event.target.value)
-                  }
-                  required
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Məsələn, Bakı Beauty Studio"
+                value={profile.businessName}
+                onChange={(event) =>
+                  update("businessName", event.target.value)
+                }
+                required
+              />
             </label>
 
             <label className="business-profile__field">
@@ -148,20 +207,26 @@ function BusinessProfile() {
                 ))}
               </select>
             </label>
+          </div>
+        </section>
 
+        {/* ===== ƏLAQƏ ===== */}
+        <section className="business-profile__card">
+          <div className="business-profile__card-header">
+            <h2>Əlaqə və ərazi</h2>
+          </div>
+
+          <div className="business-profile__fields">
             <label className="business-profile__field">
               <span>Telefon</span>
 
-              <div className="business-profile__input-wrapper">
-                <Phone size={18} strokeWidth={1.8} />
-                <input
-                  type="tel"
-                  placeholder="+994 50 000 00 00"
-                  value={profile.phone}
-                  onChange={(event) => update("phone", event.target.value)}
-                  required
-                />
-              </div>
+              <input
+                type="tel"
+                placeholder="+994 50 000 00 00"
+                value={profile.phone}
+                onChange={(event) => update("phone", event.target.value)}
+                required
+              />
             </label>
 
             <label className="business-profile__field">
@@ -184,27 +249,57 @@ function BusinessProfile() {
           </div>
         </section>
 
+        {/* ===== HAQQINDA ===== */}
         <section className="business-profile__card">
           <div className="business-profile__card-header">
-            <div>
-              <span>Təsvir</span>
-              <h2>Biznes haqqında</h2>
-            </div>
+            <h2>Haqqında</h2>
           </div>
 
-          <label className="business-profile__field business-profile__field--full">
+          <label className="business-profile__field">
             <textarea
               placeholder="Biznesiniz və göstərdiyiniz xidmətlər haqqında qısa məlumat yazın..."
-              value={profile.description}
+              value={description}
+              maxLength={DESCRIPTION_LIMIT}
               onChange={(event) => update("description", event.target.value)}
               rows={5}
             />
-          </label>
 
-          <Link to="/business/hours" className="business-profile__link">
-            İş saatlarını dəyiş
-            <ArrowRight size={15} strokeWidth={1.8} />
-          </Link>
+            <small className="business-profile__counter">
+              {description.length} / {DESCRIPTION_LIMIT}
+            </small>
+          </label>
+        </section>
+
+        {/* ===== İŞ SAATLARI XÜLASƏSİ ===== */}
+        <section className="business-profile__card">
+          <div className="business-profile__card-header">
+            <h2>İş saatları</h2>
+
+            <Link to="/business/hours" className="business-profile__link">
+              <Clock3 size={15} strokeWidth={1.8} />
+              Dəyiş
+            </Link>
+          </div>
+
+          <ul className="business-profile__hours">
+            {weekDays.map((day) => {
+              const item = profile.schedule[day];
+
+              return (
+                <li key={day}>
+                  <span>{weekDayLabels[day]}</span>
+
+                  {item.isOpen ? (
+                    <strong>
+                      {item.start} – {item.end}
+                    </strong>
+                  ) : (
+                    <em>Bağlı</em>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </section>
 
         <div className="business-profile__footer">
