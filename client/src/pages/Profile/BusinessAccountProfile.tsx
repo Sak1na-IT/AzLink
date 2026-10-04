@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Lock, LogOut, Mail, UserRound } from "lucide-react";
+import { Bell, Lock, LogOut, Mail, Pencil, UserRound } from "lucide-react";
 
 import "./BusinessAccountProfile.css";
 import { getStoredUser } from "../../services/api";
@@ -103,18 +103,32 @@ function BusinessAccountProfile() {
         </div>
 
         <div className="account-profile__identity-info">
-          <h2>{account.name || "—"}</h2>
+          <div className="account-profile__identity-name-row">
+            <h2>{account.name || "—"}</h2>
+            <em className="account-profile__role">Biznes sahibi</em>
+          </div>
+
           <span>{account.email}</span>
-          <em className="account-profile__role">Biznes sahibi</em>
+
+          <button
+            type="button"
+            className="account-profile__edit-button"
+            disabled
+            title={SOON}
+          >
+            <Pencil size={15} strokeWidth={1.8} />
+            Profili redaktə et
+          </button>
         </div>
 
         <button
           type="button"
-          className="account-profile__button"
-          disabled
-          title={SOON}
+          className="account-profile__logout-icon"
+          onClick={handleLogout}
+          title="Çıxış"
+          aria-label="Çıxış"
         >
-          Redaktə et
+          <LogOut size={18} strokeWidth={1.8} />
         </button>
       </section>
 
@@ -141,17 +155,6 @@ function BusinessAccountProfile() {
             <dd>{account.phone || "Əlavə edilməyib"}</dd>
           </div>
         </dl>
-
-        <div className="account-profile__actions">
-          <button
-            type="button"
-            className="account-profile__button"
-            disabled
-            title={SOON}
-          >
-            Redaktə et
-          </button>
-        </div>
       </section>
 
       {/* ===== TƏHLÜKƏSİZLİK ===== */}
@@ -227,17 +230,6 @@ function BusinessAccountProfile() {
             <dd>Azərbaycan dili</dd>
           </div>
         </dl>
-
-        <div className="account-profile__actions">
-          <button
-            type="button"
-            className="account-profile__logout"
-            onClick={handleLogout}
-          >
-            <LogOut size={17} strokeWidth={1.9} />
-            Hesabdan çıx
-          </button>
-        </div>
       </section>
     </main>
   );
