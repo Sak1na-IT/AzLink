@@ -22,10 +22,10 @@ import { matchesArea } from "../../utils/areaMatch";
 import "./SearchResults.css";
 import { categories, type ServiceCategory } from "../../data/categories";
 import {
-  isProviderSaved,
-  toggleSavedProvider,
-} from "../../services/favoriteStorage";
-
+  getSavedProviders,
+  saveProvider,
+  unsaveProvider,
+} from "../../services/savedService";
 type PriceFilter = "all" | "under-20" | "20-30" | "30-50" | "50-plus";
 
 const priceLabels: Record<PriceFilter, string> = {
@@ -106,13 +106,17 @@ function SearchResults() {
         }
 
         setProviders(result);
-        setSavedIds(
-          new Set(
-            result
-              .filter((provider) => isProviderSaved(provider.id))
-              .map((provider) => provider.id)
-          )
-        );
+
+        try {
+          const saved = await getSavedProviders();
+
+          if (!cancelled) {
+            setSavedIds(new Set(saved.map((provider) => provider.id)));
+          }
+        } catch {
+          /* seçilmişlər yüklənməsə də axtarış işləməyə davam edir */
+        }
+
       } catch {
         if (!cancelled) {
           setLoadError("Bizneslər yüklənmədi. Bir az sonra yenidən cəhd edin.");
@@ -163,16 +167,26 @@ function SearchResults() {
       }
   );
 
-  const handleToggleSave = (providerId: string) => {
-    const nowSaved = toggleSavedProvider(providerId);
+  const handleToggleSave = async (providerId: string) => {
+    const wasSaved = savedIds.has(providerId);
+
+    try {
+      if (wasSaved) {
+        await unsaveProvider(providerId);
+      } else {
+        await saveProvider(providerId);
+      }
+    } catch {
+      return;
+    }
 
     setSavedIds((current) => {
       const next = new Set(current);
 
-      if (nowSaved) {
-        next.add(providerId);
-      } else {
+      if (wasSaved) {
         next.delete(providerId);
+      } else {
+        next.add(providerId);
       }
 
       return next;

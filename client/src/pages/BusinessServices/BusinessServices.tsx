@@ -1,22 +1,13 @@
-import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  Clock3,
-  Pencil,
-  Plus,
-  Store,
-  Trash2,
-} from "lucide-react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { Clock3, Pencil, Plus, Store, Trash2 } from "lucide-react";
 
 import "./BusinessServices.css";
 import {
-  addService,
+  createService,
   deleteService,
-  getServicesByProvider,
+  listServices,
   updateService,
-} from "../../services/serviceStorage";
-import { CURRENT_PROVIDER_ID } from "../../services/demoBusiness";
+} from "../../services/businessServicesService";
 import type { ProviderService } from "../../types/provider";
 import { formatDuration } from "../../utils/formatDuration";
 
@@ -36,7 +27,19 @@ const emptyForm: FormState = {
   duration: "60",
 };
 
-/* Frontend yoxlaması rahatlıq üçündür, backend-də də təkrar yoxlanacaq */
+const messageStyle = {
+  padding: "60px 0",
+  textAlign: "center" as const,
+  color: "var(--color-text-muted)",
+  fontSize: "var(--font-size-sm)",
+};
+
+const formErrorStyle = {
+  color: "var(--color-danger)",
+  fontSize: "var(--font-size-sm)",
+};
+
+/* Frontend yoxlaması rahatlıq üçündür, backend-də də təkrar yoxlanmalıdır */
 const validate = (
   form: FormState,
   services: ProviderService[],
@@ -85,32 +88,49 @@ const validate = (
 };
 
 function BusinessServices() {
-  const navigate = useNavigate();
-
-  const [services, setServices] = useState<ProviderService[]>(() =>
-    getServicesByProvider(CURRENT_PROVIDER_ID)
-  );
+  const [services, setServices] = useState<ProviderService[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const [formOpen, setFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [formError, setFormError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
-  const reload = () => {
-    setServices(getServicesByProvider(CURRENT_PROVIDER_ID));
-  };
+  const reload = useCallback(async () => {
+    try {
+      setLoadError("");
+      const result = await listServices();
+      setServices(result);
+      return result;
+    } catch {
+      setLoadError("Xidmətləri yükləmək mümkün olmadı.");
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    reload();
+  }, [reload]);
 
   const closeForm = () => {
     setFormOpen(false);
     setEditingId(null);
     setForm(emptyForm);
     setErrors({});
+    setFormError("");
   };
 
   const openAdd = () => {
     setEditingId(null);
     setForm(emptyForm);
     setErrors({});
+    setFormError("");
     setFormOpen(true);
   };
 
@@ -123,6 +143,7 @@ function BusinessServices() {
       duration: String(service.duration),
     });
     setErrors({});
+    setFormError("");
     setFormOpen(true);
   };
 
@@ -130,7 +151,7 @@ function BusinessServices() {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const nextErrors = validate(form, services, editingId);
@@ -146,49 +167,82 @@ function BusinessServices() {
       duration: Number(form.duration),
     };
 
-    if (editingId) {
-      updateService(CURRENT_PROVIDER_ID, editingId, input);
-    } else {
-      addService(CURRENT_PROVIDER_ID, input);
-    }
+    try {
+      setIsSaving(true);
+      setFormError("");
 
-    reload();
-    closeForm();
+      if (editingId) {
+        await updateService(editingId, input);
+      } else {
+        await createService(input);
+      }
+
+      await reload();
+      closeForm();
+    } catch {
+      setFormError(
+        editingId
+          ? "Dəyişikliyi yadda saxlamaq mümkün olmadı."
+          : "Xidməti əlavə etmək mümkün olmadı. Biznes profilində kateqoriyanın seçildiyinə əmin olun."
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleDelete = (service: ProviderService) => {
+  const handleDelete = async (service: ProviderService) => {
     if (
-      !window.confirm(
-        `"${service.name}" xidmətini silmək istəyirsiniz? Keçmiş rezervlər dəyişməyəcək.`
-      )
+      !window.confirm(`"${service.name}" xidmətini silmək istəyirsiniz?`)
     ) {
       return;
     }
 
-    deleteService(CURRENT_PROVIDER_ID, service.id);
+    try {
+      setBusyId(service.id);
 
-    if (editingId === service.id) {
-      closeForm();
+      try {
+        await deleteService(service.id);
+      } catch {
+        /* Boş (204) cavab bəzən xəta kimi görünür: nəticəni siyahıdan yoxlayırıq */
+      }
+
+      const fresh = await reload();
+
+      if (fresh && fresh.some((item) => item.id === service.id)) {
+        alert(
+          "Xidməti silmək mümkün olmadı. Bu xidmət üzrə rezerv olduğu üçün silinməyə bilər."
+        );
+        return;
+      }
+
+      if (editingId === service.id) {
+        closeForm();
+      }
+    } finally {
+      setBusyId(null);
     }
-
-    reload();
   };
 
   const previewDuration = Number(form.duration);
 
+  if (isLoading) {
+    return (
+      <main className="business-services">
+        <p style={messageStyle}>Yüklənir...</p>
+      </main>
+    );
+  }
+
+  if (loadError && services.length === 0) {
+    return (
+      <main className="business-services">
+        <p style={messageStyle}>{loadError}</p>
+      </main>
+    );
+  }
+
   return (
     <main className="business-services">
-      <div className="business-services__top">
-        <button
-          type="button"
-          className="business-services__back"
-          onClick={() => navigate("/business")}
-        >
-          <ArrowLeft size={18} strokeWidth={1.8} />
-          Biznes panelinə qayıt
-        </button>
-      </div>
-
       <section className="business-services__header">
         <div>
           <h1>Xidmətlər</h1>
@@ -300,17 +354,28 @@ function BusinessServices() {
             </div>
           </div>
 
+          {formError && <p style={formErrorStyle}>{formError}</p>}
+
           <div className="business-services__form-actions">
             <button
               type="button"
               className="business-services__secondary"
               onClick={closeForm}
+              disabled={isSaving}
             >
               Ləğv et
             </button>
 
-            <button type="submit" className="business-services__primary">
-              {editingId ? "Yadda saxla" : "Xidməti əlavə et"}
+            <button
+              type="submit"
+              className="business-services__primary"
+              disabled={isSaving}
+            >
+              {isSaving
+                ? "Saxlanılır..."
+                : editingId
+                  ? "Yadda saxla"
+                  : "Xidməti əlavə et"}
             </button>
           </div>
         </form>
@@ -352,6 +417,7 @@ function BusinessServices() {
                   type="button"
                   className="business-service-card__button"
                   onClick={() => openEdit(service)}
+                  disabled={busyId === service.id}
                   aria-label={`${service.name} xidmətini redaktə et`}
                 >
                   <Pencil size={16} strokeWidth={1.8} />
@@ -362,6 +428,7 @@ function BusinessServices() {
                   type="button"
                   className="business-service-card__button business-service-card__button--danger"
                   onClick={() => handleDelete(service)}
+                  disabled={busyId === service.id}
                   aria-label={`${service.name} xidmətini sil`}
                 >
                   <Trash2 size={16} strokeWidth={1.8} />

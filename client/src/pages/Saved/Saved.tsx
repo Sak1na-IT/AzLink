@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
@@ -9,70 +9,75 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { providers } from "../../data/providers";
+import {
+  getSavedProviders,
+  unsaveProvider,
+} from "../../services/savedService";
+import type { Provider } from "../../types/provider";
 import "./Saved.css";
-
-const STORAGE_KEY = "azlink-saved-providers";
-
-function readSavedIds(): string[] {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-
-    if (!saved) {
-      return [];
-    }
-
-    const parsed = JSON.parse(saved);
-
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
 
 function Saved() {
   const navigate = useNavigate();
 
-  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [savedProviders, setSavedProviders] = useState<Provider[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [removingId, setRemovingId] = useState<string | null>(null);
 
   useEffect(() => {
-    setSavedIds(readSavedIds());
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const result = await getSavedProviders();
+
+        if (!cancelled) {
+          setSavedProviders(result);
+        }
+      } catch {
+        if (!cancelled) {
+          setError("Seçilmişləri yükləmək mümkün olmadı.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const savedProviders = useMemo(
-    () =>
-      providers.filter((provider) =>
-        savedIds.includes(provider.id)
-      ),
-    [savedIds]
-  );
+  const removeSaved = async (providerId: string) => {
+    try {
+      setRemovingId(providerId);
+      await unsaveProvider(providerId);
 
-  const removeSaved = (providerId: string) => {
-    const updatedIds = savedIds.filter(
-      (id) => id !== providerId
-    );
-
-    setSavedIds(updatedIds);
-
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify(updatedIds)
-    );
+      setSavedProviders((current) =>
+        current.filter((provider) => provider.id !== providerId)
+      );
+    } catch {
+      alert("Seçilmişlərdən çıxarmaq mümkün olmadı.");
+    } finally {
+      setRemovingId(null);
+    }
   };
 
   return (
     <div className="saved-page">
       <header className="saved-header">
         <div>
-          <span className="saved-header__eyebrow">
-            AzLink
-          </span>
+          <span className="saved-header__eyebrow">AzLink</span>
 
           <h1>Seçilmişlər</h1>
 
           <p>
-            Bəyəndiyiniz xidmət göstərən profilləri burada
-            saxlaya bilərsiniz.
+            Bəyəndiyiniz xidmət göstərən profilləri burada saxlaya
+            bilərsiniz.
           </p>
         </div>
 
@@ -93,7 +98,11 @@ function Saved() {
         </div>
       </header>
 
-      {savedProviders.length === 0 ? (
+      {isLoading || error ? (
+        <section className="saved-empty">
+          <h2>{error || "Yüklənir..."}</h2>
+        </section>
+      ) : savedProviders.length === 0 ? (
         <section className="saved-empty">
           <div className="saved-empty__icon">
             <Heart size={28} strokeWidth={1.8} />
@@ -102,9 +111,8 @@ function Saved() {
           <h2>Hələ heç bir profil saxlanılmayıb</h2>
 
           <p>
-            Bəyəndiyiniz profilin ürək işarəsinə klikləyin.
-            Daha sonra həmin profilləri burada asanlıqla
-            tapa bilərsiniz.
+            Bəyəndiyiniz profilin ürək işarəsinə klikləyin. Daha sonra
+            həmin profilləri burada asanlıqla tapa bilərsiniz.
           </p>
 
           <button
@@ -126,25 +134,15 @@ function Saved() {
               .join("");
 
             return (
-              <article
-                className="saved-card"
-                key={provider.id}
-              >
+              <article className="saved-card" key={provider.id}>
                 <button
                   type="button"
                   className="saved-card__main"
-                  onClick={() =>
-                    navigate(
-                      `/provider/${provider.id}`
-                    )
-                  }
+                  onClick={() => navigate(`/provider/${provider.id}`)}
                 >
                   <div className="saved-card__avatar">
                     {provider.image ? (
-                      <img
-                        src={provider.image}
-                        alt={provider.name}
-                      />
+                      <img src={provider.image} alt={provider.name} />
                     ) : (
                       <span>{initials}</span>
                     )}
@@ -155,10 +153,7 @@ function Saved() {
                       <strong>{provider.name}</strong>
 
                       {provider.verified && (
-                        <CheckCircle2
-                          size={16}
-                          strokeWidth={2}
-                        />
+                        <CheckCircle2 size={16} strokeWidth={2} />
                       )}
                     </div>
 
@@ -167,10 +162,7 @@ function Saved() {
                     </span>
 
                     <span className="saved-card__location">
-                      <MapPin
-                        size={14}
-                        strokeWidth={1.8}
-                      />
+                      <MapPin size={14} strokeWidth={1.8} />
                       {provider.area}
                     </span>
 
@@ -181,21 +173,15 @@ function Saved() {
                         strokeWidth={1.8}
                       />
 
-                      <strong>
-                        {provider.rating.toFixed(1)}
-                      </strong>
+                      <strong>{provider.rating.toFixed(1)}</strong>
 
-                      <span>
-                        ({provider.reviewCount} rəy)
-                      </span>
+                      <span>({provider.reviewCount} rəy)</span>
                     </div>
                   </div>
 
                   <div className="saved-card__price">
                     <span>Başlanğıc</span>
-                    <strong>
-                      {provider.priceFrom} ₼
-                    </strong>
+                    <strong>{provider.priceFrom} ₼</strong>
                   </div>
                 </button>
 
@@ -204,14 +190,10 @@ function Saved() {
                   className="saved-card__remove"
                   title="Seçilmişlərdən çıxar"
                   aria-label="Seçilmişlərdən çıxar"
-                  onClick={() =>
-                    removeSaved(provider.id)
-                  }
+                  disabled={removingId === provider.id}
+                  onClick={() => removeSaved(provider.id)}
                 >
-                  <Trash2
-                    size={17}
-                    strokeWidth={1.8}
-                  />
+                  <Trash2 size={17} strokeWidth={1.8} />
                 </button>
               </article>
             );
