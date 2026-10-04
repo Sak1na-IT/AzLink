@@ -14,107 +14,127 @@ import {
   X,
 } from "lucide-react";
 
-import { providers } from "../../data/providers";
-import { getServicesByProvider } from "../../services/serviceStorage";
-import { getPortfolio } from "../../services/portfolioStorage";
 import {
-  getProviderRatingSummary,
+  getProviderById,
+  type ProviderDetail,
+} from "../../services/providersService";
+import {
   getReviewsByProvider,
-  hasReviewed,
-  addReview,
-} from "../../services/reviewStorage";
-import {
-  getBookingsByCustomer,
-  type StoredBooking,
-} from "../../services/bookingStorage";
-import { CURRENT_CUSTOMER } from "../../services/demoCustomer";
-import {
-  isProviderSaved,
-  toggleSavedProvider,
-} from "../../services/favoriteStorage";
+  getMyReviews,
+  createReview,
+  type Review,
+} from "../../services/reviewsService";
+import { getSavedProviders, saveProvider, unsaveProvider } from "../../services/savedService";
+import { getBookings, type Booking } from "../../services/bookingsService";
+import { getStoredUser } from "../../services/api";
 import "./Provider.css";
 
 function Provider() {
   const { providerId } = useParams();
   const navigate = useNavigate();
+  const currentUser = getStoredUser();
+
+  const [provider, setProvider] = useState<ProviderDetail | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const [isSaved, setIsSaved] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messageSent, setMessageSent] = useState(false);
 
-  const [reviewTarget, setReviewTarget] = useState<StoredBooking | null>(
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewableBooking, setReviewableBooking] = useState<Booking | null>(
     null
   );
+
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
-  const [reviewedIds, setReviewedIds] = useState<Set<number>>(
-    () => new Set()
-  );
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
 
-  const provider = useMemo(
-    () => providers.find((item) => item.id === providerId),
-    [providerId]
-  );
-
-  /* Səhifə açılanda bu profilin seçilmişlərdə olub-olmadığını yoxla */
+  /* Profil, rəylər, seçilmiş vəziyyəti, rəy yazıla bilən rezerv — hamısı backend-dən */
   useEffect(() => {
-    if (provider) {
-      setIsSaved(isProviderSaved(provider.id));
+    if (!providerId) {
+      setIsLoading(false);
+      return;
     }
+
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const [providerResult, reviewsResult, savedResult, myReviews, bookings] =
+          await Promise.all([
+            getProviderById(providerId),
+            getReviewsByProvider(providerId),
+            getSavedProviders().catch(() => []),
+            getMyReviews().catch(() => []),
+            getBookings().catch(() => []),
+          ]);
+
+        if (cancelled) return;
+
+        setProvider(providerResult);
+        setReviews(reviewsResult);
+        setIsSaved(savedResult.some((item) => item.id === providerId));
+
+        const reviewedBookingIds = new Set(
+          myReviews.map((review) => review.bookingId)
+        );
+
+        const completed = bookings
+          .filter(
+            (booking) =>
+              booking.providerId === providerId &&
+              booking.customerId === currentUser?.id &&
+              booking.status === "COMPLETED" &&
+              !reviewedBookingIds.has(booking.id)
+          )
+          .sort((a, b) =>
+            `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`)
+          );
+
+        setReviewableBooking(completed[0] ?? null);
+      } catch {
+        if (!cancelled) {
+          setLoadError("Profil yüklənmədi. Yenidən cəhd edin.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [providerId, currentUser?.id]);
+
+  const initials = useMemo(() => {
+    if (!provider) return "";
+
+    return provider.name
+      .split(" ")
+      .map((word) => word[0])
+      .slice(0, 2)
+      .join("");
   }, [provider]);
 
-  /*
-   * Provider-in real xidmətləri (biznesin BusinessServices-də
-   * yazdığı, serviceStorage-dan gələn siyahı). Booking.tsx də
-   * eyni mənbədən oxuyur, ona görə profil və rezerv səhifəsi
-   * həmişə eyni siyahını göstərir.
-   */
-  const services = useMemo(
-    () => (provider ? getServicesByProvider(provider.id) : []),
-    [provider]
-  );
+  if (isLoading) {
+    return (
+      <div className="provider-page">
+        <p className="provider-muted-text" style={{ padding: "60px 20px" }}>
+          Yüklənir...
+        </p>
+      </div>
+    );
+  }
 
-  const portfolioImages = useMemo(
-    () => (provider ? getPortfolio(provider.id) : []),
-    [provider]
-  );
-
-  const reviews = useMemo(
-    () => (provider ? getReviewsByProvider(provider.id) : []),
-    [provider]
-  );
-
-  const ratingSummary = useMemo(
-    () => (provider ? getProviderRatingSummary(provider.id) : null),
-    [provider]
-  );
-
-  /*
-   * Müştərinin bu provider ilə tamamlanmış, hələ rəy yazılmamış
-   * ən son rezervi. Varsa, "Rəy yaz" düyməsi göstərilir.
-   */
-  const reviewableBooking = useMemo(() => {
-    if (!provider) {
-      return null;
-    }
-
-    const completed = getBookingsByCustomer(CURRENT_CUSTOMER.id)
-      .filter(
-        (booking) =>
-          booking.providerId === provider.id &&
-          booking.status === "COMPLETED" &&
-          !reviewedIds.has(booking.id) &&
-          !hasReviewed(booking.id)
-      )
-      .sort((a, b) =>
-        `${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`)
-      );
-
-    return completed[0] ?? null;
-  }, [provider, reviewedIds]);
-
-  if (!provider) {
+  if (loadError || !provider) {
     return (
       <div className="provider-page">
         <div className="provider-not-found">
@@ -140,23 +160,24 @@ function Provider() {
     );
   }
 
-  const initials = provider.name
-    .split(" ")
-    .map((word) => word[0])
-    .slice(0, 2)
-    .join("");
-
-  const displayRating = ratingSummary?.average ?? provider.rating;
-  const displayReviewCount = ratingSummary?.count ?? provider.reviewCount;
+  const displayRating = provider.rating;
+  const displayReviewCount = provider.reviewCount;
 
   const reviewLabel =
-    displayReviewCount === 1
-      ? "1 rəy"
-      : `${displayReviewCount} rəy`;
+    displayReviewCount === 1 ? "1 rəy" : `${displayReviewCount} rəy`;
 
-  const handleToggleSave = () => {
-    const nowSaved = toggleSavedProvider(provider.id);
-    setIsSaved(nowSaved);
+  const handleToggleSave = async () => {
+    try {
+      if (isSaved) {
+        await unsaveProvider(provider.id);
+        setIsSaved(false);
+      } else {
+        await saveProvider(provider.id);
+        setIsSaved(true);
+      }
+    } catch {
+      alert("Əməliyyat mümkün olmadı. Yenidən cəhd edin.");
+    }
   };
 
   const handleSendMessage = () => {
@@ -166,6 +187,7 @@ function Provider() {
       return;
     }
 
+    /* Demo rejimində: backend-də mesajlaşma hələ yoxdur */
     const storedMessages = JSON.parse(
       localStorage.getItem("azlink-demo-messages") ?? "[]"
     );
@@ -200,34 +222,41 @@ function Provider() {
 
     setReviewRating(5);
     setReviewComment("");
-    setReviewTarget(reviewableBooking);
+    setIsReviewOpen(true);
   };
 
   const closeReviewForm = () => {
-    setReviewTarget(null);
+    setIsReviewOpen(false);
   };
 
-  const submitReview = () => {
-    if (!reviewTarget) {
+  const submitReview = async () => {
+    if (!reviewableBooking) {
       return;
     }
 
-    addReview({
-      bookingId: reviewTarget.id,
-      providerId: reviewTarget.providerId,
-      customerId: CURRENT_CUSTOMER.id,
-      customerName: CURRENT_CUSTOMER.name,
-      rating: reviewRating,
-      comment: reviewComment.trim(),
-    });
+    try {
+      setIsSubmittingReview(true);
 
-    setReviewedIds((current) => {
-      const next = new Set(current);
-      next.add(reviewTarget.id);
-      return next;
-    });
+      await createReview({
+        bookingId: reviewableBooking.id,
+        rating: reviewRating,
+        comment: reviewComment.trim(),
+      });
 
-    setReviewTarget(null);
+      const [freshReviews, freshProvider] = await Promise.all([
+        getReviewsByProvider(provider.id),
+        getProviderById(provider.id),
+      ]);
+
+      setReviews(freshReviews);
+      setProvider(freshProvider);
+      setReviewableBooking(null);
+      setIsReviewOpen(false);
+    } catch {
+      alert("Rəyi göndərmək mümkün olmadı. Yenidən cəhd edin.");
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
 
   return (
@@ -271,8 +300,13 @@ function Provider() {
               <div className="provider-location">
                 <MapPin size={16} strokeWidth={1.8} />
                 <span>{provider.area}</span>
-                <span className="provider-location__dot">•</span>
-                <span>{provider.distance.toFixed(1)} km</span>
+
+                {provider.distance != null && (
+                  <>
+                    <span className="provider-location__dot">•</span>
+                    <span>{provider.distance.toFixed(1)} km</span>
+                  </>
+                )}
               </div>
 
               <div className="provider-rating-row">
@@ -289,14 +323,10 @@ function Provider() {
               type="button"
               className="provider-save-button"
               aria-label={
-                isSaved
-                  ? "Seçilmişlərdən çıxar"
-                  : "Seçilmişlərə əlavə et"
+                isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
               }
               title={
-                isSaved
-                  ? "Seçilmişlərdən çıxar"
-                  : "Seçilmişlərə əlavə et"
+                isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
               }
               onClick={handleToggleSave}
             >
@@ -314,10 +344,8 @@ function Provider() {
             </div>
 
             <p className="provider-description">
-              {provider.name} — {provider.service} xidməti üzrə AzLink
-              platformasında yerləşdirilmiş profildir. Xidmət ərazisi{" "}
-              <strong>{provider.area}</strong> olaraq göstərilir. Profil
-              üzrə başlanğıc qiymət <strong>{provider.priceFrom} ₼</strong>-dir.
+              {provider.description?.trim() ||
+                `${provider.name} — ${provider.service} xidməti üzrə AzLink platformasında yerləşdirilmiş profildir. Xidmət ərazisi ${provider.area} olaraq göstərilir. Başlanğıc qiymət ${provider.priceFrom} ₼-dir.`}
             </p>
           </section>
 
@@ -331,17 +359,14 @@ function Provider() {
               </div>
             </div>
 
-            {services.length === 0 ? (
+            {provider.services.length === 0 ? (
               <p className="provider-muted-text">
                 Bu profil üçün hələ xidmət əlavə olunmayıb.
               </p>
             ) : (
               <div className="provider-services-list">
-                {services.map((service) => (
-                  <div
-                    className="provider-service-item"
-                    key={service.id}
-                  >
+                {provider.services.map((service) => (
+                  <div className="provider-service-item" key={service.id}>
                     <div>
                       <strong>{service.name}</strong>
                       <span>{service.description}</span>
@@ -361,17 +386,17 @@ function Provider() {
               <h2>İş nümunələri</h2>
             </div>
 
-            {portfolioImages.length === 0 ? (
+            {provider.portfolio.length === 0 ? (
               <p className="provider-muted-text">
                 Bu biznes hələ portfolio şəkli əlavə etməyib.
               </p>
             ) : (
               <div className="provider-portfolio">
-                {portfolioImages.map((image) => (
+                {provider.portfolio.map((image) => (
                   <div className="provider-portfolio__item" key={image.id}>
                     <img
-                      src={image.dataUrl}
-                      alt={image.caption || provider.name}
+                      src={image.imageUrl}
+                      alt={provider.name}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -435,9 +460,7 @@ function Provider() {
                   <div className="provider-service-item" key={review.id}>
                     <div>
                       <strong>{review.customerName}</strong>
-                      <span>
-                        {review.comment || "Rəy mətni yazılmayıb."}
-                      </span>
+                      <span>{review.comment || "Rəy mətni yazılmayıb."}</span>
                     </div>
 
                     <strong className="provider-service-price">
@@ -563,9 +586,7 @@ function Provider() {
               <div>
                 <span className="area-modal__eyebrow">AzLink</span>
 
-                <h2 id="contact-title">
-                  {provider.name} ilə əlaqə
-                </h2>
+                <h2 id="contact-title">{provider.name} ilə əlaqə</h2>
 
                 <p>
                   {provider.service} · {provider.area}
@@ -602,38 +623,36 @@ function Provider() {
                   </button>
                 </div>
               ) : (
-                <>
-                  <div className="provider-section">
-                    <div className="provider-section__header">
-                      <div>
-                        <h2>Mesaj göndər</h2>
+                <div className="provider-section">
+                  <div className="provider-section__header">
+                    <div>
+                      <h2>Mesaj göndər</h2>
 
-                        <span className="provider-section__subtitle">
-                          Mesajınızı yazın
-                        </span>
-                      </div>
+                      <span className="provider-section__subtitle">
+                        Mesajınızı yazın
+                      </span>
                     </div>
-
-                    <textarea
-                      value={message}
-                      onChange={(event) => setMessage(event.target.value)}
-                      placeholder="Salam, xidmət haqqında məlumat almaq istəyirəm..."
-                      rows={6}
-                      style={{
-                        width: "100%",
-                        resize: "vertical",
-                        padding: "12px 14px",
-                        border: "1px solid var(--color-border)",
-                        borderRadius: "10px",
-                        outline: "none",
-                        background: "var(--color-surface)",
-                        color: "var(--color-text)",
-                        font: "inherit",
-                        lineHeight: 1.5,
-                      }}
-                    />
                   </div>
-                </>
+
+                  <textarea
+                    value={message}
+                    onChange={(event) => setMessage(event.target.value)}
+                    placeholder="Salam, xidmət haqqında məlumat almaq istəyirəm..."
+                    rows={6}
+                    style={{
+                      width: "100%",
+                      resize: "vertical",
+                      padding: "12px 14px",
+                      border: "1px solid var(--color-border)",
+                      borderRadius: "10px",
+                      outline: "none",
+                      background: "var(--color-surface)",
+                      color: "var(--color-text)",
+                      font: "inherit",
+                      lineHeight: 1.5,
+                    }}
+                  />
+                </div>
               )}
             </div>
 
@@ -662,7 +681,7 @@ function Provider() {
         </div>
       )}
 
-      {reviewTarget && (
+      {isReviewOpen && reviewableBooking && (
         <div className="area-modal">
           <button
             type="button"
@@ -683,7 +702,7 @@ function Provider() {
 
                 <h2 id="review-title">{provider.name} üçün rəy</h2>
 
-                <p>{reviewTarget.service}</p>
+                <p>{reviewableBooking.service}</p>
               </div>
 
               <button
@@ -708,9 +727,7 @@ function Provider() {
                     <Star
                       size={26}
                       strokeWidth={1.8}
-                      fill={
-                        value <= reviewRating ? "currentColor" : "none"
-                      }
+                      fill={value <= reviewRating ? "currentColor" : "none"}
                     />
                   </button>
                 ))}
@@ -718,9 +735,7 @@ function Provider() {
 
               <textarea
                 value={reviewComment}
-                onChange={(event) =>
-                  setReviewComment(event.target.value)
-                }
+                onChange={(event) => setReviewComment(event.target.value)}
                 placeholder="Təcrübənizi qısaca yazın (vacib deyil)..."
                 rows={5}
                 maxLength={300}
@@ -750,9 +765,11 @@ function Provider() {
                 type="button"
                 className="area-modal__apply"
                 onClick={submitReview}
+                disabled={isSubmittingReview}
+                style={{ opacity: isSubmittingReview ? 0.6 : 1 }}
               >
                 <Star size={16} strokeWidth={1.8} />
-                Rəyi göndər
+                {isSubmittingReview ? "Göndərilir..." : "Rəyi göndər"}
               </button>
             </div>
           </section>

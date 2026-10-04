@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CalendarDays,
@@ -7,27 +7,20 @@ import {
   MapPin,
   Plus,
   Star,
-  Trash2,
   X,
   XCircle,
 } from "lucide-react";
 
-import { providers } from "../../data/providers";
 import {
-  deleteBooking,
-  getBookingsByCustomer,
+  getBookings,
   updateBookingStatus,
-} from "../../services/bookingStorage";
-import type {
-  BookingStatus,
-  StoredBooking,
-} from "../../services/bookingStorage";
-import { CURRENT_CUSTOMER } from "../../services/demoCustomer";
-import { addReview, hasReviewed } from "../../services/reviewStorage";
-import { formatDuration } from "../../utils/formatDuration";
-import BusinessBookings from "../BusinessBookings/BusinessBookings";
+  type Booking,
+  type BookingStatus,
+} from "../../services/bookingsService";
+import { getMyReviews, createReview } from "../../services/reviewsService";
+import { getProviders } from "../../services/providersService";
 import { getStoredUser } from "../../services/api";
-import "./BookingsSwitch.css";
+import { formatDuration } from "../../utils/formatDuration";
 import "./Bookings.css";
 
 const statusLabels: Record<BookingStatus, string> = {
@@ -44,35 +37,63 @@ const statusClasses: Record<BookingStatus, string> = {
   COMPLETED: "confirmed",
 };
 
-const loadBookings = () => getBookingsByCustomer(CURRENT_CUSTOMER.id);
+type FilterValue = "all" | "active" | "completed" | "cancelled";
 
-function MyBookings() {
+function Bookings() {
   const navigate = useNavigate();
+  const currentUser = getStoredUser();
 
-  const [bookings, setBookings] = useState<StoredBooking[]>(() =>
-    loadBookings()
-  );
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [areaByProvider, setAreaByProvider] = useState<Record<string, string>>({});
+  const [reviewedBookingIds, setReviewedBookingIds] = useState<Set<string>>(() => new Set());
 
-  /*
-   * "active"    → yalnız Gözləyir / Təsdiqlənib
-   * "completed" → yalnız Tamamlanıb (rəy yazmaq üçün bura baxmaq rahatdır)
-   * "cancelled" → yalnız Ləğv edilib
-   */
-  const [filter, setFilter] = useState<
-    "all" | "active" | "completed" | "cancelled"
-  >("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  /* Rəy yazılan rezervlər UI-də dərhal "yazılıb" görünsün deyə */
-  const [reviewedIds, setReviewedIds] = useState<Set<number>>(
-    () => new Set()
-  );
+  const [filter, setFilter] = useState<FilterValue>("all");
 
-  const [reviewTarget, setReviewTarget] = useState<StoredBooking | null>(
-    null
-  );
-
+  const [reviewTarget, setReviewTarget] = useState<Booking | null>(null);
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+
+  const reload = async () => {
+    try {
+      setError("");
+
+      const [allBookings, providers, myReviews] = await Promise.all([
+        getBookings(),
+        getProviders().catch(() => []),
+        getMyReviews().catch(() => []),
+      ]);
+
+      /* yalnız özümün müştəri kimi etdiyi rezervlər */
+      const mine = allBookings.filter(
+        (booking) => booking.customerId === currentUser?.id
+      );
+
+      setBookings(mine);
+
+      const areaMap: Record<string, string> = {};
+      providers.forEach((provider) => {
+        areaMap[provider.id] = provider.area;
+      });
+      setAreaByProvider(areaMap);
+
+      setReviewedBookingIds(
+        new Set(myReviews.map((review) => review.bookingId))
+      );
+    } catch {
+      setError("Rezervləri yükləmək mümkün olmadı.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const sortedBookings = useMemo(() => {
     const copy = [...bookings];
@@ -107,42 +128,29 @@ function MyBookings() {
     return sortedBookings;
   }, [sortedBookings, filter]);
 
-  const handleCancel = (id: number) => {
-    const confirmed = window.confirm(
-      "Rezervi ləğv etmək istəyirsiniz?"
-    );
+  const handleCancel = async (id: string) => {
+    const confirmed = window.confirm("Rezervi ləğv etmək istəyirsiniz?");
 
     if (!confirmed) {
       return;
     }
 
-    updateBookingStatus(id, "CANCELLED");
-    setBookings(loadBookings());
-  };
-
-  const handleDelete = (id: number) => {
-    deleteBooking(id);
-    setBookings(loadBookings());
+    try {
+      await updateBookingStatus(id, "CANCELLED");
+      reload();
+    } catch {
+      alert("Rezervi ləğv etmək mümkün olmadı.");
+    }
   };
 
   const formatDate = (date: string) => {
-    const parts = date.split("-");
-    const year = parts[0];
-    const month = parts[1];
-    const day = parts[2];
-
-    return day + "." + month + "." + year;
+    const [year, month, day] = date.split("-");
+    return `${day}.${month}.${year}`;
   };
 
-  const getArea = (providerId: string) => {
-    const found = providers.find(
-      (provider) => provider.id === providerId
-    );
+  const getArea = (providerId: string) => areaByProvider[providerId] ?? "—";
 
-    return found ? found.area : "—";
-  };
-
-  const openReviewForm = (booking: StoredBooking) => {
+  const openReviewForm = (booking: Booking) => {
     setReviewTarget(booking);
     setReviewRating(5);
     setReviewComment("");
@@ -152,28 +160,43 @@ function MyBookings() {
     setReviewTarget(null);
   };
 
-  const submitReview = () => {
+  const submitReview = async () => {
     if (!reviewTarget) {
       return;
     }
 
-    addReview({
-      bookingId: reviewTarget.id,
-      providerId: reviewTarget.providerId,
-      customerId: CURRENT_CUSTOMER.id,
-      customerName: CURRENT_CUSTOMER.name,
-      rating: reviewRating,
-      comment: reviewComment.trim(),
-    });
+    try {
+      setIsSubmittingReview(true);
 
-    setReviewedIds((current) => {
-      const next = new Set(current);
-      next.add(reviewTarget.id);
-      return next;
-    });
+      await createReview({
+        bookingId: reviewTarget.id,
+        rating: reviewRating,
+        comment: reviewComment.trim(),
+      });
 
-    setReviewTarget(null);
+      setReviewedBookingIds((current) => {
+        const next = new Set(current);
+        next.add(reviewTarget.id);
+        return next;
+      });
+
+      setReviewTarget(null);
+    } catch {
+      alert("Rəyi göndərmək mümkün olmadı.");
+    } finally {
+      setIsSubmittingReview(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <main className="bookings-page">
+        <div className="bookings-page__container">
+          <p className="bookings-page__empty-text">Yüklənir...</p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="bookings-page">
@@ -184,9 +207,7 @@ function MyBookings() {
 
             <h1>Rezervlərim</h1>
 
-            <p>
-              Yaratdığınız rezervləri buradan idarə edə bilərsiniz.
-            </p>
+            <p>Yaratdığınız rezervləri buradan idarə edə bilərsiniz.</p>
           </div>
 
           <button
@@ -198,6 +219,8 @@ function MyBookings() {
             Yeni rezerv yarat
           </button>
         </section>
+
+        {error && <p className="bookings-page__empty-text">{error}</p>}
 
         <section className="bookings-page__filters">
           <button
@@ -289,8 +312,7 @@ function MyBookings() {
                 booking.status === "CONFIRMED" || isCompleted;
               const isPending = booking.status === "PENDING";
 
-              const alreadyReviewed =
-                reviewedIds.has(booking.id) || hasReviewed(booking.id);
+              const alreadyReviewed = reviewedBookingIds.has(booking.id);
 
               const cardClassName = isCancelled
                 ? "booking-card booking-card--cancelled"
@@ -304,9 +326,7 @@ function MyBookings() {
                 <article className={cardClassName} key={booking.id}>
                   <div className="booking-card__top">
                     <div className="booking-card__provider">
-                      <div className="booking-card__avatar">
-                        {initials}
-                      </div>
+                      <div className="booking-card__avatar">{initials}</div>
 
                       <div>
                         <h2>{booking.providerName}</h2>
@@ -325,13 +345,9 @@ function MyBookings() {
                         <CheckCircle2 size={15} strokeWidth={1.9} />
                       )}
 
-                      {isPending && (
-                        <Clock3 size={15} strokeWidth={1.9} />
-                      )}
+                      {isPending && <Clock3 size={15} strokeWidth={1.9} />}
 
-                      {isCancelled && (
-                        <XCircle size={15} strokeWidth={1.9} />
-                      )}
+                      {isCancelled && <XCircle size={15} strokeWidth={1.9} />}
 
                       {statusLabels[booking.status]}
                     </div>
@@ -412,17 +428,6 @@ function MyBookings() {
                         Rəy yazılıb
                       </span>
                     ) : null}
-
-                    {isCancelled ? (
-                      <button
-                        type="button"
-                        className="booking-card__delete-button"
-                        onClick={() => handleDelete(booking.id)}
-                      >
-                        <Trash2 size={16} strokeWidth={1.8} />
-                        Sil
-                      </button>
-                    ) : null}
                   </div>
                 </article>
               );
@@ -455,8 +460,7 @@ function MyBookings() {
                 </h2>
 
                 <p>
-                  {reviewTarget.service} ·{" "}
-                  {formatDate(reviewTarget.date)}
+                  {reviewTarget.service} · {formatDate(reviewTarget.date)}
                 </p>
               </div>
 
@@ -482,9 +486,7 @@ function MyBookings() {
                     <Star
                       size={26}
                       strokeWidth={1.8}
-                      fill={
-                        value <= reviewRating ? "currentColor" : "none"
-                      }
+                      fill={value <= reviewRating ? "currentColor" : "none"}
                     />
                   </button>
                 ))}
@@ -492,9 +494,7 @@ function MyBookings() {
 
               <textarea
                 value={reviewComment}
-                onChange={(event) =>
-                  setReviewComment(event.target.value)
-                }
+                onChange={(event) => setReviewComment(event.target.value)}
                 placeholder="Təcrübənizi qısaca yazın (vacib deyil)..."
                 rows={5}
                 maxLength={300}
@@ -524,57 +524,17 @@ function MyBookings() {
                 type="button"
                 className="area-modal__apply"
                 onClick={submitReview}
+                disabled={isSubmittingReview}
+                style={{ opacity: isSubmittingReview ? 0.6 : 1 }}
               >
                 <Star size={16} strokeWidth={1.8} />
-                Rəyi göndər
+                {isSubmittingReview ? "Göndərilir..." : "Rəyi göndər"}
               </button>
             </div>
           </section>
         </div>
       )}
     </main>
-  );
-}
-
-function Bookings() {
-  const isBusiness = getStoredUser()?.role === "BUSINESS";
-  const [tab, setTab] = useState<"mine" | "business">("mine");
-
-  /* User hesabı: əvvəlki kimi, tab yoxdur */
-  if (!isBusiness) {
-    return <MyBookings />;
-  }
-
-  return (
-    <>
-      <div className="bookings-switch">
-        <button
-          type="button"
-          className={
-            tab === "mine"
-              ? "bookings-switch__tab is-active"
-              : "bookings-switch__tab"
-          }
-          onClick={() => setTab("mine")}
-        >
-          Mənim rezervlərim
-        </button>
-
-        <button
-          type="button"
-          className={
-            tab === "business"
-              ? "bookings-switch__tab is-active"
-              : "bookings-switch__tab"
-          }
-          onClick={() => setTab("business")}
-        >
-          Biznes rezervlərim
-        </button>
-      </div>
-
-      {tab === "mine" ? <MyBookings /> : <BusinessBookings embedded />}
-    </>
   );
 }
 

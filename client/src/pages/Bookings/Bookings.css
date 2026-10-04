@@ -635,3 +635,10 @@
   font-weight: var(--font-weight-semibold);
 }
 }
+
+.bookings-page__empty-text {
+  margin: 40px 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}

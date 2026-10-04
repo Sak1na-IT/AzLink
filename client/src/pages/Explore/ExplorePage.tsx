@@ -1,32 +1,67 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 
 import { categories } from "../../data/categories";
-import { providers } from "../../data/providers";
+import { getProviders } from "../../services/providersService";
+import type { Provider } from "../../types/provider";
 import "./ExplorePage.css";
+
+const normalize = (value: string) => value.toLocaleLowerCase("az").trim();
 
 function ExplorePage() {
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getProviders()
+      .then((result) => {
+        if (!cancelled) {
+          setProviders(result);
+        }
+      })
+      .catch(() => {
+        /* yüklənməsə, usta sayı 0 göstərilir */
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const filteredCategories = useMemo(() => {
-    const normalized = search.toLowerCase().trim();
+    const normalized = normalize(search);
 
     if (!normalized) {
       return categories;
     }
 
     return categories.filter((category) =>
-      category.name.toLowerCase().includes(normalized)
+      normalize(category.name).includes(normalized)
     );
   }, [search]);
 
-  const getProviderCount = (categoryServices: string[]) =>
-    providers.filter((provider) =>
-      categoryServices.includes(provider.service)
-    ).length;
+  const getProviderCount = (categoryServices: string[]) => {
+    const wanted = categoryServices.map(normalize);
+
+    return providers.filter((provider) => {
+      const names = [provider.service, ...(provider.categories ?? [])].map(
+        normalize
+      );
+
+      return names.some((name) => wanted.includes(name));
+    }).length;
+  };
 
   const handleCategoryClick = (categoryId: string) => {
     navigate(`/search?category=${categoryId}`);
@@ -88,7 +123,9 @@ function ExplorePage() {
           <div className="explore-category-grid">
             {filteredCategories.map((category) => {
               const Icon = category.icon;
-              const providerCount = getProviderCount(category.services);
+              const providerCount = isLoading
+                ? null
+                : getProviderCount(category.services);
 
               return (
                 <button
@@ -105,11 +142,13 @@ function ExplorePage() {
                     <h3>{category.name}</h3>
 
                     <span>
-                      {providerCount === 0
-                        ? "Hələ usta yoxdur"
-                        : providerCount === 1
-                          ? "1 usta"
-                          : `${providerCount} usta`}
+                      {providerCount === null
+                        ? "Yüklənir..."
+                        : providerCount === 0
+                          ? "Hələ usta yoxdur"
+                          : providerCount === 1
+                            ? "1 usta"
+                            : `${providerCount} usta`}
                     </span>
                   </div>
 
