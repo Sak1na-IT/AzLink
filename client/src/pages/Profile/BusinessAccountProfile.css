@@ -1,29 +1,38 @@
 .account-profile {
-  max-width: 760px;
+  /* kartın eni 940px olsun (user profili ilə eyni): 988 - 2×24 padding */
+  width: min(948px, 100%);
   margin: 0 auto;
-  padding: 36px 20px 72px;
+  padding: 48px 24px 80px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+}
+
+/* ===== BAŞLIQ ===== */
+.account-profile__header {
+  margin-bottom: 4px;
 }
 
 .account-profile__header h1 {
   margin: 0;
   color: var(--color-text);
-  font-size: 28px;
-  letter-spacing: -0.02em;
+  font-size: clamp(28px, 3.4vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
 }
 
 .account-profile__header p {
-  margin: 6px 0 0;
+  margin: 10px 0 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
+/* ===== KARTLAR ===== */
 .account-profile__card {
-  padding: 22px 24px;
+  padding: 26px 28px;
   border: 1px solid var(--color-border);
-  border-radius: 16px;
+  border-radius: 20px;
   background: var(--color-surface);
   box-shadow: var(--shadow-sm);
 }
@@ -31,33 +40,39 @@
 .account-profile__card-header h2 {
   margin: 0;
   color: var(--color-text);
-  font-size: 17px;
-  letter-spacing: -0.01em;
+  font-size: 18px;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
 }
 
 .account-profile__card-header p {
-  margin: 4px 0 0;
+  margin: 6px 0 0;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
+  font-size: 13px;
 }
 
 /* ===== HESAB KARTI ===== */
 .account-profile__identity {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 22px;
 }
 
 .account-profile__avatar {
-  width: 64px;
-  height: 64px;
-  flex: 0 0 64px;
+  width: 84px;
+  height: 84px;
+  flex: 0 0 84px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 18px;
+  border-radius: 22px;
   background: var(--color-primary-soft);
   color: var(--color-primary);
+}
+
+.account-profile__avatar svg {
+  width: 32px;
+  height: 32px;
 }
 
 .account-profile__identity-info {
@@ -65,31 +80,32 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .account-profile__identity-info h2 {
   margin: 0;
   color: var(--color-text);
-  font-size: 19px;
-  letter-spacing: -0.01em;
+  font-size: 23px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 
 .account-profile__identity-info span {
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: 14px;
   overflow-wrap: anywhere;
 }
 
 .account-profile__role {
   align-self: flex-start;
   margin-top: 6px;
-  padding: 3px 10px;
+  padding: 5px 12px;
   border-radius: 999px;
   background: var(--color-primary-soft);
   color: var(--color-primary);
-  font-size: 11px;
+  font-size: 12px;
   font-style: normal;
   font-weight: var(--font-weight-semibold);
 }
@@ -103,10 +119,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 13px 0;
+  gap: 20px;
+  padding: 15px 0;
   border-bottom: 1px solid var(--color-border);
-  font-size: var(--font-size-sm);
+  font-size: 14px;
 }
 
 .account-profile__row:last-child {
@@ -120,7 +136,7 @@
 .account-profile__row dd {
   margin: 0;
   color: var(--color-text);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   text-align: right;
   overflow-wrap: anywhere;
 }
@@ -135,8 +151,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 12px 0;
+  gap: 20px;
+  padding: 14px 0;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -147,18 +163,20 @@
 .account-profile__list-label {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--color-text);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: 14px;
+  font-weight: var(--font-weight-semibold);
 }
 
 .account-profile__list-label svg {
+  width: 19px;
+  height: 19px;
   color: var(--color-primary);
 }
 
 .account-profile__soon {
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 999px;
   background: var(--color-surface-muted);
   color: var(--color-text-muted);
@@ -174,25 +192,27 @@
 }
 
 .account-profile__button {
-  min-height: 38px;
-  padding: 0 14px;
+  min-height: 40px;
+  padding: 0 18px;
   border: 1px solid var(--color-border);
   border-radius: 10px;
   background: var(--color-surface);
   color: var(--color-text);
   font: inherit;
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   font-weight: var(--font-weight-semibold);
   white-space: nowrap;
   cursor: pointer;
   transition:
     border-color var(--transition-fast),
-    background-color var(--transition-fast);
+    background-color var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .account-profile__button:hover:not(:disabled) {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
 .account-profile__button:disabled {
@@ -205,13 +225,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0 16px;
+  padding: 0 18px;
   border: 1px solid rgba(209, 85, 74, 0.4);
   border-radius: 10px;
   background: transparent;
   color: #d1554a;
   font: inherit;
-  font-size: var(--font-size-sm);
+  font-size: 13px;
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
   transition: background-color var(--transition-fast);
@@ -221,24 +241,50 @@
   background: rgba(209, 85, 74, 0.1);
 }
 
-/* ===== MOBİL ===== */
-@media (max-width: 600px) {
+/* ===== TABLET ===== */
+@media (max-width: 850px) {
   .account-profile {
-    padding: 24px 14px 56px;
+    padding: 36px 20px 64px;
   }
 
   .account-profile__card {
-    padding: 18px;
+    padding: 22px 22px;
+  }
+}
+
+/* ===== MOBİL ===== */
+@media (max-width: 600px) {
+  .account-profile {
+    padding: 26px 16px 56px;
+    gap: 16px;
+  }
+
+  .account-profile__card {
+    padding: 20px 18px;
+    border-radius: 18px;
   }
 
   .account-profile__identity {
     flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .account-profile__avatar {
+    width: 68px;
+    height: 68px;
+    flex-basis: 68px;
+    border-radius: 18px;
+  }
+
+  .account-profile__identity-info h2 {
+    font-size: 21px;
   }
 
   .account-profile__row {
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
+    padding: 14px 0;
   }
 
   .account-profile__row dd {
@@ -250,7 +296,8 @@
   }
 
   .account-profile__actions .account-profile__button,
-  .account-profile__logout {
+  .account-profile__logout,
+  .account-profile__identity .account-profile__button {
     width: 100%;
     justify-content: center;
   }

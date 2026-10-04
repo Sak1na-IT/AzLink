@@ -73,3 +73,20 @@
     padding: 14px 14px 0;
   }
 }
+
+/* Biznesim daxilindəki bütün səhifələr Dashboard ilə eyni enə malik olsun */
+.business-layout > main {
+  width: 100%;
+  max-width: 1040px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (max-width: 600px) {
+  .business-layout > main {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}

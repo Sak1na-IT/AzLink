@@ -4,6 +4,7 @@ import TopNav from "./TopNav";
 import BusinessSubNav from "./BusinessSubNav";
 import { useTheme } from "../../hooks/useTheme";
 import { getStoredUser } from "../../services/api";
+import "./AppLayout.css";
 
 /* Bu yollarda TopNav göstərilmir — hələ giriş/rol yoxdur */
 const AUTH_PATHS = ["/", "/account-type", "/login", "/register"];
@@ -37,10 +38,16 @@ function AppLayout() {
         <TopNav isDark={isDark} toggleTheme={toggleTheme} />
       )}
 
-      {showBusinessSubNav && <BusinessSubNav />}
-
       <main className="app-content">
-        <Outlet />
+        {showBusinessSubNav ? (
+          /* Alt-naviqasiya və səhifə eyni qutuda (yalnız biznes hesabı) */
+          <div className="business-explore-shell">
+            <BusinessSubNav />
+            <Outlet />
+          </div>
+        ) : (
+          <Outlet />
+        )}
       </main>
     </div>
   );

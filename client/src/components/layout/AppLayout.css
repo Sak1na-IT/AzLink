@@ -1,0 +1,51 @@
+/* =========================================================
+   Business hesabı: "Rezerv et" qrupu (Kəşf et, Seçilmişlər, ...)
+   Alt-naviqasiya və səhifə məzmunu eyni qutuda, eyni
+   yan boşluqla düzülür (Biznesim ilə eyni quruluş).
+   ========================================================= */
+
+.app-shell .business-explore-shell {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  /* Biznesim-dəki kimi: naviqasiya ilə alt-naviqasiya arasında boşluq */
+  padding-top: 20px;
+}
+
+/* Alt-naviqasiya: qutunun içində, yan boşluq 20px */
+.app-shell .business-explore-shell .business-subnav {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.app-shell .business-explore-shell .business-subnav__inner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0 20px;
+}
+
+/* Səhifənin kökü (hansı səhifə olursa olsun): eyni 20px yan boşluq */
+.app-shell .business-explore-shell > :not(.business-subnav) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (max-width: 600px) {
+  .app-shell .business-explore-shell {
+    padding-top: 12px;
+  }
+
+  .app-shell .business-explore-shell .business-subnav__inner,
+  .app-shell .business-explore-shell > :not(.business-subnav) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}

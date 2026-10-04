@@ -1,37 +1,38 @@
 :root {
   /* =========================
      COLORS — LIGHT MODE
+     (təmiz, yumşaq adaçayı: ağ da yoxdur, duman da)
      ========================= */
 
-  --color-bg: #F3F7F3;
-  --color-surface: #FFFFFF;
-  --color-surface-soft: #EAF4EE;
-  --color-surface-muted: #F7FAF8;
+  --color-bg: #CFDDD2;
+  --color-surface: #DFEAE1;
+  --color-surface-soft: #C4D6C9;
+  --color-surface-muted: #D6E3D9;
 
   --color-primary: #2E7D5B;
   --color-primary-hover: #256A4D;
-  --color-primary-soft: #E1F0E8;
+  --color-primary-soft: #CBE0D1;
 
-  --color-text: #183328;
-  --color-text-secondary: #64746C;
-  --color-text-muted: #849189;
+  --color-text: #14291E;
+  --color-text-secondary: #33493C;
+  --color-text-muted: #4B6154;
 
-  --color-border: #D9E5DE;
-  --color-border-strong: #C7D8CE;
+  --color-border: #B6CABB;
+  --color-border-strong: #A3BAA9;
 
   --color-success: #2E7D5B;
-  --color-warning: #B98422;
-  --color-danger: #C94B4B;
-  --color-info: #4D78A8;
+  --color-warning: #A9761A;
+  --color-danger: #B94343;
+  --color-info: #46709C;
 
   /* =========================
-     SHADOWS
+     SHADOWS (demək olar yoxdur)
      ========================= */
 
-  --shadow-xs: 0 1px 2px rgba(24, 51, 40, 0.04);
-  --shadow-sm: 0 4px 14px rgba(24, 51, 40, 0.06);
-  --shadow-md: 0 8px 24px rgba(24, 51, 40, 0.08);
-  --shadow-lg: 0 16px 40px rgba(24, 51, 40, 0.12);
+  --shadow-xs: 0 1px 2px rgba(20, 41, 30, 0.04);
+  --shadow-sm: 0 1px 3px rgba(20, 41, 30, 0.05);
+  --shadow-md: 0 2px 8px rgba(20, 41, 30, 0.06);
+  --shadow-lg: 0 8px 24px rgba(20, 41, 30, 0.08);
 
   /* =========================
      BORDER RADIUS
