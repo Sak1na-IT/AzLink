@@ -1,11 +1,10 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { BookingStatus, PrismaClient, Role } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 /* ========================================================
    ƏRAZİLƏR
-   client/src/data/providers.ts-dəki provider.area dəyərləri
    ======================================================== */
 
 const AREA_NAMES = [
@@ -19,8 +18,7 @@ const AREA_NAMES = [
 
 /* ========================================================
    KATEQORİYALAR
-   client/src/data/categories.ts ilə eyni struktur:
-   hər parent kateqoriyanın "services" siyahısı uşaq
+   Hər parent kateqoriyanın "services" siyahısı uşaq
    kateqoriya kimi yaradılır.
    ======================================================== */
 
@@ -36,8 +34,7 @@ const CATEGORIES = [
 ];
 
 /* ========================================================
-   PROVIDER-LƏR
-   client/src/data/providers.ts-dən köçürülüb
+   BİZNESLƏR (demo)
    ======================================================== */
 
 type SeedService = {
@@ -52,6 +49,7 @@ type SeedProvider = {
   service: string;
   area: string;
   phone: string;
+  verified?: boolean;
   services: SeedService[];
 };
 
@@ -185,6 +183,7 @@ const PROVIDERS: SeedProvider[] = [
     service: "Yoga",
     area: "Səbail",
     phone: "+994501110013",
+    verified: false,
     services: [
       { name: "Qrup dərsi", description: "Qrup şəklində yoga dərsi", price: 15, duration: 60 },
       { name: "Fərdi dərs", description: "Şəxsi yoga məşqi", price: 40, duration: 60 },
@@ -193,7 +192,55 @@ const PROVIDERS: SeedProvider[] = [
 ];
 
 /* ========================================================
-   KÖMƏKÇİ: ad → email slug
+   DEMO MÜŞTƏRİLƏR
+   "musteri@azlink.demo" heç bir rezervi olmayan təmiz hesabdır:
+   təqdimatda canlı rezerv yaratmaq üçün.
+   ======================================================== */
+
+const DEMO_PASSWORD = "parol123";
+
+const CUSTOMERS = [
+  { key: "demo", name: "Demo Müştəri", email: "musteri@azlink.demo" },
+  { key: "nigar", name: "Nigar Əliyeva", email: "nigar@azlink.demo" },
+  { key: "leyla", name: "Leyla Həsənova", email: "leyla@azlink.demo" },
+  { key: "gunel", name: "Günel Rzayeva", email: "gunel@azlink.demo" },
+];
+
+/* ========================================================
+   DEMO REZERVLƏR VƏ RƏYLƏR
+   Hər rəy tamamlanmış (COMPLETED) bir rezerv üzərindədir.
+   Tarixlər sabitdir, ona görə seed təkrar işləsə ikiqat yaranmır.
+   ======================================================== */
+
+type SeedReview = {
+  provider: string;
+  customer: string;
+  service: string;
+  date: string;
+  time: string;
+  rating: number;
+  comment: string;
+};
+
+const DEMO_REVIEWS: SeedReview[] = [
+  { provider: "Nail by Aysel", customer: "nigar", service: "Manikür", date: "2026-09-10", time: "11:00", rating: 5, comment: "Çox səliqəli və təmiz iş, məmnun qaldım." },
+  { provider: "Nail by Aysel", customer: "leyla", service: "Pedikür", date: "2026-09-14", time: "13:00", rating: 5, comment: "Vaxtında başladı, nəticə əla oldu." },
+  { provider: "Nail by Aysel", customer: "gunel", service: "Dırnaq dizaynı", date: "2026-09-18", time: "15:00", rating: 4, comment: "Dizayn çox xoşuma gəldi, tövsiyə edirəm." },
+  { provider: "Studio Nigar", customer: "leyla", service: "Gündəlik makiyaj", date: "2026-09-12", time: "12:00", rating: 5, comment: "Makiyaj dayanıqlı və təbii görünüşlü oldu." },
+  { provider: "Studio Nigar", customer: "gunel", service: "Gecə makiyajı", date: "2026-09-20", time: "17:00", rating: 4, comment: "Tədbir üçün əla idi." },
+  { provider: "Vüsalə Hair", customer: "nigar", service: "Saç kəsimi", date: "2026-09-11", time: "10:30", rating: 5, comment: "Dəqiq istədiyim kəsimi etdi." },
+  { provider: "Vüsalə Hair", customer: "gunel", service: "Saç boyama", date: "2026-09-16", time: "14:00", rating: 4, comment: "Rəng çox yaxşı alındı." },
+  { provider: "CleanPro", customer: "leyla", service: "Ev təmizliyi", date: "2026-09-13", time: "11:00", rating: 5, comment: "Evi tərtəmiz etdilər, vaxta əməl olundu." },
+  { provider: "Ali Photography", customer: "nigar", service: "Portret çəkilişi", date: "2026-09-15", time: "16:00", rating: 5, comment: "Şəkillər çox keyfiyyətli çıxdı." },
+  { provider: "Turbo Servis", customer: "gunel", service: "Yağ dəyişimi", date: "2026-09-17", time: "10:00", rating: 4, comment: "Sürətli və qiymətə uyğun xidmət." },
+  { provider: "Nərgiz müəllimə", customer: "leyla", service: "Fərdi dərs", date: "2026-09-09", time: "18:00", rating: 5, comment: "Dərsi çox aydın izah edir." },
+  { provider: "Nərgiz müəllimə", customer: "nigar", service: "İmtahan hazırlığı", date: "2026-09-19", time: "17:30", rating: 5, comment: "İmtahana yaxşı hazırlaşdım." },
+  { provider: "Paws Grooming", customer: "gunel", service: "Kiçik cins grooming", date: "2026-09-21", time: "12:00", rating: 5, comment: "İtimiz çox rahat oldu, təşəkkürlər." },
+  { provider: "iFix Telefon", customer: "nigar", service: "Ekran dəyişmə", date: "2026-09-22", time: "15:00", rating: 4, comment: "Ekran tez dəyişdirildi." },
+];
+
+/* ========================================================
+   KÖMƏKÇİLƏR
    ======================================================== */
 
 const slugify = (value: string) =>
@@ -210,6 +257,13 @@ const slugify = (value: string) =>
     .replace(/ğ/g, "g")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
+
+/*
+ * Bazada tarix və saat "Bakı divar saatı" UTC kimi yazılır
+ * (məs. 14:00 → 14:00Z), backend də belə oxuyur.
+ */
+const at = (date: string, time: string) =>
+  new Date(`${date}T${time}:00.000Z`);
 
 async function main() {
   console.log("Seed başladı...");
@@ -233,6 +287,8 @@ async function main() {
   /* ---------- KATEQORİYALAR (parent + child) ---------- */
 
   const childCategoryMap = new Map<string, string>();
+  /* xidmət kateqoriyasının adı → onun əsas (parent) kateqoriyasının id-si */
+  const parentCategoryByChild = new Map<string, string>();
 
   for (const parent of CATEGORIES) {
     const existingParent = await prisma.category.findFirst({
@@ -257,21 +313,24 @@ async function main() {
         }));
 
       childCategoryMap.set(childName, childRecord.id);
+      parentCategoryByChild.set(childName, parentRecord.id);
     }
   }
 
   console.log(`${childCategoryMap.size} xidmət kateqoriyası yaradıldı/mövcuddur.`);
 
-  /* ---------- PROVIDER-LƏR (User + Business + Service) ---------- */
+  /* ---------- BİZNESLƏR (User + Business + Service + iş saatları) ---------- */
 
-  const defaultPassword = await bcrypt.hash("parol123", 10);
+  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 10);
+  const businessIdByName = new Map<string, string>();
 
   for (const provider of PROVIDERS) {
     const email = `${slugify(provider.name)}@azlink.demo`;
     const areaId = areaMap.get(provider.area);
+    const parentCategoryId = parentCategoryByChild.get(provider.service);
 
-    if (!areaId) {
-      console.warn(`Ərazi tapılmadı: ${provider.area} (${provider.name})`);
+    if (!areaId || !parentCategoryId) {
+      console.warn(`Ərazi/kateqoriya tapılmadı: ${provider.name}`);
       continue;
     }
 
@@ -283,35 +342,52 @@ async function main() {
         data: {
           name: provider.name,
           email,
-          password: defaultPassword,
+          password: passwordHash,
           role: Role.BUSINESS,
           phone: provider.phone,
         },
       }));
 
+    const description = `${provider.service} sahəsində peşəkar xidmət. ${provider.area} ərazisində.`;
+    const verified = provider.verified ?? true;
+
     const existingBusiness = await prisma.business.findUnique({
       where: { userId: user.id },
     });
 
-    const business =
-      existingBusiness ??
-      (await prisma.business.create({
-        data: {
-          userId: user.id,
-          name: provider.name,
-          areaId,
-          phone: provider.phone,
-        },
-      }));
+    /* Biznesin kateqoriyası: profil və "Yeni xidmət" bunu istifadə edir */
+    const business = existingBusiness
+      ? await prisma.business.update({
+          where: { id: existingBusiness.id },
+          data: {
+            description,
+            verified,
+            categories: { set: [{ id: parentCategoryId }] },
+          },
+        })
+      : await prisma.business.create({
+          data: {
+            userId: user.id,
+            name: provider.name,
+            areaId,
+            phone: provider.phone,
+            description,
+            verified,
+            categories: { connect: [{ id: parentCategoryId }] },
+          },
+        });
+
+    businessIdByName.set(provider.name, business.id);
+
+    /* Xidmətlər */
+    const serviceCategoryId = childCategoryMap.get(provider.service);
+
+    if (!serviceCategoryId) {
+      console.warn(`Kateqoriya tapılmadı: ${provider.service}`);
+      continue;
+    }
 
     for (const service of provider.services) {
-      const categoryId = childCategoryMap.get(provider.service);
-
-      if (!categoryId) {
-        console.warn(`Kateqoriya tapılmadı: ${provider.service} (${service.name})`);
-        continue;
-      }
-
       const existingService = await prisma.service.findFirst({
         where: { businessId: business.id, name: service.name },
       });
@@ -320,7 +396,7 @@ async function main() {
         await prisma.service.create({
           data: {
             businessId: business.id,
-            categoryId,
+            categoryId: serviceCategoryId,
             name: service.name,
             description: service.description,
             price: service.price,
@@ -329,10 +405,149 @@ async function main() {
         });
       }
     }
+
+    /* İş saatları: Bazar ertəsi–Şənbə 10:00–20:00, Bazar bağlı */
+    const hoursCount = await prisma.availability.count({
+      where: { businessId: business.id },
+    });
+
+    if (hoursCount === 0) {
+      for (const dayOfWeek of [1, 2, 3, 4, 5, 6]) {
+        await prisma.availability.create({
+          data: {
+            businessId: business.id,
+            dayOfWeek,
+            startTime: "10:00",
+            endTime: "20:00",
+          },
+        });
+      }
+    }
   }
 
-  console.log(`${PROVIDERS.length} provider (User + Business + Service) yaradıldı/mövcuddur.`);
+  console.log(`${PROVIDERS.length} biznes yaradıldı/mövcuddur.`);
+
+  /* ---------- DEMO MÜŞTƏRİLƏR ---------- */
+
+  const customerIdByKey = new Map<string, string>();
+
+  for (const customer of CUSTOMERS) {
+    const user = await prisma.user.upsert({
+      where: { email: customer.email },
+      update: {},
+      create: {
+        name: customer.name,
+        email: customer.email,
+        password: passwordHash,
+        role: Role.USER,
+      },
+    });
+
+    customerIdByKey.set(customer.key, user.id);
+  }
+
+  console.log(`${CUSTOMERS.length} demo müştəri yaradıldı/mövcuddur.`);
+
+  /* ---------- TAMAMLANMIŞ REZERVLƏR + RƏYLƏR ---------- */
+
+  for (const item of DEMO_REVIEWS) {
+    const businessId = businessIdByName.get(item.provider);
+    const customerId = customerIdByKey.get(item.customer);
+
+    if (!businessId || !customerId) {
+      console.warn(`Rəy üçün biznes/müştəri tapılmadı: ${item.provider}`);
+      continue;
+    }
+
+    const service = await prisma.service.findFirst({
+      where: { businessId, name: item.service },
+    });
+
+    if (!service) {
+      console.warn(`Rəy üçün xidmət tapılmadı: ${item.service}`);
+      continue;
+    }
+
+    const date = at(item.date, item.time);
+
+    const existingBooking = await prisma.booking.findFirst({
+      where: { customerId, businessId, serviceId: service.id, date },
+    });
+
+    const booking =
+      existingBooking ??
+      (await prisma.booking.create({
+        data: {
+          customerId,
+          businessId,
+          serviceId: service.id,
+          date,
+          status: BookingStatus.COMPLETED,
+        },
+      }));
+
+    await prisma.review.upsert({
+      where: { bookingId: booking.id },
+      update: {},
+      create: {
+        bookingId: booking.id,
+        userId: customerId,
+        businessId,
+        rating: item.rating,
+        comment: item.comment,
+      },
+    });
+  }
+
+  console.log(`${DEMO_REVIEWS.length} tamamlanmış rezerv və rəy yaradıldı/mövcuddur.`);
+
+  /* ---------- GÖZLƏYƏN REZERV (təqdimatda təsdiqləmək üçün) ---------- */
+
+  const aysel = businessIdByName.get("Nail by Aysel");
+  const nigar = customerIdByKey.get("nigar");
+
+  if (aysel && nigar) {
+    const manikur = await prisma.service.findFirst({
+      where: { businessId: aysel, name: "Manikür" },
+    });
+
+    const existingPending = await prisma.booking.findFirst({
+      where: {
+        businessId: aysel,
+        customerId: nigar,
+        status: BookingStatus.PENDING,
+      },
+    });
+
+    if (manikur && !existingPending) {
+      const next = new Date();
+      next.setUTCDate(next.getUTCDate() + 1);
+      next.setUTCHours(15, 0, 0, 0);
+
+      /* Bazar günü bağlıdır, ona görə Bazar ertəsinə keçirik */
+      if (next.getUTCDay() === 0) {
+        next.setUTCDate(next.getUTCDate() + 1);
+      }
+
+      await prisma.booking.create({
+        data: {
+          customerId: nigar,
+          businessId: aysel,
+          serviceId: manikur.id,
+          date: next,
+          status: BookingStatus.PENDING,
+        },
+      });
+
+      console.log("Nail by Aysel üçün 1 gözləyən rezerv yaradıldı.");
+    }
+  }
+
   console.log("Seed tamamlandı.");
+  console.log("");
+  console.log("Demo hesablar (parol hamısı üçün: parol123):");
+  console.log("  Müştəri: musteri@azlink.demo");
+  console.log("  Biznes:  nail-by-aysel@azlink.demo");
 }
 
 main()
