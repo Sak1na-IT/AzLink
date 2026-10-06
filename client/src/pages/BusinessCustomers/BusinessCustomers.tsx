@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -11,9 +11,10 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { getBookingsByProvider } from "../../services/bookingStorage";
-import { CURRENT_PROVIDER_ID } from "../../services/demoBusiness";
-import { getBusinessCustomers } from "../../utils/getBusinessCustomers";
+import {
+  getCustomers,
+  type CustomerSummary,
+} from "../../services/businessDashboardService";
 import "./BusinessCustomers.css";
 
 const statusLabels: Record<string, string> = {
@@ -33,11 +34,18 @@ const formatDate = (date: string) => {
 function BusinessCustomers() {
   const navigate = useNavigate();
 
-  const [customers] = useState(() =>
-    getBusinessCustomers(getBookingsByProvider(CURRENT_PROVIDER_ID))
-  );
+  const [customers, setCustomers] = useState<CustomerSummary[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    getCustomers()
+      .then(setCustomers)
+      .catch(() => setError("Müştəriləri yükləmək mümkün olmadı."))
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const filteredCustomers = useMemo(() => {
     const trimmed = query.trim().toLowerCase();
@@ -52,11 +60,19 @@ function BusinessCustomers() {
   }, [customers, query]);
 
   const topCustomers = useMemo(() => {
-  return [...customers]
-    .sort((a, b) => b.bookingCount - a.bookingCount)
-    .slice(0, 3)
-    .filter((customer) => customer.bookingCount > 3);
-}, [customers]);
+    return [...customers]
+      .sort((a, b) => b.bookingCount - a.bookingCount)
+      .slice(0, 3)
+      .filter((customer) => customer.bookingCount > 3);
+  }, [customers]);
+
+  if (isLoading) {
+    return (
+      <main className="business-customers">
+        <p className="business-customers__loading">Yüklənir...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="business-customers">
@@ -81,6 +97,8 @@ function BusinessCustomers() {
           </p>
         </div>
       </section>
+
+      {error && <p className="business-customers__loading">{error}</p>}
 
       <div className="business-customers__search">
         <Search size={18} strokeWidth={1.8} />
@@ -226,4 +244,4 @@ function BusinessCustomers() {
   );
 }
 
-export default BusinessCustomers;
+export default BusinessCustomers; 

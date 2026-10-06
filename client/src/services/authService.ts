@@ -56,3 +56,26 @@ export const logout = async () => {
 };
 
 export const getMe = () => apiRequest<AuthUser>("/auth/me");
+
+export const updateProfile = async (input: {
+  name?: string;
+  phone?: string;
+}): Promise<AuthUser> => {
+  const result = await apiRequest<AuthUser>("/auth/me", {
+    method: "PATCH",
+    body: input,
+  });
+
+  setStoredUser(result);
+
+  return result;
+};
+
+export const changePassword = (input: {
+  currentPassword: string;
+  newPassword: string;
+}) =>
+  apiRequest<{ message: string }>("/auth/password", {
+    method: "PATCH",
+    body: input,
+  });

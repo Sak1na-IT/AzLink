@@ -10,6 +10,12 @@ import {
   User,
 } from "lucide-react";
 
+import ChangePasswordModal from "../../components/account/ChangePasswordModal";
+import {
+  getErrorText,
+  readAccount,
+  updateMyProfile,
+} from "../../services/accountService";
 import { getBookings, type Booking } from "../../services/bookingsService";
 import { getSavedProviders } from "../../services/savedService";
 import { getMyReviewCount } from "../../services/activityService";
@@ -24,6 +30,8 @@ const STATUS_LABEL: Record<string, string> = {
   COMPLETED: "Tamamlanıb",
 };
 
+const PHONE_PATTERN = /^\+?[0-9\s()-]{7,20}$/;
+
 function Profile() {
   const navigate = useNavigate();
   const currentUserId = getStoredUser()?.id;
@@ -33,6 +41,13 @@ function Profile() {
   const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
+  const [phone, setPhone] = useState(readAccount(user)?.phone ?? "");
+  const [savedPhone, setSavedPhone] = useState(readAccount(user)?.phone ?? "");
+
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [savedCount, setSavedCount] = useState(0);
@@ -42,9 +57,16 @@ function Profile() {
   useEffect(() => {
     getMe()
       .then((freshUser) => {
+        const info = readAccount(freshUser);
+
         setUser(freshUser);
         setName(freshUser.name);
         setEmail(freshUser.email);
+
+        if (info?.phone) {
+          setPhone(info.phone);
+          setSavedPhone(info.phone);
+        }
       })
       .catch(() => {
         /* saxlanmış istifadəçi ilə davam edirik */
@@ -107,8 +129,70 @@ function Profile() {
     [bookings]
   );
 
-  const handleSave = () => {
+  /* ========================================================
+     REDAKTƏ
+     ======================================================== */
+
+  const openEdit = () => {
+    setSaveError("");
+    setNotice("");
+    setIsEditing(true);
+  };
+
+  const cancelEdit = () => {
+    setName(user?.name ?? "");
+    setPhone(savedPhone);
+    setSaveError("");
     setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    const trimmedName = name.trim();
+    const trimmedPhone = phone.trim();
+
+    if (trimmedName.length < 2 || trimmedName.length > 60) {
+      setSaveError("Ad 2-60 simvol arasında olmalıdır.");
+      return;
+    }
+
+    if (trimmedPhone && !PHONE_PATTERN.test(trimmedPhone)) {
+      setSaveError("Telefon nömrəsini düzgün yazın (məs. +994 50 123 45 67).");
+      return;
+    }
+
+    if (!trimmedPhone && savedPhone) {
+      setSaveError("Telefon nömrəsini boş qoymaq olmaz.");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setSaveError("");
+
+      const updated = await updateMyProfile({
+        name: trimmedName,
+        ...(trimmedPhone ? { phone: trimmedPhone } : {}),
+      });
+
+      const info = readAccount(updated);
+      const nextName = info?.name || trimmedName;
+      const nextPhone = info?.phone || trimmedPhone;
+
+      setName(nextName);
+      setPhone(nextPhone);
+      setSavedPhone(nextPhone);
+      setUser((current) => (current ? { ...current, name: nextName } : current));
+
+      setIsEditing(false);
+      setNotice("Dəyişikliklər yadda saxlanıldı.");
+
+      /* yadda saxlanmış istifadəçi məlumatını təzələməyə çalışırıq */
+      getMe().catch(() => {});
+    } catch (caught) {
+      setSaveError(getErrorText(caught, "Yadda saxlamaq mümkün olmadı."));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -147,37 +231,51 @@ function Profile() {
                   Ad və soyad
                   <input
                     type="text"
+                    maxLength={60}
                     value={name}
                     onChange={(event) => setName(event.target.value)}
                   />
                 </label>
 
                 <label>
-                  Email
+                  Telefon
                   <input
-                    type="email"
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
+                    type="tel"
+                    placeholder="+994 50 123 45 67"
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
                   />
                 </label>
+
+                <label>
+                  Email (hələ dəyişdirmək olmur)
+                  <input type="email" value={email} disabled readOnly />
+                </label>
+
+                {saveError && (
+                  <p
+                    className="profile-empty-text"
+                    style={{ color: "var(--color-danger)" }}
+                  >
+                    {saveError}
+                  </p>
+                )}
 
                 <div className="profile-actions">
                   <button
                     type="button"
                     className="profile-primary-button"
                     onClick={handleSave}
+                    disabled={isSaving}
                   >
-                    Yadda saxla
+                    {isSaving ? "Saxlanılır..." : "Yadda saxla"}
                   </button>
 
                   <button
                     type="button"
                     className="profile-secondary-button"
-                    onClick={() => {
-                      setName(user?.name ?? "");
-                      setEmail(user?.email ?? "");
-                      setIsEditing(false);
-                    }}
+                    onClick={cancelEdit}
+                    disabled={isSaving}
                   >
                     Ləğv et
                   </button>
@@ -199,10 +297,19 @@ function Profile() {
                   <span>{email}</span>
                 </div>
 
+                {notice && (
+                  <p
+                    className="profile-empty-text"
+                    style={{ color: "var(--color-primary)" }}
+                  >
+                    {notice}
+                  </p>
+                )}
+
                 <button
                   type="button"
                   className="profile-secondary-button"
-                  onClick={() => setIsEditing(true)}
+                  onClick={openEdit}
                 >
                   <Pencil size={16} strokeWidth={1.8} />
                   Profili redaktə et
@@ -322,7 +429,14 @@ function Profile() {
           </div>
 
           <div className="profile-menu">
-            <button type="button" className="profile-menu__item">
+            <button
+              type="button"
+              className="profile-menu__item"
+              onClick={() => {
+                openEdit();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
               <div className="profile-menu__icon">
                 <User size={19} strokeWidth={1.8} />
               </div>
@@ -344,7 +458,11 @@ function Profile() {
               </div>
             </button>
 
-            <button type="button" className="profile-menu__item">
+            <button
+              type="button"
+              className="profile-menu__item"
+              onClick={() => setIsPasswordOpen(true)}
+            >
               <div className="profile-menu__icon">
                 <Shield size={19} strokeWidth={1.8} />
               </div>
@@ -357,6 +475,10 @@ function Profile() {
           </div>
         </section>
       </div>
+
+      {isPasswordOpen && (
+        <ChangePasswordModal onClose={() => setIsPasswordOpen(false)} />
+      )}
     </div>
   );
 }

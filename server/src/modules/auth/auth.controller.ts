@@ -137,3 +137,81 @@ export const meHandler = async (req: AuthenticatedRequest, res: Response) => {
     res.status(500).json({ message: "Verilənlər bazası xətası" });
   }
 };
+
+export const updateProfileHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    const { name, phone } = req.body ?? {};
+
+    if (name !== undefined && (typeof name !== "string" || !name.trim())) {
+      return res.status(400).json({ message: "Ad boş ola bilməz" });
+    }
+
+    if (phone !== undefined && typeof phone !== "string") {
+      return res.status(400).json({ message: "Telefon mətn olmalıdır" });
+    }
+
+    const user = await authService.updateProfile(req.user.userId, {
+      name: typeof name === "string" ? name.trim() : undefined,
+      phone: typeof phone === "string" ? phone.trim() : undefined,
+    });
+
+    res.json(toPublicUser(user));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Verilənlər bazası xətası" });
+  }
+};
+
+export const changePasswordHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    const { currentPassword, newPassword } = req.body ?? {};
+
+    if (
+      typeof currentPassword !== "string" ||
+      typeof newPassword !== "string" ||
+      !currentPassword ||
+      !newPassword
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Cari və yeni şifrə vacibdir" });
+    }
+
+    if (newPassword.length < 6) {
+      return res
+        .status(400)
+        .json({ message: "Yeni şifrə ən azı 6 simvol olmalıdır" });
+    }
+
+    await authService.changePassword(req.user.userId, {
+      currentPassword,
+      newPassword,
+    });
+
+    res.json({ message: "Şifrə dəyişdirildi" });
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message === "INVALID_CURRENT_PASSWORD"
+    ) {
+      return res.status(401).json({ message: "Cari şifrə yanlışdır" });
+    }
+
+    console.error(error);
+    res.status(500).json({ message: "Verilənlər bazası xətası" });
+  }
+};

@@ -1,42 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Lock, LogOut, Mail, Pencil, UserRound } from "lucide-react";
+import { Bell, Lock, LogOut, Mail, UserRound } from "lucide-react";
 
 import "./BusinessAccountProfile.css";
+import ChangePasswordModal from "../../components/account/ChangePasswordModal";
 import { getStoredUser } from "../../services/api";
+import {
+  getErrorText,
+  readAccount,
+  updateMyProfile,
+  type AccountInfo,
+} from "../../services/accountService";
 import { getMe, logout } from "../../services/authService";
-
-interface AccountInfo {
-  name: string;
-  email: string;
-  phone: string;
-}
-
-const readString = (value: unknown) =>
-  typeof value === "string" ? value : "";
-
-/*
- * /auth/me cavabı { user: {...} } və ya birbaşa {...} ola bilər.
- * İkisini də qəbul edirik.
- */
-const toAccountInfo = (value: unknown): AccountInfo | null => {
-  if (!value || typeof value !== "object") {
-    return null;
-  }
-
-  const record = value as Record<string, unknown>;
-
-  const source =
-    record.user && typeof record.user === "object"
-      ? (record.user as Record<string, unknown>)
-      : record;
-
-  return {
-    name: readString(source.name),
-    email: readString(source.email),
-    phone: readString(source.phone),
-  };
-};
 
 const notificationRows = [
   "Rezervasiya bildirişləri",
@@ -47,20 +22,29 @@ const notificationRows = [
 
 const SOON = "Tezliklə əlavə olunacaq";
 
+const PHONE_PATTERN = /^\+?[0-9\s()-]{7,20}$/;
+
 function BusinessAccountProfile() {
   const navigate = useNavigate();
+  const personalRef = useRef<HTMLElement>(null);
 
   const [account, setAccount] = useState<AccountInfo>(
-    () =>
-      toAccountInfo(getStoredUser()) ?? { name: "", email: "", phone: "" }
+    () => readAccount(getStoredUser()) ?? { name: "", email: "", phone: "" }
   );
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState({ name: "", phone: "" });
+  const [isSaving, setIsSaving] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     getMe()
       .then((result) => {
-        const info = toAccountInfo(result);
+        const info = readAccount(result);
 
         if (cancelled || !info) {
           return;
@@ -80,6 +64,75 @@ function BusinessAccountProfile() {
       cancelled = true;
     };
   }, []);
+
+  const openEdit = () => {
+    setDraft({ name: account.name, phone: account.phone });
+    setFormError("");
+    setNotice("");
+    setIsEditing(true);
+
+    window.setTimeout(() => {
+      personalRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 0);
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setFormError("");
+  };
+
+  const handleSave = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const name = draft.name.trim();
+    const phone = draft.phone.trim();
+
+    if (name.length < 2 || name.length > 60) {
+      setFormError("Ad 2-60 simvol arasında olmalıdır.");
+      return;
+    }
+
+    if (phone && !PHONE_PATTERN.test(phone)) {
+      setFormError("Telefon nömrəsini düzgün yazın (məs. +994 50 123 45 67).");
+      return;
+    }
+
+    if (!phone && account.phone) {
+      setFormError("Telefon nömrəsini boş qoymaq olmaz.");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      setFormError("");
+
+      const updated = await updateMyProfile({
+        name,
+        ...(phone ? { phone } : {}),
+      });
+
+      const info = readAccount(updated);
+
+      setAccount((current) => ({
+        name: info?.name || name,
+        email: info?.email || current.email,
+        phone: info?.phone || phone,
+      }));
+
+      setIsEditing(false);
+      setNotice("Dəyişikliklər yadda saxlanıldı.");
+
+      /* yadda saxlanmış istifadəçi məlumatını təzələməyə çalışırıq */
+      getMe().catch(() => {});
+    } catch (caught) {
+      setFormError(getErrorText(caught, "Yadda saxlamaq mümkün olmadı."));
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -103,58 +156,120 @@ function BusinessAccountProfile() {
         </div>
 
         <div className="account-profile__identity-info">
-          <div className="account-profile__identity-name-row">
-            <h2>{account.name || "—"}</h2>
-            <em className="account-profile__role">Biznes sahibi</em>
-          </div>
-
+          <h2>{account.name || "—"}</h2>
           <span>{account.email}</span>
-
-          <button
-            type="button"
-            className="account-profile__edit-button"
-            disabled
-            title={SOON}
-          >
-            <Pencil size={15} strokeWidth={1.8} />
-            Profili redaktə et
-          </button>
+          <em className="account-profile__role">Biznes sahibi</em>
         </div>
 
         <button
           type="button"
-          className="account-profile__logout-icon"
-          onClick={handleLogout}
-          title="Çıxış"
-          aria-label="Çıxış"
+          className="account-profile__button"
+          onClick={openEdit}
         >
-          <LogOut size={18} strokeWidth={1.8} />
+          Redaktə et
         </button>
       </section>
 
       {/* ===== ŞƏXSİ MƏLUMATLAR ===== */}
-      <section className="account-profile__card">
+      <section className="account-profile__card" ref={personalRef}>
         <div className="account-profile__card-header">
           <h2>Şəxsi məlumatlar</h2>
           <p>Hesab məlumatlarınızı yeniləyin.</p>
         </div>
 
-        <dl className="account-profile__rows">
-          <div className="account-profile__row">
-            <dt>Ad və soyad</dt>
-            <dd>{account.name || "—"}</dd>
-          </div>
+        {notice && <p className="account-profile__notice">{notice}</p>}
 
-          <div className="account-profile__row">
-            <dt>Email</dt>
-            <dd>{account.email || "—"}</dd>
-          </div>
+        {isEditing ? (
+          <form className="account-profile__form" onSubmit={handleSave}>
+            <label className="account-profile__field">
+              <span>Ad və soyad</span>
+              <input
+                type="text"
+                maxLength={60}
+                value={draft.name}
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
+              />
+            </label>
 
-          <div className="account-profile__row">
-            <dt>Telefon</dt>
-            <dd>{account.phone || "Əlavə edilməyib"}</dd>
-          </div>
-        </dl>
+            <label className="account-profile__field">
+              <span>Email</span>
+              <input type="email" value={account.email} disabled readOnly />
+              <small className="account-profile__hint">
+                Emaili dəyişmək hələ mümkün deyil.
+              </small>
+            </label>
+
+            <label className="account-profile__field">
+              <span>Telefon</span>
+              <input
+                type="tel"
+                placeholder="+994 50 123 45 67"
+                value={draft.phone}
+                onChange={(event) =>
+                  setDraft((current) => ({
+                    ...current,
+                    phone: event.target.value,
+                  }))
+                }
+              />
+            </label>
+
+            {formError && <p className="account-profile__error">{formError}</p>}
+
+            <div className="account-profile__form-actions">
+              <button
+                type="button"
+                className="account-profile__button"
+                onClick={cancelEdit}
+                disabled={isSaving}
+              >
+                Ləğv et
+              </button>
+
+              <button
+                type="submit"
+                className="account-profile__button account-profile__button--primary"
+                disabled={isSaving}
+              >
+                {isSaving ? "Saxlanılır..." : "Yadda saxla"}
+              </button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <dl className="account-profile__rows">
+              <div className="account-profile__row">
+                <dt>Ad və soyad</dt>
+                <dd>{account.name || "—"}</dd>
+              </div>
+
+              <div className="account-profile__row">
+                <dt>Email</dt>
+                <dd>{account.email || "—"}</dd>
+              </div>
+
+              <div className="account-profile__row">
+                <dt>Telefon</dt>
+                <dd>{account.phone || "Əlavə edilməyib"}</dd>
+              </div>
+            </dl>
+
+            <div className="account-profile__actions">
+              <button
+                type="button"
+                className="account-profile__button"
+                onClick={openEdit}
+              >
+                Redaktə et
+              </button>
+            </div>
+          </>
+        )}
       </section>
 
       {/* ===== TƏHLÜKƏSİZLİK ===== */}
@@ -173,8 +288,7 @@ function BusinessAccountProfile() {
             <button
               type="button"
               className="account-profile__button"
-              disabled
-              title={SOON}
+              onClick={() => setIsPasswordOpen(true)}
             >
               Şifrəni dəyiş
             </button>
@@ -230,7 +344,22 @@ function BusinessAccountProfile() {
             <dd>Azərbaycan dili</dd>
           </div>
         </dl>
+
+        <div className="account-profile__actions">
+          <button
+            type="button"
+            className="account-profile__logout"
+            onClick={handleLogout}
+          >
+            <LogOut size={17} strokeWidth={1.9} />
+            Hesabdan çıx
+          </button>
+        </div>
       </section>
+
+      {isPasswordOpen && (
+        <ChangePasswordModal onClose={() => setIsPasswordOpen(false)} />
+      )}
     </main>
   );
 }

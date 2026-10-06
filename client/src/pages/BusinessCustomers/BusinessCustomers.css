@@ -217,3 +217,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+.business-customers__loading {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}

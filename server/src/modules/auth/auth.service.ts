@@ -102,3 +102,46 @@ export const getUserById = async (userId: string) => {
     where: { id: userId },
   });
 };
+
+export const updateProfile = async (
+  userId: string,
+  input: { name?: string; phone?: string }
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  return prisma.user.update({
+    where: { id: userId },
+    data: {
+      ...(input.name !== undefined && { name: input.name }),
+      ...(input.phone !== undefined && { phone: input.phone }),
+    },
+  });
+};
+
+export const changePassword = async (
+  userId: string,
+  input: { currentPassword: string; newPassword: string }
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  const matches = await bcrypt.compare(input.currentPassword, user.password);
+
+  if (!matches) {
+    throw new Error("INVALID_CURRENT_PASSWORD");
+  }
+
+  const hashedPassword = await bcrypt.hash(input.newPassword, SALT_ROUNDS);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword },
+  });
+};
