@@ -412,11 +412,14 @@ function Provider() {
 
           <section className="provider-section">
             <div className="provider-section__header">
-              <div>
+              <div className="provider-reviews-heading">
                 <h2>Rəylər</h2>
-                <span className="provider-section__subtitle">
-                  {displayRating.toFixed(1)} / 5 · {reviewLabel}
-                </span>
+
+                <div className="provider-reviews-badge">
+                  <Star size={14} fill="currentColor" strokeWidth={0} />
+                  <strong>{displayRating.toFixed(1)}</strong>
+                  <span>· {reviewLabel}</span>
+                </div>
               </div>
 
               {reviewableBooking && (
@@ -431,43 +434,50 @@ function Provider() {
               )}
             </div>
 
-            <div className="provider-review-summary">
-              <div className="provider-review-summary__score">
-                <strong>{displayRating.toFixed(1)}</strong>
-
-                <div className="provider-stars">
-                  {[1, 2, 3, 4, 5].map((starNumber) => (
-                    <Star
-                      key={starNumber}
-                      size={17}
-                      fill="currentColor"
-                      strokeWidth={1.8}
-                    />
-                  ))}
-                </div>
-
-                <span>{reviewLabel}</span>
-              </div>
-            </div>
-
             {reviews.length === 0 ? (
               <p className="provider-muted-text">
                 Hələ rəy yazılmayıb. İlk rəyi siz yaza bilərsiniz.
               </p>
             ) : (
-              <div className="provider-services-list">
-                {reviews.map((review) => (
-                  <div className="provider-service-item" key={review.id}>
-                    <div>
-                      <strong>{review.customerName}</strong>
-                      <span>{review.comment || "Rəy mətni yazılmayıb."}</span>
-                    </div>
+              <div className="provider-review-list">
+                {reviews.map((review) => {
+                  const reviewInitials = review.customerName
+                    .split(" ")
+                    .map((word) => word[0])
+                    .slice(0, 2)
+                    .join("");
 
-                    <strong className="provider-service-price">
-                      {review.rating} ★
-                    </strong>
-                  </div>
-                ))}
+                  return (
+                    <div className="provider-review-card" key={review.id}>
+                      <div className="provider-review-card__avatar">
+                        {reviewInitials}
+                      </div>
+
+                      <div className="provider-review-card__body">
+                        <div className="provider-review-card__top">
+                          <strong>{review.customerName}</strong>
+
+                          <div className="provider-review-card__stars">
+                            {[1, 2, 3, 4, 5].map((value) => (
+                              <Star
+                                key={value}
+                                size={13}
+                                fill={
+                                  value <= review.rating
+                                    ? "currentColor"
+                                    : "none"
+                                }
+                                strokeWidth={1.8}
+                              />
+                            ))}
+                          </div>
+                        </div>
+
+                        <p>{review.comment || "Rəy mətni yazılmayıb."}</p>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </section>

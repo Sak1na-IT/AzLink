@@ -1,18 +1,17 @@
-import { useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, ImagePlus, Images, Trash2, Upload } from "lucide-react";
 
 import {
+  getPortfolio,
   addPortfolioImage,
   deletePortfolioImage,
-  getPortfolio,
-} from "../../services/portfolioStorage";
-import { CURRENT_PROVIDER_ID } from "../../services/demoBusiness";
-import type { PortfolioImage } from "../../types/portfolio";
+  type PortfolioImage,
+} from "../../services/businessPortfolioService";
 import "./BusinessPortfolio.css";
 
-/* Böyük şəkillər localStorage-ı tez doldurur, ona görə həcm limiti */
-const MAX_FILE_SIZE_MB = 2;
+/* Backend ~10MB-a qədər base64 şəkli qəbul edir, bir az ehtiyatla 5MB saxlayırıq */
+const MAX_FILE_SIZE_MB = 5;
 
 const readFileAsDataUrl = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -28,21 +27,30 @@ function BusinessPortfolio() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [images, setImages] = useState<PortfolioImage[]>(() =>
-    getPortfolio(CURRENT_PROVIDER_ID)
-  );
+  const [images, setImages] = useState<PortfolioImage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [caption, setCaption] = useState("");
   const [error, setError] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  const reload = () => {
-    setImages(getPortfolio(CURRENT_PROVIDER_ID));
+  const reload = async () => {
+    try {
+      const result = await getPortfolio();
+      setImages(result);
+    } catch {
+      setError("Portfolio yüklənmədi. Yenidən cəhd edin.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleFileChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  useEffect(() => {
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     event.target.value = "";
@@ -67,28 +75,21 @@ function BusinessPortfolio() {
     try {
       const dataUrl = await readFileAsDataUrl(file);
 
-      const success = addPortfolioImage(
-        CURRENT_PROVIDER_ID,
+      await addPortfolioImage({
         dataUrl,
-        caption.trim()
-      );
+        caption: caption.trim(),
+      });
 
-      if (!success) {
-        setError(
-          "Şəkil saxlanmadı — brauzerin yaddaşı dolu ola bilər. Bəzi şəkilləri silib yenidən sınayın."
-        );
-      } else {
-        setCaption("");
-        reload();
-      }
+      setCaption("");
+      await reload();
     } catch {
-      setError("Şəkli oxumaq mümkün olmadı. Yenidən sınayın.");
+      setError("Şəkli yükləmək mümkün olmadı. Yenidən sınayın.");
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleDelete = (image: PortfolioImage) => {
+  const handleDelete = async (image: PortfolioImage) => {
     if (
       !window.confirm(
         "Bu şəkli silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz."
@@ -97,9 +98,21 @@ function BusinessPortfolio() {
       return;
     }
 
-    deletePortfolioImage(CURRENT_PROVIDER_ID, image.id);
-    reload();
+    try {
+      await deletePortfolioImage(image.id);
+      await reload();
+    } catch {
+      setError("Şəkli silmək mümkün olmadı.");
+    }
   };
+
+  if (isLoading) {
+    return (
+      <main className="business-portfolio">
+        <p className="business-portfolio__hint">Yüklənir...</p>
+      </main>
+    );
+  }
 
   return (
     <main className="business-portfolio">
@@ -155,8 +168,8 @@ function BusinessPortfolio() {
         {error && <small className="business-portfolio__error">{error}</small>}
 
         <small className="business-portfolio__hint">
-          Ən çox {MAX_FILE_SIZE_MB}MB. Şəkillər bu brauzerdə saxlanılır
-          (demo rejimi).
+          Ən çox {MAX_FILE_SIZE_MB}MB. Şəkillər serverdə saxlanılır və
+          profilinizdə hər kəsə görünür.
         </small>
       </section>
 

@@ -97,7 +97,6 @@ export const toProviderCard = (business: BusinessCard) => ({
     "",
   ownerId: business.userId,
   categories: getCategoryNames(business),
-  image: business.portfolio[0]?.imageUrl,
   services: business.services.map((service) => ({
     id: service.id,
     name: service.name,

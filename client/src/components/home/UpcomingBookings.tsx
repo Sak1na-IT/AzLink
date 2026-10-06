@@ -1,6 +1,6 @@
 import { CalendarDays, ChevronRight, Clock } from "lucide-react";
 
-import type { Booking } from "../../types/booking";
+import type { Booking } from "../../services/bookingsService";
 
 interface UpcomingBookingsProps {
   bookings: Booking[];

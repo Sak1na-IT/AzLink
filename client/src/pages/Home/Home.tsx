@@ -1,31 +1,81 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import HomeHero from "../../components/home/HomeHero";
 import UpcomingBookings from "../../components/home/UpcomingBookings";
 import PopularNearby from "../../components/home/PopularNearby";
 import TodayOverview from "../../components/home/TodayOverview";
-import RecentlyViewed from "../../components/home/RecentlyViewed";
 import HowItWorks from "../../components/home/HowItWorks";
 import HelpfulInfo from "../../components/home/HelpfulInfo";
 import AreaSelector from "../../components/AreaSelector/AreaSelector";
-import { providers } from "../../data/providers";
-import { bookings } from "../../data/bookings";
+import { getStoredUser } from "../../services/api";
+import { getBookings, type Booking } from "../../services/bookingsService";
+import { getProviders } from "../../services/providersService";
+import type { Provider } from "../../types/provider";
 import type { Area } from "../../types/area";
 import { matchesArea } from "../../utils/areaMatch";
 import "./Home.css";
 
-
 function Home() {
   const navigate = useNavigate();
+  const currentUserId = getStoredUser()?.id;
 
   /* ========================================================
      STATE
      ======================================================== */
 
   const [selectedAreas, setSelectedAreas] = useState<Area[]>([]);
-
   const [isAreaSelectorOpen, setIsAreaSelectorOpen] = useState(false);
+
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [myBookings, setMyBookings] = useState<Booking[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  /* ========================================================
+     DATA
+     ======================================================== */
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const result = await getProviders();
+
+        if (!cancelled) {
+          setProviders(result);
+        }
+      } catch {
+        if (!cancelled) {
+          setLoadError("Bizneslər yüklənmədi. Bir az sonra yenidən cəhd edin.");
+        }
+      }
+
+      try {
+        const result = await getBookings();
+
+        if (!cancelled) {
+          /* yalnız sizin müştəri kimi etdiyiniz rezervlər */
+          setMyBookings(
+            result.filter((booking) => booking.customerId === currentUserId)
+          );
+        }
+      } catch {
+        /* rezervlər yüklənməsə də səhifə işləməyə davam edir */
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUserId]);
 
   /* ========================================================
      AREA LABEL
@@ -49,29 +99,28 @@ function Home() {
 
   /* ========================================================
      POPULAR PROVIDERS
+     Reytinqə, sonra rəy sayına görə sıralanır.
      ======================================================== */
 
   const filteredProviders = useMemo(() => {
-    if (selectedAreas.length === 0) {
-      return providers.slice(0, 4);
+    const sorted = [...providers].sort(
+      (a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount
+    );
+
+    const hasConcreteAreas =
+      selectedAreas.length > 0 &&
+      !selectedAreas.some((area) => area.id === "all-baku");
+
+    if (!hasConcreteAreas) {
+      return sorted.slice(0, 4);
     }
 
-    if (selectedAreas.some((area) => area.id === "all-baku")) {
-      return providers.slice(0, 4);
-    }
-
-    return providers
+    return sorted
       .filter((provider) =>
         selectedAreas.some((area) => matchesArea(provider.area, area.name))
       )
       .slice(0, 4);
-  }, [selectedAreas]);
-
-  /* ========================================================
-     RECENTLY VIEWED (mock — sonra localStorage ilə əvəz olunacaq)
-     ======================================================== */
-
-  const recentProviders = useMemo(() => providers.slice(3, 7), []);
+  }, [providers, selectedAreas]);
 
   /* ========================================================
      SEARCH
@@ -110,19 +159,16 @@ function Home() {
   };
 
   /* ========================================================
-     PROVIDER
+     PROVIDER / BOOKING
      ======================================================== */
 
   const handleProviderClick = (providerId: string) => {
     navigate(`/provider/${providerId}`);
   };
 
-  /* ========================================================
-     BOOKING
-     ======================================================== */
-
-  const handleBookingClick = (bookingId: string) => {
-    navigate(`/bookings/${bookingId}`);
+  /* Tək rezerv səhifəsi yoxdur: siyahıya aparırıq */
+  const handleBookingClick = () => {
+    navigate("/bookings");
   };
 
   /* ========================================================
@@ -133,8 +179,8 @@ function Home() {
     (provider) => provider.verified
   ).length;
 
-  const highlyReviewed = providers.filter(
-    (provider) => provider.reviewCount >= 100
+  const highlyRated = providers.filter(
+    (provider) => provider.reviewCount > 0 && provider.rating >= 4.5
   ).length;
 
   /* ========================================================
@@ -150,31 +196,37 @@ function Home() {
           onSearch={handleSearch}
         />
 
-        <UpcomingBookings
-          bookings={bookings}
-          onBookingClick={handleBookingClick}
-          onSeeAllClick={() => navigate("/bookings")}
-        />
+        {loadError ? (
+          <section className="home-section">
+            <p>{loadError}</p>
+          </section>
+        ) : (
+          !isLoading && (
+            <>
+              <UpcomingBookings
+                bookings={myBookings}
+                onBookingClick={handleBookingClick}
+                onSeeAllClick={() => navigate("/bookings")}
+              />
 
-        <PopularNearby
-          providers={filteredProviders}
-          onProviderClick={handleProviderClick}
-        />
+              <PopularNearby
+                providers={filteredProviders}
+                onProviderClick={handleProviderClick}
+                onSeeAllClick={() => navigate("/search")}
+              />
 
-        <TodayOverview
-          verifiedProfiles={verifiedProfiles}
-          availableToday={providers.length}
-          highlyReviewed={highlyReviewed}
-        />
+              <TodayOverview
+                verifiedProfiles={verifiedProfiles}
+                totalProfiles={providers.length}
+                highlyRated={highlyRated}
+              />
 
-        <RecentlyViewed
-          providers={recentProviders}
-          onProviderClick={handleProviderClick}
-        />
+              <HowItWorks />
 
-        <HowItWorks />
-
-        <HelpfulInfo />
+              <HelpfulInfo />
+            </>
+          )
+        )}
       </main>
 
       {isAreaSelectorOpen && (

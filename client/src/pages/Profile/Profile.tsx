@@ -10,10 +10,9 @@ import {
   User,
 } from "lucide-react";
 
-import { getBookingsByCustomer } from "../../services/bookingStorage";
-import { hasReviewed } from "../../services/reviewStorage";
-import { getSavedProviderIds } from "../../services/favoriteStorage";
-import { CURRENT_CUSTOMER } from "../../services/demoCustomer";
+import { getBookings, type Booking } from "../../services/bookingsService";
+import { getSavedProviders } from "../../services/savedService";
+import { getMyReviewCount } from "../../services/activityService";
 import { getMe, logout } from "../../services/authService";
 import { getStoredUser, type AuthUser } from "../../services/api";
 import "./Profile.css";
@@ -27,12 +26,18 @@ const STATUS_LABEL: Record<string, string> = {
 
 function Profile() {
   const navigate = useNavigate();
+  const currentUserId = getStoredUser()?.id;
 
   const [isEditing, setIsEditing] = useState(false);
 
   const [user, setUser] = useState<AuthUser | null>(() => getStoredUser());
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
+
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [savedCount, setSavedCount] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     getMe()
@@ -47,27 +52,50 @@ function Profile() {
   }, []);
 
   /* ========================================================
-     FƏALİYYƏT
+     FƏALİYYƏT (real API)
      ======================================================== */
 
-  const bookings = useMemo(
-    () => getBookingsByCustomer(CURRENT_CUSTOMER.id),
-    []
-  );
+  useEffect(() => {
+    let cancelled = false;
 
-  const savedCount = useMemo(
-    () => getSavedProviderIds().length,
-    []
-  );
+    const load = async () => {
+      const [bookingsResult, savedResult, reviewsResult] =
+        await Promise.allSettled([
+          getBookings(),
+          getSavedProviders(),
+          getMyReviewCount(),
+        ]);
 
-  const reviewsWrittenCount = useMemo(
-    () =>
-      bookings.filter(
-        (booking) =>
-          booking.status === "COMPLETED" && hasReviewed(booking.id)
-      ).length,
-    [bookings]
-  );
+      if (cancelled) {
+        return;
+      }
+
+      if (bookingsResult.status === "fulfilled") {
+        /* yalnız sizin müştəri kimi etdiyiniz rezervlər */
+        setBookings(
+          bookingsResult.value.filter(
+            (booking) => booking.customerId === currentUserId
+          )
+        );
+      }
+
+      if (savedResult.status === "fulfilled") {
+        setSavedCount(savedResult.value.length);
+      }
+
+      if (reviewsResult.status === "fulfilled") {
+        setReviewCount(reviewsResult.value);
+      }
+
+      setIsLoaded(true);
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentUserId]);
 
   const recentBookings = useMemo(
     () =>
@@ -87,6 +115,8 @@ function Profile() {
     await logout();
     navigate("/account-type");
   };
+
+  const showCount = (value: number) => (isLoaded ? value : "–");
 
   return (
     <div className="profile-page">
@@ -209,7 +239,7 @@ function Profile() {
               className="profile-stat"
               onClick={() => navigate("/bookings")}
             >
-              <strong>{bookings.length}</strong>
+              <strong>{showCount(bookings.length)}</strong>
               <span>Rezerv</span>
             </button>
 
@@ -218,12 +248,12 @@ function Profile() {
               className="profile-stat"
               onClick={() => navigate("/saved")}
             >
-              <strong>{savedCount}</strong>
+              <strong>{showCount(savedCount)}</strong>
               <span>Seçilmiş</span>
             </button>
 
             <div className="profile-stat profile-stat--static">
-              <strong>{reviewsWrittenCount}</strong>
+              <strong>{showCount(reviewCount)}</strong>
               <span>Rəy</span>
             </div>
           </div>

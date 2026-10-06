@@ -10,11 +10,13 @@ import { getCategoryVisual } from "../../utils/categoryVisual";
 interface PopularNearbyProps {
   providers: Provider[];
   onProviderClick: (providerId: string) => void;
+  onSeeAllClick?: () => void;
 }
 
 function PopularNearby({
   providers,
   onProviderClick,
+  onSeeAllClick,
 }: PopularNearbyProps) {
   return (
     <section className="home-section">
@@ -28,6 +30,7 @@ function PopularNearby({
         <button
           type="button"
           className="home-section__link"
+          onClick={onSeeAllClick}
         >
           Daha çox
           <ChevronRight
@@ -101,8 +104,8 @@ function PopularNearby({
                       {provider.service}
                       {" · "}
                       {provider.area}
-                      {" · "}
-                      {provider.distance} km
+                      {provider.distance != null &&
+                        ` · ${provider.distance} km`}
                     </p>
 
                     <p className="popular-card__status">
@@ -122,7 +125,7 @@ function PopularNearby({
 
           <p className="popular-caption">
             Populyar profillər seçdiyiniz əraziyə və
-            platformadakı aktivliyə əsasən göstərilir.
+            platformadakı reytinqə əsasən göstərilir.
           </p>
         </>
       ) : (
