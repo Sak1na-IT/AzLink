@@ -1,4 +1,4 @@
-import { apiRequest } from "./api";
+import { apiRequest, getStoredUser, setStoredUser } from "./api";
 
 export interface AccountInfo {
   name: string;
@@ -37,8 +37,29 @@ export interface UpdateProfileInput {
   phone?: string;
 }
 
-export const updateMyProfile = (input: UpdateProfileInput) =>
-  apiRequest<unknown>("/auth/me", { method: "PATCH", body: input });
+/*
+ * Profili yeniləyir və brauzerdə yadda saxlanmış istifadəçini də
+ * təzələyir: beləcə Dashboard və digər səhifələr yeni adı dərhal göstərir.
+ */
+export const updateMyProfile = async (input: UpdateProfileInput) => {
+  const result = await apiRequest<unknown>("/auth/me", {
+    method: "PATCH",
+    body: input,
+  });
+
+  const info = readAccount(result);
+  const stored = getStoredUser();
+
+  if (stored) {
+    setStoredUser({
+      ...stored,
+      name: info?.name || input.name,
+      phone: info?.phone || input.phone || stored.phone,
+    });
+  }
+
+  return result;
+};
 
 export interface ChangePasswordInput {
   currentPassword: string;

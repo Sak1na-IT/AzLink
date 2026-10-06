@@ -9,7 +9,7 @@ import {
   Star,
 } from "lucide-react";
 
-import { getStoredUser } from "../../services/api";
+import { ApiError, getStoredUser } from "../../services/api";
 import {
   createBooking,
   getBookings,
@@ -238,6 +238,17 @@ const getBookingErrorText = (error: unknown) => {
 
   if (text.includes("SERVICE_NOT_FOUND")) {
     return "Seçdiyiniz xidmət tapılmadı. Səhifəni yeniləyib yenidən cəhd edin.";
+  }
+
+  /* Backend özü başa düşülən mesaj göndəribsə, onu göstəririk */
+  if (
+    error instanceof ApiError &&
+    error.status >= 400 &&
+    error.status < 500 &&
+    text &&
+    text !== "Xəta baş verdi"
+  ) {
+    return text;
   }
 
   return "Rezervi yaratmaq mümkün olmadı. Bir az sonra yenidən cəhd edin.";
