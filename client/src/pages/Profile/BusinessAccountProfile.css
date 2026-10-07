@@ -431,3 +431,26 @@
     width: 100%;
   }
 }
+
+.account-profile__icon-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.account-profile__icon-button:hover {
+  border-color: #d1554a;
+  color: #d1554a;
+  background: rgba(209, 85, 74, 0.08);
+}

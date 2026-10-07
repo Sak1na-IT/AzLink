@@ -163,10 +163,12 @@ function BusinessAccountProfile() {
 
         <button
           type="button"
-          className="account-profile__button"
-          onClick={openEdit}
+          className="account-profile__icon-button"
+          onClick={handleLogout}
+          aria-label="Hesabdan çıx"
+          title="Hesabdan çıx"
         >
-          Redaktə et
+          <LogOut size={18} strokeWidth={1.9} />
         </button>
       </section>
 
