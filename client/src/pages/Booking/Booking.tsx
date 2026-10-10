@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -20,6 +20,10 @@ import {
   type ProviderDetail,
 } from "../../services/providersService";
 import {
+  getBusySlots,
+  type BusySlot,
+} from "../../services/busySlotsService";
+import {
   defaultWeeklySchedule,
   getWeekDayFromDate,
   weekDays,
@@ -33,6 +37,9 @@ import "./Booking.css";
 
 /* Saatlar arasındakı addım (dəqiqə) */
 const SLOT_STEP_MINUTES = 30;
+
+/* Neçə gün irəli rezerv etmək olar (tarix kartları və dolu saatlar üçün) */
+const BOOKING_DAYS_AHEAD = 14;
 
 /* Backend-dəki iş saatı: dayOfWeek 0 = Bazar ... 6 = Şənbə */
 type AvailabilitySlot = {
@@ -191,8 +198,6 @@ const exceedsWorkday = (
 
 /*
  * Seçilən vaxt aralığı sizin öz aktiv rezervlərinizlə kəsişirmi?
- * Başqa müştərilərin rezervlərini bu səhifə görmür, onları backend
- * rezerv yaradılanda yoxlayır.
  */
 const isSlotTaken = (
   bookings: BookingRecord[],
@@ -218,6 +223,27 @@ const isSlotTaken = (
 
     return start < bookingEnd && bookingStart < end;
   });
+};
+
+/*
+ * Seçilən vaxt aralığı bu biznesin HƏR HANSI müştərisinin
+ * aktiv rezervi ilə kəsişirmi? (Backend-dəki busy endpoint-indən.)
+ */
+const isSlotBusy = (
+  busySlots: BusySlot[],
+  date: string,
+  time: string,
+  duration: number
+) => {
+  const start = toMinutes(time);
+  const end = start + duration;
+
+  return busySlots.some(
+    (slot) =>
+      slot.date === date &&
+      start < toMinutes(slot.end) &&
+      toMinutes(slot.start) < end
+  );
 };
 
 /* Backend xətasını müştəriyə başa düşülən mətnə çevirir */
@@ -273,6 +299,7 @@ function Booking() {
 
   const [provider, setProvider] = useState<ProviderWithHours | null>(null);
   const [myBookings, setMyBookings] = useState<BookingRecord[]>([]);
+  const [busySlots, setBusySlots] = useState<BusySlot[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadFailed, setLoadFailed] = useState(false);
 
@@ -284,9 +311,38 @@ function Booking() {
   const [submitError, setSubmitError] = useState("");
 
   /*
-   * DİQQƏT: bütün hook-lar (useState, useEffect, useMemo) aşağıdakı
-   * erkən "return" sətirlərindən ƏVVƏL olmalıdır.
+   * DİQQƏT: bütün hook-lar (useState, useEffect, useMemo, useCallback)
+   * aşağıdakı erkən "return" sətirlərindən ƏVVƏL olmalıdır.
    */
+
+  /*
+   * Bu biznesin növbəti günlər üçün dolu saatları (bütün müştərilərdən).
+   * Yüklənməsə də səhifə işləyir, backend rezerv zamanı yenə yoxlayır.
+   */
+  const refreshBusySlots = useCallback(async () => {
+    if (!providerId) {
+      return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const last = new Date(today);
+    last.setDate(today.getDate() + BOOKING_DAYS_AHEAD - 1);
+
+    try {
+      const slots = await getBusySlots(
+        providerId,
+        formatDateKey(today),
+        formatDateKey(last)
+      );
+
+      setBusySlots(slots);
+    } catch {
+      /* dolu saatlar yüklənmədi, backend yoxlaması qüvvədə qalır */
+    }
+  }, [providerId]);
+
   useEffect(() => {
     if (!providerId) {
       setLoadFailed(true);
@@ -310,7 +366,10 @@ function Booking() {
       }
 
       try {
-        const mine = await getBookings();
+        const [mine] = await Promise.all([
+          getBookings(),
+          refreshBusySlots(),
+        ]);
 
         if (!cancelled) {
           setMyBookings(mine);
@@ -329,7 +388,7 @@ function Booking() {
     return () => {
       cancelled = true;
     };
-  }, [providerId]);
+  }, [providerId, refreshBusySlots]);
 
   /*
    * Biznesin real iş qrafiki.
@@ -348,7 +407,7 @@ function Booking() {
 
     today.setHours(0, 0, 0, 0);
 
-    for (let i = 0; i < 14; i++) {
+    for (let i = 0; i < BOOKING_DAYS_AHEAD; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       dates.push(date);
@@ -436,8 +495,16 @@ function Booking() {
   const currentDuration = selectedService?.duration ?? 60;
 
   /*
-   * Saat seçilə bilməz: vaxtı keçib, sizin başqa rezervlə kəsişir
-   * və ya xidmət iş günündən sonraya qalır.
+   * Saat dolu sayılır: sizin öz rezervinizlə və ya başqa
+   * müştərinin rezervi ilə kəsişir.
+   */
+  const isTimeTaken = (date: string, time: string, duration: number) =>
+    isSlotTaken(myBookings, provider.id, date, time, duration) ||
+    isSlotBusy(busySlots, date, time, duration);
+
+  /*
+   * Saat seçilə bilməz: vaxtı keçib, dolu və ya xidmət iş günündən
+   * sonraya qalır.
    */
   const isTimeUnavailable = (
     date: string,
@@ -447,14 +514,14 @@ function Booking() {
   ) =>
     isTimePassed(date, time) ||
     exceedsWorkday(time, duration, schedule) ||
-    isSlotTaken(myBookings, provider.id, date, time, duration);
+    isTimeTaken(date, time, duration);
 
   /*
    * Günün vəziyyəti:
    *
    * full    → bağlıdır və ya heç bir saat seçilə bilmir
-   * partial → sizin bu gün üçün ən azı bir rezerviniz var
-   * empty   → rezerviniz yoxdur
+   * partial → bu gün üçün ən azı bir saat artıq doludur
+   * empty   → heç bir rezerv yoxdur
    */
   const getDateStatus = (date: string, duration: number) => {
     const schedule = getScheduleForDate(weeklySchedule, date);
@@ -472,14 +539,16 @@ function Booking() {
       return "full";
     }
 
-    const hasBookings = myBookings.some(
-      (booking) =>
-        booking.providerId === provider.id &&
-        booking.date === date &&
-        (booking.status === "PENDING" || booking.status === "CONFIRMED")
-    );
+    const hasBusy =
+      busySlots.some((slot) => slot.date === date) ||
+      myBookings.some(
+        (booking) =>
+          booking.providerId === provider.id &&
+          booking.date === date &&
+          (booking.status === "PENDING" || booking.status === "CONFIRMED")
+      );
 
-    return hasBookings ? "partial" : "empty";
+    return hasBusy ? "partial" : "empty";
   };
 
   const canConfirm =
@@ -546,6 +615,9 @@ function Booking() {
     } catch (error) {
       setSubmitError(getBookingErrorText(error));
       setSelectedTime("");
+
+      /* Başqası ondan əvvəl tutubsa, dolu saatlar yenilənsin */
+      refreshBusySlots();
     } finally {
       setIsSubmitting(false);
     }
@@ -711,7 +783,7 @@ function Booking() {
               <h2>2. Tarix seçin</h2>
 
               <p>
-                Biznesin iş günləri və sizin öz rezervləriniz nəzərə
+                Biznesin iş günləri və artıq dolu olan saatlar nəzərə
                 alınır.
               </p>
             </div>
@@ -724,7 +796,7 @@ function Booking() {
 
               <span>
                 <i className="booking-date-dot booking-date-dot--partial" />
-                Rezerviniz var
+                Qismən dolu
               </span>
 
               <span>
@@ -769,7 +841,7 @@ function Booking() {
 
                     <small>
                       {status === "empty" && "Boş"}
-                      {status === "partial" && "Rezerviniz var"}
+                      {status === "partial" && "Qismən dolu"}
                       {status === "full" &&
                         (schedule.isOpen ? "Dolu" : "Bağlı")}
                     </small>
@@ -806,9 +878,7 @@ function Booking() {
                 {selectedDayTimes.map((time) => {
                   const passed = isTimePassed(selectedDate, time);
 
-                  const taken = isSlotTaken(
-                    myBookings,
-                    provider.id,
+                  const taken = isTimeTaken(
                     selectedDate,
                     time,
                     currentDuration
