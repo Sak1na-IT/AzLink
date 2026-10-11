@@ -1,15 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Check,
-  MapPin,
-  Search,
-  X,
-} from "lucide-react";
+import { Check, MapPin, Search, X } from "lucide-react";
 
-import {
-  areas,
-  type Area,
-} from "../../types/area";
+import { areas, type Area } from "../../types/area";
 
 import "./AreaSelector.css";
 
@@ -19,264 +11,140 @@ interface AreaSelectorProps {
   onClose: () => void;
 }
 
-const normalizeText = (value: string) =>
-  value
-    .toLocaleLowerCase("az")
-    .trim();
+const ALL_BAKU_ID = "all-baku";
+
+const normalizeText = (value: string) => value.toLocaleLowerCase("az").trim();
 
 function AreaSelector({
   selectedAreas,
   onApply,
   onClose,
 }: AreaSelectorProps) {
-  const [selected, setSelected] =
-    useState<Area[]>(selectedAreas);
-
-  const [query, setQuery] =
-    useState("");
+  const [selected, setSelected] = useState<Area[]>(selectedAreas);
+  const [query, setQuery] = useState("");
 
   /*
    * Escape düyməsi ilə modalı bağla
    */
   useEffect(() => {
-    const handleKeyDown = (
-      event: KeyboardEvent
-    ) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
       }
     };
 
-    document.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
+    document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [onClose]);
 
   /*
-   * Modal açıq olanda body scroll-u bağla.
-   *
-   * Beləliklə modal açıldıqda arxadakı
-   * Home səhifəsi aşağı-yuxarı hərəkət etməyəcək.
+   * Modal açıq olanda arxadakı səhifənin scroll-unu bağla.
    */
   useEffect(() => {
-    const originalOverflow =
-      document.body.style.overflow;
+    const originalOverflow = document.body.style.overflow;
 
     document.body.style.overflow = "hidden";
 
     return () => {
-      document.body.style.overflow =
-        originalOverflow;
+      document.body.style.overflow = originalOverflow;
     };
   }, []);
 
-  /*
-   * Bütün Bakı seçilibmi?
-   */
-  const isAllBakuSelected =
-    selected.some(
-      (area) => area.id === "all-baku"
-    );
+  const isAllBakuSelected = selected.some((area) => area.id === ALL_BAKU_ID);
+
+  const isSelected = (areaId: string) =>
+    selected.some((area) => area.id === areaId);
 
   /*
-   * Axtarış nəticələri.
-   *
-   * Həm ərazi adı,
-   * həm də ərazi tipi üzrə axtarış edə bilirik.
+   * Axtarış: yalnız ərazinin adına görə.
    */
   const filteredAreas = useMemo(() => {
-    const normalizedQuery =
-      normalizeText(query);
+    const normalizedQuery = normalizeText(query);
 
-    if (!normalizedQuery) {
-      return areas;
-    }
-
-    return areas.filter((area) =>
-      normalizeText(
-        `${area.name} ${area.type}`
-      ).includes(normalizedQuery)
-    );
-  }, [query]);
-
-  /*
-   * İstifadəçinin yazdığı ərazi
-   * siyahıda artıq varmı?
-   */
-  const exactAreaExists = useMemo(() => {
-    const normalizedQuery =
-      normalizeText(query);
-
-    if (!normalizedQuery) {
-      return true;
-    }
-
-    return areas.some(
+    return areas.filter(
       (area) =>
-        normalizeText(area.name) ===
-        normalizedQuery
+        area.id !== ALL_BAKU_ID &&
+        (!normalizedQuery ||
+          normalizeText(area.name).includes(normalizedQuery))
     );
   }, [query]);
 
+  const allBaku = areas.find((area) => area.id === ALL_BAKU_ID);
+  const districtAreas = filteredAreas.filter((area) => area.type === "district");
+  const metroAreas = filteredAreas.filter((area) => area.type === "metro");
+
   /*
-   * Ərazi seç
+   * Ərazi seç / seçimi götür
    */
   const toggleArea = (area: Area) => {
-    /*
-     * Bütün Bakı seçilirsə,
-     * digər seçimləri təmizləyirik.
-     */
-    if (area.id === "all-baku") {
-      if (isAllBakuSelected) {
-        setSelected([]);
-      } else {
-        setSelected([area]);
-      }
-
+    /* Bütün Bakı seçilirsə, digər seçimləri təmizləyirik */
+    if (area.id === ALL_BAKU_ID) {
+      setSelected(isAllBakuSelected ? [] : [area]);
       return;
     }
 
-    /*
-     * Konkret ərazi seçilirsə,
-     * Bütün Bakı seçimindən çıxırıq.
-     */
-    let nextSelected =
-      selected.filter(
-        (item) =>
-          item.id !== "all-baku"
-      );
+    /* Konkret ərazi seçilirsə, Bütün Bakı seçimindən çıxırıq */
+    const withoutAllBaku = selected.filter((item) => item.id !== ALL_BAKU_ID);
 
-    const alreadySelected =
-      nextSelected.some(
-        (item) =>
-          item.id === area.id
-      );
+    const alreadySelected = withoutAllBaku.some((item) => item.id === area.id);
 
-    if (alreadySelected) {
-      nextSelected =
-        nextSelected.filter(
-          (item) =>
-            item.id !== area.id
-        );
-    } else {
-      nextSelected.push(area);
-    }
-
-    setSelected(nextSelected);
-  };
-
-  /*
-   * İstifadəçinin özü yazdığı ərazini əlavə et
-   */
-  const addCustomArea = () => {
-    const value = query.trim();
-
-    if (!value || exactAreaExists) {
-      return;
-    }
-
-    const customArea: Area = {
-      id: `custom-${Date.now()}`,
-      name: value,
-      type: "custom",
-    };
-
-    setSelected((current) => {
-      const withoutAllBaku =
-        current.filter(
-          (area) =>
-            area.id !== "all-baku"
-        );
-
-      return [
-        ...withoutAllBaku,
-        customArea,
-      ];
-    });
-
-    setQuery("");
-  };
-
-  /*
-   * Ərazi seçilibmi?
-   */
-  const isSelected = (
-    areaId: string
-  ) =>
-    selected.some(
-      (area) =>
-        area.id === areaId
-    );
-
-  /*
-   * Seçilmiş ərazini sil
-   */
-  const removeSelected = (
-    areaId: string
-  ) => {
-    setSelected((current) =>
-      current.filter(
-        (area) =>
-          area.id !== areaId
-      )
+    setSelected(
+      alreadySelected
+        ? withoutAllBaku.filter((item) => item.id !== area.id)
+        : [...withoutAllBaku, area]
     );
   };
 
-  /*
-   * Bütün seçimləri təmizlə
-   */
+  const removeSelected = (areaId: string) => {
+    setSelected((current) => current.filter((area) => area.id !== areaId));
+  };
+
   const clearAll = () => {
     setSelected([]);
     setQuery("");
   };
 
-  /*
-   * Tətbiq et
-   */
   const handleApply = () => {
     onApply(selected);
     onClose();
   };
 
   /*
-   * Əraziləri qruplaşdır
+   * Bir seçim sətri (rayon, metro və ya Bütün Bakı)
    */
-  const districtAreas =
-    filteredAreas.filter(
-      (area) =>
-        area.type === "district" &&
-        area.id !== "all-baku"
-    );
+  const renderOption = (area: Area, hint: string) => (
+    <button
+      type="button"
+      key={area.id}
+      className={`area-selector__option ${
+        isSelected(area.id) ? "is-selected" : ""
+      }`}
+      onClick={() => toggleArea(area)}
+    >
+      <span className="area-selector__option-icon">
+        <MapPin size={18} strokeWidth={1.8} />
+      </span>
 
-  const neighborhoodAreas =
-    filteredAreas.filter(
-      (area) =>
-        area.type === "neighborhood"
-    );
+      <span className="area-selector__option-content">
+        <strong>{area.name}</strong>
 
-  const metroAreas =
-    filteredAreas.filter(
-      (area) =>
-        area.type === "metro"
-    );
+        <small>{hint}</small>
+      </span>
 
-  const customAreas =
-    filteredAreas.filter(
-      (area) =>
-        area.type === "custom"
-    );
+      <span className="area-selector__check">
+        {isSelected(area.id) && <Check size={17} strokeWidth={2} />}
+      </span>
+    </button>
+  );
 
-  /*
-   * Modal
-   */
+  const metroHint = (area: Area) =>
+    area.districts && area.districts.length > 0
+      ? `Metro · ${area.districts.join(", ")}`
+      : "Metro";
+
   return (
     <div
       className="area-selector"
@@ -300,17 +168,12 @@ function AreaSelector({
 
         <header className="area-selector__header">
           <div>
-            <span className="area-selector__eyebrow">
-              Ərazi seçimi
-            </span>
+            <span className="area-selector__eyebrow">Ərazi seçimi</span>
 
-            <h2 id="area-selector-title">
-              Harada xidmət axtarırsınız?
-            </h2>
+            <h2 id="area-selector-title">Harada xidmət axtarırsınız?</h2>
 
             <p>
-              Bakı daxilində istədiyiniz ərazini
-              seçin və ya axtarışdan istifadə edin.
+              Bakı şəhəri daxilində rayon və ya metro stansiyası seçin.
             </p>
           </div>
 
@@ -320,27 +183,19 @@ function AreaSelector({
             onClick={onClose}
             aria-label="Bağla"
           >
-            <X
-              size={20}
-              strokeWidth={1.8}
-            />
+            <X size={20} strokeWidth={1.8} />
           </button>
         </header>
 
         {/* SEARCH */}
 
         <div className="area-selector__search">
-          <Search
-            size={19}
-            strokeWidth={1.8}
-          />
+          <Search size={19} strokeWidth={1.8} />
 
           <input
             type="text"
             value={query}
-            onChange={(event) =>
-              setQuery(event.target.value)
-            }
+            onChange={(event) => setQuery(event.target.value)}
             placeholder="Məsələn: Nərimanov, Gənclik, 28 May..."
             autoFocus
           />
@@ -362,14 +217,9 @@ function AreaSelector({
         {selected.length > 0 && (
           <section className="area-selector__selected">
             <div className="area-selector__selected-header">
-              <span>
-                Seçilmiş ərazilər
-              </span>
+              <span>Seçilmiş ərazilər</span>
 
-              <button
-                type="button"
-                onClick={clearAll}
-              >
+              <button type="button" onClick={clearAll}>
                 Hamısını təmizlə
               </button>
             </div>
@@ -380,20 +230,11 @@ function AreaSelector({
                   type="button"
                   key={area.id}
                   className="area-selector__tag"
-                  onClick={() =>
-                    removeSelected(
-                      area.id
-                    )
-                  }
+                  onClick={() => removeSelected(area.id)}
                 >
-                  <span>
-                    {area.name}
-                  </span>
+                  <span>{area.name}</span>
 
-                  <X
-                    size={13}
-                    strokeWidth={2}
-                  />
+                  <X size={13} strokeWidth={2} />
                 </button>
               ))}
             </div>
@@ -403,96 +244,13 @@ function AreaSelector({
         {/* CONTENT */}
 
         <div className="area-selector__content">
-          {/* CUSTOM AREA */}
-
-          {query.trim() &&
-            !exactAreaExists && (
-              <button
-                type="button"
-                className="area-selector__custom"
-                onClick={addCustomArea}
-              >
-                <span className="area-selector__custom-icon">
-                  <MapPin
-                    size={18}
-                    strokeWidth={1.8}
-                  />
-                </span>
-
-                <span className="area-selector__custom-content">
-                  <strong>
-                    “{query.trim()}”
-                  </strong>
-
-                  <small>
-                    Bu ərazini seçimə əlavə et
-                  </small>
-                </span>
-
-                <span className="area-selector__custom-action">
-                  Əlavə et
-                </span>
-              </button>
-            )}
-
           {/* ALL BAKU */}
 
-          {!query.trim() && (
+          {!query.trim() && allBaku && (
             <section className="area-selector__group">
-              <div className="area-selector__group-title">
-                Ümumi
-              </div>
+              <div className="area-selector__group-title">Ümumi</div>
 
-              {areas
-                .filter(
-                  (area) =>
-                    area.id ===
-                    "all-baku"
-                )
-                .map((area) => (
-                  <button
-                    type="button"
-                    key={area.id}
-                    className={`area-selector__option ${
-                      isSelected(
-                        area.id
-                      )
-                        ? "is-selected"
-                        : ""
-                    }`}
-                    onClick={() =>
-                      toggleArea(area)
-                    }
-                  >
-                    <span className="area-selector__option-icon">
-                      <MapPin
-                        size={18}
-                        strokeWidth={1.8}
-                      />
-                    </span>
-
-                    <span className="area-selector__option-content">
-                      <strong>
-                        Bütün Bakı
-                      </strong>
-
-                      <small>
-                        Bakı üzrə bütün xidmətlər
-                      </small>
-                    </span>
-
-                    <span className="area-selector__check">
-                      {isSelected(
-                        area.id
-                      ) && (
-                        <Check
-                          size={17}
-                          strokeWidth={2}
-                        />
-                      )}
-                    </span>
-                  </button>
-                ))}
+              {renderOption(allBaku, "Bakı üzrə bütün xidmətlər")}
             </section>
           )}
 
@@ -500,120 +258,10 @@ function AreaSelector({
 
           {districtAreas.length > 0 && (
             <section className="area-selector__group">
-              <div className="area-selector__group-title">
-                Rayonlar
-              </div>
+              <div className="area-selector__group-title">Rayonlar</div>
 
               <div className="area-selector__options">
-                {districtAreas.map(
-                  (area) => (
-                    <button
-                      type="button"
-                      key={area.id}
-                      className={`area-selector__option ${
-                        isSelected(
-                          area.id
-                        )
-                          ? "is-selected"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        toggleArea(
-                          area
-                        )
-                      }
-                    >
-                      <span className="area-selector__option-icon">
-                        <MapPin
-                          size={18}
-                          strokeWidth={1.8}
-                        />
-                      </span>
-
-                      <span className="area-selector__option-content">
-                        <strong>
-                          {area.name}
-                        </strong>
-
-                        <small>
-                          Rayon
-                        </small>
-                      </span>
-
-                      <span className="area-selector__check">
-                        {isSelected(
-                          area.id
-                        ) && (
-                          <Check
-                            size={17}
-                            strokeWidth={2}
-                          />
-                        )}
-                      </span>
-                    </button>
-                  )
-                )}
-              </div>
-            </section>
-          )}
-
-          {/* NEIGHBORHOODS */}
-
-          {neighborhoodAreas.length > 0 && (
-            <section className="area-selector__group">
-              <div className="area-selector__group-title">
-                Ərazilər və məhəllələr
-              </div>
-
-              <div className="area-selector__options">
-                {neighborhoodAreas.map(
-                  (area) => (
-                    <button
-                      type="button"
-                      key={area.id}
-                      className={`area-selector__option ${
-                        isSelected(
-                          area.id
-                        )
-                          ? "is-selected"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        toggleArea(
-                          area
-                        )
-                      }
-                    >
-                      <span className="area-selector__option-icon">
-                        <MapPin
-                          size={18}
-                          strokeWidth={1.8}
-                        />
-                      </span>
-
-                      <span className="area-selector__option-content">
-                        <strong>
-                          {area.name}
-                        </strong>
-
-                        <small>
-                          Ərazi / məhəllə
-                        </small>
-                      </span>
-
-                      <span className="area-selector__check">
-                        {isSelected(
-                          area.id
-                        ) && (
-                          <Check
-                            size={17}
-                            strokeWidth={2}
-                          />
-                        )}
-                      </span>
-                    </button>
-                  )
-                )}
+                {districtAreas.map((area) => renderOption(area, "Rayon"))}
               </div>
             </section>
           )}
@@ -623,148 +271,28 @@ function AreaSelector({
           {metroAreas.length > 0 && (
             <section className="area-selector__group">
               <div className="area-selector__group-title">
-                Metro
+                Metro stansiyaları
               </div>
 
               <div className="area-selector__options">
-                {metroAreas.map(
-                  (area) => (
-                    <button
-                      type="button"
-                      key={area.id}
-                      className={`area-selector__option ${
-                        isSelected(
-                          area.id
-                        )
-                          ? "is-selected"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        toggleArea(
-                          area
-                        )
-                      }
-                    >
-                      <span className="area-selector__option-icon">
-                        <MapPin
-                          size={18}
-                          strokeWidth={1.8}
-                        />
-                      </span>
-
-                      <span className="area-selector__option-content">
-                        <strong>
-                          {area.name}
-                        </strong>
-
-                        <small>
-                          Metro və ətrafı
-                        </small>
-                      </span>
-
-                      <span className="area-selector__check">
-                        {isSelected(
-                          area.id
-                        ) && (
-                          <Check
-                            size={17}
-                            strokeWidth={2}
-                          />
-                        )}
-                      </span>
-                    </button>
-                  )
-                )}
-              </div>
-            </section>
-          )}
-
-          {/* CUSTOM AREAS */}
-
-          {customAreas.length > 0 && (
-            <section className="area-selector__group">
-              <div className="area-selector__group-title">
-                Əlavə etdiyiniz ərazilər
-              </div>
-
-              <div className="area-selector__options">
-                {customAreas.map(
-                  (area) => (
-                    <button
-                      type="button"
-                      key={area.id}
-                      className={`area-selector__option ${
-                        isSelected(
-                          area.id
-                        )
-                          ? "is-selected"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        toggleArea(
-                          area
-                        )
-                      }
-                    >
-                      <span className="area-selector__option-icon">
-                        <MapPin
-                          size={18}
-                          strokeWidth={1.8}
-                        />
-                      </span>
-
-                      <span className="area-selector__option-content">
-                        <strong>
-                          {area.name}
-                        </strong>
-
-                        <small>
-                          Sizin əlavə etdiyiniz ərazi
-                        </small>
-                      </span>
-
-                      <span className="area-selector__check">
-                        {isSelected(
-                          area.id
-                        ) && (
-                          <Check
-                            size={17}
-                            strokeWidth={2}
-                          />
-                        )}
-                      </span>
-                    </button>
-                  )
-                )}
+                {metroAreas.map((area) => renderOption(area, metroHint(area)))}
               </div>
             </section>
           )}
 
           {/* NO RESULTS */}
 
-          {filteredAreas.length === 0 &&
-            !(
-              query.trim() &&
-              !exactAreaExists
-            ) && (
-              <div className="area-selector__empty">
-                <div className="area-selector__empty-icon">
-                  <Search
-                    size={22}
-                    strokeWidth={1.8}
-                  />
-                </div>
-
-                <strong>
-                  Ərazi tapılmadı
-                </strong>
-
-                <span>
-                  Başqa ad yazın və ya
-                  öz ərazinizi əlavə edin.
-                </span>
+          {filteredAreas.length === 0 && (
+            <div className="area-selector__empty">
+              <div className="area-selector__empty-icon">
+                <Search size={22} strokeWidth={1.8} />
               </div>
-            )}
+
+              <strong>Ərazi tapılmadı</strong>
+
+              <span>Rayon və ya metro stansiyasının adını yazın.</span>
+            </div>
+          )}
         </div>
 
         {/* FOOTER */}
@@ -773,18 +301,12 @@ function AreaSelector({
           <div className="area-selector__count">
             {selected.length > 0 ? (
               <>
-                <strong>
-                  {selected.length}
-                </strong>
+                <strong>{selected.length}</strong>
 
-                <span>
-                  ərazi seçilib
-                </span>
+                <span>ərazi seçilib</span>
               </>
             ) : (
-              <span>
-                Ərazi seçilməyib
-              </span>
+              <span>Ərazi seçilməyib</span>
             )}
           </div>
 

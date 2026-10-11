@@ -1,25 +1,27 @@
-const normalize = (value: string) =>
-  value.toLocaleLowerCase("az").trim();
+import { metroStations } from "../data/metroStations";
+
+const normalize = (value: string) => value.toLocaleLowerCase("az").trim();
+
+const ALL_BAKU_NAMES = ["bütün bakı", "bakı", "baki"];
 
 /*
- * Bu ərazilər hansı rayona aiddir.
- * Yeni ərazi əlavə etmək üçün bura bir sətir yaz.
+ * "Gənclik metrosu" → ["nərimanov", "nəsimi"].
+ * Yalnız "... metrosu" adı qeydə alınır ki, "Nizami" kimi stansiya adı
+ * eyni adlı rayonla qarışmasın.
  */
-const areaToDistrict: Record<string, string> = {
-  "gənclik": "nərimanov",
-  "gənclik və ətrafı": "nərimanov",
-  "gənclik metrosu": "nərimanov",
+const metroToDistricts = new Map<string, string[]>();
 
-  "28 may": "nəsimi",
-  "28 may metrosu": "nəsimi",
+for (const station of metroStations) {
+  metroToDistricts.set(
+    normalize(`${station.name} metrosu`),
+    station.districts.map(normalize)
+  );
+}
 
-  "elmlər akademiyası": "yasamal",
-  "elmlər akademiyası metrosu": "yasamal",
-
-  "inşaatçılar": "yasamal",
-  "inşaatçılar metrosu": "yasamal",
-};
-
+/*
+ * Biznes (providerArea: bazadakı rayon) seçilmiş əraziyə uyğundurmu?
+ * Metro seçilibsə, onun rayonlarından biri biznesin rayonu ilə eyni olmalıdır.
+ */
 export function matchesArea(
   providerArea: string,
   selectedAreaName: string
@@ -27,19 +29,15 @@ export function matchesArea(
   const provider = normalize(providerArea);
   const area = normalize(selectedAreaName);
 
-  if (area === "bütün bakı" || area === "baki") {
+  if (ALL_BAKU_NAMES.includes(area)) {
     return true;
   }
 
-  const district = areaToDistrict[area];
+  const districts = metroToDistricts.get(area);
 
-  if (district) {
-    return provider === district;
+  if (districts) {
+    return districts.includes(provider);
   }
 
-  return (
-    provider === area ||
-    provider.includes(area) ||
-    area.includes(provider)
-  );
+  return provider === area;
 }

@@ -1,193 +1,48 @@
-export type AreaType =
-  | "district"
-  | "metro"
-  | "neighborhood"
-  | "custom";
+import { metroStations } from "../data/metroStations";
+
+/*
+ * "custom" yalnız köhnə və ya əl ilə dəyişdirilmiş axtarış linklərində
+ * siyahıda olmayan ad gələndə istifadə olunur (seçimdə yeni ərazi yazmaq
+ * artıq mümkün deyil).
+ */
+export type AreaType = "district" | "metro" | "custom";
 
 export interface Area {
   id: string;
   name: string;
   type: AreaType;
+  /* Metro üçün: stansiyanın uyğun gəldiyi rayonlar */
+  districts?: string[];
 }
 
+/* Bakının 12 rayonu: adlar bazadakı adlarla eyni olmalıdır */
+const districtList = [
+  { id: "narimanov", name: "Nərimanov" },
+  { id: "nesimi", name: "Nəsimi" },
+  { id: "yasamal", name: "Yasamal" },
+  { id: "sabail", name: "Səbail" },
+  { id: "xetai", name: "Xətai" },
+  { id: "nizami", name: "Nizami" },
+  { id: "bineqedi", name: "Binəqədi" },
+  { id: "sabunchu", name: "Sabunçu" },
+  { id: "suraxani", name: "Suraxanı" },
+  { id: "khazar", name: "Xəzər" },
+  { id: "qaradag", name: "Qaradağ" },
+  { id: "pirallah", name: "Pirallahı" },
+];
+
 export const areas: Area[] = [
-  // =========================
-  // ÜMUMİ
-  // =========================
+  { id: "all-baku", name: "Bütün Bakı", type: "district" },
 
-  {
-    id: "all-baku",
-    name: "Bütün Bakı",
-    type: "district",
-  },
+  ...districtList.map((district) => ({
+    ...district,
+    type: "district" as const,
+  })),
 
-  // =========================
-  // RAYONLAR
-  // =========================
-
-  {
-    id: "narimanov",
-    name: "Nərimanov",
-    type: "district",
-  },
-  {
-    id: "nesimi",
-    name: "Nəsimi",
-    type: "district",
-  },
-  {
-    id: "yasamal",
-    name: "Yasamal",
-    type: "district",
-  },
-  {
-    id: "sabail",
-    name: "Səbail",
-    type: "district",
-  },
-  {
-    id: "xetai",
-    name: "Xətai",
-    type: "district",
-  },
-  {
-    id: "nizami",
-    name: "Nizami",
-    type: "district",
-  },
-  {
-    id: "bineqedi",
-    name: "Binəqədi",
-    type: "district",
-  },
-  {
-    id: "sabunchu",
-    name: "Sabunçu",
-    type: "district",
-  },
-  {
-    id: "suraxani",
-    name: "Suraxanı",
-    type: "district",
-  },
-  {
-    id: "khazar",
-    name: "Xəzər",
-    type: "district",
-  },
-  {
-    id: "qaradag",
-    name: "Qaradağ",
-    type: "district",
-  },
-  {
-    id: "pirallah",
-    name: "Pirallahı",
-    type: "district",
-  },
-
-  // =========================
-  // MƏHƏLLƏ / ƏRAZİ
-  // =========================
-
-  {
-    id: "genclik",
-    name: "Gənclik",
-    type: "neighborhood",
-  },
-  {
-    id: "28-may",
-    name: "28 May",
-    type: "neighborhood",
-  },
-  {
-    id: "icheri-sheher",
-    name: "İçərişəhər",
-    type: "neighborhood",
-  },
-  {
-    id: "nizami-street",
-    name: "Nizami küçəsi",
-    type: "neighborhood",
-  },
-  {
-    id: "white-city",
-    name: "Ağ Şəhər",
-    type: "neighborhood",
-  },
-  {
-    id: "port-baku",
-    name: "Port Baku",
-    type: "neighborhood",
-  },
-  {
-    id: "bakmil",
-    name: "Bakmil",
-    type: "neighborhood",
-  },
-  {
-    id: "inshaatchilar",
-    name: "İnşaatçılar",
-    type: "neighborhood",
-  },
-  {
-    id: "elmler",
-    name: "Elmlər Akademiyası",
-    type: "neighborhood",
-  },
-  {
-    id: "ahmadli",
-    name: "Əhmədli",
-    type: "neighborhood",
-  },
-  {
-    id: "khirdalan",
-    name: "Xırdalan",
-    type: "neighborhood",
-  },
-  {
-    id: "bilajari",
-    name: "Biləcəri",
-    type: "neighborhood",
-  },
-
-  // =========================
-  // METRO
-  // =========================
-
-  {
-    id: "genclik-metro",
-    name: "Gənclik metrosu",
-    type: "metro",
-  },
-  {
-    id: "narimanov-metro",
-    name: "Nəriman Nərimanov metrosu",
-    type: "metro",
-  },
-  {
-    id: "28-may-metro",
-    name: "28 May metrosu",
-    type: "metro",
-  },
-  {
-    id: "koroglu-metro",
-    name: "Koroğlu metrosu",
-    type: "metro",
-  },
-  {
-    id: "insaatcilar-metro",
-    name: "İnşaatçılar metrosu",
-    type: "metro",
-  },
-  {
-    id: "elmler-metro",
-    name: "Elmlər Akademiyası metrosu",
-    type: "metro",
-  },
-  {
-    id: "ahmadli-metro",
-    name: "Əhmədli metrosu",
-    type: "metro",
-  },
+  ...metroStations.map((station) => ({
+    id: `${station.id}-metro`,
+    name: `${station.name} metrosu`,
+    type: "metro" as const,
+    districts: station.districts,
+  })),
 ];
