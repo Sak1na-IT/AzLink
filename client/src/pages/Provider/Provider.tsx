@@ -166,6 +166,10 @@ function Provider() {
   const reviewLabel =
     displayReviewCount === 1 ? "1 rəy" : `${displayReviewCount} rəy`;
 
+  /* Biznes sahibi öz profilinə baxanda ürək düyməsi göstərilmir */
+  const isOwnBusiness =
+    Boolean(provider.ownerId) && provider.ownerId === currentUser?.id;
+
   const handleToggleSave = async () => {
     try {
       if (isSaved) {
@@ -319,23 +323,25 @@ function Provider() {
               </div>
             </div>
 
-            <button
-              type="button"
-              className="provider-save-button"
-              aria-label={
-                isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
-              }
-              title={
-                isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
-              }
-              onClick={handleToggleSave}
-            >
-              <Heart
-                size={20}
-                strokeWidth={1.8}
-                fill={isSaved ? "currentColor" : "none"}
-              />
-            </button>
+            {!isOwnBusiness && (
+              <button
+                type="button"
+                className="provider-save-button"
+                aria-label={
+                  isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
+                }
+                title={
+                  isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
+                }
+                onClick={handleToggleSave}
+              >
+                <Heart
+                  size={20}
+                  strokeWidth={1.8}
+                  fill={isSaved ? "currentColor" : "none"}
+                />
+              </button>
+            )}
           </section>
 
           <section className="provider-section">
