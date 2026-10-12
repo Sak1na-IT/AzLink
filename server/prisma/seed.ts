@@ -9,11 +9,17 @@ const prisma = new PrismaClient();
 
 const AREA_NAMES = [
   "Nərimanov",
-  "Yasamal",
   "Nəsimi",
+  "Yasamal",
   "Səbail",
   "Xətai",
   "Nizami",
+  "Binəqədi",
+  "Sabunçu",
+  "Suraxanı",
+  "Xəzər",
+  "Qaradağ",
+  "Pirallahı",
 ];
 
 /* ========================================================

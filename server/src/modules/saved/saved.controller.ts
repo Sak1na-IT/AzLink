@@ -8,6 +8,12 @@ const handleError = (error: unknown, res: Response) => {
     return res.status(404).json({ message: "Profil tapılmadı" });
   }
 
+  if (error instanceof Error && error.message === "OWN_BUSINESS") {
+    return res.status(400).json({
+      message: "Öz biznesinizi seçilmişlərə əlavə edə bilməzsiniz",
+    });
+  }
+
   console.error(error);
   res.status(500).json({ message: "Verilənlər bazası xətası" });
 };

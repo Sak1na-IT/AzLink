@@ -20,7 +20,10 @@ export const listSaved = async (userId: string) => {
   return saved.map((item) => toProviderDTO(item.business));
 };
 
-/* Təkrar çağırılsa xəta vermir (artıq seçilibsə heç nə dəyişmir) */
+/*
+ * Təkrar çağırılsa xəta vermir (artıq seçilibsə heç nə dəyişmir).
+ * Biznes sahibi öz biznesini seçilmişlərə əlavə edə bilməz.
+ */
 export const addSaved = async (userId: string, providerId: string) => {
   const business = await prisma.business.findUnique({
     where: { id: providerId },
@@ -28,6 +31,10 @@ export const addSaved = async (userId: string, providerId: string) => {
 
   if (!business) {
     throw new Error("PROVIDER_NOT_FOUND");
+  }
+
+  if (business.userId === userId) {
+    throw new Error("OWN_BUSINESS");
   }
 
   await prisma.savedProvider.upsert({
