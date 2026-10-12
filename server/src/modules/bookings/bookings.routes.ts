@@ -5,6 +5,7 @@ import {
   listBookingsHandler,
   getBookingHandler,
   updateBookingStatusHandler,
+  deleteBookingHandler,
 } from "./bookings.controller";
 import { authenticate } from "../../middleware/authenticate";
 
@@ -16,5 +17,6 @@ router.post("/", createBookingHandler);
 router.get("/", listBookingsHandler);
 router.get("/:id", getBookingHandler);
 router.patch("/:id", updateBookingStatusHandler);
+router.delete("/:id", deleteBookingHandler);
 
 export default router;

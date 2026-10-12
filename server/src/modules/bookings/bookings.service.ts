@@ -36,7 +36,7 @@ const DEFAULT_SLOTS: Slot[] = [1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
 }));
 
 const bookingInclude = {
-  business: true,
+  business: { include: { area: true } },
   customer: true,
   service: true,
 } as const;
@@ -65,6 +65,7 @@ const toBookingDTO = (booking: BookingWithRelations) => ({
   id: booking.id,
   providerId: booking.businessId,
   providerName: booking.business.name,
+  area: booking.business.area.name,
   customerId: booking.customerId,
   customerName: booking.customer.name,
   service: booking.service.name,
@@ -202,6 +203,11 @@ export const listBookings = async (user: TokenPayload) => {
   return sorted.map(toBookingDTO);
 };
 
+/*
+ * Rezervə çıxış: ya rezervi edən müştəri (rolundan asılı olmayaraq),
+ * ya da rezerv edilən biznesin sahibi. Başqasının rezervi
+ * "tapılmadı" kimi görünür, varlığı bildirilmir.
+ */
 const findAccessibleBooking = async (user: TokenPayload, id: string) => {
   const booking = await prisma.booking.findUnique({
     where: { id },
@@ -212,12 +218,9 @@ const findAccessibleBooking = async (user: TokenPayload, id: string) => {
     throw new Error("BOOKING_NOT_FOUND");
   }
 
-  const isCustomer =
-    user.role === "USER" && booking.customerId === user.userId;
-  const isBusiness =
-    user.role === "BUSINESS" && booking.business.userId === user.userId;
+  const isCustomer = booking.customerId === user.userId;
+  const isBusiness = booking.business.userId === user.userId;
 
-  /* Başqasının rezervi "tapılmadı" kimi görünür, varlığı bildirilmir */
   if (!isCustomer && !isBusiness) {
     throw new Error("BOOKING_NOT_FOUND");
   }
@@ -264,4 +267,22 @@ export const updateBookingStatus = async (
   });
 
   return toBookingDTO(updated);
+};
+
+/*
+ * Yalnız rezervi edən müştəri, yalnız ləğv edilmiş rezervi silə bilər.
+ * (Ləğv edilmiş rezervə rəy yazıla bilmədiyi üçün bağlı rəy olmur.)
+ */
+export const deleteBooking = async (user: TokenPayload, id: string) => {
+  const booking = await prisma.booking.findUnique({ where: { id } });
+
+  if (!booking || booking.customerId !== user.userId) {
+    throw new Error("BOOKING_NOT_FOUND");
+  }
+
+  if (booking.status !== "CANCELLED") {
+    throw new Error("NOT_DELETABLE");
+  }
+
+  await prisma.booking.delete({ where: { id } });
 };

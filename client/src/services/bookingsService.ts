@@ -6,6 +6,8 @@ export interface Booking {
   id: string;
   providerId: string;
   providerName: string;
+  /* Biznesin ərazisi, məs. "Nərimanov" */
+  area: string;
   customerId: string;
   customerName: string;
   service: string;
@@ -43,3 +45,7 @@ export const updateBookingStatus = (id: string, status: BookingStatus) =>
     method: "PATCH",
     body: { status },
   });
+
+/* Yalnız ləğv edilmiş və özünüzün etdiyiniz rezervi silmək olar */
+export const deleteBooking = (id: string) =>
+  apiRequest<{ message: string }>(`/bookings/${id}`, { method: "DELETE" });

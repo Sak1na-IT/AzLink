@@ -39,6 +39,10 @@ const handleError = (error: unknown, res: Response) => {
         return res.status(400).json({
           message: "Bu status dəyişikliyinə icazə yoxdur",
         });
+      case "NOT_DELETABLE":
+        return res.status(400).json({
+          message: "Yalnız ləğv edilmiş rezervi silmək olar",
+        });
     }
   }
 
@@ -143,6 +147,23 @@ export const updateBookingStatusHandler = async (
     );
 
     res.json(booking);
+  } catch (error) {
+    handleError(error, res);
+  }
+};
+
+export const deleteBookingHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    await bookingsService.deleteBooking(req.user, String(req.params.id));
+
+    res.json({ message: "Rezerv silindi" });
   } catch (error) {
     handleError(error, res);
   }
