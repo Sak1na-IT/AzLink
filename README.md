@@ -462,9 +462,11 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 
 ## Dizayn sistemi
 
-Əsas fikir: **"Xəzərin incisi"**. Saytın simvolu mirvaridir (`components/brand/Pearl.tsx`). Fon mirvari ağıdır, əsas rəng dərin zümrüd yaşılıdır (`#17614C`, qaranlıq rejimdə `#74D2AD`).
+Əsas fikir: **"Bakının xidmətləri bir sapda"**. Bakı "Xəzərin incisi"dir, AzLink-dəki *link* isə "bağ" deməkdir. Ona görə saytın simvolu qızılı sapa düzülmüş **mirvari boyunbağıdır**: hər mirvari bir xidmət sahəsidir (`data/categories.ts`).
 
-- **Mirvari** yalnız giriş ekranında (böyük) və Ana səhifənin başlığında (kiçik) görünür. Açılışda bir dəfə "əmələ gəlir", siçanın hərəkətinə görə işığı və sədəf çalarları dəyişir. Telefonda və "azaldılmış hərəkət" ayarında sakit qalır. Qalan hər şey bilərəkdən sakit və sadədir.
+- **Boyunbağı** (`components/brand/PearlNecklace.tsx`): real fizika ilə (Verlet) hesablanır. Açılışda yellənib yerinə oturur, mirvarilər mərkəzdən kənara bir-bir görünür. Siçan yaxınlaşanda mirvarilər tərpənir, mirvarini tutub dartmaq olur. Üstünə gələndə sahənin adı və xidmətləri görünür, klikləyəndə həmin kateqoriyanın axtarışı açılır. Klaviatura üçün eyni kateqoriyalar gizli düymələr kimi də var. "Azaldılmış hərəkət" ayarında sakit qalır.
+- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd məxmər fon, incə dən toxuması və siçanın arxasınca hərəkət edən işıq. Giriş ekranı bütövlükdə vitrindir, Ana səhifədə isə axtarış vitrin kartının içindədir. Hər iki rejimdə eyni görünür.
+- **Rənglər:** fon mirvari ağıdır, əsas rəng dərin zümrüd yaşılıdır (`#17614C`, qaranlıq rejimdə `#74D2AD`). Qızılı rəng yalnız sap və incə kənarlarda işlənir.
 - **Şrift:** Onest. Azərbaycan hərflərini (Ə ə, Ğ ğ, Ş ş, ı) və manat işarəsini (₼) tam dəstəkləyir. Fayl layihənin içindədir (`assets/fonts/`), ona görə internet olmadan da düzgün görünür.
 - **Yuxarı menyu:** şüşə effekti (arxa fon bulanıq görünür), bölmələr bir zolağın içindədir, aktiv bölmə qalxmış düymə kimi görünür.
 - Light və Dark mode dəstəklənir. Seçim brauzerin yaddaşında saxlanır (`hooks/useTheme.ts`).

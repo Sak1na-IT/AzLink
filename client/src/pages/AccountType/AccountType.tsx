@@ -1,77 +1,72 @@
+import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Building2, ChevronRight, Search } from "lucide-react";
 
-import Pearl from "../../components/brand/Pearl";
+import PearlNecklace from "../../components/brand/PearlNecklace";
+import VelvetStage from "../../components/brand/VelvetStage";
+import { isLoggedIn } from "../../services/api";
 import "./AccountType.css";
 
 function AccountType() {
   const navigate = useNavigate();
+  const zoneRef = useRef<HTMLDivElement>(null);
+
+  /* Mirvari kliklənəndə: girişlidirsə həmin sahənin axtarışı, deyilsə qeydiyyat */
+  const handleCategory = (categoryId: string) => {
+    navigate(
+      isLoggedIn() ? `/search?category=${categoryId}` : "/register?role=user"
+    );
+  };
 
   return (
     <div className="account-type-page">
-      <div className="account-type">
-        <section className="account-type__content">
+      <VelvetStage className="account-type">
+        <header className="account-type__bar">
           <span className="account-type__brand">AzLink</span>
 
-          <h1>Bakıda lazım olan xidməti tapın, vaxtınızı rezerv edin</h1>
+          <Link to="/login" className="account-type__login">
+            Daxil olun
+          </Link>
+        </header>
 
-          <p className="account-type__lead">
-            Başlamaq üçün sizə uyğun olanı seçin.
+        {/* Boyunbağının asıldığı sahə; boyunbağının özü bütün vitrini tutur */}
+        <div ref={zoneRef} className="account-type__zone" />
+
+        <div className="account-type__necklace">
+          <PearlNecklace
+            onSelect={handleCategory}
+            zoneRef={zoneRef}
+            top={-0.12}
+            sag={0.95}
+          />
+        </div>
+
+        <div className="account-type__content">
+          <h1>Bakının xidmətləri bir sapda</h1>
+
+          <p>
+            Usta, salon və mütəxəssisləri tapın, vaxtınızı onlayn rezerv
+            edin. Hər mirvari bir sahədir: birinə toxunun.
           </p>
 
-          <div className="account-type__options">
+          <div className="account-type__actions">
             <button
               type="button"
-              className="account-type__option"
+              className="velvet-button velvet-button--primary"
               onClick={() => navigate("/register?role=user")}
             >
-              <span className="account-type__icon">
-                <Search size={20} strokeWidth={1.8} />
-              </span>
-
-              <span className="account-type__text">
-                <strong>Xidmət axtarıram</strong>
-                <small>Usta tapın, profilləri müqayisə edin, rezerv edin.</small>
-              </span>
-
-              <ChevronRight
-                className="account-type__chevron"
-                size={20}
-                strokeWidth={1.8}
-              />
+              Xidmət axtarıram
             </button>
 
             <button
               type="button"
-              className="account-type__option"
+              className="velvet-button velvet-button--ghost"
               onClick={() => navigate("/register?role=business")}
             >
-              <span className="account-type__icon">
-                <Building2 size={20} strokeWidth={1.8} />
-              </span>
-
-              <span className="account-type__text">
-                <strong>Biznesim var</strong>
-                <small>Xidmətlərinizi əlavə edin, rezervləri idarə edin.</small>
-              </span>
-
-              <ChevronRight
-                className="account-type__chevron"
-                size={20}
-                strokeWidth={1.8}
-              />
+              Biznesimi əlavə edirəm
             </button>
           </div>
-
-          <p className="account-type__login">
-            Hesabınız var? <Link to="/login">Daxil olun</Link>
-          </p>
-        </section>
-
-        <div className="account-type__visual">
-          <Pearl />
         </div>
-      </div>
+      </VelvetStage>
     </div>
   );
 }

@@ -1,11 +1,14 @@
+import { useRef } from "react";
 import { MapPin, Search, ChevronRight } from "lucide-react";
 
-import Pearl from "../brand/Pearl";
+import PearlNecklace from "../brand/PearlNecklace";
+import VelvetStage from "../brand/VelvetStage";
 
 interface HomeHeroProps {
   areaLabel: string;
   onAreaClick: () => void;
   onSearch: (value: string) => void;
+  onCategorySelect: (categoryId: string) => void;
 }
 
 const quickSearches = [
@@ -20,7 +23,10 @@ function HomeHero({
   areaLabel,
   onAreaClick,
   onSearch,
+  onCategorySelect,
 }: HomeHeroProps) {
+  const zoneRef = useRef<HTMLDivElement>(null);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -33,8 +39,18 @@ function HomeHero({
   };
 
   return (
-    <section className="home-hero">
-      <Pearl size={64} className="home-hero__pearl" />
+    <VelvetStage className="home-hero">
+      {/* Boyunbağı: hər mirvari bir sahədir, klikləyəndə axtarış açılır */}
+      <div ref={zoneRef} className="home-hero__zone" />
+
+      <div className="home-hero__necklace">
+        <PearlNecklace
+          onSelect={onCategorySelect}
+          zoneRef={zoneRef}
+          top={-0.25}
+          sag={0.9}
+        />
+      </div>
 
       <h1 className="home-hero__title">
         Ehtiyacınız olan xidməti
@@ -94,7 +110,7 @@ function HomeHero({
           </button>
         ))}
       </div>
-    </section>
+    </VelvetStage>
   );
 }
 

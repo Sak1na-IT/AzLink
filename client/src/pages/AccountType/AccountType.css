@@ -1,60 +1,36 @@
 /* =========================================================
    ACCOUNT TYPE — saytın ilk ekranı
-   Solda seçim, sağda AzLink mirvarisi.
+   Bütün ekran zərgər vitrinidir: yuxarıda mirvari boyunbağı,
+   aşağıda başlıq və iki seçim.
    ========================================================= */
 
 .account-type-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
   /* AppLayout-un yan boşluqlarını ləğv edib ekranı tam tuturuq */
   margin: calc(var(--space-8) * -1) -120px calc(var(--space-16) * -1);
-  padding: 48px 120px;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Mirvarinin arxasında çox zəif işıq halqası */
-.account-type-page::before {
-  content: "";
-  position: absolute;
-  width: 900px;
-  height: 900px;
-  right: -220px;
-  top: 50%;
-  transform: translateY(-50%);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    var(--color-primary-soft) 0%,
-    transparent 62%
-  );
-  opacity: 0.7;
-  pointer-events: none;
 }
 
 .account-type {
-  position: relative;
-  width: min(1120px, 100%);
-  margin: 0 auto;
+  min-height: 100vh;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
-  align-items: center;
-  gap: 64px;
+  grid-template-rows: auto minmax(300px, 1fr) auto;
+  padding: 28px 56px 64px;
 }
 
-/* ---------- Mətn və seçimlər ---------- */
+/* ---------- Yuxarı zolaq ---------- */
 
-.account-type__content {
-  max-width: 520px;
-  animation: account-type-in 0.9s 0.35s var(--ease-out) backwards;
+.account-type__bar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .account-type__brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: var(--color-text);
+  color: var(--velvet-text);
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.04em;
@@ -62,8 +38,8 @@
 
 .account-type__brand::before {
   content: "";
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: radial-gradient(
     circle at 35% 30%,
@@ -72,135 +48,80 @@
     #cfc5ce 70%,
     #a59aa8 100%
   );
-  box-shadow:
-    inset -1px -2px 3px rgba(64, 44, 80, 0.25),
-    0 1px 3px rgba(15, 29, 24, 0.18);
-}
-
-.account-type__content h1 {
-  margin: 40px 0 0;
-  color: var(--color-text);
-  font-size: clamp(34px, 4.2vw, 52px);
-  font-weight: 650;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-}
-
-.account-type__lead {
-  margin: 18px 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xl);
-  line-height: var(--line-height-normal);
-}
-
-.account-type__options {
-  display: grid;
-  gap: 12px;
-  margin-top: 36px;
-}
-
-.account-type__option {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 18px 20px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  background: var(--color-surface);
-  color: var(--color-text);
-  text-align: left;
-  box-shadow: var(--shadow-sm);
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-normal),
-    transform var(--transition-normal);
-}
-
-.account-type__option:hover {
-  border-color: var(--color-primary);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-1px);
-}
-
-.account-type__option:active {
-  transform: translateY(0);
-}
-
-.account-type__icon {
-  width: 46px;
-  height: 46px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-}
-
-.account-type__text {
-  flex: 1;
-  min-width: 0;
-  display: grid;
-  gap: 3px;
-}
-
-.account-type__text strong {
-  font-size: var(--font-size-lg);
-  font-weight: 600;
-}
-
-.account-type__text small {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-md);
-  line-height: 1.4;
-}
-
-.account-type__chevron {
-  flex: 0 0 auto;
-  color: var(--color-text-muted);
-  transition:
-    color var(--transition-fast),
-    transform var(--transition-normal);
-}
-
-.account-type__option:hover .account-type__chevron {
-  color: var(--color-primary);
-  transform: translateX(3px);
+  box-shadow: 0 0 12px rgba(255, 244, 222, 0.35);
 }
 
 .account-type__login {
-  margin: 24px 0 0;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-md);
-}
-
-.account-type__login a {
-  color: var(--color-primary);
+  padding: 9px 18px;
+  border: 1px solid var(--velvet-line);
+  border-radius: 999px;
+  color: var(--velvet-text);
+  font-size: 14px;
   font-weight: 600;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
-.account-type__login a:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.account-type__login:hover {
+  border-color: var(--velvet-gold);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-/* ---------- Mirvari ---------- */
+/* ---------- Boyunbağı ---------- */
 
-.account-type__visual {
+.account-type__zone {
+  min-height: 300px;
+}
+
+/* Bütün vitrini tutur: dartılan mirvari başlığın üstünə də gələ bilər */
+.account-type__necklace {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* ---------- Başlıq və seçimlər ---------- */
+
+.account-type__content {
+  position: relative;
+  z-index: 2;
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+  animation: account-type-in 1s 1.3s var(--ease-out) backwards;
+}
+
+.account-type__content h1 {
+  margin: 0;
+  color: var(--velvet-text);
+  font-size: clamp(38px, 5.4vw, 72px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.045em;
+}
+
+.account-type__content p {
+  max-width: 520px;
+  margin: 20px auto 0;
+  color: var(--velvet-text-muted);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.account-type__actions {
   display: flex;
   justify-content: center;
-  align-items: center;
-}
-
-.account-type__visual .pearl {
-  --pearl-size: clamp(260px, 30vw, 420px);
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
 }
 
 @keyframes account-type-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(14px);
   }
 
   to {
@@ -217,57 +138,38 @@
   .account-type-page {
     margin-left: -28px;
     margin-right: -28px;
+  }
+
+  .account-type {
     padding-left: 28px;
     padding-right: 28px;
   }
 
-  .account-type {
-    gap: 40px;
-  }
-}
-
-@media (max-width: 860px) {
-  .account-type {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  /* Telefonda mirvari yuxarıda, ortada; loqodakı kiçik mirvari gizlənir */
-  .account-type__visual {
-    order: -1;
-    padding: 8px 0 28px;
-  }
-
-  .account-type__visual .pearl {
-    --pearl-size: 168px;
-  }
-
-  .account-type__brand::before {
-    display: none;
-  }
-
-  .account-type__content h1 {
-    margin-top: 28px;
-  }
-
-  .account-type-page::before {
-    width: 560px;
-    height: 560px;
-    right: auto;
-    left: 50%;
-    top: -120px;
-    transform: translateX(-50%);
-  }
 }
 
 @media (max-width: 760px) {
   .account-type-page {
     margin: -20px -16px -40px;
-    padding: 32px 16px 40px;
-    align-items: flex-start;
   }
 
-  .account-type__option {
-    padding: 16px;
+  .account-type {
+    grid-template-rows: auto minmax(240px, 1fr) auto;
+    padding: 20px 16px 40px;
+  }
+
+  .account-type__zone {
+    min-height: 240px;
+  }
+
+  .account-type__content p {
+    font-size: 15px;
+  }
+
+  .account-type__actions {
+    flex-direction: column;
+  }
+
+  .account-type__actions .velvet-button {
+    width: 100%;
   }
 }

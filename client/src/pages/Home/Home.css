@@ -8,27 +8,44 @@
 
 .home-hero {
   width: 100%;
-  padding: 44px 24px 26px;
+  padding: 0 24px 34px;
+  border: 1px solid rgba(232, 204, 146, 0.16);
+  border-radius: 32px;
   text-align: center;
+  box-shadow: var(--shadow-lg);
 }
 
-.home-hero__pearl {
-  margin: 0 auto 26px;
+/* Boyunbağının asıldığı sahə (başlığın üstü) */
+.home-hero__zone {
+  height: 240px;
+}
+
+/* Boyunbağı bütün kartı tutur, kliklər altdakı elementlərə keçir */
+.home-hero__necklace {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.home-hero > :not(.home-hero__necklace) {
+  position: relative;
+  z-index: 2;
 }
 
 .home-hero__title {
   margin: 0;
-  color: var(--color-text);
-  font-size: clamp(34px, 4.4vw, 54px);
-  font-weight: 650;
-  letter-spacing: -0.035em;
-  line-height: var(--line-height-tight);
+  color: var(--velvet-text);
+  font-size: clamp(34px, 4.4vw, 56px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
 }
 
 .home-hero__description {
-  width: min(100%, 680px);
+  width: min(100%, 620px);
   margin: 16px auto 0;
-  color: var(--color-text-secondary);
+  color: var(--velvet-text-muted);
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
 }
@@ -140,16 +157,16 @@
 
 .quick-searches__label {
   margin-right: 2px;
-  color: var(--color-text-muted);
+  color: var(--velvet-text-muted);
   font-size: var(--font-size-xs);
 }
 
 .quick-searches__item {
-  padding: 7px 12px;
-  border: 1px solid var(--color-border);
+  padding: 7px 14px;
+  border: 1px solid var(--velvet-line);
   border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--velvet-text);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   cursor: pointer;
@@ -160,9 +177,8 @@
 }
 
 .quick-searches__item:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
+  border-color: var(--velvet-gold);
+  background: rgba(255, 255, 255, 0.09);
 }
 
 
@@ -543,7 +559,16 @@
 
 @media (max-width: 760px) {
   .home-hero {
-    padding: 28px 8px 22px;
+    padding: 0 14px 22px;
+    border-radius: 24px;
+  }
+
+  .home-hero__zone {
+    height: 170px;
+  }
+
+  .home-hero__title br {
+    display: none;
   }
 
   .home-hero__title {

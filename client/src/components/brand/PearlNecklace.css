@@ -1,0 +1,95 @@
+.necklace {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.necklace__canvas {
+  /* Mütləq mövqe: kanvasın ölçüsü səhifənin ölçüsünü dəyişməsin */
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Kliklər altdakı düymələrə keçir; mirvarini tutmaq JS ilə işləyir */
+  pointer-events: none;
+}
+
+/* Mirvarinin altında çıxan ad: şüşə kimi, qızılı incə kənarla */
+.necklace__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  gap: 2px;
+  min-width: 140px;
+  max-width: 220px;
+  padding: 9px 14px 10px;
+  border: 1px solid rgba(232, 204, 146, 0.35);
+  border-radius: 14px;
+  background: rgba(6, 22, 18, 0.72);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  color: #f3f1ec;
+  text-align: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 160ms var(--ease-out);
+  will-change: transform;
+}
+
+.necklace__label.is-visible {
+  opacity: 1;
+}
+
+.necklace__label strong {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.necklace__label span {
+  color: rgba(243, 241, 236, 0.66);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+/* Gizli, amma klaviatura ilə fokuslananda görünən düymələr */
+.necklace__a11y {
+  position: absolute;
+  pointer-events: auto;
+  left: 50%;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+  transform: translateX(-50%);
+}
+
+.necklace__a11y button {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  padding: 0;
+  border: 0;
+}
+
+.necklace__a11y:focus-within button {
+  position: static;
+  width: auto;
+  height: auto;
+  clip: auto;
+  padding: 6px 12px;
+  border: 1px solid rgba(232, 204, 146, 0.4);
+  border-radius: 999px;
+  background: rgba(6, 22, 18, 0.8);
+  color: #f3f1ec;
+  font-size: 13px;
+}
