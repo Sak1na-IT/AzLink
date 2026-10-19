@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, CalendarCheck, Shield, Tag, X } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 interface HelpItem {
+  icon: LucideIcon;
   title: string;
   description: string;
   content: string;
@@ -9,6 +11,7 @@ interface HelpItem {
 
 const items: HelpItem[] = [
   {
+    icon: Shield,
     title: "Profilə baxarkən nələrə diqqət etməli?",
     description:
       "Reytinq, rəylər, xidmətlər və qiymət məlumatlarını necə oxumaq olar.",
@@ -21,6 +24,7 @@ Profildəki xidmətlər siyahısını nəzərdən keçirin: hər xidmətin qiym�
 Ərazi və məsafə məlumatına da baxın — profilin sizə nə qədər yaxın olduğunu göstərir.`,
   },
   {
+    icon: Tag,
     title: "Xidmət qiymətləri necə göstərilir?",
     description:
       "Başlayan qiymət və xidmət üzrə dəqiq məbləğ arasındakı fərq.",
@@ -31,6 +35,7 @@ Dəqiq məbləğ profil səhifəsindəki xidmətlər siyahısında göstərilir 
 Son qiymət seçdiyiniz konkret xidmətdən, əlavə tələblərdən və bəzən ərazidən asılı olaraq dəyişə bilər. Rezerv etməzdən əvvəl provider ilə dəqiqləşdirməyiniz tövsiyə olunur.`,
   },
   {
+    icon: CalendarCheck,
     title: "Rezervdən əvvəl nəyi yoxlamaq olar?",
     description:
       "Tarix, saat, xidmət müddəti və əlavə ödənişləri əvvəlcədən nəzərdən keçirin.",
@@ -57,6 +62,9 @@ function HelpfulInfo() {
       <div className="helpful-info">
         {items.map((item) => (
           <div className="helpful-info__card" key={item.title}>
+            <span className="helpful-info__icon">
+              <item.icon size={18} strokeWidth={1.7} />
+            </span>
             <strong>{item.title}</strong>
             <p>{item.description}</p>
 

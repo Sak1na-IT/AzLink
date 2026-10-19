@@ -122,6 +122,10 @@
      TRANSITIONS
      ========================= */
 
+  /* Qızılı vurğu (premium detallar: ulduz, nömrə, incə xətt) */
+  --color-gold: #a9822f;
+  --color-gold-soft: rgba(169, 130, 47, 0.14);
+
   /* Yumşaq dayanan hərəkət əyrisi (interaktiv elementlər üçün) */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
@@ -146,6 +150,9 @@
    ========================================= */
 
 [data-theme="dark"] {
+  --color-gold: #e6c98a;
+  --color-gold-soft: rgba(230, 201, 138, 0.12);
+
   --color-bg: #121915;
   --color-surface: #1B241F;
   --color-surface-soft: #22372C;

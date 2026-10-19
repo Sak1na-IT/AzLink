@@ -1,6 +1,8 @@
 import { CalendarDays, ChevronRight, Clock } from "lucide-react";
 
 import type { Booking } from "../../services/bookingsService";
+import { formatDuration } from "../../utils/formatDuration";
+import { formatRelativeDay, getDayParts } from "../../utils/formatDate";
 
 interface UpcomingBookingsProps {
   bookings: Booking[];
@@ -15,15 +17,10 @@ const statusLabel: Record<Booking["status"], string> = {
   COMPLETED: "Tamamlanıb",
 };
 
-function formatDate(dateStr: string) {
-  const date = new Date(dateStr);
-
-  return date.toLocaleDateString("az-AZ", {
-    day: "numeric",
-    month: "long",
-  });
-}
-
+/*
+ * Növbəti rezervlər "bilet" kimi göstərilir: solda tarix,
+ * qırıq xətt, sağda xidmət, usta, saat və status.
+ */
 function UpcomingBookings({
   bookings,
   onBookingClick,
@@ -61,37 +58,60 @@ function UpcomingBookings({
         </div>
       ) : (
         <div className="upcoming-bookings">
-          {upcoming.map((booking) => (
-            <button
-              key={booking.id}
-              type="button"
-              className="upcoming-bookings__item"
-              onClick={() => onBookingClick(booking.id)}
-            >
-              <div className="upcoming-bookings__icon">
-                <CalendarDays size={18} strokeWidth={1.8} />
-              </div>
+          {upcoming.map((booking) => {
+            const { day, monthShort, weekday } = getDayParts(booking.date);
 
-              <div className="upcoming-bookings__body">
-                <strong>{booking.providerName}</strong>
-                <p>{booking.service}</p>
-              </div>
+            return (
+              <button
+                key={booking.id}
+                type="button"
+                className="upcoming-bookings__item"
+                onClick={() => onBookingClick(booking.id)}
+              >
+                {/* Tarix bloku */}
+                <div className="upcoming-bookings__date">
+                  <strong>{day}</strong>
+                  <span>{monthShort}</span>
+                </div>
 
-              <div className="upcoming-bookings__meta">
-                <span className="upcoming-bookings__time">
-                  <Clock size={13} strokeWidth={1.8} />
-                  {formatDate(booking.date)} · {booking.time}
-                </span>
-                <span
-                  className={`upcoming-bookings__status upcoming-bookings__status--${booking.status.toLowerCase()}`}
-                >
-                  {statusLabel[booking.status]}
-                </span>
-              </div>
+                <div className="upcoming-bookings__body">
+                  <span className="upcoming-bookings__when">
+                    {formatRelativeDay(booking.date)} · {weekday}
+                    <span className="upcoming-bookings__when-time">
+                      {" · "}
+                      {booking.time}
+                    </span>
+                  </span>
+                  <strong>{booking.service}</strong>
+                  <p>
+                    {booking.providerName}
+                    {booking.area ? ` · ${booking.area}` : ""}
+                  </p>
+                </div>
 
-              <ChevronRight size={16} strokeWidth={1.8} />
-            </button>
-          ))}
+                <div className="upcoming-bookings__meta">
+                  <span className="upcoming-bookings__time">
+                    <Clock size={14} strokeWidth={1.8} />
+                    {booking.time}
+                    {booking.duration ? (
+                      <small>{formatDuration(booking.duration)}</small>
+                    ) : null}
+                  </span>
+                  <span
+                    className={`upcoming-bookings__status upcoming-bookings__status--${booking.status.toLowerCase()}`}
+                  >
+                    {statusLabel[booking.status]}
+                  </span>
+                </div>
+
+                <ChevronRight
+                  className="upcoming-bookings__chevron"
+                  size={18}
+                  strokeWidth={1.8}
+                />
+              </button>
+            );
+          })}
         </div>
       )}
     </section>

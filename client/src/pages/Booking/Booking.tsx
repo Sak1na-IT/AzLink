@@ -33,6 +33,7 @@ import {
 } from "../../types/schedule";
 import type { ProviderService } from "../../types/provider";
 import { formatDuration } from "../../utils/formatDuration";
+import { formatReadable, monthShort, weekdayShort } from "../../utils/formatDate";
 import "./Booking.css";
 
 /* Saatlar arasındakı addım (dəqiqə) */
@@ -104,24 +105,15 @@ const formatDateKey = (date: Date) => {
 /*
  * 2026-09-24 → "cümə axşamı, 24 sentyabr"
  */
-const formatReadableDate = (dateKey: string) => {
-  const date = new Date(`${dateKey}T00:00:00`);
+const formatReadableDate = (dateKey: string) =>
+  formatReadable(new Date(`${dateKey}T00:00:00`));
 
-  return date.toLocaleDateString("az-AZ", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-};
+/* Brauzerin "az-AZ" lokalı bəzi sistemlərdə "M10" göstərir, ona görə özümüz formatlayırıq */
+const getWeekDay = (date: Date) => weekdayShort(date);
 
-const getWeekDay = (date: Date) =>
-  date.toLocaleDateString("az-AZ", { weekday: "short" });
+const getDayNumber = (date: Date) => String(date.getDate());
 
-const getDayNumber = (date: Date) =>
-  date.toLocaleDateString("az-AZ", { day: "numeric" });
-
-const getMonthName = (date: Date) =>
-  date.toLocaleDateString("az-AZ", { month: "short" });
+const getMonthName = (date: Date) => monthShort(date);
 
 /* "14:30" → 870 */
 const toMinutes = (time: string) => {

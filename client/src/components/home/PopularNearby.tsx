@@ -1,4 +1,5 @@
 import {
+  CheckCircle2,
   ChevronRight,
   MapPin,
   Star,
@@ -71,16 +72,25 @@ function PopularNearby({
                         alt={provider.name}
                       />
                     ) : (
-                      <>
+                      /* Şəkil yoxdursa: sahənin ikonu böyük və zərif */
+                      <span className="popular-card__emblem">
                         <Icon
-                          size={28}
-                          strokeWidth={1.6}
+                          size={30}
+                          strokeWidth={1.5}
                         />
-                        <span className="popular-card__image-label">
-                          Nümunə şəkil
-                        </span>
-                      </>
+                      </span>
                     )}
+
+                    {provider.verified && (
+                      <span className="popular-card__verified">
+                        <CheckCircle2 size={13} strokeWidth={2} />
+                        Təsdiqlənib
+                      </span>
+                    )}
+
+                    <span className="popular-card__price">
+                      {provider.priceFrom} ₼-dən
+                    </span>
                   </div>
 
                   {/* ---------- BODY ---------- */}
@@ -108,15 +118,10 @@ function PopularNearby({
                         ` · ${provider.distance} km`}
                     </p>
 
-                    <p className="popular-card__status">
-                      {provider.verified
-                        ? "Təsdiqlənib"
-                        : "Təsdiqlənməyib"}
-                      {" · "}
-                      <strong>
-                        {provider.priceFrom} ₼-dən
-                      </strong>
-                    </p>
+                    <span className="popular-card__cta">
+                      Profilə bax
+                      <ChevronRight size={14} strokeWidth={1.9} />
+                    </span>
                   </div>
                 </button>
               );

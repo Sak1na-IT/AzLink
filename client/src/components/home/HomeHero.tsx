@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
 import { MapPin, Search, ChevronRight } from "lucide-react";
 
+import VelvetStage from "../brand/VelvetStage";
+import { getStoredUser } from "../../services/api";
+import { getCategoryVisual } from "../../utils/categoryVisual";
+
 interface HomeHeroProps {
   areaLabel: string;
   onAreaClick: () => void;
@@ -29,8 +33,17 @@ const quickSearches = [
   "Təmizlik",
   "Fotoqraf",
   "Saç",
-  "Elektrik",
+  "Avtoyuma",
 ];
+
+/* Günün vaxtına görə salam */
+const getGreeting = () => {
+  const hour = new Date().getHours();
+
+  if (hour >= 5 && hour < 12) return "Sabahınız xeyir";
+  if (hour >= 12 && hour < 18) return "Günortanız xeyir";
+  return "Axşamınız xeyir";
+};
 
 function HomeHero({
   areaLabel,
@@ -97,10 +110,17 @@ function HomeHero({
     }
   };
 
+  const firstName = getStoredUser()?.name?.trim().split(" ")[0];
+
   return (
-    <section className="home-hero">
+    <VelvetStage className="home-hero">
+      {/* Arxada çox yavaş fırlanan incə qızılı halqalar */}
+      <span className="home-hero__ring" aria-hidden="true" />
+      <span className="home-hero__ring home-hero__ring--inner" aria-hidden="true" />
+
       <div className="home-hero__eyebrow">
-        Bakı · AzLink
+        {getGreeting()}
+        {firstName ? `, ${firstName}` : ""}
       </div>
 
       <h1 className="home-hero__title">
@@ -151,18 +171,23 @@ function HomeHero({
           Məsələn:
         </span>
 
-        {quickSearches.map((item) => (
-          <button
-            key={item}
-            type="button"
-            className="quick-searches__item"
-            onClick={() => onSearch(item)}
-          >
-            {item}
-          </button>
-        ))}
+        {quickSearches.map((item) => {
+          const Icon = getCategoryVisual(item).icon;
+
+          return (
+            <button
+              key={item}
+              type="button"
+              className="quick-searches__item"
+              onClick={() => onSearch(item)}
+            >
+              <Icon size={14} strokeWidth={1.8} />
+              {item}
+            </button>
+          );
+        })}
       </div>
-    </section>
+    </VelvetStage>
   );
 }
 
