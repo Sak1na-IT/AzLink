@@ -105,6 +105,15 @@ export const createBooking = async (
       throw new Error("SERVICE_NOT_FOUND");
     }
 
+    /* Biznes sahibi öz biznesinə rezerv edə bilməz */
+    const business = await tx.business.findUnique({
+      where: { id: service.businessId },
+    });
+
+    if (business?.userId === customerId) {
+      throw new Error("OWN_BUSINESS");
+    }
+
     /* İş saatları yoxlaması */
     const availability = await tx.availability.findMany({
       where: { businessId: service.businessId },

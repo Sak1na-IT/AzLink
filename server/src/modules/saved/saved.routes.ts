@@ -5,11 +5,15 @@ import {
   addSavedHandler,
   removeSavedHandler,
 } from "./saved.controller";
-import { authenticate, requireRole } from "../../middleware/authenticate";
+import { authenticate } from "../../middleware/authenticate";
 
 const router = Router();
 
-router.use(authenticate, requireRole("USER"));
+/*
+ * Hər iki rol üçün açıqdır: biznes hesabı da başqa ustaları
+ * seçilmişlərə əlavə edə bilir (öz biznesi istisnadır, service-də yoxlanılır).
+ */
+router.use(authenticate);
 
 router.get("/", listSavedHandler);
 router.post("/:providerId", addSavedHandler);

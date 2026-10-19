@@ -3,6 +3,8 @@ import type { Response } from "express";
 import type { AuthenticatedRequest } from "../../middleware/authenticate";
 import * as businessService from "./business.service";
 import * as dashboardService from "./business-dashboard.service";
+import { listReviewsByProvider } from "../reviews/reviews.service";
+import { prisma } from "../../config/prisma";
 
 export const getBusinessProfileHandler = async (
   req: AuthenticatedRequest,
@@ -105,6 +107,32 @@ export const getCustomersHandler = async (
     const customers = await dashboardService.getCustomers(req.user.userId);
 
     res.json(customers);
+  } catch (error) {
+    handleDashboardError(error, res);
+  }
+};
+
+/* GET /api/business/reviews — biznesin özünə yazılmış rəylər, ən yenisi birinci */
+export const getBusinessReviewsHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    const business = await prisma.business.findUnique({
+      where: { userId: req.user.userId },
+    });
+
+    if (!business) {
+      throw new Error("BUSINESS_NOT_FOUND");
+    }
+
+    const reviews = await listReviewsByProvider(business.id);
+
+    res.json(reviews);
   } catch (error) {
     handleDashboardError(error, res);
   }

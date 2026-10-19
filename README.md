@@ -202,9 +202,9 @@ client/
     ├── components/
     │   ├── AreaSelector/        ← ərazi seçimi modalı (rayonlar və metro)
     │   ├── account/             ← ChangePasswordModal (şifrə dəyişmə pəncərəsi)
-    │   ├── business/            ← BusinessLayout ("Biznesim" alt-naviqasiyası), BusinessPlaceholder
+    │   ├── business/            ← BusinessLayout ("Biznesim" alt-naviqasiyası)
     │   ├── home/                ← HomeHero, UpcomingBookings, PopularNearby, TodayOverview,
-    │   │                          RecentlyViewed, HowItWorks, HelpfulInfo
+    │   │                          HowItWorks, HelpfulInfo
     │   └── layout/              ← AppLayout, TopNav, BusinessSubNav ("Rezerv et" alt-naviqasiyası)
     │
     ├── data/
@@ -335,7 +335,7 @@ Hər modul üç fayla bölünür: `<ad>.service.ts` (Prisma sorğuları), `<ad>.
 
 - Qeydiyyat zamanı seçilən rol (`USER` və ya `BUSINESS`) hesabın "əsas kimliyini" təyin edir. Biznes hesabı öz panelini (`/business/*`) idarə edir, adi istifadəçi hesabı isə ora girə bilmir.
 - Rezerv etmək, seçilmişlərə əlavə etmək və rəy yazmaq üçün rol məhdudiyyəti **yoxdur**, yalnız giriş edilmiş olmaq kifayətdir. Biznes hesabı ilə girib başqa ustaya rezerv etmək olar.
-- Biznes sahibi öz biznesinə rezerv edə bilməz, öz biznesi axtarışda görünmür.
+- Biznes sahibi öz biznesinə rezerv edə bilməz (həm frontend, həm backend yoxlayır), öz biznesi axtarışda görünmür.
 - `GET /api/bookings` hər iki növü qaytarır: özünün **müştəri kimi etdiyi** rezervlər və (biznesi varsa) **ona gələn** rezervlər. Frontend bunları `customerId`-yə görə ayırır.
 - Eyni email ilə təkrar qeydiyyat cəhdi dəqiq mesaj verir və hansı rolla qeydiyyatdan keçdiyini bildirir.
 
@@ -384,7 +384,7 @@ Köhnə `/business-profile`, `/business-services` və s. yolları yeni `/busines
 Business hesabında:
 
 - **Biznesim** altında alt-naviqasiya: Dashboard, Profil, Xidmətlər, Rezervlər, Portfolio, Rəylər, Müştərilər, İş saatları.
-- **Rezerv et** altında alt-naviqasiya: Kəşf et, Seçilmişlər, Mənim rezervlərim (`BusinessSubNav`). Business hesabında `/bookings` səhifəsində "Mənim rezervlərim" və "Biznes rezervlərim" tabları var.
+- **Rezerv et** altında alt-naviqasiya: Kəşf et, Seçilmişlər, Mənim rezervlərim (`BusinessSubNav`). `/bookings` yalnız hesabın özünün başqa bizneslərə etdiyi rezervləri göstərir; biznesə gələn rezervlər "Biznesim → Rezervlər" (`/business/bookings`) bölməsindədir.
 - **Profil** biznes sahibinin şəxsi hesabıdır (ad, email, telefon, şifrə), biznes vitrini isə "Biznesim → Profil"dir. Bu ikisi qarışdırılmır.
 
 ### Rezerv statusları
@@ -508,7 +508,7 @@ GET    /api/bookings/:id
 PATCH  /api/bookings/:id        → status keçid qaydaları (yuxarıda)
 DELETE /api/bookings/:id        → ləğv edilmiş rezervi silir
 
-Seçilmişlər                     ← giriş tələb olunur
+Seçilmişlər                     ← giriş tələb olunur (hər iki rol; öz biznesini əlavə etmək olmur)
 GET    /api/saved
 POST   /api/saved/:providerId
 DELETE /api/saved/:providerId
@@ -523,6 +523,7 @@ GET    /api/business/profile
 PATCH  /api/business/profile    → ad, kateqoriya, ərazi, telefon, təsvir, iş saatları (schedule)
 GET    /api/business/dashboard  → xidmət/rezerv/gəlir/müştəri sayları, profil tamamlanma faizi
 GET    /api/business/customers  → müştəri siyahısı, qruplaşdırılıb
+GET    /api/business/reviews    → biznesə yazılmış rəylər
 GET    /api/business/services
 POST   /api/business/services
 PATCH  /api/business/services/:id

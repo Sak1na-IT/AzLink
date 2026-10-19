@@ -7,18 +7,19 @@ import {
   MapPin,
   Plus,
   Star,
+  Trash2,
   X,
   XCircle,
 } from "lucide-react";
 
 import {
+  deleteBooking,
   getBookings,
   updateBookingStatus,
   type Booking,
   type BookingStatus,
 } from "../../services/bookingsService";
 import { getMyReviews, createReview } from "../../services/reviewsService";
-import { getProviders } from "../../services/providersService";
 import { getStoredUser } from "../../services/api";
 import { formatDuration } from "../../utils/formatDuration";
 import "./Bookings.css";
@@ -44,7 +45,6 @@ function Bookings() {
   const currentUser = getStoredUser();
 
   const [bookings, setBookings] = useState<Booking[]>([]);
-  const [areaByProvider, setAreaByProvider] = useState<Record<string, string>>({});
   const [reviewedBookingIds, setReviewedBookingIds] = useState<Set<string>>(() => new Set());
 
   const [isLoading, setIsLoading] = useState(true);
@@ -61,9 +61,8 @@ function Bookings() {
     try {
       setError("");
 
-      const [allBookings, providers, myReviews] = await Promise.all([
+      const [allBookings, myReviews] = await Promise.all([
         getBookings(),
-        getProviders().catch(() => []),
         getMyReviews().catch(() => []),
       ]);
 
@@ -73,12 +72,6 @@ function Bookings() {
       );
 
       setBookings(mine);
-
-      const areaMap: Record<string, string> = {};
-      providers.forEach((provider) => {
-        areaMap[provider.id] = provider.area;
-      });
-      setAreaByProvider(areaMap);
 
       setReviewedBookingIds(
         new Set(myReviews.map((review) => review.bookingId))
@@ -143,12 +136,30 @@ function Bookings() {
     }
   };
 
+  /* Yalnız ləğv edilmiş rezerv silinə bilər (backend də bunu yoxlayır) */
+  const handleDelete = async (id: string) => {
+    const confirmed = window.confirm(
+      "Ləğv edilmiş rezervi siyahıdan silmək istəyirsiniz?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      await deleteBooking(id);
+      setBookings((current) =>
+        current.filter((booking) => booking.id !== id)
+      );
+    } catch {
+      alert("Rezervi silmək mümkün olmadı.");
+    }
+  };
+
   const formatDate = (date: string) => {
     const [year, month, day] = date.split("-");
     return `${day}.${month}.${year}`;
   };
-
-  const getArea = (providerId: string) => areaByProvider[providerId] ?? "—";
 
   const openReviewForm = (booking: Booking) => {
     setReviewTarget(booking);
@@ -377,7 +388,7 @@ function Bookings() {
 
                       <div>
                         <span>Ərazi</span>
-                        <strong>{getArea(booking.providerId)}</strong>
+                        <strong>{booking.area || "—"}</strong>
                       </div>
                     </div>
 
@@ -408,6 +419,17 @@ function Bookings() {
                       >
                         <XCircle size={16} strokeWidth={1.8} />
                         Rezervi ləğv et
+                      </button>
+                    ) : null}
+
+                    {isCancelled ? (
+                      <button
+                        type="button"
+                        className="booking-card__cancel-button"
+                        onClick={() => handleDelete(booking.id)}
+                      >
+                        <Trash2 size={16} strokeWidth={1.8} />
+                        Sil
                       </button>
                     ) : null}
 

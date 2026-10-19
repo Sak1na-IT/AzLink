@@ -16,6 +16,10 @@ export const getReviewsByProvider = (providerId: string) =>
     auth: false,
   });
 
+/* Biznes hesabı: öz biznesinə yazılmış rəylər */
+export const getBusinessReviews = () =>
+  apiRequest<Review[]>("/business/reviews");
+
 export const getMyReviews = () => apiRequest<Review[]>("/reviews/mine");
 
 export const createReview = (input: {

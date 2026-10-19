@@ -127,7 +127,9 @@ export const apiRequest = async <T>(
     if (newToken) {
       response = await doFetch(newToken);
     } else {
+      /* Giriş müddəti bitib: tokenləri sil və giriş səhifəsinə qaytar */
       clearTokens();
+      window.location.assign("/account-type");
     }
   }
 

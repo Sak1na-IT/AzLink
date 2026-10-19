@@ -2,7 +2,6 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import AppLayout from "./components/layout/AppLayout";
 import BusinessLayout from "./components/business/BusinessLayout";
-import BusinessPlaceholder from "./components/business/BusinessPlaceholder";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Home from "./pages/Home/Home";
@@ -24,6 +23,7 @@ import BusinessBookings from "./pages/BusinessBookings/BusinessBookings";
 import BusinessCustomers from "./pages/BusinessCustomers/BusinessCustomers";
 import BusinessPortfolio from "./pages/BusinessPortfolio/BusinessPortfolio";
 import BusinessHours from "./pages/BusinessHours/BusinessHours";
+import BusinessReviews from "./pages/BusinessReviews/BusinessReviews";
 
 function App() {
   return (
@@ -128,10 +128,7 @@ function App() {
           <Route path="services" element={<BusinessServices />} />
           <Route path="bookings" element={<BusinessBookings />} />
           <Route path="portfolio" element={<BusinessPortfolio />} />
-          <Route
-            path="reviews"
-            element={<BusinessPlaceholder title="Rəylər" />}
-          />
+          <Route path="reviews" element={<BusinessReviews />} />
           <Route path="customers" element={<BusinessCustomers />} />
           <Route path="hours" element={<BusinessHours />} />
         </Route>

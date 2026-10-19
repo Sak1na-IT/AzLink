@@ -5,6 +5,7 @@ import {
   patchBusinessProfileHandler,
   getDashboardHandler,
   getCustomersHandler,
+  getBusinessReviewsHandler,
 } from "./business.controller";
 import businessServicesRoutes from "./business-services.routes";
 import businessPortfolioRoutes from "./business-portfolio.routes";
@@ -18,6 +19,7 @@ router.get("/profile", getBusinessProfileHandler);
 router.patch("/profile", patchBusinessProfileHandler);
 router.get("/dashboard", getDashboardHandler);
 router.get("/customers", getCustomersHandler);
+router.get("/reviews", getBusinessReviewsHandler);
 
 router.use("/services", businessServicesRoutes);
 router.use("/portfolio", businessPortfolioRoutes);

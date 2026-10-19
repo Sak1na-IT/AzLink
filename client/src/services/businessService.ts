@@ -1,4 +1,4 @@
-import { apiRequest } from "./api";
+import { ApiError, apiRequest } from "./api";
 
 export type WeekDay =
   | "monday"
@@ -36,8 +36,29 @@ export const defaultWeeklySchedule: WeeklySchedule = {
   sunday: { isOpen: false, start: "10:00", end: "20:00" },
 };
 
-export const getBusinessProfile = () =>
-  apiRequest<BusinessProfile>("/business/profile");
+/*
+ * Profil hələ yaradılmayıbsa (backend 404 qaytarır), boş forma qaytarılır:
+ * beləcə biznes sahibi profil və ya iş saatları səhifəsində onu doldurub
+ * yadda saxlaya bilir, səhifə xətada ilişib qalmır.
+ */
+export const getBusinessProfile = async (): Promise<BusinessProfile> => {
+  try {
+    return await apiRequest<BusinessProfile>("/business/profile");
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 404) {
+      return {
+        businessName: "",
+        category: "",
+        areaId: "",
+        phone: "",
+        description: "",
+        schedule: defaultWeeklySchedule,
+      };
+    }
+
+    throw error;
+  }
+};
 
 export const saveBusinessProfile = (profile: BusinessProfile) =>
   apiRequest<BusinessProfile>("/business/profile", {

@@ -93,6 +93,8 @@ export const getBusinessProfileByUserId = async (userId: string) => {
   }
 
   return {
+    /* Frontend "Profilə bax" keçidi üçün istifadə edir */
+    id: business.id,
     businessName: business.name,
     category: business.categories[0]?.name ?? "",
     areaId: business.areaId,

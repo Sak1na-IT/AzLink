@@ -31,6 +31,10 @@ const handleError = (error: unknown, res: Response) => {
         return res.status(400).json({
           message: "Seçilən vaxt biznesin iş saatlarına uyğun deyil",
         });
+      case "OWN_BUSINESS":
+        return res
+          .status(400)
+          .json({ message: "Öz biznesinizə rezerv edə bilməzsiniz" });
       case "SLOT_TAKEN":
         return res.status(409).json({ message: "Bu vaxt artıq doludur" });
       case "BOOKING_NOT_FOUND":
