@@ -101,7 +101,42 @@ export const getBusinessProfileByUserId = async (userId: string) => {
     phone: business.phone,
     description: business.description ?? "",
     schedule,
+    logoUrl: business.logoUrl,
+    coverUrl: business.coverUrl,
+    coverPosition: business.coverPosition,
   };
+};
+
+export interface BrandingInput {
+  logoUrl?: string | null;
+  coverUrl?: string | null;
+  coverPosition?: number;
+}
+
+/*
+ * Profil şəkli, üz qabığı və onun mövqeyi ayrıca yadda saxlanılır:
+ * forma göndərilmədən, şəkil seçilən kimi dəyişir.
+ * null göndərilsə şəkil silinir.
+ */
+export const saveBranding = async (userId: string, input: BrandingInput) => {
+  const existing = await prisma.business.findUnique({ where: { userId } });
+
+  if (!existing) {
+    throw new Error("BUSINESS_NOT_FOUND");
+  }
+
+  await prisma.business.update({
+    where: { userId },
+    data: {
+      ...(input.logoUrl !== undefined ? { logoUrl: input.logoUrl } : {}),
+      ...(input.coverUrl !== undefined ? { coverUrl: input.coverUrl } : {}),
+      ...(input.coverPosition !== undefined
+        ? { coverPosition: input.coverPosition }
+        : {}),
+    },
+  });
+
+  return getBusinessProfileByUserId(userId);
 };
 
 /*

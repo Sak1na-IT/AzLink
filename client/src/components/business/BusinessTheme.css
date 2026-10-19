@@ -861,3 +861,308 @@ body .account-profile__logout:hover {
     align-items: flex-start;
   }
 }
+
+/* =========================================================
+   PROFİL ŞƏKLİ VƏ ÜZ QABIĞI — redaktə
+   ========================================================= */
+
+.business-layout .business-profile__cover {
+  height: 220px;
+  touch-action: none;
+}
+
+.business-layout .business-profile__cover img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Sürüşdürmə rejimi */
+.business-layout .business-profile__cover.is-adjusting {
+  cursor: grab;
+  outline: 2px solid #e6c98a;
+  outline-offset: -2px;
+}
+
+.business-layout .business-profile__cover.is-adjusting:active {
+  cursor: grabbing;
+}
+
+.business-layout .business-profile__cover.is-adjusting::after {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px) 0 0 / 100% 33.33%,
+    linear-gradient(180deg, transparent 40%, rgba(8, 26, 21, 0.35));
+}
+
+.business-layout .business-profile__cover .business-profile__drag-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.business-profile__cover-tools {
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.business-profile__cover-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(217, 184, 116, 0.45);
+  border-radius: 999px;
+  background: rgba(8, 26, 21, 0.68);
+  color: #f6f1e7;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition:
+    background-color 220ms var(--ease-out),
+    border-color 220ms var(--ease-out);
+}
+
+.business-profile__cover-button:hover:not(:disabled) {
+  border-color: #e6c98a;
+  background: rgba(8, 26, 21, 0.85);
+}
+
+.business-profile__cover-button--gold,
+.business-profile__cover-button--gold:hover:not(:disabled) {
+  border-color: transparent;
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+}
+
+.business-profile__cover-button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Üz qabığı seçimi paneli */
+.business-profile__cover-picker {
+  margin-top: 12px;
+  padding: 18px 24px 20px;
+  border: 1px solid rgba(217, 184, 116, 0.35);
+  border-radius: 24px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  animation: picker-in 280ms var(--ease-out);
+}
+
+.business-profile__cover-picker-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  margin-bottom: 14px;
+}
+
+.business-profile__cover-picker-head strong {
+  color: var(--color-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.business-profile__cover-picker-head span {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.business-profile__cover-options {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+}
+
+.business-profile__cover-upload,
+.business-profile__cover-option {
+  flex: 0 0 auto;
+  width: 150px;
+  height: 92px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+.business-profile__cover-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px dashed rgba(169, 130, 47, 0.6);
+  background: var(--color-surface);
+  color: var(--color-gold);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.business-profile__cover-upload:hover:not(:disabled) {
+  background: var(--color-gold-soft);
+}
+
+.business-profile__cover-option {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  border: 2px solid transparent;
+  background: var(--color-surface);
+  transition:
+    border-color 220ms var(--ease-out),
+    transform 220ms var(--ease-out);
+}
+
+.business-profile__cover-option img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.business-profile__cover-option:hover:not(:disabled) {
+  border-color: rgba(217, 184, 116, 0.7);
+  transform: translateY(-2px);
+}
+
+.business-profile__cover-option.is-selected {
+  border-color: #d9b874;
+  box-shadow: 0 0 0 3px var(--color-gold-soft);
+}
+
+.business-profile__text-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.business-profile__text-button:hover {
+  color: var(--color-danger);
+}
+
+/* Profil şəkli: düymə kimi, üzərinə gələndə "Dəyiş" */
+.business-profile__avatar-wrap {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  margin-top: -48px;
+}
+
+.business-layout .business-profile__avatar-wrap .business-profile__avatar {
+  position: relative;
+  overflow: hidden;
+  margin-top: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.business-layout .business-profile__avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.business-profile__avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border-radius: 50%;
+  background: rgba(8, 26, 21, 0.62);
+  color: #f6e3b4;
+  font-family: "Onest", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 220ms var(--ease-out);
+}
+
+.business-profile__avatar:hover .business-profile__avatar-overlay,
+.business-profile__avatar:focus-visible .business-profile__avatar-overlay {
+  opacity: 1;
+}
+
+.business-profile__avatar-remove {
+  position: absolute;
+  right: -2px;
+  top: 2px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.business-profile__avatar-remove:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.business-profile__branding-note {
+  margin: 12px 0 0;
+  color: var(--color-gold);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.business-profile__branding-tip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 0 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+@keyframes picker-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (max-width: 700px) {
+  .business-layout .business-profile__cover {
+    height: 170px;
+  }
+
+  /* Telefonda nişan düymələrə mane olmasın */
+  .business-layout .business-profile__cover > span:not(.business-profile__drag-hint) {
+    display: none;
+  }
+
+  .business-profile__cover-upload,
+  .business-profile__cover-option {
+    width: 120px;
+    height: 76px;
+  }
+}

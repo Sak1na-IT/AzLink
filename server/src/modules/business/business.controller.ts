@@ -67,6 +67,54 @@ export const patchBusinessProfileHandler = async (
   }
 };
 
+/* data:image/...;base64 formatında şəkil, və ya silmək üçün null */
+const isImageValue = (value: unknown) =>
+  value === null ||
+  (typeof value === "string" && /^data:image\/[a-z+]+;base64,/i.test(value));
+
+/* PATCH /api/business/profile/branding — profil şəkli, üz qabığı, mövqe */
+export const patchBrandingHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    const { logoUrl, coverUrl, coverPosition } = req.body ?? {};
+
+    if (logoUrl !== undefined && !isImageValue(logoUrl)) {
+      return res.status(400).json({ message: "Profil şəkli düzgün deyil" });
+    }
+
+    if (coverUrl !== undefined && !isImageValue(coverUrl)) {
+      return res.status(400).json({ message: "Üz qabığı şəkli düzgün deyil" });
+    }
+
+    if (
+      coverPosition !== undefined &&
+      (!Number.isInteger(coverPosition) ||
+        coverPosition < 0 ||
+        coverPosition > 100)
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Mövqe 0 ilə 100 arasında olmalıdır" });
+    }
+
+    const profile = await businessService.saveBranding(req.user.userId, {
+      logoUrl,
+      coverUrl,
+      coverPosition,
+    });
+
+    res.json(profile);
+  } catch (error) {
+    handleDashboardError(error, res);
+  }
+};
+
 const handleDashboardError = (error: unknown, res: Response) => {
   if (error instanceof Error && error.message === "BUSINESS_NOT_FOUND") {
     return res

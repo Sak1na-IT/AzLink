@@ -21,7 +21,9 @@ export const listSaved = async (userId: string) => {
   return saved.map((item) => ({
     ...toProviderDTO(item.business),
     /* Portfoliodakı ilk şəkil kartın üz qabığıdır */
-    image: item.business.portfolio[0]?.imageUrl ?? null,
+    image:
+      item.business.coverUrl ?? item.business.portfolio[0]?.imageUrl ?? null,
+    logo: item.business.logoUrl,
   }));
 };
 

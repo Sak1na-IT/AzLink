@@ -70,6 +70,9 @@ function PopularNearby({
                       <img
                         src={provider.image}
                         alt={provider.name}
+                        style={{
+                          objectPosition: `50% ${provider.coverPosition ?? 50}%`,
+                        }}
                       />
                     ) : (
                       /* Şəkil yoxdursa: sahənin ikonu böyük və zərif */

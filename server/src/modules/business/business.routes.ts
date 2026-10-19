@@ -3,6 +3,7 @@ import { Router } from "express";
 import {
   getBusinessProfileHandler,
   patchBusinessProfileHandler,
+  patchBrandingHandler,
   getDashboardHandler,
   getCustomersHandler,
   getBusinessReviewsHandler,
@@ -17,6 +18,7 @@ router.use(authenticate, requireRole("BUSINESS"));
 
 router.get("/profile", getBusinessProfileHandler);
 router.patch("/profile", patchBusinessProfileHandler);
+router.patch("/profile/branding", patchBrandingHandler);
 router.get("/dashboard", getDashboardHandler);
 router.get("/customers", getCustomersHandler);
 router.get("/reviews", getBusinessReviewsHandler);

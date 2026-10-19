@@ -19,6 +19,10 @@ export interface Provider {
   priceFrom: number;
   verified: boolean;
   image?: string;
+  /* Üz qabığının şaquli mövqeyi (0–100, faiz) */
+  coverPosition?: number;
+  /* Profil şəkli (loqo) */
+  logo?: string | null;
 
   /* Backend-dən gələnlər */
   ownerId?: string;

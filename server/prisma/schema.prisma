@@ -60,6 +60,11 @@ model Business {
   areaId      String
   phone       String
   verified    Boolean  @default(false)
+  /// Profil şəkli (loqo) və üz qabığı: data URL kimi saxlanılır
+  logoUrl       String?
+  coverUrl      String?
+  /// Üz qabığının şaquli mövqeyi, faizlə (0 = yuxarı, 100 = aşağı)
+  coverPosition Int      @default(50)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

@@ -280,8 +280,9 @@ function Provider() {
         <main className="provider-main">
           <section className="provider-hero-card">
             <div className="provider-avatar-large">
-              {provider.image ? (
-                <img src={provider.image} alt={provider.name} />
+              {/* Profil şəkli (loqo), yoxdursa üz qabığı */}
+              {provider.logo || provider.image ? (
+                <img src={provider.logo || provider.image} alt={provider.name} />
               ) : (
                 <span>{initials}</span>
               )}

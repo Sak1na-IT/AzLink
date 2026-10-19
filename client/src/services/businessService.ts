@@ -24,7 +24,23 @@ export interface BusinessProfile {
   phone: string;
   description: string;
   schedule: WeeklySchedule;
+  logoUrl?: string | null;
+  coverUrl?: string | null;
+  coverPosition?: number;
 }
+
+export interface BrandingInput {
+  logoUrl?: string | null;
+  coverUrl?: string | null;
+  coverPosition?: number;
+}
+
+/* Profil şəkli, üz qabığı və onun mövqeyi (null = sil) */
+export const saveBranding = (input: BrandingInput) =>
+  apiRequest<BusinessProfile>("/business/profile/branding", {
+    method: "PATCH",
+    body: input,
+  });
 
 export const defaultWeeklySchedule: WeeklySchedule = {
   monday: { isOpen: true, start: "10:00", end: "20:00" },
@@ -53,6 +69,9 @@ export const getBusinessProfile = async (): Promise<BusinessProfile> => {
         phone: "",
         description: "",
         schedule: defaultWeeklySchedule,
+        logoUrl: null,
+        coverUrl: null,
+        coverPosition: 50,
       };
     }
 
