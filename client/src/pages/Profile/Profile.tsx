@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Bell,
   CheckCircle2,
+  ChevronRight,
   LogOut,
   Mail,
   Pencil,
@@ -21,6 +22,7 @@ import { getSavedProviders } from "../../services/savedService";
 import { getMyReviewCount } from "../../services/activityService";
 import { getMe, logout } from "../../services/authService";
 import { getStoredUser, type AuthUser } from "../../services/api";
+import { formatDayMonth } from "../../utils/formatDate";
 import "./Profile.css";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -202,6 +204,15 @@ function Profile() {
 
   const showCount = (value: number) => (isLoaded ? value : "–");
 
+  /* "Səkinə Paşazadə" → "SP" */
+  const initials = name
+    .trim()
+    .split(/\s+/)
+    .map((word) => word[0])
+    .slice(0, 2)
+    .join("")
+    .toLocaleUpperCase("az");
+
   return (
     <div className="profile-page">
       <div className="profile-page__header">
@@ -221,7 +232,7 @@ function Profile() {
 
         <section className="profile-card">
           <div className="profile-avatar">
-            <User size={34} strokeWidth={1.8} />
+            {initials || <User size={34} strokeWidth={1.8} />}
           </div>
 
           <div className="profile-card__content">
@@ -397,7 +408,7 @@ function Profile() {
                     <strong>{booking.providerName}</strong>
                     <span>{booking.service}</span>
                     <span className="profile-booking-item__date">
-                      {booking.date} · {booking.time}
+                      {formatDayMonth(booking.date)} · {booking.time}
                     </span>
                   </div>
 
@@ -408,7 +419,10 @@ function Profile() {
                       {STATUS_LABEL[booking.status]}
                     </span>
 
-                    <strong>{booking.priceFrom} ₼</strong>
+                    <strong>
+                      {booking.priceFrom}
+                      <small className="manat">₼</small>
+                    </strong>
                   </div>
                 </div>
               ))}
@@ -445,6 +459,12 @@ function Profile() {
                 <strong>Hesab məlumatları</strong>
                 <span>Ad, email, telefon və şəxsi məlumatlar</span>
               </div>
+
+              <ChevronRight
+                className="profile-menu__chevron"
+                size={18}
+                strokeWidth={1.8}
+              />
             </button>
 
             <button type="button" className="profile-menu__item">
@@ -456,6 +476,12 @@ function Profile() {
                 <strong>Bildirişlər</strong>
                 <span>Rezerv və digər bildiriş seçimləri</span>
               </div>
+
+              <ChevronRight
+                className="profile-menu__chevron"
+                size={18}
+                strokeWidth={1.8}
+              />
             </button>
 
             <button
@@ -471,6 +497,12 @@ function Profile() {
                 <strong>Təhlükəsizlik</strong>
                 <span>Şifrə və hesab təhlükəsizliyi</span>
               </div>
+
+              <ChevronRight
+                className="profile-menu__chevron"
+                size={18}
+                strokeWidth={1.8}
+              />
             </button>
           </div>
         </section>

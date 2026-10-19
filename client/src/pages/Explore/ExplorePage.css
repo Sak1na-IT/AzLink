@@ -286,3 +286,181 @@
     min-height: 94px;
   }
 }
+/* =========================================================
+   PREMIUM QAT — şəkilli kateqoriya vitrinləri
+   ========================================================= */
+
+.explore-header__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-gold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-size: 12px;
+}
+
+.explore-header__eyebrow::after {
+  content: "";
+  width: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+
+.explore-header h1,
+.explore-section__header h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.explore-header h1 {
+  font-size: clamp(40px, 5vw, 58px);
+  line-height: 1;
+}
+
+.explore-section__header h2 {
+  font-size: 32px;
+}
+
+.explore-section__header span {
+  color: var(--color-gold);
+  letter-spacing: 0.14em;
+}
+
+.explore-search {
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+}
+
+.explore-search:focus-within {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 4px var(--color-gold-soft);
+}
+
+/* Kart: foto və ya zümrüd məxmər, mətn aşağıda */
+.explore-category-card {
+  overflow: hidden;
+  isolation: isolate;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 12px;
+  min-height: 220px;
+  padding: 18px;
+  border: 1px solid rgba(217, 184, 116, 0.28);
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.1), transparent 50%),
+    radial-gradient(circle at 70% 90%, #1d5a49 0%, #0b241d 100%);
+  color: #f6f1e7;
+  box-shadow: 0 14px 34px rgba(12, 36, 29, 0.16);
+  transition:
+    transform 420ms var(--ease-out),
+    box-shadow 420ms var(--ease-out),
+    border-color 300ms var(--ease-out);
+}
+
+.explore-category-card:hover {
+  border-color: rgba(230, 201, 138, 0.7);
+  background:
+    radial-gradient(circle at 25% 15%, rgba(255, 255, 255, 0.1), transparent 50%),
+    radial-gradient(circle at 70% 90%, #1d5a49 0%, #0b241d 100%);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px rgba(12, 36, 29, 0.28);
+}
+
+.explore-category-card__photo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform 900ms var(--ease-out);
+}
+
+.explore-category-card:hover .explore-category-card__photo {
+  transform: scale(1.09);
+}
+
+.explore-category-card__shade {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(8, 26, 21, 0.05) 0%, rgba(8, 26, 21, 0.35) 45%, rgba(8, 26, 21, 0.92) 100%);
+  pointer-events: none;
+}
+
+/* Qızılı haşiyəli medalyon */
+.explore-category-card__icon {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  color: #f6e3b4;
+  background:
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.explore-category-card__content h3 {
+  color: #fff;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.explore-category-card__content span {
+  margin-top: 6px;
+  color: rgba(246, 241, 231, 0.8);
+  font-size: 12.5px;
+}
+
+.explore-category-card__arrow {
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(230, 201, 138, 0.45);
+  background: rgba(8, 26, 21, 0.45);
+  color: #f6e3b4;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.explore-category-card:hover .explore-category-card__arrow {
+  color: #1c160a;
+  background: #e6c98a;
+  transform: translateX(3px);
+}
+
+.explore-category-card__content {
+  padding-right: 42px;
+}
+
+@media (max-width: 520px) {
+  .explore-category-card {
+    min-height: 180px;
+    padding: 14px;
+  }
+
+  .explore-category-card__content h3 {
+    font-size: 21px;
+  }
+
+  .explore-header h1 {
+    font-size: 38px;
+  }
+}

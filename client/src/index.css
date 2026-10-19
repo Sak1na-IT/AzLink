@@ -45,3 +45,12 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* ₼ işarəsi: serif rəqəmin yanında yüngül və kiçik */
+.manat {
+  margin-left: 0.12em;
+  font-family: "Onest", sans-serif;
+  font-size: 0.66em;
+  font-weight: 400;
+  vertical-align: 0.12em;
+}

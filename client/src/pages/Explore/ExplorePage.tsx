@@ -51,7 +51,7 @@ function ExplorePage() {
     );
   }, [search]);
 
-  const getProviderCount = (categoryServices: string[]) => {
+  const getCategoryProviders = (categoryServices: string[]) => {
     const wanted = categoryServices.map(normalize);
 
     return providers.filter((provider) => {
@@ -60,7 +60,7 @@ function ExplorePage() {
       );
 
       return names.some((name) => wanted.includes(name));
-    }).length;
+    });
   };
 
   const handleCategoryClick = (categoryId: string) => {
@@ -123,9 +123,14 @@ function ExplorePage() {
           <div className="explore-category-grid">
             {filteredCategories.map((category) => {
               const Icon = category.icon;
-              const providerCount = isLoading
-                ? null
-                : getProviderCount(category.services);
+              const inCategory = getCategoryProviders(category.services);
+              const providerCount = isLoading ? null : inCategory.length;
+              /* Kartın fonu: bu sahədəki ilk şəkilli biznesin üz qabığı */
+              const cover = inCategory.find((provider) => provider.image)?.image;
+              const prices = inCategory
+                .map((provider) => provider.priceFrom)
+                .filter((price) => price > 0);
+              const priceFrom = prices.length ? Math.min(...prices) : null;
 
               return (
                 <button
@@ -134,6 +139,16 @@ function ExplorePage() {
                   className="explore-category-card"
                   onClick={() => handleCategoryClick(category.id)}
                 >
+                  {cover ? (
+                    <img
+                      className="explore-category-card__photo"
+                      src={cover}
+                      alt=""
+                      loading="lazy"
+                    />
+                  ) : null}
+                  <span className="explore-category-card__shade" />
+
                   <div className="explore-category-card__icon">
                     <Icon size={25} strokeWidth={1.8} />
                   </div>
@@ -149,6 +164,9 @@ function ExplorePage() {
                           : providerCount === 1
                             ? "1 usta"
                             : `${providerCount} usta`}
+                      {priceFrom !== null && providerCount
+                        ? ` · ${priceFrom} ₼-dən`
+                        : ""}
                     </span>
                   </div>
 

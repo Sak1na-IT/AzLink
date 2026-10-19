@@ -1,38 +1,41 @@
 :root {
   /* =========================
      COLORS — LIGHT MODE
-     (təmiz, yumşaq adaçayı: ağ da yoxdur, duman da)
      ========================= */
 
-  --color-bg: #CFDDD2;
-  --color-surface: #DFEAE1;
-  --color-surface-soft: #C4D6C9;
-  --color-surface-muted: #D6E3D9;
+  /*
+   * İşıqlı rejim: çini ağı fon, ağ kartlar, zümrüd əsas rəng.
+   * (Əvvəlki tutqun adaçayı tonlar yerinə daha təmiz və premium.)
+   */
+  --color-bg: #F1F2EE;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #E8ECE6;
+  --color-surface-muted: #F7F7F4;
 
-  --color-primary: #2E7D5B;
-  --color-primary-hover: #256A4D;
-  --color-primary-soft: #CBE0D1;
+  --color-primary: #17614C;
+  --color-primary-hover: #114E3D;
+  --color-primary-soft: #E2EEE8;
 
-  --color-text: #14291E;
-  --color-text-secondary: #33493C;
-  --color-text-muted: #4B6154;
+  --color-text: #12201A;
+  --color-text-secondary: #3E4B45;
+  --color-text-muted: #6B7671;
 
-  --color-border: #B6CABB;
-  --color-border-strong: #A3BAA9;
+  --color-border: #E2E4DE;
+  --color-border-strong: #CBD1C9;
 
-  --color-success: #2E7D5B;
-  --color-warning: #A9761A;
-  --color-danger: #B94343;
-  --color-info: #46709C;
+  --color-success: #17614C;
+  --color-warning: #A86E12;
+  --color-danger: #B3403C;
+  --color-info: #2F6690;
 
   /* =========================
      SHADOWS (demək olar yoxdur)
      ========================= */
 
-  --shadow-xs: 0 1px 2px rgba(20, 41, 30, 0.04);
-  --shadow-sm: 0 1px 3px rgba(20, 41, 30, 0.05);
-  --shadow-md: 0 2px 8px rgba(20, 41, 30, 0.06);
-  --shadow-lg: 0 8px 24px rgba(20, 41, 30, 0.08);
+  --shadow-xs: 0 1px 2px rgba(18, 32, 26, 0.04);
+  --shadow-sm: 0 1px 2px rgba(18, 32, 26, 0.04), 0 4px 14px rgba(18, 32, 26, 0.05);
+  --shadow-md: 0 2px 4px rgba(18, 32, 26, 0.04), 0 10px 28px rgba(18, 32, 26, 0.07);
+  --shadow-lg: 0 4px 10px rgba(18, 32, 26, 0.05), 0 22px 50px rgba(18, 32, 26, 0.10);
 
   /* =========================
      BORDER RADIUS

@@ -6,6 +6,8 @@ export interface Booking {
   id: string;
   providerId: string;
   providerName: string;
+  /* Biznesin üz qabığı şəkli (portfoliodakı ilk şəkil), yoxdursa null */
+  providerImage?: string | null;
   /* Biznesin ərazisi, məs. "Nərimanov" */
   area: string;
   customerId: string;

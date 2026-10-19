@@ -36,7 +36,8 @@ const DEFAULT_SLOTS: Slot[] = [1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
 }));
 
 const bookingInclude = {
-  business: { include: { area: true } },
+  /* portfolio: kartda biznesin üz qabığı şəkli üçün */
+  business: { include: { area: true, portfolio: { take: 1 } } },
   customer: true,
   service: true,
 } as const;
@@ -65,6 +66,7 @@ const toBookingDTO = (booking: BookingWithRelations) => ({
   id: booking.id,
   providerId: booking.businessId,
   providerName: booking.business.name,
+  providerImage: booking.business.portfolio[0]?.imageUrl ?? null,
   area: booking.business.area.name,
   customerId: booking.customerId,
   customerName: booking.customer.name,

@@ -521,3 +521,355 @@
     justify-content: space-between;
   }
 }
+/* =========================================================
+   PREMIUM QAT — Profilim
+   Profil kartı zümrüd məxmər "üzvlük kartı"dır, qalan
+   bölmələr açıq səthdə qızılı detallarla.
+   ========================================================= */
+
+.profile-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: var(--color-gold);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.profile-page__eyebrow::after {
+  content: "";
+  width: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+
+.profile-page__header h1 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.profile-card,
+.profile-section {
+  border-radius: 24px;
+}
+
+/* ---------- Üzvlük kartı ---------- */
+
+.profile-card {
+  overflow: hidden;
+  isolation: isolate;
+  align-items: center;
+  gap: 24px;
+  padding: 30px;
+  border: 1px solid rgba(217, 184, 116, 0.35);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.1), transparent 45%),
+    radial-gradient(circle at 85% 120%, #1d5a49 0%, #0b241d 70%);
+  color: #f6f1e7;
+  box-shadow: 0 24px 50px rgba(12, 36, 29, 0.22);
+}
+
+/* İncə qızılı xətlər — kart naxışı */
+.profile-card::after {
+  content: "";
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  z-index: -1;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  border: 1px solid rgba(217, 184, 116, 0.16);
+  box-shadow: 0 0 0 26px transparent, 0 0 0 27px rgba(217, 184, 116, 0.1);
+  pointer-events: none;
+}
+
+.profile-avatar {
+  width: 96px;
+  height: 96px;
+  flex: 0 0 96px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.2), transparent 50%) padding-box,
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4, #a8823f, #f6e3b4) border-box;
+  color: #f6e3b4;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.45),
+    0 0 0 8px rgba(217, 184, 116, 0.06),
+    0 0 40px rgba(240, 205, 140, 0.18);
+}
+
+.profile-card__name-row h2 {
+  color: #fff;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.profile-status {
+  border: 1px solid rgba(217, 184, 116, 0.4);
+  background: rgba(217, 184, 116, 0.1);
+  color: #f6e3b4;
+}
+
+.profile-card__email {
+  color: rgba(246, 241, 231, 0.72);
+}
+
+.profile-card .profile-secondary-button {
+  border-radius: 999px;
+  border-color: rgba(217, 184, 116, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+  color: #f6f1e7;
+}
+
+.profile-card .profile-secondary-button:hover {
+  border-color: #e6c98a;
+  background: rgba(217, 184, 116, 0.14);
+  color: #fff;
+}
+
+.profile-card .profile-primary-button {
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+}
+
+.profile-card__content label {
+  color: rgba(246, 241, 231, 0.8);
+}
+
+.profile-card__content input {
+  border-color: rgba(217, 184, 116, 0.3);
+  background: rgba(0, 0, 0, 0.22);
+  color: #fff;
+}
+
+.profile-card__content input:focus {
+  border-color: #e6c98a;
+  box-shadow: 0 0 0 3px rgba(217, 184, 116, 0.18);
+}
+
+.profile-card__content input:disabled {
+  color: rgba(246, 241, 231, 0.55);
+}
+
+.profile-card__logout {
+  border-radius: 50%;
+  border-color: rgba(217, 184, 116, 0.3);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(246, 241, 231, 0.75);
+}
+
+/* ---------- Bölmələr ---------- */
+
+.profile-section {
+  padding: 28px 30px;
+}
+
+.profile-section__header h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.profile-section__link {
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+/* Statistika: qızılı serif rəqəmlər */
+.profile-stat {
+  position: relative;
+  padding: 24px 12px 20px;
+  border-radius: 18px;
+  background: var(--color-surface-muted);
+  transition:
+    border-color 300ms var(--ease-out),
+    transform 420ms var(--ease-out),
+    box-shadow 420ms var(--ease-out);
+}
+
+.profile-stat:hover {
+  border-color: rgba(169, 130, 47, 0.5);
+  background: var(--color-surface-muted);
+  transform: translateY(-3px);
+  box-shadow: 0 16px 30px rgba(12, 36, 29, 0.1);
+}
+
+.profile-stat--static:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.profile-stat strong {
+  color: var(--color-gold);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 46px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.profile-stat span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Son rezervlər: bilet kimi */
+.profile-booking-item {
+  position: relative;
+  padding: 16px 18px 16px 22px;
+  border-radius: 16px;
+}
+
+.profile-booking-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #f6e3b4, #a8823f);
+}
+
+.profile-booking-item__left strong {
+  font-size: 15px;
+}
+
+.profile-booking-item__date {
+  color: var(--color-gold) !important;
+  font-weight: 600;
+}
+
+.profile-booking-item__right strong {
+  color: var(--color-text);
+  font-family: "Cormorant Garamond", "Onest", Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.profile-booking-status {
+  padding: 4px 10px;
+  font-size: 11px;
+  opacity: 1;
+}
+
+.profile-booking-status--pending {
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  color: var(--color-warning);
+  opacity: 1;
+}
+
+.profile-booking-status--confirmed,
+.profile-booking-status--completed {
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
+  opacity: 1;
+}
+
+.profile-booking-status--cancelled {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+  opacity: 1;
+}
+
+/* Menyu: medalyon ikon + ox */
+.profile-menu {
+  gap: 4px;
+}
+
+.profile-menu__item {
+  padding: 14px;
+  border-radius: 16px;
+  transition:
+    background-color 260ms var(--ease-out),
+    border-color 260ms var(--ease-out);
+}
+
+.profile-menu__item > div:not(.profile-menu__icon) {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.profile-menu__item strong {
+  font-size: 15px;
+}
+
+.profile-menu__icon {
+  width: 44px;
+  height: 44px;
+  flex-basis: 44px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  color: #f6e3b4;
+}
+
+.profile-menu__chevron {
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition:
+    color 260ms var(--ease-out),
+    transform 260ms var(--ease-out);
+}
+
+.profile-menu__item:hover .profile-menu__chevron {
+  color: var(--color-gold);
+  transform: translateX(3px);
+}
+
+@media (max-width: 600px) {
+  .profile-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+  }
+
+  .profile-avatar {
+    width: 78px;
+    height: 78px;
+    flex-basis: 78px;
+    font-size: 30px;
+  }
+
+  .profile-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .profile-stat {
+    padding: 18px 6px 14px;
+  }
+
+  .profile-stat strong {
+    font-size: 34px;
+  }
+
+  .profile-stat span {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+}

@@ -22,6 +22,7 @@ import {
 import { getMyReviews, createReview } from "../../services/reviewsService";
 import { getStoredUser } from "../../services/api";
 import { formatDuration } from "../../utils/formatDuration";
+import { formatRelativeDay, getDayParts } from "../../utils/formatDate";
 import "./Bookings.css";
 
 const statusLabels: Record<BookingStatus, string> = {
@@ -156,9 +157,10 @@ function Bookings() {
     }
   };
 
+  /* "24 sentyabr 2026" — brauzer lokalından asılı olmadan */
   const formatDate = (date: string) => {
-    const [year, month, day] = date.split("-");
-    return `${day}.${month}.${year}`;
+    const { day, month } = getDayParts(date);
+    return `${day} ${month} ${date.slice(0, 4)}`;
   };
 
   const openReviewForm = (booking: Booking) => {
@@ -337,7 +339,17 @@ function Bookings() {
                 <article className={cardClassName} key={booking.id}>
                   <div className="booking-card__top">
                     <div className="booking-card__provider">
-                      <div className="booking-card__avatar">{initials}</div>
+                      <div className="booking-card__avatar">
+                        {booking.providerImage ? (
+                          <img
+                            src={booking.providerImage}
+                            alt=""
+                            loading="lazy"
+                          />
+                        ) : (
+                          initials
+                        )}
+                      </div>
 
                       <div>
                         <h2>{booking.providerName}</h2>
@@ -371,6 +383,9 @@ function Bookings() {
                       <div>
                         <span>Tarix</span>
                         <strong>{formatDate(booking.date)}</strong>
+                        {!isCancelled && !isCompleted ? (
+                          <small>{formatRelativeDay(booking.date)}</small>
+                        ) : null}
                       </div>
                     </div>
 
@@ -395,7 +410,10 @@ function Bookings() {
                     <div className="booking-card__detail">
                       <div>
                         <span>Qiymət</span>
-                        <strong>{booking.priceFrom} ₼</strong>
+                        <strong className="booking-card__price">
+                          {booking.priceFrom}
+                          <small className="manat">₼</small>
+                        </strong>
                       </div>
                     </div>
                   </div>

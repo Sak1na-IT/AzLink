@@ -181,7 +181,10 @@ function Saved() {
 
                   <div className="saved-card__price">
                     <span>Başlanğıc</span>
-                    <strong>{provider.priceFrom} ₼</strong>
+                    <strong>
+                      {provider.priceFrom}
+                      <small className="manat">₼</small>
+                    </strong>
                   </div>
                 </button>
 

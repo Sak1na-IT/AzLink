@@ -642,3 +642,223 @@
   font-size: var(--font-size-sm);
   text-align: center;
 }
+/* =========================================================
+   PREMIUM QAT — Rezervlərim
+   ========================================================= */
+
+.bookings-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--color-gold);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+}
+
+.bookings-page__eyebrow::after {
+  content: "";
+  width: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+
+.bookings-page__header h1 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(40px, 5vw, 56px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.bookings-page__new-button {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 10px 24px rgba(169, 130, 47, 0.25);
+}
+
+.bookings-page__new-button:hover {
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 30px rgba(169, 130, 47, 0.35);
+}
+
+/* Filtrlər: həb formalı seçici */
+.bookings-page__filters {
+  border-radius: 999px;
+  padding: 5px;
+  box-shadow: var(--shadow-sm);
+}
+
+.bookings-page__filter {
+  border-radius: 999px;
+  padding: 0 16px;
+  transition:
+    background-color 260ms var(--ease-out),
+    color 260ms var(--ease-out);
+}
+
+.bookings-page__filter.is-active {
+  background: linear-gradient(135deg, #1d5a49, #0d2a22);
+  color: #f6e3b4;
+  box-shadow: 0 6px 16px rgba(12, 36, 29, 0.25);
+}
+
+/* Kart: solda qızılı zolaq */
+.booking-card {
+  position: relative;
+  overflow: hidden;
+  padding: 26px 26px 22px 30px;
+  border-radius: 24px;
+  transition:
+    border-color 300ms var(--ease-out),
+    transform 420ms var(--ease-out),
+    box-shadow 420ms var(--ease-out);
+}
+
+.booking-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #f6e3b4, #a8823f);
+}
+
+.booking-card--cancelled::before {
+  background: var(--color-border-strong);
+}
+
+.booking-card:hover {
+  border-color: rgba(169, 130, 47, 0.45);
+  transform: translateY(-3px);
+  box-shadow: 0 22px 44px rgba(12, 36, 29, 0.12);
+}
+
+/* Avatar: biznesin şəkli, qızılı haşiyə */
+.booking-card__avatar {
+  width: 62px;
+  height: 62px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  color: #f6e3b4;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(12, 36, 29, 0.2);
+}
+
+.booking-card__avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.booking-card__provider h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+/* Status: tema rənglərindən */
+.booking-card__status--confirmed {
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
+}
+
+.booking-card__status--pending {
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  color: var(--color-warning);
+}
+
+.booking-card__status--cancelled {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.booking-card__details {
+  border-top-style: dashed;
+  border-bottom-style: dashed;
+}
+
+.booking-card__detail > svg {
+  color: var(--color-gold);
+}
+
+.booking-card__detail span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.booking-card__detail strong {
+  font-size: 15px;
+}
+
+.booking-card__detail > div > small {
+  display: block;
+  margin-top: 3px;
+  color: var(--color-gold);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.booking-card__detail strong.booking-card__price {
+  font-family: "Cormorant Garamond", "Onest", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.booking-card__provider-button,
+.booking-card__cancel-button {
+  border-radius: 999px;
+  padding: 0 16px;
+}
+
+.booking-card__provider-button:hover {
+  border-color: var(--color-gold);
+  background: var(--color-gold-soft);
+  color: var(--color-text);
+}
+
+@media (max-width: 600px) {
+  .bookings-page__filters {
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .bookings-page__filter {
+    flex-shrink: 0;
+  }
+
+  .booking-card {
+    padding: 22px 18px 18px 22px;
+  }
+
+  .booking-card__details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 18px;
+  }
+
+  .booking-card__provider h2 {
+    font-size: 23px;
+  }
+}
