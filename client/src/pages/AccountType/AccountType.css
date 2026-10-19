@@ -1,7 +1,7 @@
 /* =========================================================
    ACCOUNT TYPE — saytın ilk ekranı
    Tünd zümrüd vitrin: solda başlıq və iki seçim, sağda
-   mərkəzə bağlı 8 xidmət sahəsi (ServiceConstellation).
+   AzLink-ə qızılı saplarla bağlı 8 xidmət medalyonu (ServiceBoutique).
    ========================================================= */
 
 .account-type-page {
@@ -64,7 +64,7 @@
 .account-type__content {
   position: relative;
   z-index: 4;
-  max-width: 540px;
+  max-width: 620px;
 }
 
 /* Başlıq: klassik serif şrift, sözlər açılışda bir-bir üzə çıxır */
@@ -72,7 +72,7 @@
   margin: 0;
   color: var(--velvet-text);
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(48px, 5.2vw, 80px);
+  font-size: clamp(44px, 4.4vw, 70px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: -0.012em;
@@ -139,7 +139,8 @@
 .account-type__facts dt {
   color: var(--velvet-text);
   font-variant-numeric: lining-nums;
-  font-family: "Cormorant Garamond", Georgia, serif;
+  /* ₼ işarəsi Cormorant-da yoxdur, Onest-dən götürülür */
+  font-family: "Cormorant Garamond", "Onest", Georgia, serif;
   font-size: 34px;
   font-weight: 500;
   line-height: 1;

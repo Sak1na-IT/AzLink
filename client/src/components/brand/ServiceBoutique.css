@@ -1,0 +1,425 @@
+/* =========================================================
+   SERVICE BOUTIQUE — qızılı haşiyəli medalyonlar
+   VelvetStage içində işlənir (--velvet-* dəyişənləri oradandır).
+   ========================================================= */
+
+.boutique {
+  --gold-1: #f6e3b4;
+  --gold-2: #d9b874;
+  --gold-3: #a8823f;
+  --gold-4: #6f5427;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 380px;
+  touch-action: pan-y;
+}
+
+.boutique__dust,
+.boutique__threads {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.boutique__threads {
+  overflow: visible;
+}
+
+.boutique__thread {
+  fill: none;
+  stroke: url(#boutique-gold);
+  stroke-linecap: round;
+}
+
+/* ---------- Mərkəz: AzLink medalyonu ---------- */
+
+.boutique__core {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 128px;
+  height: 128px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  padding: 4px;
+  background: conic-gradient(
+    from 210deg,
+    var(--gold-1),
+    var(--gold-3),
+    var(--gold-2),
+    var(--gold-4),
+    var(--gold-1),
+    var(--gold-3),
+    var(--gold-1)
+  );
+  box-shadow:
+    0 0 0 10px rgba(217, 184, 116, 0.06),
+    0 0 80px rgba(240, 205, 140, 0.22),
+    0 24px 50px rgba(0, 0, 0, 0.5);
+  animation: core-in 1.2s var(--ease-out) backwards;
+}
+
+.boutique__core strong {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255, 255, 255, 0.18), transparent 55%),
+    radial-gradient(circle at 50% 60%, #1e5c4b 0%, #0d2a22 100%);
+  color: var(--gold-1);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+
+.boutique__core-ring {
+  position: absolute;
+  inset: -22px;
+  border-radius: 50%;
+  border: 1px dashed rgba(217, 184, 116, 0.3);
+  animation: ring-turn 50s linear infinite;
+}
+
+/* ---------- Medalyonlar ---------- */
+
+.boutique__medal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  justify-items: center;
+  padding: 0;
+  background: none;
+  color: var(--velvet-text, #f6f1e7);
+  opacity: 0;
+  cursor: grab;
+  touch-action: none;
+  will-change: transform;
+}
+
+.boutique__medal:active {
+  cursor: grabbing;
+}
+
+/* Qızılı haşiyə + zümrüd emal üz */
+.boutique__face {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--gold-1);
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.22), transparent 50%),
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(
+        from 200deg,
+        var(--gold-1),
+        var(--gold-3),
+        var(--gold-2),
+        var(--gold-4),
+        var(--gold-1),
+        var(--gold-3),
+        var(--gold-1)
+      )
+      border-box;
+  border: 3px solid transparent;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 14px 30px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(0, 0, 0, 0.25);
+  transition: box-shadow 260ms var(--ease-out);
+}
+
+/* Üzərindən keçən parıltı */
+.boutique__face::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 246, 220, 0.55) 50%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  transition: background-position 900ms var(--ease-out);
+  pointer-events: none;
+}
+
+.boutique__medal.is-active .boutique__face {
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 0 6px rgba(217, 184, 116, 0.12),
+    0 0 46px rgba(240, 205, 140, 0.4),
+    0 18px 36px rgba(0, 0, 0, 0.5);
+}
+
+.boutique__medal.is-active .boutique__face::after {
+  background-position: -20% 0;
+}
+
+.boutique__name {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* Üzərinə gələndə: neçə biznes və qiymət */
+.boutique__hint {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-top: 6px;
+  display: flex;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(217, 184, 116, 0.35);
+  background: rgba(8, 26, 21, 0.85);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: rgba(246, 241, 231, 0.75);
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+  pointer-events: none;
+}
+
+.boutique__hint b {
+  color: var(--gold-1);
+  font-weight: 600;
+}
+
+.boutique__medal.is-active .boutique__hint {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.boutique__medal:focus-visible {
+  outline: none;
+}
+
+.boutique__medal:focus-visible .boutique__face {
+  outline: 2px solid var(--gold-1);
+  outline-offset: 4px;
+}
+
+/* ---------- Sahə kartı (menyu kimi) ---------- */
+
+.boutique__card {
+  position: absolute;
+  right: 0;
+  bottom: 4%;
+  z-index: 10;
+  width: min(320px, calc(100% - 24px));
+  padding: 22px 22px 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(217, 184, 116, 0.4);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 40%),
+    rgba(9, 30, 24, 0.9);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow:
+    0 30px 70px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 246, 220, 0.12);
+  color: var(--velvet-text, #f6f1e7);
+  animation: card-in 420ms var(--ease-out);
+}
+
+.boutique__close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(246, 241, 231, 0.75);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.boutique__close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.boutique__card-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-right: 30px;
+}
+
+.boutique__card-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--gold-1);
+  background: radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, var(--gold-1), var(--gold-3), var(--gold-2), var(--gold-1)) border-box;
+  border: 2px solid transparent;
+}
+
+.boutique__card h3 {
+  margin: 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.boutique__card-head p {
+  margin: 4px 0 0;
+  color: rgba(246, 241, 231, 0.6);
+  font-size: 13px;
+}
+
+/* Restoran menyusu kimi: ad ..... qiymət */
+.boutique__menu {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 18px;
+  padding: 16px 0 0;
+  list-style: none;
+  border-top: 1px solid rgba(217, 184, 116, 0.18);
+}
+
+.boutique__menu li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 14.5px;
+}
+
+.boutique__menu i {
+  flex: 1;
+  border-bottom: 1px dotted rgba(217, 184, 116, 0.35);
+  transform: translateY(-4px);
+}
+
+.boutique__menu b {
+  color: var(--gold-1);
+  font-family: "Cormorant Garamond", "Onest", Georgia, serif;
+  font-size: 20px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
+
+.boutique__empty {
+  margin: 16px 0;
+  color: rgba(246, 241, 231, 0.7);
+  font-size: 14px;
+}
+
+.boutique__cta {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--gold-1), var(--gold-2));
+  color: #1c160a;
+  font-size: 15px;
+  font-weight: 650;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 10px 26px rgba(217, 184, 116, 0.28);
+  transition:
+    transform 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+
+.boutique__cta:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 32px rgba(217, 184, 116, 0.4);
+}
+
+@keyframes core-in {
+  from {
+    opacity: 0;
+    scale: 0.7;
+  }
+}
+
+@keyframes ring-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+@media (max-width: 560px) {
+  .boutique {
+    min-height: 330px;
+  }
+
+  .boutique__core {
+    width: 92px;
+    height: 92px;
+  }
+
+  .boutique__core strong {
+    font-size: 22px;
+  }
+
+  .boutique__face {
+    width: 54px;
+    height: 54px;
+    border-width: 2px;
+  }
+
+  .boutique__face svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .boutique__name {
+    margin-top: 6px;
+    font-size: 11px;
+  }
+
+  .boutique__card {
+    left: 12px;
+    right: 12px;
+    width: auto;
+    bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boutique__core-ring {
+    animation: none;
+  }
+}

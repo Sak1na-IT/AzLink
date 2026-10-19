@@ -1,25 +1,71 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import ServiceConstellation from "../../components/brand/ServiceConstellation";
+import ServiceBoutique, {
+  type CategoryStats,
+} from "../../components/brand/ServiceBoutique";
 import VelvetStage from "../../components/brand/VelvetStage";
 import { categories } from "../../data/categories";
 import { isLoggedIn } from "../../services/api";
 import { getProviders } from "../../services/providersService";
+import type { Provider } from "../../types/provider";
 import "./AccountType.css";
 
 /* Başlıq sətirləri; hər sətir açılışda növbə ilə üzə çıxır */
-const HEADLINE = ["Gündəlik", "ehtiyaclarınız,", "bir yerdə"];
+const HEADLINE = ["Özünüzə vaxt ayırın,", "qalanını biz tapaq"];
 
-/* Bakının 12 rayonu (types/area.ts) */
-const DISTRICT_COUNT = 12;
+/*
+ * Bazadakı bizneslərdən hər sahə üçün real rəqəmlər:
+ * neçə biznes var, qiymət neçədən başlayır, ən sərfəli xidmətlər.
+ */
+const buildStats = (providers: Provider[]) => {
+  const result: Record<string, CategoryStats> = {};
+
+  for (const category of categories) {
+    const inCategory = providers.filter((provider) =>
+      provider.categories?.includes(category.name)
+    );
+
+    /* Eyni adlı xidmətlərdən ən ucuzunu saxlayırıq */
+    const cheapest = new Map<string, number>();
+
+    for (const provider of inCategory) {
+      for (const service of provider.services ?? []) {
+        const known = cheapest.get(service.name);
+
+        if (known === undefined || service.price < known) {
+          cheapest.set(service.name, service.price);
+        }
+      }
+    }
+
+    const topServices = Array.from(cheapest, ([name, price]) => ({
+      name,
+      price,
+    }))
+      .sort((a, b) => a.price - b.price)
+      .slice(0, 4);
+
+    const prices = inCategory
+      .map((provider) => provider.priceFrom)
+      .filter((price) => price > 0);
+
+    result[category.name] = {
+      businessCount: inCategory.length,
+      priceFrom: prices.length ? Math.min(...prices) : null,
+      topServices,
+    };
+  }
+
+  return result;
+};
 
 function AccountType() {
   const navigate = useNavigate();
 
-  /* Bazadan real rəqəmlər: neçə biznes var və hansı sahədə neçəsi */
   const [businessCount, setBusinessCount] = useState<number | null>(null);
-  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [lowestPrice, setLowestPrice] = useState<number | null>(null);
+  const [stats, setStats] = useState<Record<string, CategoryStats>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -30,16 +76,13 @@ function AccountType() {
           return;
         }
 
-        const byCategory: Record<string, number> = {};
-
-        for (const category of categories) {
-          byCategory[category.name] = providers.filter((provider) =>
-            provider.categories?.includes(category.name)
-          ).length;
-        }
+        const prices = providers
+          .map((provider) => provider.priceFrom)
+          .filter((price) => price > 0);
 
         setBusinessCount(providers.length);
-        setCounts(byCategory);
+        setLowestPrice(prices.length ? Math.min(...prices) : null);
+        setStats(buildStats(providers));
       })
       .catch(() => {
         /* Rəqəmlər yüklənməsə də səhifə işləyir, sadəcə göstərilmir */
@@ -50,7 +93,7 @@ function AccountType() {
     };
   }, []);
 
-  /* Sahə kliklənəndə: girişlidirsə həmin sahənin axtarışı, deyilsə qeydiyyat */
+  /* "Ustaları gör": girişlidirsə həmin sahənin axtarışı, deyilsə qeydiyyat */
   const handleCategory = (categoryId: string) => {
     navigate(
       isLoggedIn() ? `/search?category=${categoryId}` : "/register?role=user"
@@ -70,13 +113,12 @@ function AccountType() {
 
         <div className="account-type__body">
           <div className="account-type__content">
-            {/* Açılışda sözlər bir-bir yumşaqca üzə çıxır */}
             <h1 aria-label={HEADLINE.join(" ")}>
               {HEADLINE.map((line, index) => (
                 <span
                   key={line}
                   className="account-type__line"
-                  style={{ animationDelay: `${150 + index * 140}ms` }}
+                  style={{ animationDelay: `${150 + index * 160}ms` }}
                   aria-hidden="true"
                 >
                   {line}
@@ -85,9 +127,9 @@ function AccountType() {
             </h1>
 
             <p>
-              Gözəllikdən ev işlərinə, dərsdən avtomobilə: Bakının
-              mütəxəssislərini bir platformada tapın, müqayisə edin və
-              onlayn rezerv edin.
+              Manikürdən ev təmizliyinə, dərsdən avtomobil yumasına: Bakının
+              mütəxəssisləri bir platformada. Qiymətləri müqayisə edin, boş
+              vaxtı seçin, bir toxunuşla rezerv edin.
             </p>
 
             <div className="account-type__actions">
@@ -96,7 +138,7 @@ function AccountType() {
                 className="velvet-button velvet-button--primary"
                 onClick={() => navigate("/register?role=user")}
               >
-                Xidmət axtarıram
+                Xidmət seçin
               </button>
 
               <button
@@ -121,15 +163,17 @@ function AccountType() {
                 <dd>xidmət sahəsi</dd>
               </div>
 
-              <div>
-                <dt>{DISTRICT_COUNT}</dt>
-                <dd>Bakı rayonu</dd>
-              </div>
+              {lowestPrice ? (
+                <div>
+                  <dt>{lowestPrice} ₼</dt>
+                  <dd>başlanğıc qiymət</dd>
+                </div>
+              ) : null}
             </dl>
           </div>
 
           <div className="account-type__visual">
-            <ServiceConstellation onSelect={handleCategory} counts={counts} />
+            <ServiceBoutique onSelect={handleCategory} stats={stats} />
           </div>
         </div>
       </VelvetStage>

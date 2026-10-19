@@ -469,14 +469,14 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 - Rənglər və ölçülər `styles/variables.css`-də toplanıb. Səhifələrin CSS-i rəngləri düz kod kimi yox, `var(--color-surface)`, `var(--color-text)` kimi dəyişənlərlə yazmalıdır.
 - Kateqoriya kartları üçün gradient fonlar `--gradient-teal`, `--gradient-pink`, `--gradient-blue`, `--gradient-purple` dəyişənləri ilə idarə olunur (`utils/categoryVisual.ts`).
 
-### Giriş ekranı: "AzLink = bağlantı"
+### Giriş ekranı: "Xidmət butiki"
 
-İlk ekran (`pages/AccountType`) saytın qalanından fərqli, premium vitrindir:
+İlk ekran (`pages/AccountType`) saytın qalanından fərqli, lüks vitrindir:
 
-- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd fon, incə dən toxuması, siçanın arxasınca hərəkət edən yumşaq işıq, qızılı incə xətlər.
-- **Sahələr** (`components/brand/ServiceConstellation.tsx`): mərkəzdə AzLink, ətrafında 8 xidmət sahəsi (`data/categories.ts`) qızılı xətlərlə mərkəzə bağlıdır və maili orbitdə sakitcə fırlanır. Sahənin üstünə gələndə fırlanma dayanır, həmin sahədə neçə biznes olduğu və xidmətləri görünür. Klikləyəndə kateqoriyanın axtarışı açılır.
+- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd fon, aşağıda isti "şam işığı" parıltısı, incə dən toxuması, siçanın arxasınca hərəkət edən yumşaq işıq.
+- **Medalyonlar** (`components/brand/ServiceBoutique.tsx`): 8 xidmət sahəsi (`data/categories.ts`) qızılı haşiyəli, zümrüd emallı medalyonlardır və mərkəzdəki AzLink-ə qızılı saplarla bağlıdır. Sadə 2D fizika ilə işləyir: açılışda kənarlardan uçub gəlir, siçan yaxınlaşanda yana çəkilir, medalyonu tutub atmaq olur (digərlərinə dəyib sıçrayır, sap dartılır, sonra yerinə qayıdır). Arxada qızıl tozu süzülür.
+- **Üstünə gələndə** sahədə neçə biznes olduğu və qiymətin neçədən başladığı görünür. **Klikləyəndə** menyu kimi kart açılır: ən sərfəli xidmətlər qiymətləri ilə və "Ustaları gör" düyməsi. Bütün rəqəmlər bazadan (`GET /api/providers`) hesablanır.
 - **Başlıq** Cormorant Garamond, mətn Onest şrifti ilədir. Hər ikisi Azərbaycan hərflərini dəstəkləyir və layihənin içindədir (`assets/fonts/`).
-- Altdakı rəqəmlər (biznes sayı və s.) bazadan real gəlir.
 
 ### Interaktivlik (bütün sayt)
 
