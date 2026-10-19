@@ -462,13 +462,13 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 
 ## Dizayn sistemi
 
-Əsas istiqamət: **yumşaq yaşıl-boz tonlar**, əsas accent rəng `#2E7D5B`.
+Əsas fikir: **"Xəzərin incisi"**. Saytın simvolu mirvaridir (`components/brand/Pearl.tsx`). Fon mirvari ağıdır, əsas rəng dərin zümrüd yaşılıdır (`#17614C`, qaranlıq rejimdə `#74D2AD`).
 
-- Ümumi görünüş premium və minimal olmalıdır. Həm gözəllik, həm santexnik, həm repetitor eyni dizaynda düzgün görünməlidir.
-- İşıqlı rejimdə təmiz ağ sahə yoxdur, çünki göz yorur. Fon və kartlar yumşaq adaçayı tonlarındadır.
+- **Mirvari** yalnız giriş ekranında (böyük) və Ana səhifənin başlığında (kiçik) görünür. Açılışda bir dəfə "əmələ gəlir", siçanın hərəkətinə görə işığı və sədəf çalarları dəyişir. Telefonda və "azaldılmış hərəkət" ayarında sakit qalır. Qalan hər şey bilərəkdən sakit və sadədir.
+- **Şrift:** Onest. Azərbaycan hərflərini (Ə ə, Ğ ğ, Ş ş, ı) və manat işarəsini (₼) tam dəstəkləyir. Fayl layihənin içindədir (`assets/fonts/`), ona görə internet olmadan da düzgün görünür.
+- **Yuxarı menyu:** şüşə effekti (arxa fon bulanıq görünür), bölmələr bir zolağın içindədir, aktiv bölmə qalxmış düymə kimi görünür.
 - Light və Dark mode dəstəklənir. Seçim brauzerin yaddaşında saxlanır (`hooks/useTheme.ts`).
-- Rənglər və ölçülər `styles/variables.css`-də toplanıb. **Hər səhifənin CSS-i rəngləri düz kod (`#ffffff`) kimi yox, mütləq `variables.css`-dəki qlobal dəyişənlərlə (`var(--color-surface)`, `var(--color-text)` və s.) yazmalıdır.** Əks halda qaranlıq modda həmin səhifə uyğunsuz qalır.
-- Yuxarı naviqasiyanın rəngləri `App.css`-dəki `--nav-*` dəyişənləri ilə idarə olunur: işıqlı rejimdə dərin yaşıl panel, qaranlıq rejimdə adi görünüş.
+- Rənglər, kölgələr, radiuslar və animasiya sürətləri `styles/variables.css`-də toplanıb. **Səhifələrin CSS-i rəngləri düz kod (`#ffffff`) kimi yox, `var(--color-surface)`, `var(--color-text)`, `var(--color-on-primary)` kimi dəyişənlərlə yazmalıdır.** Əks halda qaranlıq modda səhifə uyğunsuz qalır.
 - Kateqoriya kartları üçün gradient fonlar `--gradient-teal`, `--gradient-pink`, `--gradient-blue`, `--gradient-purple` dəyişənləri ilə idarə olunur. Hansı kateqoriyaya hansı gradient və ikon düşdüyü `utils/categoryVisual.ts`-dədir.
 - Biznesim və Rezerv et bölmələrində səhifələr eyni enə (1040px) və eyni yan boşluğa malikdir.
 - Responsive: desktop və mobile dəstəklənir.

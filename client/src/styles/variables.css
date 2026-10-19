@@ -1,38 +1,45 @@
 :root {
   /* =========================
      COLORS — LIGHT MODE
-     (təmiz, yumşaq adaçayı: ağ da yoxdur, duman da)
+     Mirvari ağı fon, Xəzər zümrüdü əsas rəng.
+     Mirvari çalarları yalnız Pearl komponentində işlənir.
      ========================= */
 
-  --color-bg: #CFDDD2;
-  --color-surface: #DFEAE1;
-  --color-surface-soft: #C4D6C9;
-  --color-surface-muted: #D6E3D9;
+  --color-bg: #F3F5F4;
+  --color-surface: #FFFFFF;
+  --color-surface-soft: #E9EFEC;
+  --color-surface-muted: #F6F8F7;
 
-  --color-primary: #2E7D5B;
-  --color-primary-hover: #256A4D;
-  --color-primary-soft: #CBE0D1;
+  --color-primary: #17614C;
+  --color-primary-hover: #114E3D;
+  --color-primary-dark: #114E3D;
+  --color-primary-soft: #E1EEE8;
+  --color-on-primary: #FFFFFF;
 
-  --color-text: #14291E;
-  --color-text-secondary: #33493C;
-  --color-text-muted: #4B6154;
+  --color-text: #0F1D18;
+  --color-text-secondary: #3E5049;
+  --color-text-muted: #66766F;
 
-  --color-border: #B6CABB;
-  --color-border-strong: #A3BAA9;
+  --color-border: #E0E6E3;
+  --color-border-strong: #C9D4CF;
 
-  --color-success: #2E7D5B;
-  --color-warning: #A9761A;
-  --color-danger: #B94343;
-  --color-info: #46709C;
+  --color-success: #17614C;
+  --color-warning: #A86E12;
+  --color-danger: #B3403C;
+  --color-danger-soft: #F7E5E3;
+  --color-info: #2F6690;
+
+  /* Üst menyu üçün şəffaf (şüşə) fon */
+  --nav-glass: rgba(243, 245, 244, 0.78);
 
   /* =========================
      SHADOWS (demək olar yoxdur)
      ========================= */
 
-  --shadow-xs: 0 1px 2px rgba(20, 41, 30, 0.04);
-  --shadow-sm: 0 1px 3px rgba(20, 41, 30, 0.05);
-  --shadow-md: 0 2px 8px rgba(20, 41, 30, 0.06);
-  --shadow-lg: 0 8px 24px rgba(20, 41, 30, 0.08);
+  --shadow-xs: 0 1px 2px rgba(15, 29, 24, 0.04);
+  --shadow-sm: 0 1px 2px rgba(15, 29, 24, 0.04), 0 2px 8px rgba(15, 29, 24, 0.04);
+  --shadow-md: 0 2px 4px rgba(15, 29, 24, 0.04), 0 8px 24px rgba(15, 29, 24, 0.06);
+  --shadow-lg: 0 4px 8px rgba(15, 29, 24, 0.04), 0 20px 48px rgba(15, 29, 24, 0.10);
 
   /* =========================
      BORDER RADIUS
@@ -68,7 +75,7 @@
      ========================= */
 
   --font-family:
-    Inter,
+    "Onest",
     ui-sans-serif,
     system-ui,
     -apple-system,
@@ -122,9 +129,10 @@
      TRANSITIONS
      ========================= */
 
-  --transition-fast: 120ms ease;
-  --transition-normal: 180ms ease;
-  --transition-slow: 250ms ease;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast: 140ms var(--ease-out);
+  --transition-normal: 220ms var(--ease-out);
+  --transition-slow: 360ms var(--ease-out);
 
 
     /* =========================
@@ -143,31 +151,37 @@
    ========================================= */
 
 [data-theme="dark"] {
-  --color-bg: #121915;
-  --color-surface: #1B241F;
-  --color-surface-soft: #22372C;
-  --color-surface-muted: #19211C;
+  /* Gecə Xəzəri: dərin dəniz yaşılı */
+  --color-bg: #0A1412;
+  --color-surface: #111D1A;
+  --color-surface-soft: #18302A;
+  --color-surface-muted: #0E1916;
 
-  --color-primary: #63BE8C;
-  --color-primary-hover: #74C99A;
-  --color-primary-soft: #254133;
+  --color-primary: #74D2AD;
+  --color-primary-hover: #8FDDBE;
+  --color-primary-dark: #5FC49C;
+  --color-primary-soft: #16352C;
+  --color-on-primary: #052118;
 
-  --color-text: #EEF6F1;
-  --color-text-secondary: #A4B1AA;
-  --color-text-muted: #84918A;
+  --color-text: #EAF2EE;
+  --color-text-secondary: #ABBCB4;
+  --color-text-muted: #7F918A;
 
-  --color-border: #2C3932;
-  --color-border-strong: #3A4A41;
+  --color-border: #1D2E29;
+  --color-border-strong: #2A403A;
 
-  --color-success: #63BE8C;
-  --color-warning: #D6A647;
-  --color-danger: #E06B6B;
-  --color-info: #6F9BCB;
+  --color-success: #74D2AD;
+  --color-warning: #E0B054;
+  --color-danger: #EB7A72;
+  --color-danger-soft: #3A1E1C;
+  --color-info: #7FAEDB;
 
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.12);
-  --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.18);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.24);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.32);
+  --nav-glass: rgba(10, 20, 18, 0.72);
+
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.22);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.28);
+  --shadow-lg: 0 20px 48px rgba(0, 0, 0, 0.38);
 }
 
 

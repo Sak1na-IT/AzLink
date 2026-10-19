@@ -1,103 +1,76 @@
-import { useNavigate } from "react-router-dom";
-import {
-  ArrowRight,
-  Building2,
-  UserRound,
-} from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Building2, ChevronRight, Search } from "lucide-react";
 
+import Pearl from "../../components/brand/Pearl";
 import "./AccountType.css";
 
 function AccountType() {
   const navigate = useNavigate();
 
-  const handleUserSelect = () => {
-    navigate("/register?role=user");
-  };
-
-  const handleBusinessSelect = () => {
-    navigate("/register?role=business");
-  };
-
   return (
     <div className="account-type-page">
-      <div className="account-type-card">
-        <div className="account-type-header">
-          <span className="account-type-eyebrow">
-            AzLink
-          </span>
+      <div className="account-type">
+        <section className="account-type__content">
+          <span className="account-type__brand">AzLink</span>
 
-          <h1>
-            AzLink-dən necə istifadə etmək istəyirsiniz?
-          </h1>
+          <h1>Bakıda lazım olan xidməti tapın, vaxtınızı rezerv edin</h1>
 
-          <p>
-            Davam etmək üçün sizə uyğun hesab tipini
-            seçin.
+          <p className="account-type__lead">
+            Başlamaq üçün sizə uyğun olanı seçin.
           </p>
-        </div>
 
-        <div className="account-type-options">
-          <button
-            type="button"
-            className="account-type-option"
-            onClick={handleUserSelect}
-          >
-            <div className="account-type-option__icon">
-              <UserRound
-                size={25}
+          <div className="account-type__options">
+            <button
+              type="button"
+              className="account-type__option"
+              onClick={() => navigate("/register?role=user")}
+            >
+              <span className="account-type__icon">
+                <Search size={20} strokeWidth={1.8} />
+              </span>
+
+              <span className="account-type__text">
+                <strong>Xidmət axtarıram</strong>
+                <small>Usta tapın, profilləri müqayisə edin, rezerv edin.</small>
+              </span>
+
+              <ChevronRight
+                className="account-type__chevron"
+                size={20}
                 strokeWidth={1.8}
               />
-            </div>
+            </button>
 
-            <div className="account-type-option__content">
-              <h2>İstifadəçiyəm</h2>
+            <button
+              type="button"
+              className="account-type__option"
+              onClick={() => navigate("/register?role=business")}
+            >
+              <span className="account-type__icon">
+                <Building2 size={20} strokeWidth={1.8} />
+              </span>
 
-              <p>
-                Xidmət axtarıram, rezerv yaradıram və
-                bəyəndiyim xidmətləri yadda saxlayıram.
-              </p>
-            </div>
+              <span className="account-type__text">
+                <strong>Biznesim var</strong>
+                <small>Xidmətlərinizi əlavə edin, rezervləri idarə edin.</small>
+              </span>
 
-            <ArrowRight
-              className="account-type-option__arrow"
-              size={20}
-              strokeWidth={1.8}
-            />
-          </button>
-
-          <button
-            type="button"
-            className="account-type-option"
-            onClick={handleBusinessSelect}
-          >
-            <div className="account-type-option__icon">
-              <Building2
-                size={25}
+              <ChevronRight
+                className="account-type__chevron"
+                size={20}
                 strokeWidth={1.8}
               />
-            </div>
+            </button>
+          </div>
 
-            <div className="account-type-option__content">
-              <h2>Biznes sahibiyəm</h2>
+          <p className="account-type__login">
+            Hesabınız var? <Link to="/login">Daxil olun</Link>
+          </p>
+        </section>
 
-              <p>
-                Xidmətlərimi təqdim edirəm, rezervləri
-                idarə edirəm və biznes profilimi
-                inkişaf etdirirəm.
-              </p>
-            </div>
-
-            <ArrowRight
-              className="account-type-option__arrow"
-              size={20}
-              strokeWidth={1.8}
-            />
-          </button>
+        <div className="account-type__visual">
+          <Pearl />
         </div>
-
-        <p className="account-type-footer">
-          Hesab tipinizi sonradan dəyişmək mümkündür.
-        </p>
       </div>
     </div>
   );

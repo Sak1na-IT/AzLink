@@ -61,7 +61,7 @@
   border-radius: 8px;
   padding: 9px 16px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-on-primary);
   font: inherit;
   font-weight: 600;
   cursor: pointer;

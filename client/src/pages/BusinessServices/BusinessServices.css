@@ -79,7 +79,7 @@
 
 .business-services__primary {
   background: var(--bs-accent);
-  color: #fff;
+  color: var(--color-on-primary);
 }
 
 .business-services__primary:hover {

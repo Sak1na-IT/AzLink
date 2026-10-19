@@ -61,11 +61,11 @@
 .business-subnav__tab.is-active {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  color: #ffffff;
+  color: var(--color-on-primary);
 }
 
 .business-subnav__tab.is-active svg {
-  color: #ffffff;
+  color: var(--color-on-primary);
 }
 
 @media (max-width: 600px) {

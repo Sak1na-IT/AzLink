@@ -77,7 +77,7 @@
 .explore-search:focus-within {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px
-    rgba(79, 209, 139, 0.1);
+    color-mix(in srgb, var(--color-primary) 10%, transparent);
 }
 
 .explore-search input {

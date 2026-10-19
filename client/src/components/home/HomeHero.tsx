@@ -1,5 +1,7 @@
 import { MapPin, Search, ChevronRight } from "lucide-react";
 
+import Pearl from "../brand/Pearl";
+
 interface HomeHeroProps {
   areaLabel: string;
   onAreaClick: () => void;
@@ -32,9 +34,7 @@ function HomeHero({
 
   return (
     <section className="home-hero">
-      <div className="home-hero__eyebrow">
-        Bakı · AzLink
-      </div>
+      <Pearl size={64} className="home-hero__pearl" />
 
       <h1 className="home-hero__title">
         Ehtiyacınız olan xidməti

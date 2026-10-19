@@ -68,7 +68,10 @@ img {
   top: 0;
   z-index: 100;
   width: 100%;
-  background: var(--color-surface);
+  /* Şüşə effekti: arxadakı məzmun yumşaq bulanıq görünür */
+  background: var(--nav-glass);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  backdrop-filter: blur(16px) saturate(150%);
   border-bottom: 1px solid var(--color-border);
   transition:
     background-color var(--transition-normal),
@@ -86,6 +89,9 @@ img {
 
 .top-nav__brand {
   flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
   color: var(--color-text);
   font-size: 23px;
   font-weight: var(--font-weight-bold);
@@ -97,24 +103,42 @@ img {
   color: var(--color-primary);
 }
 
+/* Loqonun yanındakı kiçik mirvari */
+.top-nav__brand::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, #ffffff 0%, #f3eef0 30%, #cfc5ce 70%, #a59aa8 100%);
+  box-shadow:
+    inset -1px -2px 3px rgba(64, 44, 80, 0.25),
+    0 1px 3px rgba(15, 29, 24, 0.18);
+}
+
 .top-nav__links {
   display: flex;
   align-items: center;
 
-  gap: 4px;
+  gap: 2px;
+  padding: 4px;
 
   margin-left: auto;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
 }
 
 .top-nav__link {
   position: relative;
-  min-height: 42px;
-  padding: 0 14px;
+  min-height: 38px;
+  padding: 0 16px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   background: transparent;
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
@@ -126,14 +150,19 @@ img {
 }
 
 .top-nav__link:hover {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
+  color: var(--color-text);
 }
 
+/* Aktiv bölmə: menyu zolağının içində qalxmış "düymə" */
 .top-nav__link.is-active {
-  background: var(--color-primary-soft);
+  background: var(--color-surface);
   color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .top-nav__link.is-active {
+  background: var(--color-surface-soft);
 }
 
 .top-nav__theme {
@@ -146,10 +175,10 @@ img {
   place-items: center;
 
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: 50%;
 
-  background: var(--color-surface);
-  
+  background: var(--color-surface-muted);
+
   color: var(--color-text-secondary);
 
   transition:
@@ -223,8 +252,8 @@ img {
   }
 
   .top-nav__link {
-    width: 42px;
-    min-width: 42px;
+    width: 40px;
+    min-width: 40px;
     padding: 0;
   }
 
