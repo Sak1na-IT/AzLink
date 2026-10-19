@@ -49,27 +49,41 @@ function BusinessDashboard() {
   const [error, setError] = useState("");
 
   const reload = useCallback(async () => {
-    try {
-      setError("");
+    setError("");
 
-      const [statsResult, bookingsResult, servicesResult] =
-        await Promise.all([
-          getDashboardStats(),
-          getBookings(),
-          getServicesPreview(),
-        ]);
+    /*
+     * Hər sorğu ayrıca yoxlanılır: biri alınmasa da panel açılır,
+     * alınmayan hissə isə konsolda və ekranda adı ilə göstərilir.
+     */
+    const [statsResult, bookingsResult, servicesResult] =
+      await Promise.allSettled([
+        getDashboardStats(),
+        getBookings(),
+        getServicesPreview(),
+      ]);
 
-      setStats(statsResult);
-      setServices(servicesResult);
+    const failed: string[] = [];
 
+    if (statsResult.status === "fulfilled") {
+      setStats(statsResult.value);
+    } else {
+      failed.push("statistika");
+      console.error("[Dashboard] /business/dashboard:", statsResult.reason);
+    }
+
+    if (servicesResult.status === "fulfilled") {
+      setServices(servicesResult.value);
+    } else {
+      failed.push("xidmətlər");
+      console.error("[Dashboard] /business/services:", servicesResult.reason);
+    }
+
+    if (bookingsResult.status === "fulfilled") {
       const today = todayKey();
 
       /* yalnız sizə gələnlər (siz müştəri kimi etdiyiniz rezervlər yox) */
-      const incoming = bookingsResult.filter(
-        (booking) => booking.customerId !== currentUser?.id
-      );
-
-      const todays = incoming
+      const todays = bookingsResult.value
+        .filter((booking) => booking.customerId !== currentUser?.id)
         .filter(
           (booking) =>
             booking.date === today && booking.status !== "CANCELLED"
@@ -77,11 +91,29 @@ function BusinessDashboard() {
         .sort((a, b) => a.time.localeCompare(b.time));
 
       setTodayBookings(todays);
-    } catch {
-      setError("Panel məlumatlarını yükləmək mümkün olmadı.");
-    } finally {
-      setIsLoading(false);
+    } else {
+      failed.push("rezervlər");
+      console.error("[Dashboard] /bookings:", bookingsResult.reason);
     }
+
+    if (failed.length > 0) {
+      const reason =
+        statsResult.status === "rejected"
+          ? statsResult.reason
+          : bookingsResult.status === "rejected"
+            ? bookingsResult.reason
+            : servicesResult.status === "rejected"
+              ? servicesResult.reason
+              : null;
+
+      const detail = reason instanceof Error ? reason.message : "";
+
+      setError(
+        `Yüklənmədi: ${failed.join(", ")}${detail ? ` (${detail})` : ""}`
+      );
+    }
+
+    setIsLoading(false);
   }, [currentUser?.id]);
 
   useEffect(() => {
@@ -105,7 +137,7 @@ function BusinessDashboard() {
     );
   }
 
-  if (error || !stats) {
+  if (!stats) {
     return (
       <main className="business-dashboard">
         <p className="business-dashboard__loading">
@@ -190,6 +222,8 @@ function BusinessDashboard() {
           </button>
         </dl>
       </section>
+
+      {error && <p className="biz-error">{error}</p>}
 
       {/* ===== DİQQƏT: gözləyən rezervlər ===== */}
       {stats.pendingCount > 0 && (
