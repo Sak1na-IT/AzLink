@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import "./BusinessLayout.css";
+import "./BusinessTheme.css";
 
 const tabs = [
   { to: "/business", label: "Dashboard", end: true, icon: LayoutDashboard },

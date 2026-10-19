@@ -5,14 +5,11 @@ import {
   getBusinessReviews,
   type Review,
 } from "../../services/reviewsService";
+import { formatFullDate } from "../../utils/formatDate";
 import "./BusinessReviews.css";
 
-/* 2026-10-19T... → 19.10.2026 */
-const formatDate = (value: string) => {
-  const [year, month, day] = value.slice(0, 10).split("-");
-
-  return `${day}.${month}.${year}`;
-};
+/* 2026-10-19T... → 19 oktyabr 2026 */
+const formatDate = formatFullDate;
 
 const getInitials = (name: string) =>
   name
@@ -85,7 +82,8 @@ function BusinessReviews() {
   return (
     <main className="business-reviews">
       <header className="business-reviews__header">
-        <h1>Rəylər</h1>
+        <span className="biz-eyebrow">Rəylər</span>
+        <h1>Müştəri rəyləri</h1>
         <p>Müştərilərin tamamlanmış rezervlərdən sonra yazdığı rəylər.</p>
       </header>
 

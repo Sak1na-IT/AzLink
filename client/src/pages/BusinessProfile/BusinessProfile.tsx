@@ -14,6 +14,7 @@ import {
   saveBusinessProfile,
   type BusinessProfile as BusinessProfileData,
 } from "../../services/businessService";
+import { getPortfolio } from "../../services/businessPortfolioService";
 import { weekDays, weekDayLabels } from "../../types/schedule";
 
 type AreaOption = Awaited<ReturnType<typeof getAreas>>[number];
@@ -27,6 +28,8 @@ function BusinessProfile() {
   const [profile, setProfile] = useState<ProfileWithId | null>(null);
   const [areas, setAreas] = useState<AreaOption[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
+  /* Önbaxışın üz qabığı: portfoliodakı ilk şəkil */
+  const [cover, setCover] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -55,6 +58,12 @@ function BusinessProfile() {
     };
 
     load();
+
+    getPortfolio()
+      .then((images) => setCover(images[0]?.dataUrl ?? null))
+      .catch(() => {
+        /* şəkil yoxdursa zümrüd fon qalır */
+      });
   }, []);
 
   const update = <K extends keyof BusinessProfileData>(
@@ -108,6 +117,7 @@ function BusinessProfile() {
     <main className="business-profile">
       <section className="business-profile__header">
         <div>
+          <span className="biz-eyebrow">Profil</span>
           <h1>Biznes profili</h1>
           <p>Müştərilərin sizin haqqınızda gördüyü məlumatlar.</p>
         </div>
@@ -129,6 +139,7 @@ function BusinessProfile() {
         aria-label="Müştərilər sizi belə görür"
       >
         <div className="business-profile__cover">
+          {cover && <img src={cover} alt="" />}
           <span>Müştərilər sizi belə görür</span>
         </div>
 

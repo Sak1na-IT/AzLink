@@ -136,6 +136,7 @@ function BusinessHours() {
   return (
     <main className="business-hours">
       <section className="business-hours__header">
+        <span className="biz-eyebrow">İş saatları</span>
         <h1>İş saatları</h1>
         <p>Müştərilərin hansı gün və saatlarda rezerv edə biləcəyini seçin.</p>
       </section>

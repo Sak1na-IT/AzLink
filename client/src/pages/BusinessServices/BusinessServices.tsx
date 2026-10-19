@@ -245,7 +245,8 @@ function BusinessServices() {
     <main className="business-services">
       <section className="business-services__header">
         <div>
-          <h1>Xidmətlər</h1>
+          <span className="biz-eyebrow">Xidmətlər</span>
+          <h1>Xidmət menyusu</h1>
 
           <p>
             Müştərilər rezerv edərkən bu xidmətlərdən birini seçir.
@@ -409,7 +410,8 @@ function BusinessServices() {
               </div>
 
               <strong className="business-service-card__price">
-                {service.price} ₼
+                {service.price}
+                <small className="manat">₼</small>
               </strong>
 
               <div className="business-service-card__actions">

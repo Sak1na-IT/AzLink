@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Bell, Lock, LogOut, Mail, UserRound } from "lucide-react";
 
 import "./BusinessAccountProfile.css";
+import "../../components/business/BusinessTheme.css";
 import ChangePasswordModal from "../../components/account/ChangePasswordModal";
 import { getStoredUser } from "../../services/api";
 import {
@@ -142,9 +143,20 @@ function BusinessAccountProfile() {
     }
   };
 
+  /* "Nail by Aysel" → "NA" */
+  const initials = (account.name || "")
+    .trim()
+    .split(/\s+/)
+    .filter((word) => /\p{L}/u.test(word[0] ?? ""))
+    .map((word) => word[0])
+    .filter((_, index, all) => index === 0 || index === all.length - 1)
+    .join("")
+    .toLocaleUpperCase("az");
+
   return (
     <main className="account-profile">
       <section className="account-profile__header">
+        <span className="biz-eyebrow">Hesab</span>
         <h1>Profil</h1>
         <p>Hesabınızı və şəxsi parametrlərinizi idarə edin.</p>
       </section>
@@ -152,7 +164,7 @@ function BusinessAccountProfile() {
       {/* ===== HESAB KARTI ===== */}
       <section className="account-profile__card account-profile__identity">
         <div className="account-profile__avatar">
-          <UserRound size={30} strokeWidth={1.7} />
+          {initials || <UserRound size={30} strokeWidth={1.7} />}
         </div>
 
         <div className="account-profile__identity-info">

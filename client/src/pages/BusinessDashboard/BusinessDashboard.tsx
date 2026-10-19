@@ -2,16 +2,15 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
-  CalendarDays,
   Check,
   Clock3,
   ImagePlus,
   Plus,
   Settings,
   Store,
-  Users,
 } from "lucide-react";
 
+import { formatReadable } from "../../utils/formatDate";
 import "./BusinessDashboard.css";
 import { getStoredUser } from "../../services/api";
 import {
@@ -116,113 +115,147 @@ function BusinessDashboard() {
     );
   }
 
-  const firstName = currentUser?.name?.split(" ")[0] ?? "";
+  const businessName = currentUser?.name ?? "";
+
+  /* Günün vaxtına görə salam */
+  const hour = new Date().getHours();
+  const greeting =
+    hour < 12 ? "Sabahınız xeyir" : hour < 18 ? "Günortanız xeyir" : "Axşamınız xeyir";
+
+  const todayLabel = formatReadable(new Date());
+
+  /* Profil tamamlanma halqası */
+  const completion = Math.max(0, Math.min(100, stats.profileCompletion));
+  const isProfileComplete = completion >= 100;
+
+  /* Biznes sahibi üçün bir cümləlik xülasə */
+  const summary =
+    todayBookings.length > 0
+      ? `Bu gün ${todayBookings.length} rezerviniz var.`
+      : "Bu gün üçün rezerv yoxdur.";
 
   return (
     <main className="business-dashboard">
-      {/* ===== BAŞLIQ ===== */}
-      <section className="business-dashboard__hero">
-        <div>
-          <h1>Salam, {firstName} 👋</h1>
-          <p>Bu gün biznesinizdə baş verənlərə ümumi baxış.</p>
+      {/* ===== BAŞLIQ: zümrüd vitrin ===== */}
+      <section className="biz-hero">
+        <div className="biz-hero__top">
+          <div>
+            <span className="biz-hero__eyebrow">
+              {greeting} · {todayLabel}
+            </span>
+            <h1>{businessName}</h1>
+            <p>
+              {summary}
+              {stats.pendingCount > 0
+                ? ` ${stats.pendingCount} rezerv təsdiqinizi gözləyir.`
+                : ""}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="biz-gold-button"
+            onClick={() => navigate("/business/services")}
+          >
+            <Plus size={18} strokeWidth={2} />
+            Yeni xidmət
+          </button>
         </div>
 
-        <button
-          type="button"
-          className="business-dashboard__primary-button"
-          onClick={() => navigate("/business-services")}
-        >
-          <Plus size={18} strokeWidth={2} />
-          Yeni xidmət
-        </button>
+        {/* Əsas rəqəmlər */}
+        <dl className="biz-hero__stats">
+          <button type="button" onClick={() => navigate("/business/bookings")}>
+            <dt>{todayBookings.length}</dt>
+            <dd>Bu günkü rezerv</dd>
+          </button>
+
+          <button type="button" onClick={() => navigate("/business/bookings")}>
+            <dt className={stats.pendingCount > 0 ? "is-alert" : ""}>
+              {stats.pendingCount}
+            </dt>
+            <dd>Təsdiq gözləyir</dd>
+          </button>
+
+          <button type="button" onClick={() => navigate("/business/customers")}>
+            <dt>{stats.uniqueCustomerCount}</dt>
+            <dd>Müştəri</dd>
+          </button>
+
+          <button type="button" onClick={() => navigate("/business/bookings")}>
+            <dt>
+              {stats.revenue}
+              <small className="manat">₼</small>
+            </dt>
+            <dd>Təsdiqlənmiş gəlir</dd>
+          </button>
+        </dl>
       </section>
 
-      {/* ===== KPI ===== */}
-      <section className="business-dashboard__stats">
-        <div className="business-stat-card">
-          <div className="business-stat-card__icon">
-            <CalendarDays size={20} strokeWidth={1.8} />
-          </div>
-          <div>
-            <span>Bu gün</span>
-            <strong>{todayBookings.length} rezerv</strong>
-          </div>
-        </div>
-
+      {/* ===== DİQQƏT: gözləyən rezervlər ===== */}
+      {stats.pendingCount > 0 && (
         <button
           type="button"
-          className="business-stat-card business-stat-card--clickable"
-          onClick={() => navigate("/business-bookings")}
+          className="biz-alert"
+          onClick={() => navigate("/business/bookings")}
         >
-          <div className="business-stat-card__icon">
-            <Clock3 size={20} strokeWidth={1.8} />
-          </div>
-          <div>
-            <span>Gözləyən</span>
-            <strong>{stats.pendingCount} rezerv</strong>
-          </div>
+          <span className="biz-alert__icon">
+            <Clock3 size={18} strokeWidth={1.8} />
+          </span>
+          <span className="biz-alert__text">
+            <strong>
+              {stats.pendingCount} yeni rezerv təsdiqinizi gözləyir
+            </strong>
+            <span>Müştəri cavabınızı gözləyir, təsdiqləyin və ya ləğv edin.</span>
+          </span>
+          <span className="biz-alert__cta">
+            Bax
+            <ArrowRight size={15} strokeWidth={1.8} />
+          </span>
         </button>
-
-        <button
-          type="button"
-          className="business-stat-card business-stat-card--clickable"
-          onClick={() => navigate("/business-services")}
-        >
-          <div className="business-stat-card__icon">
-            <Store size={20} strokeWidth={1.8} />
-          </div>
-          <div>
-            <span>Xidmətlər</span>
-            <strong>{stats.serviceCount}</strong>
-          </div>
-        </button>
-
-        <button
-          type="button"
-          className="business-stat-card business-stat-card--clickable"
-          onClick={() => navigate("/business-customers")}
-        >
-          <div className="business-stat-card__icon">
-            <Users size={20} strokeWidth={1.8} />
-          </div>
-          <div>
-            <span>Müştərilər</span>
-            <strong>{stats.uniqueCustomerCount}</strong>
-          </div>
-        </button>
-      </section>
+      )}
 
       {/* ===== BUGÜNKÜ REZERVLƏR + PROFİL ===== */}
-      <section className="business-dashboard__content">
-        <div className="business-dashboard__main-card">
-          <div className="business-card-header">
+      <section className="biz-grid">
+        <div className="biz-card">
+          <header className="biz-card__header">
             <h2>Bugünkü rezervlər</h2>
-          </div>
+            <button
+              type="button"
+              className="biz-link"
+              onClick={() => navigate("/business/bookings")}
+            >
+              Hamısı
+              <ArrowRight size={15} strokeWidth={1.8} />
+            </button>
+          </header>
 
           {todayBookings.length === 0 ? (
-            <p className="business-dashboard__empty-text">
-              Bu gün üçün rezerv yoxdur.
-            </p>
+            <div className="biz-empty">
+              <span className="biz-medal">
+                <Clock3 size={20} strokeWidth={1.7} />
+              </span>
+              <div>
+                <strong>Bu gün sakit gündür</strong>
+                <p>Yeni rezerv gələndə burada saat sırası ilə görünəcək.</p>
+              </div>
+            </div>
           ) : (
-            <div className="business-today-list">
+            <ol className="biz-timeline">
               {todayBookings.map((booking) => (
-                <div className="business-today-item" key={booking.id}>
-                  <div className="business-today-item__time">
-                    {booking.time}
-                  </div>
+                <li className="biz-timeline__item" key={booking.id}>
+                  <span className="biz-timeline__time">{booking.time}</span>
 
-                  <div className="business-today-item__info">
-                    <strong>{booking.customerName}</strong>
-                    <span>{booking.service}</span>
-                  </div>
+                  <div className="biz-timeline__card">
+                    <div className="biz-timeline__info">
+                      <strong>{booking.customerName}</strong>
+                      <span>
+                        {booking.service} · {booking.priceFrom}
+                        <small className="manat">₼</small>
+                      </span>
+                    </div>
 
-                  <div className="business-today-item__price">
-                    {booking.priceFrom} ₼
-                  </div>
-
-                  <div className="business-today-item__right">
                     <span
-                      className={`business-today-item__status business-today-item__status--${booking.status.toLowerCase()}`}
+                      className={`biz-status biz-status--${booking.status.toLowerCase()}`}
                     >
                       {statusText[booking.status]}
                     </span>
@@ -230,146 +263,114 @@ function BusinessDashboard() {
                     {booking.status === "PENDING" ? (
                       <button
                         type="button"
-                        className="business-dashboard__chip-button"
+                        className="biz-chip biz-chip--gold"
                         onClick={() => handleConfirm(booking.id)}
                       >
                         <Check size={14} strokeWidth={2} />
                         Təsdiqlə
                       </button>
-                    ) : (
-                      <button
-                        type="button"
-                        className="business-dashboard__chip-button business-dashboard__chip-button--ghost"
-                        onClick={() => navigate("/business-bookings")}
-                      >
-                        Bax
-                      </button>
-                    )}
+                    ) : null}
                   </div>
-                </div>
+                </li>
               ))}
-            </div>
+            </ol>
           )}
-
-          <button
-            type="button"
-            className="business-dashboard__link-button"
-            onClick={() => navigate("/business-bookings")}
-          >
-            Bütün rezervlərə bax
-            <ArrowRight size={15} strokeWidth={1.8} />
-          </button>
         </div>
 
-        <aside className="business-dashboard__side-card">
+        <aside className="biz-card biz-profile">
           <h2>Profiliniz</h2>
 
-          <div className="business-dashboard__progress-top">
-            <strong>{stats.profileCompletion}% tamamlanıb</strong>
-          </div>
-
-          <div className="business-dashboard__progress-bar">
-            <div style={{ width: `${stats.profileCompletion}%` }} />
+          <div
+            className="biz-ring"
+            style={{ ["--value" as string]: `${completion}` }}
+          >
+            <div className="biz-ring__inner">
+              <strong>{completion}%</strong>
+              <span>hazır</span>
+            </div>
           </div>
 
           <p>
-            Müştərilərin sizi daha asan tapması üçün profilinizi
-            tamamlayın.
+            {isProfileComplete
+              ? "Profiliniz tam hazırdır. Müştərilər sizi asanlıqla tapır."
+              : "Şəkil, təsvir və iş saatlarını əlavə edin ki, müştərilər sizi daha tez seçsin."}
           </p>
 
           <button
             type="button"
-            className="business-dashboard__secondary-button"
-            onClick={() => navigate("/business-profile")}
+            className="biz-outline-button"
+            onClick={() => navigate("/business/profile")}
           >
-            Profili tamamla
+            {isProfileComplete ? "Profili redaktə et" : "Profili tamamla"}
             <ArrowRight size={15} strokeWidth={1.8} />
           </button>
         </aside>
       </section>
 
       {/* ===== XİDMƏTLƏR + SÜRƏTLİ ƏMƏLİYYATLAR ===== */}
-      <section className="business-dashboard__content">
-        <div className="business-dashboard__panel">
-          <div className="business-card-header">
+      <section className="biz-grid">
+        <div className="biz-card">
+          <header className="biz-card__header">
             <h2>Xidmətləriniz</h2>
-          </div>
+            <button
+              type="button"
+              className="biz-link"
+              onClick={() => navigate("/business/services")}
+            >
+              İdarə et
+              <ArrowRight size={15} strokeWidth={1.8} />
+            </button>
+          </header>
 
           {services.length === 0 ? (
-            <p className="business-dashboard__empty-text">
-              Hələ xidmət əlavə etməmisiniz.
-            </p>
+            <p className="biz-muted">Hələ xidmət əlavə etməmisiniz.</p>
           ) : (
-            <div className="business-service-list">
-              {services.slice(0, 4).map((service) => (
-                <div className="business-service-row" key={service.id}>
+            /* Menyu kimi: ad ...... qiymət */
+            <ul className="biz-menu">
+              {services.slice(0, 5).map((service) => (
+                <li key={service.id}>
                   <span>{service.name}</span>
-                  <strong>{service.price} ₼</strong>
-                </div>
+                  <i aria-hidden="true" />
+                  <b>
+                    {service.price}
+                    <small className="manat">₼</small>
+                  </b>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
-
-          <button
-            type="button"
-            className="business-dashboard__link-button"
-            onClick={() => navigate("/business-services")}
-          >
-            Bütün xidmətlər
-            <ArrowRight size={15} strokeWidth={1.8} />
-          </button>
         </div>
 
-        <div className="business-dashboard__panel">
-          <div className="business-card-header">
+        <div className="biz-card">
+          <header className="biz-card__header">
             <h2>Sürətli əməliyyatlar</h2>
+          </header>
+
+          <div className="biz-actions">
+            {[
+              { label: "Yeni xidmət", hint: "Qiymət və müddət", icon: Plus, to: "/business/services" },
+              { label: "Şəkil əlavə et", hint: "Portfolio", icon: ImagePlus, to: "/business/portfolio" },
+              { label: "Profili redaktə et", hint: "Ad, ərazi, təsvir", icon: Settings, to: "/business/profile" },
+              { label: "İş saatları", hint: "Açıq günlər", icon: Clock3, to: "/business/hours" },
+            ].map(({ label, hint, icon: Icon, to }) => (
+              <button
+                key={label}
+                type="button"
+                className="biz-action"
+                onClick={() => navigate(to)}
+              >
+                <span className="biz-medal">
+                  <Icon size={18} strokeWidth={1.8} />
+                </span>
+                <strong>{label}</strong>
+                <span>{hint}</span>
+              </button>
+            ))}
           </div>
 
-          <div className="business-dashboard__actions">
-            <button
-              type="button"
-              className="business-dashboard__action"
-              onClick={() => navigate("/business-services")}
-            >
-              <div>
-                <Plus size={18} strokeWidth={1.8} />
-                <span>Yeni xidmət əlavə et</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              className="business-dashboard__action"
-              onClick={() => navigate("/business-portfolio")}
-            >
-              <div>
-                <ImagePlus size={18} strokeWidth={1.8} />
-                <span>Portfolioya şəkil əlavə et</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              className="business-dashboard__action"
-              onClick={() => navigate("/business-profile")}
-            >
-              <div>
-                <Settings size={18} strokeWidth={1.8} />
-                <span>Biznes profilini redaktə et</span>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              className="business-dashboard__action"
-              onClick={() => navigate("/business-profile")}
-            >
-              <div>
-                <Clock3 size={18} strokeWidth={1.8} />
-                <span>İş saatlarını dəyiş</span>
-              </div>
-            </button>
-          </div>
+          <p className="biz-muted biz-actions__note">
+            <Store size={14} strokeWidth={1.8} /> {stats.serviceCount} aktiv xidmət
+          </p>
         </div>
       </section>
     </main>

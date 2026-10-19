@@ -1,0 +1,863 @@
+/* =========================================================
+   BİZNES PANELİ — ORTAQ PREMİUM QAT
+   Bütün "Biznesim" səhifələri eyni dildə danışır:
+   zərif serif başlıqlar, qızılı detallar, aydın kartlar.
+   Seçicilər .business-layout ilə başlayır ki, səhifələrin öz
+   stillərindən güclü olsun (CSS sırasından asılı olmasın).
+   ========================================================= */
+
+/* ---------- Ortaq: kiçik qızılı başlıq ---------- */
+
+.biz-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: var(--color-gold);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.biz-eyebrow::after {
+  content: "";
+  width: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+
+/* ---------- Səhifə başlıqları ---------- */
+
+.business-layout .business-profile__header h1,
+.business-layout .business-services__header h1,
+.business-layout .business-bookings__header h1,
+.business-layout .business-portfolio__header h1,
+.business-layout .business-reviews__header h1,
+.business-layout .business-customers__header h1,
+.business-layout .business-hours__header h1,
+body .account-profile__header h1 {
+  margin: 0;
+  color: var(--color-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 4.6vw, 52px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.business-layout .business-profile__header p,
+.business-layout .business-services__header p,
+.business-layout .business-bookings__header p,
+.business-layout .business-portfolio__header p,
+.business-layout .business-reviews__header p,
+.business-layout .business-customers__header p,
+.business-layout .business-hours__header p,
+body .account-profile__header p {
+  margin-top: 12px;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+}
+
+/* Kart başlıqları */
+.business-layout .business-profile__card-header h2,
+.business-layout .business-services__form h2,
+.business-layout .business-customers__top-header h2,
+.business-layout .business-services__empty h2,
+.business-layout .business-portfolio__empty h2,
+.business-layout .business-reviews__empty h2,
+.business-layout .business-customers__empty h2,
+.business-layout .business-bookings__empty h3,
+body .account-profile__card-header h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+/* ---------- Kartlar: yumşaq künc, sakit kölgə ---------- */
+
+.business-layout .business-profile__card,
+.business-layout .business-services__form,
+.business-layout .business-service-card,
+.business-layout .business-booking-card,
+.business-layout .business-reviews__summary,
+.business-layout .business-review-card,
+.business-layout .business-customer-card,
+.business-layout .business-customers__top,
+.business-layout .business-hours__card,
+.business-layout .business-portfolio__upload,
+body .account-profile__card {
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ---------- Düymələr ---------- */
+
+/* Əsas əməl: qızılı həb */
+.business-layout .business-services__primary,
+.business-layout .business-profile__save,
+.business-layout .business-hours__save,
+.business-layout .business-portfolio__upload-button,
+.business-layout .business-portfolio__empty-cta,
+body .account-profile__button--primary {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+  font-weight: 700;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 10px 24px rgba(169, 130, 47, 0.22);
+  transition:
+    transform 220ms var(--ease-out),
+    box-shadow 220ms var(--ease-out);
+}
+
+.business-layout .business-services__primary:hover:not(:disabled),
+.business-layout .business-profile__save:hover:not(:disabled),
+.business-layout .business-hours__save:hover:not(:disabled),
+.business-layout .business-portfolio__upload-button:hover:not(:disabled),
+.business-layout .business-portfolio__empty-cta:hover,
+body .account-profile__button--primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 30px rgba(169, 130, 47, 0.32);
+}
+
+/* İkinci dərəcəli: incə haşiyəli həb */
+.business-layout .business-services__secondary,
+.business-layout .business-service-card__button,
+.business-layout .business-profile__view,
+body .account-profile__button:not(.account-profile__button--primary) {
+  border-radius: 999px;
+}
+
+.business-layout .business-profile__view:hover,
+.business-layout .business-services__secondary:hover,
+.business-layout .business-service-card__button:not(.business-service-card__button--danger):hover,
+body .account-profile__button:not(.account-profile__button--primary):hover:not(:disabled) {
+  border-color: var(--color-gold);
+  background: var(--color-gold-soft);
+  color: var(--color-text);
+}
+
+.business-layout .business-profile__view,
+.business-layout .business-profile__link {
+  border-color: rgba(169, 130, 47, 0.45);
+  color: var(--color-gold);
+}
+
+/* ---------- Form sahələri ---------- */
+
+.business-layout .business-profile__field input,
+.business-layout .business-profile__field select,
+.business-layout .business-profile__field textarea,
+.business-layout .business-services__field input,
+.business-layout .business-portfolio__upload input[type="text"],
+.business-layout .business-customers__search,
+.business-layout .business-hours__select,
+body .account-profile__field input {
+  border-radius: 14px;
+}
+
+.business-layout .business-profile__field input:focus,
+.business-layout .business-profile__field select:focus,
+.business-layout .business-profile__field textarea:focus,
+.business-layout .business-services__field input:focus,
+.business-layout .business-portfolio__upload input[type="text"]:focus,
+.business-layout .business-hours__select:focus,
+body .account-profile__field input:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 4px var(--color-gold-soft);
+  outline: none;
+}
+
+.business-layout .business-customers__search:focus-within {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 4px var(--color-gold-soft);
+}
+
+.business-layout .business-profile__field > span,
+.business-layout .business-services__field label,
+body .account-profile__field > span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* ---------- Qızılı medalyon (avatar və ikonlar) ---------- */
+
+.business-layout .business-customer-card__avatar,
+.business-layout .business-review-card__avatar,
+.business-layout .business-services__empty-icon,
+.business-layout .business-portfolio__empty-icon,
+.business-layout .business-reviews__empty-icon,
+.business-layout .business-customers__empty-icon,
+.business-layout .business-bookings__empty-icon {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  color: #f6e3b4;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 6px 14px rgba(12, 36, 29, 0.18);
+}
+
+/* ---------- Statuslar: tema rəngləri ---------- */
+
+.business-layout .business-booking-card__status--pending,
+.business-layout .business-customer-card__status--pending {
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  color: var(--color-warning);
+}
+
+.business-layout .business-booking-card__status--confirmed,
+.business-layout .business-booking-card__status--completed,
+.business-layout .business-customer-card__status--confirmed,
+.business-layout .business-customer-card__status--completed {
+  background: color-mix(in srgb, var(--color-success) 13%, transparent);
+  color: var(--color-success);
+}
+
+.business-layout .business-booking-card__status--cancelled,
+.business-layout .business-customer-card__status--cancelled {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.business-layout .business-booking-card__status,
+.business-layout .business-customer-card__status {
+  padding: 5px 11px;
+  border: 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   PROFİL — "Müştərilər sizi belə görür"
+   ========================================================= */
+
+.business-layout .business-profile__preview {
+  border: 1px solid rgba(217, 184, 116, 0.35);
+  border-radius: 28px;
+  box-shadow: 0 22px 46px rgba(12, 36, 29, 0.14);
+}
+
+.business-layout .business-profile__cover {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(255, 255, 255, 0.12), transparent 45%),
+    radial-gradient(circle at 85% 130%, #1f604e 0%, #0b241d 70%);
+}
+
+.business-layout .business-profile__cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.business-layout .business-profile__cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(8, 26, 21, 0.45));
+}
+
+.business-layout .business-profile__cover span {
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(217, 184, 116, 0.5);
+  background: rgba(8, 26, 21, 0.65);
+  color: #f6e3b4;
+  letter-spacing: 0.04em;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.business-layout .business-profile__avatar {
+  position: relative;
+  z-index: 2;
+  width: 96px;
+  height: 96px;
+  flex-basis: 96px;
+  margin-top: -48px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.2), transparent 50%) padding-box,
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  color: #f6e3b4;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 40px;
+  font-weight: 600;
+  box-shadow:
+    0 0 0 5px var(--color-surface),
+    0 14px 28px rgba(12, 36, 29, 0.3);
+}
+
+.business-layout .business-profile__preview-info h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.business-layout .business-profile__chip {
+  border: 1px solid rgba(169, 130, 47, 0.3);
+  background: var(--color-gold-soft);
+  color: var(--color-text);
+}
+
+.business-layout .business-profile__chip svg {
+  color: var(--color-gold);
+}
+
+.business-layout .business-profile__hours strong {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 19px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
+
+/* =========================================================
+   XİDMƏTLƏR — menyu kartları
+   ========================================================= */
+
+.business-layout .business-service-card {
+  position: relative;
+  padding: 20px 22px 18px 26px;
+  transition:
+    border-color 300ms var(--ease-out),
+    transform 420ms var(--ease-out),
+    box-shadow 420ms var(--ease-out);
+}
+
+.business-layout .business-service-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 20px;
+  bottom: 20px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: linear-gradient(180deg, #f6e3b4, #a8823f);
+}
+
+.business-layout .business-service-card:hover {
+  border-color: rgba(169, 130, 47, 0.45);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px rgba(12, 36, 29, 0.1);
+}
+
+.business-layout .business-service-card__info h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.business-layout .business-service-card__duration svg {
+  color: var(--color-gold);
+}
+
+.business-layout .business-service-card__price {
+  color: var(--color-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 36px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.business-layout .business-service-card__actions {
+  padding-top: 14px;
+  border-top: 1px dashed var(--color-border-strong);
+}
+
+/* =========================================================
+   REZERVLƏR — bilet kartları
+   ========================================================= */
+
+.business-layout .business-bookings__summary {
+  border-radius: 999px;
+  border-color: rgba(169, 130, 47, 0.35);
+}
+
+.business-layout .business-bookings__summary svg {
+  color: var(--color-gold);
+}
+
+.business-layout .business-bookings__tabs,
+.business-layout .business-bookings__subtabs {
+  width: fit-content;
+  max-width: 100%;
+  padding: 5px;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.business-layout .business-bookings__tab,
+.business-layout .business-bookings__subtab {
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+}
+
+.business-layout .business-bookings__tab.is-active,
+.business-layout .business-bookings__subtab.is-active {
+  background: linear-gradient(135deg, #1d5a49, #0d2a22);
+  color: #f6e3b4;
+  box-shadow: 0 6px 16px rgba(12, 36, 29, 0.25);
+}
+
+.business-layout .business-booking-card {
+  padding: 18px 20px;
+  gap: 14px;
+  transition:
+    border-color 300ms var(--ease-out),
+    box-shadow 420ms var(--ease-out);
+}
+
+.business-layout .business-booking-card:hover {
+  border-color: rgba(169, 130, 47, 0.4);
+  box-shadow: 0 16px 32px rgba(12, 36, 29, 0.1);
+}
+
+.business-layout .business-booking-card__main {
+  flex-wrap: nowrap;
+  gap: 18px;
+}
+
+/* Tarix bloku: gün iri, ay kiçik */
+.business-booking-card__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 64px;
+  height: 68px;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 30% 0%, rgba(255, 255, 255, 0.14), transparent 60%),
+    linear-gradient(160deg, #1d5a49, #0b241d);
+  color: #f6e3b4;
+  box-shadow: inset 0 0 0 1px rgba(217, 184, 116, 0.35);
+}
+
+.business-booking-card__day strong {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 30px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.business-booking-card__day span {
+  margin-top: 2px;
+  color: rgba(246, 241, 231, 0.75);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.business-layout .business-booking-card__content {
+  flex: 1;
+}
+
+.business-layout .business-booking-card__content h3 {
+  margin-top: 4px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.business-layout .business-booking-card__content span {
+  font-size: 13px;
+}
+
+.business-layout .business-booking-card__content .business-booking-card__when {
+  margin-top: 0;
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+.business-booking-card__price {
+  flex-shrink: 0;
+  color: var(--color-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
+
+.business-layout .business-booking-card__actions {
+  padding-top: 14px;
+  border-top: 1px dashed var(--color-border-strong);
+}
+
+.business-layout .business-booking-card__action {
+  border-radius: 999px;
+}
+
+.business-layout .business-booking-card__action--confirm {
+  border-color: transparent;
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+}
+
+.business-layout .business-booking-card__action--confirm:hover {
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  filter: brightness(1.04);
+}
+
+/* "Tamamla": göy yox, zümrüd */
+.business-layout .business-booking-card__action--complete,
+.business-layout .business-booking-card__action--complete:hover {
+  border-color: transparent;
+  background: linear-gradient(135deg, #1d5a49, #0d2a22);
+  color: #f6e3b4;
+}
+
+/* =========================================================
+   PORTFOLIO — yükləmə zonası və qalereya
+   ========================================================= */
+
+.business-layout .business-portfolio__upload {
+  padding: 18px;
+  border: 1px dashed rgba(169, 130, 47, 0.55);
+  background: var(--color-surface);
+}
+
+.business-layout .business-portfolio__grid {
+  gap: 14px;
+}
+
+.business-layout .business-portfolio-item {
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 12px 26px rgba(12, 36, 29, 0.14);
+}
+
+.business-layout .business-portfolio-item img {
+  transition: transform 900ms var(--ease-out);
+}
+
+.business-layout .business-portfolio-item:hover img {
+  transform: scale(1.06);
+}
+
+.business-layout .business-portfolio-item__caption {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   RƏYLƏR
+   ========================================================= */
+
+.business-layout .business-reviews__average strong {
+  color: var(--color-gold);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 72px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.business-layout .business-reviews__bar > div {
+  background: linear-gradient(90deg, #a8823f, #e6c98a);
+}
+
+.business-layout .business-reviews__stars svg.is-filled {
+  color: #d9b874;
+  fill: #d9b874;
+}
+
+.business-layout .business-review-card__name h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.business-layout .business-review-card__comment {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.business-layout .business-review-card__comment:not(.is-empty)::before {
+  content: "“";
+  margin-right: 2px;
+  color: var(--color-gold);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 28px;
+  line-height: 0;
+  vertical-align: -0.3em;
+}
+
+/* =========================================================
+   MÜŞTƏRİLƏR
+   ========================================================= */
+
+.business-layout .business-customers__top {
+  border: 1px solid rgba(217, 184, 116, 0.32);
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.1), transparent 45%),
+    radial-gradient(circle at 90% 130%, #1f604e 0%, #0b241d 70%);
+  color: #f6f1e7;
+}
+
+.business-layout .business-customers__top-header h2 {
+  color: #fff;
+}
+
+.business-layout .business-customers__top-header svg {
+  color: #e6c98a;
+}
+
+.business-layout .business-customers__top-card {
+  border-color: rgba(217, 184, 116, 0.25);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.business-layout .business-customers__top-card strong {
+  color: #fff;
+}
+
+.business-layout .business-customers__top-card span {
+  color: rgba(246, 241, 231, 0.7);
+}
+
+.business-layout .business-customer-card__name h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 23px;
+  font-weight: 600;
+}
+
+.business-layout .business-customer-card__stat svg {
+  color: var(--color-gold);
+}
+
+.business-layout .business-customer-card__stat strong {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
+
+/* =========================================================
+   İŞ SAATLARI — açarlar (toggle)
+   ========================================================= */
+
+.business-layout .business-hours__card {
+  padding: 8px 28px;
+}
+
+.business-layout .business-hours__day input {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  width: 44px;
+  height: 26px;
+  margin: 0;
+  border-radius: 999px;
+  background: var(--color-border-strong);
+  transition: background-color 260ms var(--ease-out);
+}
+
+.business-layout .business-hours__day input::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  transition: transform 260ms var(--ease-out);
+}
+
+.business-layout .business-hours__day input:checked {
+  background: linear-gradient(135deg, #1d5a49, #0d2a22);
+}
+
+.business-layout .business-hours__day input:checked::after {
+  transform: translateX(18px);
+  background: #f6e3b4;
+}
+
+.business-layout .business-hours__day input:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.business-layout .business-hours__day span {
+  font-size: 15px;
+}
+
+.business-layout .business-hours__closed {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   HESAB PROFİLİ (yuxarı menyudakı "Profil")
+   ========================================================= */
+
+body .account-profile__identity {
+  position: relative;
+  overflow: hidden;
+  align-items: center;
+  border: 1px solid rgba(217, 184, 116, 0.35);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.1), transparent 45%),
+    radial-gradient(circle at 85% 120%, #1d5a49 0%, #0b241d 70%);
+  color: #f6f1e7;
+  box-shadow: 0 24px 50px rgba(12, 36, 29, 0.22);
+}
+
+body .account-profile__identity .account-profile__avatar {
+  width: 92px;
+  height: 92px;
+  flex-basis: 92px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.2), transparent 50%) padding-box,
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  color: #f6e3b4;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 600;
+  box-shadow: 0 0 40px rgba(240, 205, 140, 0.16);
+}
+
+body .account-profile__identity-info h2 {
+  color: #fff;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+body .account-profile__identity-info > span {
+  color: rgba(246, 241, 231, 0.72);
+}
+
+/* "Biznes sahibi" nişanı: bütün eni tutmasın */
+body .account-profile__role {
+  align-self: flex-start;
+  border: 1px solid rgba(217, 184, 116, 0.4);
+  background: rgba(217, 184, 116, 0.1);
+  color: #f6e3b4;
+}
+
+body .account-profile__identity .account-profile__icon-button {
+  border-color: rgba(217, 184, 116, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(246, 241, 231, 0.75);
+}
+
+body .account-profile__list-label svg {
+  color: var(--color-gold);
+}
+
+body .account-profile__soon {
+  border-radius: 999px;
+}
+
+/* "Hesabdan çıx" düyməsi: əvvəl stili yox idi, ağ boş görünürdü */
+body .account-profile__logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 18px;
+  border: 1px solid color-mix(in srgb, var(--color-danger) 45%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-danger);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 220ms var(--ease-out);
+}
+
+body .account-profile__logout:hover {
+  background: color-mix(in srgb, var(--color-danger) 10%, transparent);
+}
+
+/* ---------- Telefon ---------- */
+
+@media (max-width: 600px) {
+  .business-layout .business-booking-card__main {
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .business-layout .business-booking-card__actions {
+    flex-basis: auto;
+    flex-wrap: wrap;
+  }
+
+  .business-layout .business-booking-card__content {
+    min-width: 0;
+  }
+
+  .business-layout .business-bookings__tabs,
+  .business-layout .business-bookings__subtabs {
+    flex-wrap: nowrap;
+  }
+
+  .business-booking-card__day {
+    width: 56px;
+    height: 60px;
+  }
+
+  .business-layout .business-hours__card {
+    padding: 4px 16px;
+  }
+
+  body .account-profile__identity {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

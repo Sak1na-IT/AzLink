@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CalendarDays, Check, Clock3, UserRound, X } from "lucide-react";
 
+import { formatRelativeDay, getDayParts } from "../../utils/formatDate";
 import "./BusinessBookings.css";
 import { getStoredUser } from "../../services/api";
 import {
@@ -40,11 +41,6 @@ const periodTabs: { value: PeriodFilter; label: string }[] = [
 ];
 
 /* 2026-09-25 → 25.09.2026 */
-const formatDate = (dateKey: string) => {
-  const [year, month, day] = dateKey.split("-");
-  return `${day}.${month}.${year}`;
-};
-
 /* Bazar ertəsi 00:00 - Bazar 23:59 aralığı */
 const getWeekRange = () => {
   const today = new Date();
@@ -201,7 +197,7 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
       ) : (
         <section className="business-bookings__header">
           <div>
-            <span className="business-bookings__eyebrow">Rezervlər</span>
+            <span className="biz-eyebrow">Rezervlər</span>
 
             <h1>Rezervləri idarə edin</h1>
 
@@ -266,15 +262,18 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
           {filteredBookings.map((booking) => (
             <article key={booking.id} className="business-booking-card">
               <div className="business-booking-card__main">
-                <div className="business-booking-card__date">
-                  <CalendarDays size={15} strokeWidth={1.8} />
-                  <span>{formatDate(booking.date)}</span>
-
-                  <Clock3 size={15} strokeWidth={1.8} />
-                  <span>{booking.time}</span>
+                {/* Bilet kimi tarix bloku */}
+                <div className="business-booking-card__day">
+                  <strong>{getDayParts(booking.date).day}</strong>
+                  <span>{getDayParts(booking.date).monthShort}</span>
                 </div>
 
                 <div className="business-booking-card__content">
+                  <span className="business-booking-card__when">
+                    <Clock3 size={14} strokeWidth={1.8} />
+                    {booking.time} · {formatRelativeDay(booking.date)}
+                  </span>
+
                   <h3>{booking.service}</h3>
 
                   <span>
@@ -282,6 +281,11 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
                     {booking.customerName}
                   </span>
                 </div>
+
+                <strong className="business-booking-card__price">
+                  {booking.priceFrom}
+                  <small className="manat">₼</small>
+                </strong>
               </div>
 
               <span

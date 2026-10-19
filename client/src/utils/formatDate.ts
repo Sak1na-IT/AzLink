@@ -79,3 +79,10 @@ export const formatReadable = (date: Date) =>
   `${WEEKDAYS[date.getDay()].toLocaleLowerCase("az")}, ${date.getDate()} ${
     MONTHS[date.getMonth()]
   }`;
+
+/* "2026-10-05" və ya ISO vaxt → "5 oktyabr 2026" */
+export const formatFullDate = (date: string) => {
+  const key = date.slice(0, 10);
+  const { day, month } = getDayParts(key);
+  return `${day} ${month} ${key.slice(0, 4)}`;
+};

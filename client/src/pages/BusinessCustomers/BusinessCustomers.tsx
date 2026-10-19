@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   CalendarDays,
   CheckCircle2,
   Search,
@@ -15,6 +13,7 @@ import {
   getCustomers,
   type CustomerSummary,
 } from "../../services/businessDashboardService";
+import { formatFullDate } from "../../utils/formatDate";
 import "./BusinessCustomers.css";
 
 const statusLabels: Record<string, string> = {
@@ -25,14 +24,9 @@ const statusLabels: Record<string, string> = {
 };
 
 /* 2026-09-25 → 25.09.2026 */
-const formatDate = (date: string) => {
-  const [year, month, day] = date.split("-");
-
-  return `${day}.${month}.${year}`;
-};
+const formatDate = formatFullDate;
 
 function BusinessCustomers() {
-  const navigate = useNavigate();
 
   const [customers, setCustomers] = useState<CustomerSummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,19 +70,9 @@ function BusinessCustomers() {
 
   return (
     <main className="business-customers">
-      <div className="business-customers__top">
-        <button
-          type="button"
-          className="business-customers__back"
-          onClick={() => navigate("/business")}
-        >
-          <ArrowLeft size={18} strokeWidth={1.8} />
-          Biznes panelinə qayıt
-        </button>
-      </div>
-
       <section className="business-customers__header">
         <div>
+          <span className="biz-eyebrow">Müştərilər</span>
           <h1>Müştərilər</h1>
 
           <p>
@@ -231,7 +215,10 @@ function BusinessCustomers() {
 
                     <div>
                       <span>Ümumi ödəniş</span>
-                      <strong>{customer.totalSpent} ₼</strong>
+                      <strong>
+                        {customer.totalSpent}
+                        <small className="manat">₼</small>
+                      </strong>
                     </div>
                   </div>
                 </div>

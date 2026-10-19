@@ -1,10 +1,16 @@
+/* =========================================================
+   BİZNES PANELİ — Dashboard
+   Yuxarıda zümrüd vitrin (salam + əsas rəqəmlər), altında
+   aydın kartlar: bugünkü rezervlər, profil, xidmətlər, əməliyyatlar.
+   ========================================================= */
+
 .business-dashboard {
   max-width: 1040px;
   margin: 0 auto;
-  padding: 28px 20px 64px;
+  padding: 8px 0 64px;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
 .business-dashboard__loading {
@@ -14,402 +20,636 @@
   font-size: var(--font-size-sm);
 }
 
-/* ===== HERO ===== */
-.business-dashboard__hero {
+/* ---------- Zümrüd vitrin ---------- */
+
+.biz-hero {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 30px 32px 0;
+  border: 1px solid rgba(217, 184, 116, 0.32);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.1), transparent 42%),
+    radial-gradient(circle at 90% 130%, #1f604e 0%, #0b241d 68%);
+  color: #f6f1e7;
+  box-shadow: 0 26px 54px rgba(12, 36, 29, 0.22);
+}
+
+/* İncə qızılı dairələr — fon naxışı */
+.biz-hero::after {
+  content: "";
+  position: absolute;
+  right: -90px;
+  top: -120px;
+  z-index: -1;
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  border: 1px solid rgba(217, 184, 116, 0.16);
+  box-shadow: 0 0 0 34px transparent, 0 0 0 35px rgba(217, 184, 116, 0.09);
+  pointer-events: none;
+}
+
+.biz-hero__top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 20px;
 }
 
-.business-dashboard__hero h1 {
-  margin: 0;
-  color: var(--color-text);
-  font-size: 26px;
-  letter-spacing: -0.02em;
-}
-
-.business-dashboard__hero p {
-  margin: 6px 0 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
-}
-
-.business-dashboard__primary-button,
-.business-dashboard__secondary-button {
+.biz-hero__eyebrow {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 42px;
-  padding: 0 18px;
-  border-radius: 11px;
-  border: 1px solid var(--color-primary);
-  background: var(--color-primary);
-  color: #ffffff;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  white-space: nowrap;
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast);
-}
-
-.business-dashboard__primary-button:hover,
-.business-dashboard__secondary-button:hover {
-  background: var(--color-primary-hover);
-  border-color: var(--color-primary-hover);
-}
-
-/* ===== KPI ===== */
-.business-dashboard__stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-
-.business-stat-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-  text-align: left;
-  color: inherit;
-  cursor: default;
-  transition:
-    border-color var(--transition-fast),
-    background-color var(--transition-fast);
-}
-
-.business-stat-card--clickable {
-  cursor: pointer;
-}
-
-.business-stat-card--clickable:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
-}
-
-.business-stat-card__icon {
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-}
-
-.business-stat-card div:last-child {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.business-stat-card span {
-  color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
-}
-
-.business-stat-card strong {
-  color: var(--color-text);
-  font-size: 17px;
-  font-weight: var(--font-weight-bold);
-  white-space: nowrap;
-}
-
-/* ===== CONTENT GRID ===== */
-.business-dashboard__content {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 16px;
-  align-items: start;
-}
-
-.business-dashboard__main-card,
-.business-dashboard__panel,
-.business-dashboard__side-card {
-  padding: 22px;
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-}
-
-.business-card-header {
-  margin-bottom: 14px;
-}
-
-.business-card-header h2 {
-  margin: 0;
-  color: var(--color-text);
-  font-size: 17px;
-}
-
-.business-dashboard__empty-text {
-  margin: 0 0 10px;
-  color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-}
-
-/* ===== TODAY'S BOOKINGS ===== */
-.business-today-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.business-today-item {
-  display: grid;
-  grid-template-columns: 52px 1fr auto auto;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.business-today-item:last-child {
-  border-bottom: none;
-}
-
-.business-today-item__time {
-  color: var(--color-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-}
-
-.business-today-item__info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.business-today-item__info strong {
-  color: var(--color-text);
-  font-size: var(--font-size-sm);
-}
-
-.business-today-item__info span {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-}
-
-.business-today-item__price {
-  color: var(--color-text);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  white-space: nowrap;
-}
-
-.business-today-item__right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.business-today-item__status {
-  padding: 3px 9px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: var(--font-weight-semibold);
-  white-space: nowrap;
-}
-
-.business-today-item__status--pending {
-  background: var(--color-warning);
-  color: #ffffff;
-  opacity: 0.85;
-}
-
-.business-today-item__status--confirmed {
-  background: var(--color-primary-soft);
-  color: var(--color-primary);
-}
-
-.business-dashboard__chip-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  height: 30px;
-  padding: 0 11px;
-  border: 1px solid var(--color-primary);
-  border-radius: 999px;
-  background: var(--color-primary);
-  color: #ffffff;
+  gap: 10px;
+  color: #e6c98a;
   font-size: 12px;
-  font-weight: var(--font-weight-semibold);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.biz-hero__eyebrow::after {
+  content: "";
+  width: 42px;
+  height: 1px;
+  background: linear-gradient(90deg, #e6c98a, transparent);
+}
+
+.biz-hero h1 {
+  margin: 12px 0 0;
+  color: #fff;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 5vw, 56px);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.biz-hero p {
+  margin: 12px 0 0;
+  color: rgba(246, 241, 231, 0.75);
+  font-size: 15px;
+}
+
+/* Rəqəmlər: incə qızılı xətlə ayrılmış dörd sütun */
+.biz-hero__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 28px -32px 0;
+  border-top: 1px solid rgba(217, 184, 116, 0.18);
+}
+
+.biz-hero__stats button {
+  padding: 20px 32px 22px;
+  border-left: 1px solid rgba(217, 184, 116, 0.18);
+  background: transparent;
+  color: inherit;
+  text-align: left;
   cursor: pointer;
-  white-space: nowrap;
+  transition: background-color 260ms var(--ease-out);
 }
 
-.business-dashboard__chip-button:hover {
-  background: var(--color-primary-hover);
+.biz-hero__stats button:first-child {
+  border-left: 0;
 }
 
-.business-dashboard__chip-button--ghost {
+.biz-hero__stats button:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.biz-hero__stats dt {
+  color: #f6e3b4;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 44px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.biz-hero__stats dt.is-alert {
+  color: #ffd27a;
+  text-shadow: 0 0 18px rgba(255, 210, 122, 0.45);
+}
+
+.biz-hero__stats dd {
+  margin: 8px 0 0;
+  color: rgba(246, 241, 231, 0.65);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---------- Düymələr ---------- */
+
+.biz-gold-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 10px 24px rgba(0, 0, 0, 0.25);
+  transition:
+    transform 220ms var(--ease-out),
+    box-shadow 220ms var(--ease-out);
+}
+
+.biz-gold-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 14px 30px rgba(217, 184, 116, 0.3);
+}
+
+.biz-outline-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
   background: transparent;
   color: var(--color-text);
-  border-color: var(--color-border);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 220ms var(--ease-out),
+    background-color 220ms var(--ease-out);
 }
 
-.business-dashboard__chip-button--ghost:hover {
-  background: var(--color-surface-muted);
+.biz-outline-button:hover {
+  border-color: var(--color-gold);
+  background: var(--color-gold-soft);
 }
 
-.business-dashboard__link-button {
+.biz-link {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  margin-top: 14px;
-  padding: 0;
-  border: none;
   background: transparent;
-  color: var(--color-primary);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
+  color: var(--color-gold);
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
 }
 
-.business-dashboard__link-button:hover {
-  text-decoration: underline;
+.biz-link svg {
+  transition: transform 220ms var(--ease-out);
 }
 
-/* ===== PROFİL KARTI ===== */
-.business-dashboard__side-card h2 {
-  margin: 0 0 12px;
+.biz-link:hover svg {
+  transform: translateX(3px);
+}
+
+/* ---------- Diqqət zolağı ---------- */
+
+.biz-alert {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid color-mix(in srgb, var(--color-warning) 45%, transparent);
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--color-warning) 9%, var(--color-surface));
   color: var(--color-text);
-  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 220ms var(--ease-out);
 }
 
-.business-dashboard__progress-top strong {
-  color: var(--color-primary);
-  font-size: var(--font-size-sm);
+.biz-alert:hover {
+  transform: translateY(-1px);
 }
 
-.business-dashboard__progress-bar {
-  margin-top: 8px;
-  height: 7px;
-  border-radius: 999px;
-  background: var(--color-surface-muted);
-  overflow: hidden;
+.biz-alert__icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--color-warning) 18%, transparent);
+  color: var(--color-warning);
 }
 
-.business-dashboard__progress-bar div {
-  height: 100%;
-  border-radius: 999px;
-  background: var(--color-primary);
-  transition: width 0.3s ease;
-}
-
-.business-dashboard__side-card p {
-  margin: 12px 0 16px;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-xs);
-  line-height: 1.5;
-}
-
-/* ===== XİDMƏTLƏR PREVIEW ===== */
-.business-service-list {
+.biz-alert__text {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  min-width: 0;
 }
 
-.business-service-row {
+.biz-alert__text strong {
+  font-size: 15px;
+}
+
+.biz-alert__text span {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.biz-alert__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--color-warning);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ---------- Kartlar ---------- */
+
+.biz-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  gap: 18px;
+}
+
+.biz-card {
+  padding: 26px 28px;
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.biz-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--color-border);
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
-.business-service-row:last-child {
-  border-bottom: none;
-}
-
-.business-service-row span {
+.biz-card h2 {
+  margin: 0;
   color: var(--color-text);
-  font-size: var(--font-size-sm);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.05;
 }
 
-.business-service-row strong {
-  color: var(--color-primary);
-  font-size: var(--font-size-sm);
+.biz-muted {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 14px;
 }
 
-/* ===== SÜRƏTLİ ƏMƏLİYYATLAR ===== */
-.business-dashboard__actions {
+/* Qızılı haşiyəli medalyon ikon */
+.biz-medal {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  background:
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  color: #f6e3b4;
+  box-shadow: 0 6px 14px rgba(12, 36, 29, 0.18);
+}
+
+.biz-empty {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
+  border: 1px dashed var(--color-border-strong);
+  border-radius: 18px;
+}
+
+.biz-empty strong {
+  color: var(--color-text);
+  font-size: 15px;
+}
+
+.biz-empty p {
+  margin: 3px 0 0;
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+/* ---------- Bugünkü rezervlər: zaman xətti ---------- */
+
+.biz-timeline {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.biz-timeline__item {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+}
+
+.biz-timeline__time {
+  color: var(--color-gold);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
+
+.biz-timeline__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 14px;
+  background: var(--color-surface-muted);
+}
+
+.biz-timeline__info {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 3px;
+  min-width: 0;
+  margin-right: auto;
 }
 
-.business-dashboard__action {
-  display: flex;
+.biz-timeline__info strong {
+  color: var(--color-text);
+  font-size: 15px;
+}
+
+.biz-timeline__info span {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.biz-status {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.biz-status--pending {
+  background: color-mix(in srgb, var(--color-warning) 14%, transparent);
+  color: var(--color-warning);
+}
+
+.biz-status--confirmed,
+.biz-status--completed {
+  background: color-mix(in srgb, var(--color-success) 13%, transparent);
+  color: var(--color-success);
+}
+
+.biz-status--cancelled {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+}
+
+.biz-chip {
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
+  gap: 5px;
+  min-height: 32px;
+  padding: 0 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.biz-chip--gold {
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+}
+
+/* ---------- Profil halqası ---------- */
+
+.biz-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.biz-profile h2 {
+  align-self: flex-start;
+}
+
+.biz-ring {
+  --value: 0;
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 18px 0 16px;
+  border-radius: 50%;
+  background: conic-gradient(
+    #d9b874 calc(var(--value) * 1%),
+    var(--color-surface-soft) 0
+  );
+  box-shadow: 0 10px 26px rgba(169, 130, 47, 0.18);
+}
+
+.biz-ring__inner {
+  position: absolute;
+  inset: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+
+.biz-ring__inner strong {
+  color: var(--color-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 40px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+}
+
+.biz-ring__inner span {
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.biz-profile p {
+  margin: 0 0 18px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* ---------- Xidmətlər: menyu kimi ---------- */
+
+.biz-menu {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.biz-menu li {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  color: var(--color-text);
+  font-size: 15px;
+}
+
+.biz-menu i {
+  flex: 1;
+  border-bottom: 1px dotted var(--color-border-strong);
+  transform: translateY(-4px);
+}
+
+.biz-menu b {
+  color: var(--color-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 24px;
+  font-weight: 600;
+  font-variant-numeric: lining-nums;
+}
+
+/* ---------- Sürətli əməliyyatlar ---------- */
+
+.biz-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.biz-action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 16px;
   border: 1px solid var(--color-border);
-  border-radius: 11px;
+  border-radius: 18px;
   background: var(--color-surface-muted);
   color: var(--color-text);
+  text-align: left;
   cursor: pointer;
   transition:
-    border-color var(--transition-fast),
-    background-color var(--transition-fast);
+    border-color 260ms var(--ease-out),
+    transform 260ms var(--ease-out),
+    box-shadow 260ms var(--ease-out);
 }
 
-.business-dashboard__action:hover {
-  border-color: var(--color-primary);
-  background: var(--color-primary-soft);
+.biz-action:hover {
+  border-color: rgba(169, 130, 47, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(12, 36, 29, 0.1);
 }
 
-.business-dashboard__action > div {
+.biz-action .biz-medal {
+  margin-bottom: 8px;
+}
+
+.biz-action strong {
+  font-size: 14px;
+}
+
+.biz-action > span:last-child {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.biz-actions__note {
   display: flex;
   align-items: center;
-  gap: 10px;
-  color: var(--color-primary);
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 13px;
 }
 
-.business-dashboard__action span {
-  color: var(--color-text);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-}
+/* ---------- Responsive ---------- */
 
-/* ===== MOBILE ===== */
 @media (max-width: 860px) {
-  .business-dashboard__stats {
-    grid-template-columns: repeat(2, 1fr);
+  .biz-grid {
+    grid-template-columns: 1fr;
   }
 
-  .business-dashboard__content {
-    grid-template-columns: 1fr;
+  .biz-hero__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .biz-hero__stats button:nth-child(3) {
+    border-left: 0;
+  }
+
+  .biz-hero__stats button:nth-child(n + 3) {
+    border-top: 1px solid rgba(217, 184, 116, 0.18);
   }
 }
 
 @media (max-width: 600px) {
-  .business-dashboard {
-    padding: 20px 14px 50px;
+  .biz-hero {
+    padding: 24px 20px 0;
+    border-radius: 24px;
   }
 
-  .business-today-item {
+  .biz-hero__top {
+    flex-direction: column;
+  }
+
+  .biz-hero__stats {
+    margin: 22px -20px 0;
+  }
+
+  .biz-hero__stats button {
+    padding: 16px 20px 18px;
+  }
+
+  .biz-hero__stats dt {
+    font-size: 36px;
+  }
+
+  .biz-card {
+    padding: 22px 18px;
+  }
+
+  .biz-timeline__item {
     grid-template-columns: 1fr;
-    gap: 6px;
+    gap: 4px;
   }
 
-  .business-today-item__right {
-    justify-content: space-between;
-    width: 100%;
+  .biz-timeline__card {
+    flex-wrap: wrap;
+  }
+
+  .biz-alert__text span {
+    display: none;
   }
 }

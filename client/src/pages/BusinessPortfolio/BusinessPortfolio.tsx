@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ImagePlus, Images, Trash2, Upload } from "lucide-react";
+import { ImagePlus, Images, Trash2, Upload } from "lucide-react";
 
 import {
   getPortfolio,
@@ -15,7 +14,6 @@ import "./BusinessPortfolio.css";
 const MAX_FILE_SIZE_MB = 20;
 
 function BusinessPortfolio() {
-  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [images, setImages] = useState<PortfolioImage[]>([]);
@@ -107,20 +105,10 @@ function BusinessPortfolio() {
 
   return (
     <main className="business-portfolio">
-      <div className="business-portfolio__top">
-        <button
-          type="button"
-          className="business-portfolio__back"
-          onClick={() => navigate("/business")}
-        >
-          <ArrowLeft size={18} strokeWidth={1.8} />
-          Biznes panelinə qayıt
-        </button>
-      </div>
-
       <section className="business-portfolio__header">
         <div>
-          <h1>Portfolio</h1>
+          <span className="biz-eyebrow">Portfolio</span>
+          <h1>İş nümunələri</h1>
 
           <p>
             İş nümunələrinizi əlavə edin. Müştərilər bunları profil
