@@ -34,6 +34,7 @@ import {
   type PortfolioImage,
 } from "../../services/businessPortfolioService";
 import { compressImage } from "../../utils/compressImage";
+import { ApiError } from "../../services/api";
 import { weekDays, weekDayLabels } from "../../types/schedule";
 
 type AreaOption = Awaited<ReturnType<typeof getAreas>>[number];
@@ -143,8 +144,24 @@ function BusinessProfile() {
       );
       setBrandingNote(note);
       return true;
-    } catch {
-      setBrandingNote("Şəkli yadda saxlamaq mümkün olmadı. Yenidən cəhd edin.");
+    } catch (caught) {
+      console.error("[Branding]", caught);
+
+      /* Səbəbi aydın yazırıq ki, nəyi düzəltmək lazım olduğu bilinsin */
+      const status = caught instanceof ApiError ? caught.status : 0;
+      const detail = caught instanceof Error ? caught.message : "";
+
+      setBrandingNote(
+        status === 404
+          ? "Server köhnə versiyadadır: serveri dayandırıb yenidən başladın (npm run dev)."
+          : status === 413
+            ? "Şəkil çox böyükdür, daha kiçik şəkil seçin."
+            : status >= 500
+              ? `Server xətası: ${detail}. Bazanı yenilədinizmi? (npx prisma migrate deploy, npx prisma generate)`
+              : status
+                ? `Yadda saxlamaq mümkün olmadı: ${detail}`
+                : "Serverə qoşulmaq mümkün olmadı. Server işləyirmi?"
+      );
       return false;
     } finally {
       setBrandingBusy(false);
