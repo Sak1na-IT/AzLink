@@ -1,16 +1,14 @@
-import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import PearlNecklace from "../../components/brand/PearlNecklace";
+import ServiceConstellation from "../../components/brand/ServiceConstellation";
 import VelvetStage from "../../components/brand/VelvetStage";
 import { isLoggedIn } from "../../services/api";
 import "./AccountType.css";
 
 function AccountType() {
   const navigate = useNavigate();
-  const zoneRef = useRef<HTMLDivElement>(null);
 
-  /* Mirvari kliklənəndə: girişlidirsə həmin sahənin axtarışı, deyilsə qeydiyyat */
+  /* Sahə kliklənəndə: girişlidirsə həmin sahənin axtarışı, deyilsə qeydiyyat */
   const handleCategory = (categoryId: string) => {
     navigate(
       isLoggedIn() ? `/search?category=${categoryId}` : "/register?role=user"
@@ -28,42 +26,37 @@ function AccountType() {
           </Link>
         </header>
 
-        {/* Boyunbağının asıldığı sahə; boyunbağının özü bütün vitrini tutur */}
-        <div ref={zoneRef} className="account-type__zone" />
+        <div className="account-type__body">
+          <div className="account-type__content">
+            <h1>Gündəlik ehtiyaclarınız, bir yerdə</h1>
 
-        <div className="account-type__necklace">
-          <PearlNecklace
-            onSelect={handleCategory}
-            zoneRef={zoneRef}
-            top={-0.12}
-            sag={0.95}
-          />
-        </div>
+            <p>
+              Gözəllikdən ev işlərinə, dərsdən avtomobilə: Bakının
+              mütəxəssislərini bir platformada tapın, müqayisə edin və
+              onlayn rezerv edin.
+            </p>
 
-        <div className="account-type__content">
-          <h1>Bakının xidmətləri bir sapda</h1>
+            <div className="account-type__actions">
+              <button
+                type="button"
+                className="velvet-button velvet-button--primary"
+                onClick={() => navigate("/register?role=user")}
+              >
+                Xidmət axtarıram
+              </button>
 
-          <p>
-            Usta, salon və mütəxəssisləri tapın, vaxtınızı onlayn rezerv
-            edin. Hər mirvari bir sahədir: birinə toxunun.
-          </p>
+              <button
+                type="button"
+                className="velvet-button velvet-button--ghost"
+                onClick={() => navigate("/register?role=business")}
+              >
+                Biznesimi əlavə edirəm
+              </button>
+            </div>
+          </div>
 
-          <div className="account-type__actions">
-            <button
-              type="button"
-              className="velvet-button velvet-button--primary"
-              onClick={() => navigate("/register?role=user")}
-            >
-              Xidmət axtarıram
-            </button>
-
-            <button
-              type="button"
-              className="velvet-button velvet-button--ghost"
-              onClick={() => navigate("/register?role=business")}
-            >
-              Biznesimi əlavə edirəm
-            </button>
+          <div className="account-type__visual">
+            <ServiceConstellation onSelect={handleCategory} />
           </div>
         </div>
       </VelvetStage>

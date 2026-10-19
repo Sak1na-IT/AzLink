@@ -462,11 +462,11 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 
 ## Dizayn sistemi
 
-Əsas fikir: **"Bakının xidmətləri bir sapda"**. Bakı "Xəzərin incisi"dir, AzLink-dəki *link* isə "bağ" deməkdir. Ona görə saytın simvolu qızılı sapa düzülmüş **mirvari boyunbağıdır**: hər mirvari bir xidmət sahəsidir (`data/categories.ts`).
+Əsas fikir: **"AzLink = bağlantı"**. Platforma müxtəlif sahələri birləşdirib insanların gündəlik ehtiyaclarını bir yerdə qarşılayır. Bunu ilk ekranda göstərən element `components/brand/ServiceConstellation.tsx`-dir: mərkəzdə AzLink, ətrafında 8 xidmət sahəsi (`data/categories.ts`) incə qızılı xətlərlə mərkəzə bağlıdır.
 
-- **Boyunbağı** (`components/brand/PearlNecklace.tsx`): real fizika ilə (Verlet) hesablanır. Açılışda yellənib yerinə oturur, mirvarilər mərkəzdən kənara bir-bir görünür. Siçan yaxınlaşanda mirvarilər tərpənir, mirvarini tutub dartmaq olur. Üstünə gələndə sahənin adı və xidmətləri görünür, klikləyəndə həmin kateqoriyanın axtarışı açılır. Klaviatura üçün eyni kateqoriyalar gizli düymələr kimi də var. "Azaldılmış hərəkət" ayarında sakit qalır.
-- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd məxmər fon, incə dən toxuması və siçanın arxasınca hərəkət edən işıq. Giriş ekranı bütövlükdə vitrindir, Ana səhifədə isə axtarış vitrin kartının içindədir. Hər iki rejimdə eyni görünür.
-- **Rənglər:** fon mirvari ağıdır, əsas rəng dərin zümrüd yaşılıdır (`#17614C`, qaranlıq rejimdə `#74D2AD`). Qızılı rəng yalnız sap və incə kənarlarda işlənir.
+- **Sahələr** maili orbitdə sakitcə fırlanır, xətlər boyunca yavaşca işıq axır. Açılışda sahələr mərkəzdən açılır (bir dəfə). Sistem siçana tərəf azca əyilir. Sahənin üstünə gələndə fırlanma dayanır, xətt parlayır və həmin sahənin xidmətləri görünür. Klikləyəndə kateqoriyanın axtarışı açılır. Sahələr adi düymədir, klaviatura ilə də işləyir. "Azaldılmış hərəkət" ayarında sakit qalır.
+- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd fon, incə dən toxuması və siçanın arxasınca hərəkət edən yumşaq işıq. Giriş ekranı bütövlükdə vitrindir, Ana səhifədə axtarış vitrin kartının içindədir. Hər iki rejimdə eyni görünür.
+- **Rənglər:** fon açıq və sakitdir, əsas rəng dərin zümrüd yaşılıdır (`#17614C`, qaranlıq rejimdə `#74D2AD`). Qızılı rəng yalnız incə xətlərdə və kənarlarda işlənir. Göz yormaması üçün yanıb-sönən və sürətli hərəkət yoxdur.
 - **Şrift:** Onest. Azərbaycan hərflərini (Ə ə, Ğ ğ, Ş ş, ı) və manat işarəsini (₼) tam dəstəkləyir. Fayl layihənin içindədir (`assets/fonts/`), ona görə internet olmadan da düzgün görünür.
 - **Yuxarı menyu:** şüşə effekti (arxa fon bulanıq görünür), bölmələr bir zolağın içindədir, aktiv bölmə qalxmış düymə kimi görünür.
 - Light və Dark mode dəstəklənir. Seçim brauzerin yaddaşında saxlanır (`hooks/useTheme.ts`).

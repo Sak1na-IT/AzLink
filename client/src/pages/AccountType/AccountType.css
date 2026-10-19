@@ -1,7 +1,7 @@
 /* =========================================================
    ACCOUNT TYPE — saytın ilk ekranı
-   Bütün ekran zərgər vitrinidir: yuxarıda mirvari boyunbağı,
-   aşağıda başlıq və iki seçim.
+   Tünd zümrüd vitrin: solda başlıq və iki seçim, sağda
+   mərkəzə bağlı 8 xidmət sahəsi (ServiceConstellation).
    ========================================================= */
 
 .account-type-page {
@@ -12,43 +12,25 @@
 .account-type {
   min-height: 100vh;
   display: grid;
-  grid-template-rows: auto minmax(300px, 1fr) auto;
-  padding: 28px 56px 64px;
+  grid-template-rows: auto 1fr;
+  padding: 28px 56px 48px;
 }
 
 /* ---------- Yuxarı zolaq ---------- */
 
 .account-type__bar {
   position: relative;
-  z-index: 2;
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .account-type__brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
   color: var(--velvet-text);
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.04em;
-}
-
-.account-type__brand::before {
-  content: "";
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 35% 30%,
-    #ffffff 0%,
-    #f3eef0 30%,
-    #cfc5ce 70%,
-    #a59aa8 100%
-  );
-  box-shadow: 0 0 12px rgba(255, 244, 222, 0.35);
 }
 
 .account-type__login {
@@ -68,60 +50,56 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
-/* ---------- Boyunbağı ---------- */
+/* ---------- Əsas hissə ---------- */
 
-.account-type__zone {
-  min-height: 300px;
+.account-type__body {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: 40px;
 }
-
-/* Bütün vitrini tutur: dartılan mirvari başlığın üstünə də gələ bilər */
-.account-type__necklace {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-}
-
-/* ---------- Başlıq və seçimlər ---------- */
 
 .account-type__content {
   position: relative;
-  z-index: 2;
-  max-width: 720px;
-  margin: 0 auto;
-  text-align: center;
-  animation: account-type-in 1s 1.3s var(--ease-out) backwards;
+  z-index: 4;
+  max-width: 520px;
+  animation: account-type-in 0.9s 0.2s var(--ease-out) backwards;
 }
 
 .account-type__content h1 {
   margin: 0;
   color: var(--velvet-text);
-  font-size: clamp(38px, 5.4vw, 72px);
+  font-size: clamp(40px, 4.6vw, 64px);
   font-weight: 600;
-  line-height: 1.02;
-  letter-spacing: -0.045em;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
 }
 
 .account-type__content p {
-  max-width: 520px;
-  margin: 20px auto 0;
+  margin: 22px 0 0;
   color: var(--velvet-text-muted);
   font-size: 17px;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .account-type__actions {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 34px;
+}
+
+.account-type__visual {
+  position: relative;
+  height: min(620px, 72vh);
 }
 
 @keyframes account-type-in {
   from {
     opacity: 0;
-    transform: translateY(14px);
+    transform: translateY(12px);
   }
 
   to {
@@ -144,7 +122,30 @@
     padding-left: 28px;
     padding-right: 28px;
   }
+}
 
+@media (max-width: 900px) {
+  .account-type__body {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    align-content: start;
+    padding-top: 12px;
+  }
+
+  /* Telefonda sahələr yuxarıda, mətn aşağıda */
+  .account-type__visual {
+    order: -1;
+    height: 340px;
+  }
+
+  .account-type__content {
+    max-width: none;
+    text-align: center;
+  }
+
+  .account-type__actions {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 760px) {
@@ -153,12 +154,7 @@
   }
 
   .account-type {
-    grid-template-rows: auto minmax(240px, 1fr) auto;
-    padding: 20px 16px 40px;
-  }
-
-  .account-type__zone {
-    min-height: 240px;
+    padding: 20px 16px 36px;
   }
 
   .account-type__content p {

@@ -103,17 +103,16 @@ img {
   color: var(--color-primary);
 }
 
-/* Loqonun yanındakı kiçik mirvari */
+/* Loqonun yanındakı kiçik nişan: qızılı halqalı zümrüd mərkəz (AzLink-in mərkəzi) */
 .top-nav__brand::before {
   content: "";
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background:
-    radial-gradient(circle at 35% 30%, #ffffff 0%, #f3eef0 30%, #cfc5ce 70%, #a59aa8 100%);
+  background: radial-gradient(circle, #2a6b58 0%, #0f2f27 100%);
   box-shadow:
-    inset -1px -2px 3px rgba(64, 44, 80, 0.25),
-    0 1px 3px rgba(15, 29, 24, 0.18);
+    0 0 0 2px var(--color-bg),
+    0 0 0 3px #d9bd7f;
 }
 
 .top-nav__links {

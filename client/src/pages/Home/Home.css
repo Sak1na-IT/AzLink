@@ -8,46 +8,43 @@
 
 .home-hero {
   width: 100%;
-  padding: 0 24px 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: 24px;
+  min-height: 460px;
+  padding: 44px 48px;
   border: 1px solid rgba(232, 204, 146, 0.16);
   border-radius: 32px;
-  text-align: center;
   box-shadow: var(--shadow-lg);
 }
 
-/* Boyunbağının asıldığı sahə (başlığın üstü) */
-.home-hero__zone {
-  height: 240px;
-}
-
-/* Boyunbağı bütün kartı tutur, kliklər altdakı elementlərə keçir */
-.home-hero__necklace {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  pointer-events: none;
-}
-
-.home-hero > :not(.home-hero__necklace) {
+.home-hero__main {
   position: relative;
   z-index: 2;
+  min-width: 0;
 }
 
 .home-hero__title {
   margin: 0;
   color: var(--velvet-text);
-  font-size: clamp(34px, 4.4vw, 56px);
+  font-size: clamp(34px, 4vw, 54px);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.04;
 }
 
 .home-hero__description {
-  width: min(100%, 620px);
-  margin: 16px auto 0;
+  max-width: 520px;
+  margin: 14px 0 0;
   color: var(--velvet-text-muted);
   font-size: var(--font-size-lg);
   line-height: var(--line-height-relaxed);
+}
+
+.home-hero__visual {
+  position: relative;
+  height: 400px;
 }
 
 /* =========================================================
@@ -55,8 +52,8 @@
    ========================================================= */
 
 .home-search {
-  width: min(100%, 820px);
-  margin: 28px auto 0;
+  width: 100%;
+  margin: 26px 0 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
@@ -148,7 +145,7 @@
 
 .quick-searches {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   flex-wrap: wrap;
   gap: 7px;
@@ -553,22 +550,26 @@
   }
 }
 
+/* Kiçik ekranda sahələr gizlənir, axtarış ön plana çıxır */
+@media (max-width: 1000px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+
+  .home-hero__visual {
+    display: none;
+  }
+}
+
 /* =========================================================
    RESPONSIVE — MOBILE
    ========================================================= */
 
 @media (max-width: 760px) {
   .home-hero {
-    padding: 0 14px 22px;
+    padding: 28px 18px 22px;
     border-radius: 24px;
-  }
-
-  .home-hero__zone {
-    height: 170px;
-  }
-
-  .home-hero__title br {
-    display: none;
   }
 
   .home-hero__title {

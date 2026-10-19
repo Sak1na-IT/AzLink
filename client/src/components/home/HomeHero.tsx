@@ -1,7 +1,6 @@
-import { useRef } from "react";
 import { MapPin, Search, ChevronRight } from "lucide-react";
 
-import PearlNecklace from "../brand/PearlNecklace";
+import ServiceConstellation from "../brand/ServiceConstellation";
 import VelvetStage from "../brand/VelvetStage";
 
 interface HomeHeroProps {
@@ -11,12 +10,13 @@ interface HomeHeroProps {
   onCategorySelect: (categoryId: string) => void;
 }
 
+/* Bazada həqiqətən olan, fərqli sahələrdən xidmətlər */
 const quickSearches = [
-  "Dırnaq",
-  "Təmizlik",
-  "Fotoqraf",
-  "Saç",
-  "Elektrik",
+  "Manikür",
+  "Ev təmizliyi",
+  "Saç kəsimi",
+  "Fərdi dərs",
+  "Kompleks yuma",
 ];
 
 function HomeHero({
@@ -25,8 +25,6 @@ function HomeHero({
   onSearch,
   onCategorySelect,
 }: HomeHeroProps) {
-  const zoneRef = useRef<HTMLDivElement>(null);
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -40,75 +38,66 @@ function HomeHero({
 
   return (
     <VelvetStage className="home-hero">
-      {/* Boyunbağı: hər mirvari bir sahədir, klikləyəndə axtarış açılır */}
-      <div ref={zoneRef} className="home-hero__zone" />
+      <div className="home-hero__main">
+        <h1 className="home-hero__title">Bu gün nə lazımdır?</h1>
 
-      <div className="home-hero__necklace">
-        <PearlNecklace
-          onSelect={onCategorySelect}
-          zoneRef={zoneRef}
-          top={-0.25}
-          sag={0.9}
-        />
-      </div>
+        <p className="home-hero__description">
+          Gözəllik, ev, avtomobil, təhsil və daha çox: axtarın,
+          ərazinizi seçin, uyğun mütəxəssisə rezerv edin.
+        </p>
 
-      <h1 className="home-hero__title">
-        Ehtiyacınız olan xidməti
-        <br />
-        rahatlıqla tapın
-      </h1>
-
-      <p className="home-hero__description">
-        Xidmət və ya mütəxəssis axtarın, ərazinizi seçin
-        və uyğun profillərə baxın.
-      </p>
-
-      <form
-        className="home-search"
-        onSubmit={handleSubmit}
-      >
-        <div className="home-search__input">
-          <Search size={19} strokeWidth={1.8} />
-
-          <input
-            name="search"
-            type="text"
-            placeholder="Xidmət və ya mütəxəssis yazın"
-            autoComplete="off"
-          />
-        </div>
-
-        <button
-          type="button"
-          className="home-search__area"
-          onClick={onAreaClick}
+        <form
+          className="home-search"
+          onSubmit={handleSubmit}
         >
-          <MapPin size={19} strokeWidth={1.8} />
+          <div className="home-search__input">
+            <Search size={19} strokeWidth={1.8} />
 
-          <span>
-            <strong>{areaLabel}</strong>
-            <small>Ərazi seçimi</small>
+            <input
+              name="search"
+              type="text"
+              placeholder="Xidmət və ya mütəxəssis yazın"
+              autoComplete="off"
+            />
+          </div>
+
+          <button
+            type="button"
+            className="home-search__area"
+            onClick={onAreaClick}
+          >
+            <MapPin size={19} strokeWidth={1.8} />
+
+            <span>
+              <strong>{areaLabel}</strong>
+              <small>Ərazi seçimi</small>
+            </span>
+
+            <ChevronRight size={16} strokeWidth={1.8} />
+          </button>
+        </form>
+
+        <div className="quick-searches">
+          <span className="quick-searches__label">
+            Məsələn:
           </span>
 
-          <ChevronRight size={16} strokeWidth={1.8} />
-        </button>
-      </form>
+          {quickSearches.map((item) => (
+            <button
+              key={item}
+              type="button"
+              className="quick-searches__item"
+              onClick={() => onSearch(item)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      </div>
 
-      <div className="quick-searches">
-        <span className="quick-searches__label">
-          Məsələn:
-        </span>
-
-        {quickSearches.map((item) => (
-          <button
-            key={item}
-            type="button"
-            className="quick-searches__item"
-            onClick={() => onSearch(item)}
-          >
-            {item}
-          </button>
-        ))}
+      {/* 8 sahə AzLink-ə bağlıdır; sahəyə klik həmin kateqoriyanı açır */}
+      <div className="home-hero__visual">
+        <ServiceConstellation onSelect={onCategorySelect} />
       </div>
     </VelvetStage>
   );

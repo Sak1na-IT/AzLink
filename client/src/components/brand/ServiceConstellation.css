@@ -1,0 +1,218 @@
+/* =========================================================
+   SERVICE CONSTELLATION — AzLink = bağlantı
+   VelvetStage içində işlənir (--velvet-* dəyişənləri oradandır).
+   ========================================================= */
+
+.constellation {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+}
+
+.constellation__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.constellation__line {
+  stroke: var(--velvet-gold, #e3c98f);
+  stroke-width: 1;
+  transition: stroke-width 200ms var(--ease-out);
+}
+
+/* ---------- Mərkəz ---------- */
+
+.constellation__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  width: 128px;
+  height: 128px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 2px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.12), transparent 60%),
+    radial-gradient(circle, #1d5546 0%, #0f2f27 100%);
+  border: 1px solid rgba(227, 201, 143, 0.45);
+  box-shadow:
+    0 0 0 8px rgba(227, 201, 143, 0.05),
+    0 0 60px rgba(116, 210, 173, 0.18),
+    0 20px 40px rgba(0, 0, 0, 0.35);
+  animation: core-in 1.1s var(--ease-out) backwards;
+}
+
+.constellation__core strong {
+  color: var(--velvet-text, #f3f1ec);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.constellation__core small {
+  color: var(--velvet-gold, #e3c98f);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+}
+
+/* Mərkəzin ətrafında çox yavaş fırlanan incə halqalar */
+.constellation__ring {
+  position: absolute;
+  inset: -14px;
+  border-radius: 50%;
+  border: 1px dashed rgba(227, 201, 143, 0.28);
+  animation: ring-spin 60s linear infinite;
+}
+
+.constellation__ring--outer {
+  inset: -30px;
+  border-style: solid;
+  border-color: rgba(227, 201, 143, 0.1);
+  animation-duration: 90s;
+  animation-direction: reverse;
+}
+
+/* ---------- Sahələr ---------- */
+
+.constellation__node {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  color: var(--velvet-text, #f3f1ec);
+  opacity: 0;
+  will-change: transform, opacity;
+  cursor: pointer;
+}
+
+.constellation__icon {
+  width: 66px;
+  height: 66px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(227, 201, 143, 0.3);
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.16), transparent 60%),
+    rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+  transition:
+    border-color 220ms var(--ease-out),
+    background-color 220ms var(--ease-out),
+    box-shadow 220ms var(--ease-out);
+}
+
+.constellation__label {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* Xidmətlər yalnız üzərinə gələndə görünür */
+.constellation__services {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(6, 22, 18, 0.78);
+  border: 1px solid rgba(227, 201, 143, 0.3);
+  color: var(--velvet-text-muted, rgba(243, 241, 236, 0.7));
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translate(-50%, -4px);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+  pointer-events: none;
+}
+
+.constellation__node.is-hovered .constellation__icon,
+.constellation__node:focus-visible .constellation__icon {
+  border-color: var(--velvet-gold, #e3c98f);
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.22), transparent 60%),
+    rgba(227, 201, 143, 0.14);
+  box-shadow:
+    0 0 0 6px rgba(227, 201, 143, 0.08),
+    0 0 40px rgba(227, 201, 143, 0.25),
+    0 14px 34px rgba(0, 0, 0, 0.35);
+}
+
+.constellation__node.is-hovered .constellation__services,
+.constellation__node:focus-visible .constellation__services {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.constellation__node:focus-visible {
+  outline: none;
+}
+
+@keyframes core-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+}
+
+@keyframes ring-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 760px) {
+  .constellation {
+    min-height: 300px;
+  }
+
+  .constellation__core {
+    width: 96px;
+    height: 96px;
+  }
+
+  .constellation__core strong {
+    font-size: 16px;
+  }
+
+  .constellation__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .constellation__icon svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .constellation__label {
+    font-size: 11.5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .constellation__ring,
+  .constellation__core {
+    animation: none;
+  }
+}
