@@ -6,6 +6,8 @@ import "./ServiceConstellation.css";
 interface ServiceConstellationProps {
   /* Sahə kliklənəndə kateqoriya id-si ilə çağırılır */
   onSelect?: (categoryId: string) => void;
+  /* Hər sahədə neçə biznes var (kateqoriya adı → say); verilsə, göstərilir */
+  counts?: Record<string, number>;
   className?: string;
 }
 
@@ -35,6 +37,7 @@ const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 function ServiceConstellation({
   onSelect,
+  counts,
   className = "",
 }: ServiceConstellationProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -42,6 +45,8 @@ function ServiceConstellation({
   const lineRefs = useRef<(SVGLineElement | null)[]>([]);
   const sparkRefs = useRef<(SVGCircleElement | null)[]>([]);
   const svgRef = useRef<SVGSVGElement>(null);
+  const orbitRef = useRef<SVGEllipseElement>(null);
+  const orbitOuterRef = useRef<SVGEllipseElement>(null);
 
   const [hovered, setHovered] = useState<number | null>(null);
   const hoveredRef = useRef<number | null>(null);
@@ -118,6 +123,23 @@ function ServiceConstellation({
       const radiusX = width * 0.4 * (0.35 + 0.65 * intro);
       const radiusY =
         height * (0.3 + tilt.y * 0.05) * (0.35 + 0.65 * intro);
+
+      /* Orbitin incə xətləri (astrolyabiya kimi) */
+      const orbit = orbitRef.current;
+      const orbitOuter = orbitOuterRef.current;
+
+      if (orbit && orbitOuter) {
+        for (const [ellipse, factor] of [
+          [orbit, 1],
+          [orbitOuter, 1.22],
+        ] as const) {
+          ellipse.setAttribute("cx", String(cx));
+          ellipse.setAttribute("cy", String(cy));
+          ellipse.setAttribute("rx", String(radiusX * factor));
+          ellipse.setAttribute("ry", String(radiusY * factor));
+          ellipse.style.opacity = String(intro);
+        }
+      }
 
       for (let i = 0; i < count; i += 1) {
         const node = nodeRefs.current[i];
@@ -232,6 +254,12 @@ function ServiceConstellation({
           </radialGradient>
         </defs>
 
+        <ellipse ref={orbitRef} className="constellation__orbit" />
+        <ellipse
+          ref={orbitOuterRef}
+          className="constellation__orbit constellation__orbit--outer"
+        />
+
         {categories.map((category, i) => (
           <line
             key={category.id}
@@ -288,6 +316,9 @@ function ServiceConstellation({
             <span className="constellation__label">{category.name}</span>
 
             <span className="constellation__services">
+              {counts?.[category.name] ? (
+                <b>{counts[category.name]} biznes</b>
+              ) : null}
               {category.services.join(", ")}
             </span>
           </button>

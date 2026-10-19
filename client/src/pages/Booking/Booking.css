@@ -182,7 +182,7 @@
 }
 
 .booking-provider__location svg:nth-of-type(2) {
-  color: var(--color-warning);
+  color: #e5b85c;
 }
 
 /* =========================================================
@@ -477,7 +477,7 @@
 .booking-time.is-selected {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: #ffffff;
   font-weight: 700;
 }
 
@@ -591,7 +591,7 @@
   border: 1px solid var(--color-primary);
   border-radius: 11px;
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: #ffffff;
   font: inherit;
   font-size: 13px;
   font-weight: 700;
@@ -737,12 +737,12 @@
 .booking-success__button--primary {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: #ffffff;
 }
 
 .booking-success__button--primary:hover {
   background: var(--color-primary-dark);
-  color: var(--color-on-primary);
+  color: #ffffff;
 }
 
 /* =========================================================

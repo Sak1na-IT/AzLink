@@ -68,10 +68,7 @@ img {
   top: 0;
   z-index: 100;
   width: 100%;
-  /* Şüşə effekti: arxadakı məzmun yumşaq bulanıq görünür */
-  background: var(--nav-glass);
-  -webkit-backdrop-filter: blur(16px) saturate(150%);
-  backdrop-filter: blur(16px) saturate(150%);
+  background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
   transition:
     background-color var(--transition-normal),
@@ -89,9 +86,6 @@ img {
 
 .top-nav__brand {
   flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
   color: var(--color-text);
   font-size: 23px;
   font-weight: var(--font-weight-bold);
@@ -103,41 +97,24 @@ img {
   color: var(--color-primary);
 }
 
-/* Loqonun yanındakı kiçik nişan: qızılı halqalı zümrüd mərkəz (AzLink-in mərkəzi) */
-.top-nav__brand::before {
-  content: "";
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: radial-gradient(circle, #2a6b58 0%, #0f2f27 100%);
-  box-shadow:
-    0 0 0 2px var(--color-bg),
-    0 0 0 3px #d9bd7f;
-}
-
 .top-nav__links {
   display: flex;
   align-items: center;
 
-  gap: 2px;
-  padding: 4px;
+  gap: 4px;
 
   margin-left: auto;
-
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-pill);
-  background: var(--color-surface-muted);
 }
 
 .top-nav__link {
   position: relative;
-  min-height: 38px;
-  padding: 0 16px;
+  min-height: 42px;
+  padding: 0 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
@@ -149,19 +126,14 @@ img {
 }
 
 .top-nav__link:hover {
-  color: var(--color-text);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
 }
 
-/* Aktiv bölmə: menyu zolağının içində qalxmış "düymə" */
 .top-nav__link.is-active {
-  background: var(--color-surface);
+  background: var(--color-primary-soft);
   color: var(--color-primary);
   font-weight: var(--font-weight-semibold);
-  box-shadow: var(--shadow-sm);
-}
-
-[data-theme="dark"] .top-nav__link.is-active {
-  background: var(--color-surface-soft);
 }
 
 .top-nav__theme {
@@ -174,10 +146,10 @@ img {
   place-items: center;
 
   border: 1px solid var(--color-border);
-  border-radius: 50%;
+  border-radius: var(--radius-md);
 
-  background: var(--color-surface-muted);
-
+  background: var(--color-surface);
+  
   color: var(--color-text-secondary);
 
   transition:
@@ -251,8 +223,8 @@ img {
   }
 
   .top-nav__link {
-    width: 40px;
-    min-width: 40px;
+    width: 42px;
+    min-width: 42px;
     padding: 0;
   }
 

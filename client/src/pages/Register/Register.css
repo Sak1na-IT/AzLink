@@ -180,7 +180,7 @@
 
 .register-error {
   margin: 0;
-  color: var(--color-danger);
+  color: #d64545;
   font-size: var(--font-size-xs);
   line-height: 1.5;
 }
@@ -192,7 +192,7 @@
   border: 1px solid var(--color-primary);
   border-radius: 11px;
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: #ffffff;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;

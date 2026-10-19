@@ -194,9 +194,6 @@ function Home() {
           areaLabel={areaLabel}
           onAreaClick={handleAreaClick}
           onSearch={handleSearch}
-          onCategorySelect={(categoryId) =>
-            navigate(`/search?category=${categoryId}`)
-          }
         />
 
         {loadError ? (

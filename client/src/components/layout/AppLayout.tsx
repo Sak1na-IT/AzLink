@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom";
 
 import TopNav from "./TopNav";
 import BusinessSubNav from "./BusinessSubNav";
+import Interactions from "../common/Interactions";
 import { useTheme } from "../../hooks/useTheme";
 import { getStoredUser } from "../../services/api";
 import "./AppLayout.css";
@@ -34,6 +35,9 @@ function AppLayout() {
 
   return (
     <div className="app-shell">
+      {/* Kartların əyilməsi, sürüşdürəndə üzə çıxma və s. */}
+      <Interactions />
+
       {!hideNav && (
         <TopNav isDark={isDark} toggleTheme={toggleTheme} />
       )}

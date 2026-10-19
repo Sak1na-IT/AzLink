@@ -64,21 +64,45 @@
 .account-type__content {
   position: relative;
   z-index: 4;
-  max-width: 520px;
-  animation: account-type-in 0.9s 0.2s var(--ease-out) backwards;
+  max-width: 540px;
 }
 
+/* Başlıq: klassik serif şrift, sözlər açılışda bir-bir üzə çıxır */
 .account-type__content h1 {
   margin: 0;
   color: var(--velvet-text);
-  font-size: clamp(40px, 4.6vw, 64px);
-  font-weight: 600;
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(48px, 5.2vw, 80px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.012em;
+}
+
+.account-type__line {
+  display: block;
+  animation: word-in 1s var(--ease-out) backwards;
+}
+
+/* Başlıq altında incə qızılı xətt */
+.account-type__content h1::after {
+  content: "";
+  display: block;
+  width: 72px;
+  height: 1px;
+  margin-top: 28px;
+  background: linear-gradient(90deg, var(--velvet-gold), transparent);
+  animation: line-in 1.2s 0.8s var(--ease-out) backwards;
+  transform-origin: left;
+}
+
+.account-type__content p,
+.account-type__actions,
+.account-type__facts {
+  animation: account-type-in 0.9s 0.7s var(--ease-out) backwards;
 }
 
 .account-type__content p {
-  margin: 22px 0 0;
+  margin: 24px 0 0;
   color: var(--velvet-text-muted);
   font-size: 17px;
   line-height: 1.6;
@@ -91,9 +115,65 @@
   margin-top: 34px;
 }
 
+/* Real rəqəmlər: incə xətlə ayrılmış üç fakt */
+.account-type__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 40px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid rgba(227, 201, 143, 0.16);
+  animation-delay: 0.9s;
+}
+
+.account-type__facts div {
+  padding: 0 26px;
+  border-left: 1px solid rgba(227, 201, 143, 0.16);
+}
+
+.account-type__facts div:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+
+.account-type__facts dt {
+  color: var(--velvet-text);
+  font-variant-numeric: lining-nums;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.account-type__facts dd {
+  margin: 6px 0 0;
+  color: var(--velvet-text-muted);
+  font-size: 13px;
+}
+
 .account-type__visual {
   position: relative;
   height: min(620px, 72vh);
+}
+
+@keyframes word-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    filter: blur(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes line-in {
+  from {
+    transform: scaleX(0);
+  }
 }
 
 @keyframes account-type-in {
@@ -143,8 +223,15 @@
     text-align: center;
   }
 
-  .account-type__actions {
+  .account-type__actions,
+  .account-type__facts {
     justify-content: center;
+  }
+
+  .account-type__content h1::after {
+    margin-left: auto;
+    margin-right: auto;
+    background: linear-gradient(90deg, transparent, var(--velvet-gold), transparent);
   }
 }
 
@@ -159,6 +246,14 @@
 
   .account-type__content p {
     font-size: 15px;
+  }
+
+  .account-type__facts div {
+    padding: 0 16px;
+  }
+
+  .account-type__facts dt {
+    font-size: 28px;
   }
 
   .account-type__actions {

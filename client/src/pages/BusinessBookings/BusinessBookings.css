@@ -96,7 +96,7 @@
 .business-bookings__tab.is-active {
   border-color: var(--color-primary);
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: #fff;
 }
 
 /* Tamamlanmış içindəki dövr sekmeleri (Bu həftə / Bu ay / Ümumi) */
@@ -300,7 +300,7 @@
 
 .business-booking-card__action--confirm {
   background: var(--color-primary);
-  color: var(--color-on-primary);
+  color: #fff;
 }
 
 .business-booking-card__action--confirm:hover {

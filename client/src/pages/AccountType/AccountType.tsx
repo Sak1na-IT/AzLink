@@ -1,12 +1,54 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import ServiceConstellation from "../../components/brand/ServiceConstellation";
 import VelvetStage from "../../components/brand/VelvetStage";
+import { categories } from "../../data/categories";
 import { isLoggedIn } from "../../services/api";
+import { getProviders } from "../../services/providersService";
 import "./AccountType.css";
+
+/* Başlıq sətirləri; hər sətir açılışda növbə ilə üzə çıxır */
+const HEADLINE = ["Gündəlik", "ehtiyaclarınız,", "bir yerdə"];
+
+/* Bakının 12 rayonu (types/area.ts) */
+const DISTRICT_COUNT = 12;
 
 function AccountType() {
   const navigate = useNavigate();
+
+  /* Bazadan real rəqəmlər: neçə biznes var və hansı sahədə neçəsi */
+  const [businessCount, setBusinessCount] = useState<number | null>(null);
+  const [counts, setCounts] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getProviders()
+      .then((providers) => {
+        if (cancelled) {
+          return;
+        }
+
+        const byCategory: Record<string, number> = {};
+
+        for (const category of categories) {
+          byCategory[category.name] = providers.filter((provider) =>
+            provider.categories?.includes(category.name)
+          ).length;
+        }
+
+        setBusinessCount(providers.length);
+        setCounts(byCategory);
+      })
+      .catch(() => {
+        /* Rəqəmlər yüklənməsə də səhifə işləyir, sadəcə göstərilmir */
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /* Sahə kliklənəndə: girişlidirsə həmin sahənin axtarışı, deyilsə qeydiyyat */
   const handleCategory = (categoryId: string) => {
@@ -28,7 +70,19 @@ function AccountType() {
 
         <div className="account-type__body">
           <div className="account-type__content">
-            <h1>Gündəlik ehtiyaclarınız, bir yerdə</h1>
+            {/* Açılışda sözlər bir-bir yumşaqca üzə çıxır */}
+            <h1 aria-label={HEADLINE.join(" ")}>
+              {HEADLINE.map((line, index) => (
+                <span
+                  key={line}
+                  className="account-type__line"
+                  style={{ animationDelay: `${150 + index * 140}ms` }}
+                  aria-hidden="true"
+                >
+                  {line}
+                </span>
+              ))}
+            </h1>
 
             <p>
               Gözəllikdən ev işlərinə, dərsdən avtomobilə: Bakının
@@ -53,10 +107,29 @@ function AccountType() {
                 Biznesimi əlavə edirəm
               </button>
             </div>
+
+            <dl className="account-type__facts">
+              {businessCount ? (
+                <div>
+                  <dt>{businessCount}</dt>
+                  <dd>biznes</dd>
+                </div>
+              ) : null}
+
+              <div>
+                <dt>{categories.length}</dt>
+                <dd>xidmət sahəsi</dd>
+              </div>
+
+              <div>
+                <dt>{DISTRICT_COUNT}</dt>
+                <dd>Bakı rayonu</dd>
+              </div>
+            </dl>
           </div>
 
           <div className="account-type__visual">
-            <ServiceConstellation onSelect={handleCategory} />
+            <ServiceConstellation onSelect={handleCategory} counts={counts} />
           </div>
         </div>
       </VelvetStage>

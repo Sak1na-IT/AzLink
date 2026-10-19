@@ -1,19 +1,5 @@
 @import "./styles/variables.css";
 
-/*
- * Onest — Azərbaycan hərflərini (Ə ə, Ğ ğ, Ş ş, ı, İ) və manat
- * işarəsini (₼) tam dəstəkləyir. Fayl layihənin içindədir, ona görə
- * internet olmadan da (məs. təqdimatda) düzgün görünür.
- * Lisenziya: assets/fonts/OFL-Onest.txt
- */
-@font-face {
-  font-family: "Onest";
-  src: url("./assets/fonts/Onest-Variable.woff") format("woff");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
-
 html,
 body,
 #root {
@@ -27,18 +13,28 @@ body {
 #root {
   min-height: 100vh;
 }
-
-h1,
-h2,
-h3 {
-  letter-spacing: -0.025em;
-  text-wrap: balance;
+/*
+ * Giriş ekranının (AccountType) şriftləri. Hər ikisi Azərbaycan
+ * hərflərini (Ə ə, Ğ ğ, Ş ş, ı) dəstəkləyir və layihənin içindədir,
+ * ona görə internetsiz də işləyir. Lisenziyalar: assets/fonts/OFL-*.txt
+ */
+@font-face {
+  font-family: "Onest";
+  src: url("./assets/fonts/Onest-Variable.woff") format("woff");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
 }
 
-p {
-  text-wrap: pretty;
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("./assets/fonts/CormorantGaramond-Variable.woff") format("woff");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
 }
 
+/* Hərəkətə həssas istifadəçilər üçün animasiyalar söndürülür */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -46,5 +42,6 @@ p {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

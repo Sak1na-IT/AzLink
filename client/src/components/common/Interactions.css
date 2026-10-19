@@ -1,0 +1,114 @@
+/* =========================================================
+   INTERACTIONS — mövcud dizayna əlavə hərəkət
+   (Interactions.tsx ilə birlikdə işləyir)
+   ========================================================= */
+
+/* ---------- Kartların əyilməsi və üzərində gəzən işıq ---------- */
+
+.popular-card,
+.search-provider-card,
+.saved-card,
+.explore-category-card,
+.provider-service-item,
+.business-stat-card,
+.helpful-info__card,
+.how-it-works__item,
+.upcoming-bookings__item,
+.booking-card,
+.business-service-card {
+  position: relative;
+}
+
+.is-tilting {
+  transform: perspective(900px) rotateX(var(--tilt-x, 0deg))
+    rotateY(var(--tilt-y, 0deg)) translateY(-2px) !important;
+  transition: transform 120ms ease-out !important;
+}
+
+.popular-card::after,
+.search-provider-card::after,
+.saved-card::after,
+.explore-category-card::after,
+.provider-service-item::after,
+.business-stat-card::after,
+.helpful-info__card::after,
+.how-it-works__item::after,
+.upcoming-bookings__item::after,
+.booking-card::after,
+.business-service-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    circle 220px at var(--light-x, 50%) var(--light-y, 0%),
+    rgba(255, 255, 255, 0.22),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 250ms ease;
+  pointer-events: none;
+}
+
+[data-theme="dark"] .is-tilting::after {
+  background: radial-gradient(
+    circle 220px at var(--light-x, 50%) var(--light-y, 0%),
+    rgba(255, 255, 255, 0.08),
+    transparent 70%
+  );
+}
+
+.is-tilting::after {
+  opacity: 1;
+}
+
+/* ---------- Sürüşdürəndə yumşaq üzə çıxma ---------- */
+
+.reveal {
+  opacity: 0;
+  translate: 0 16px;
+  transition:
+    opacity 600ms var(--ease-out, ease-out) var(--reveal-delay, 0ms),
+    translate 700ms var(--ease-out, ease-out) var(--reveal-delay, 0ms);
+}
+
+.reveal.is-revealed {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* ---------- Səhifə keçidi: yeni səhifə yumşaq açılır ---------- */
+
+.app-content > :not(.account-type-page):not(.business-explore-shell),
+.business-explore-shell > :not(.business-subnav),
+.business-layout > :not(.business-layout__subnav-inner) {
+  animation: page-in 320ms var(--ease-out, ease-out) backwards;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+/* ---------- Düymələrə basanda azca "batma" hissi ---------- */
+
+button:not(:disabled):active {
+  scale: 0.98;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    translate: none;
+  }
+
+  .is-tilting {
+    transform: none !important;
+  }
+
+  button:not(:disabled):active {
+    scale: 1;
+  }
+}

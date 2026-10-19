@@ -462,18 +462,32 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 
 ## Dizayn sistemi
 
-Əsas fikir: **"AzLink = bağlantı"**. Platforma müxtəlif sahələri birləşdirib insanların gündəlik ehtiyaclarını bir yerdə qarşılayır. Bunu ilk ekranda göstərən element `components/brand/ServiceConstellation.tsx`-dir: mərkəzdə AzLink, ətrafında 8 xidmət sahəsi (`data/categories.ts`) incə qızılı xətlərlə mərkəzə bağlıdır.
+Əsas istiqamət: **yumşaq yaşıl-boz tonlar**, əsas accent rəng `#2E7D5B`.
 
-- **Sahələr** maili orbitdə sakitcə fırlanır, xətlər boyunca yavaşca işıq axır. Açılışda sahələr mərkəzdən açılır (bir dəfə). Sistem siçana tərəf azca əyilir. Sahənin üstünə gələndə fırlanma dayanır, xətt parlayır və həmin sahənin xidmətləri görünür. Klikləyəndə kateqoriyanın axtarışı açılır. Sahələr adi düymədir, klaviatura ilə də işləyir. "Azaldılmış hərəkət" ayarında sakit qalır.
-- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd fon, incə dən toxuması və siçanın arxasınca hərəkət edən yumşaq işıq. Giriş ekranı bütövlükdə vitrindir, Ana səhifədə axtarış vitrin kartının içindədir. Hər iki rejimdə eyni görünür.
-- **Rənglər:** fon açıq və sakitdir, əsas rəng dərin zümrüd yaşılıdır (`#17614C`, qaranlıq rejimdə `#74D2AD`). Qızılı rəng yalnız incə xətlərdə və kənarlarda işlənir. Göz yormaması üçün yanıb-sönən və sürətli hərəkət yoxdur.
-- **Şrift:** Onest. Azərbaycan hərflərini (Ə ə, Ğ ğ, Ş ş, ı) və manat işarəsini (₼) tam dəstəkləyir. Fayl layihənin içindədir (`assets/fonts/`), ona görə internet olmadan da düzgün görünür.
-- **Yuxarı menyu:** şüşə effekti (arxa fon bulanıq görünür), bölmələr bir zolağın içindədir, aktiv bölmə qalxmış düymə kimi görünür.
+- Ümumi görünüş premium və minimal olmalıdır. Həm gözəllik, həm santexnik, həm repetitor eyni dizaynda düzgün görünməlidir.
 - Light və Dark mode dəstəklənir. Seçim brauzerin yaddaşında saxlanır (`hooks/useTheme.ts`).
-- Rənglər, kölgələr, radiuslar və animasiya sürətləri `styles/variables.css`-də toplanıb. **Səhifələrin CSS-i rəngləri düz kod (`#ffffff`) kimi yox, `var(--color-surface)`, `var(--color-text)`, `var(--color-on-primary)` kimi dəyişənlərlə yazmalıdır.** Əks halda qaranlıq modda səhifə uyğunsuz qalır.
-- Kateqoriya kartları üçün gradient fonlar `--gradient-teal`, `--gradient-pink`, `--gradient-blue`, `--gradient-purple` dəyişənləri ilə idarə olunur. Hansı kateqoriyaya hansı gradient və ikon düşdüyü `utils/categoryVisual.ts`-dədir.
-- Biznesim və Rezerv et bölmələrində səhifələr eyni enə (1040px) və eyni yan boşluğa malikdir.
-- Responsive: desktop və mobile dəstəklənir.
+- Rənglər və ölçülər `styles/variables.css`-də toplanıb. Səhifələrin CSS-i rəngləri düz kod kimi yox, `var(--color-surface)`, `var(--color-text)` kimi dəyişənlərlə yazmalıdır.
+- Kateqoriya kartları üçün gradient fonlar `--gradient-teal`, `--gradient-pink`, `--gradient-blue`, `--gradient-purple` dəyişənləri ilə idarə olunur (`utils/categoryVisual.ts`).
+
+### Giriş ekranı: "AzLink = bağlantı"
+
+İlk ekran (`pages/AccountType`) saytın qalanından fərqli, premium vitrindir:
+
+- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd fon, incə dən toxuması, siçanın arxasınca hərəkət edən yumşaq işıq, qızılı incə xətlər.
+- **Sahələr** (`components/brand/ServiceConstellation.tsx`): mərkəzdə AzLink, ətrafında 8 xidmət sahəsi (`data/categories.ts`) qızılı xətlərlə mərkəzə bağlıdır və maili orbitdə sakitcə fırlanır. Sahənin üstünə gələndə fırlanma dayanır, həmin sahədə neçə biznes olduğu və xidmətləri görünür. Klikləyəndə kateqoriyanın axtarışı açılır.
+- **Başlıq** Cormorant Garamond, mətn Onest şrifti ilədir. Hər ikisi Azərbaycan hərflərini dəstəkləyir və layihənin içindədir (`assets/fonts/`).
+- Altdakı rəqəmlər (biznes sayı və s.) bazadan real gəlir.
+
+### Interaktivlik (bütün sayt)
+
+`components/common/Interactions.tsx` mövcud dizayna toxunmadan hərəkət əlavə edir (AppLayout-da qoşulub):
+
+- kartlar siçana tərəf azca əyilir, üzərində yumşaq işıq gəzir;
+- bölmələr və kartlar aşağı sürüşdürdükcə növbə ilə üzə çıxır;
+- "Bu gün" statistikasındakı rəqəmlər görünəndə sayılır;
+- səhifələr arasında keçid yumşaq açılır.
+
+Ana səhifənin axtarış sahəsində nümunələr ("Manikür", "Ev təmizliyi"...) yazılırmış kimi dəyişir. "Azaldılmış hərəkət" ayarı seçilibsə, bütün animasiyalar söndürülür.
 
 ---
 

@@ -16,6 +16,7 @@
   isolation: isolate;
   overflow: hidden;
   color: var(--velvet-text);
+  font-family: "Onest", var(--font-family);
   background:
     radial-gradient(
       ellipse 90% 70% at 50% 12%,
@@ -78,15 +79,41 @@
 }
 
 .velvet-button--primary {
-  background: var(--velvet-text);
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fbf9f4 0%, #ece6d8 100%);
   color: #0c2a22;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(227, 201, 143, 0.55),
+    0 12px 32px rgba(0, 0, 0, 0.38);
+}
+
+/* Üzərinə gələndə düymənin səthindən incə işıq keçir */
+.velvet-button--primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.85) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 700ms var(--ease-out);
 }
 
 .velvet-button--primary:hover {
-  background: #ffffff;
   transform: translateY(-1px);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 0 0 1px rgba(227, 201, 143, 0.8),
+    0 16px 40px rgba(0, 0, 0, 0.42);
+}
+
+.velvet-button--primary:hover::after {
+  transform: translateX(120%);
 }
 
 .velvet-button--ghost {
