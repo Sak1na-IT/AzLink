@@ -1,0 +1,27 @@
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 18px;
+  padding: 6px 10px 6px 8px;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.auth-back-link:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.auth-back-link svg {
+  transition: transform var(--transition-fast);
+}
+
+.auth-back-link:hover svg {
+  transform: translateX(-2px);
+}

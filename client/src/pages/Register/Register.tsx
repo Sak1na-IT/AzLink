@@ -22,6 +22,7 @@ import {
   saveBusinessProfile,
   defaultWeeklySchedule,
 } from "../../services/businessService";
+import AuthBackLink from "../../components/auth/AuthBackLink";
 import "./Register.css";
 
 function Register() {
@@ -122,6 +123,8 @@ function Register() {
   return (
     <div className="register-page">
       <div className="register-card">
+        <AuthBackLink />
+
         <div className="register-header">
           <div className="register-icon">
             {isBusiness ? (

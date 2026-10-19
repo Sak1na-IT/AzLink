@@ -12,6 +12,7 @@ import {
 
 import { signin } from "../../services/authService";
 import { ApiError } from "../../services/api";
+import AuthBackLink from "../../components/auth/AuthBackLink";
 import "./Login.css";
 
 function Login() {
@@ -60,6 +61,8 @@ function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
+        <AuthBackLink />
+
         <div className="login-header">
           <div className="login-icon">
             <LockKeyhole size={24} strokeWidth={1.8} />
