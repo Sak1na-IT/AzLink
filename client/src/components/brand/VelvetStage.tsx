@@ -1,19 +1,21 @@
 import { useEffect, useRef } from "react";
 import type { ReactNode } from "react";
 
+import GoldDust from "./GoldDust";
 import "./VelvetStage.css";
 
 interface VelvetStageProps {
   children: ReactNode;
   className?: string;
+  dust?: boolean;
 }
 
 /*
  * Zərgər vitrini: tünd zümrüd məxmər fon, üzərində yumşaq işıq
- * ləkəsi siçanın arxasınca hərəkət edir. Mirvari boyunbağı bunun
- * içində göstərilir. İşıqlı və qaranlıq rejimdə eyni görünür.
+ * ləkəsi siçanın arxasınca hərəkət edir. İşıqlı və qaranlıq rejimdə
+ * eyni görünür. dust={true} verilsə, arxada qızıl tozu süzülür.
  */
-function VelvetStage({ children, className = "" }: VelvetStageProps) {
+function VelvetStage({ children, className = "", dust = false }: VelvetStageProps) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -48,6 +50,7 @@ function VelvetStage({ children, className = "" }: VelvetStageProps) {
 
   return (
     <section ref={ref} className={`velvet-stage ${className}`}>
+      {dust && <GoldDust />}
       {children}
     </section>
   );

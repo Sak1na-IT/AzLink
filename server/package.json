@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "seed": "ts-node --project prisma/tsconfig.json prisma/seed.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "covers": "ts-node --project prisma/tsconfig.json prisma/add-covers.ts"
   },
   "keywords": [],
   "author": "",

@@ -113,7 +113,7 @@ function HomeHero({
   const firstName = getStoredUser()?.name?.trim().split(" ")[0];
 
   return (
-    <VelvetStage className="home-hero">
+    <VelvetStage className="home-hero" dust>
       {/* Arxada çox yavaş fırlanan incə qızılı halqalar */}
       <span className="home-hero__ring" aria-hidden="true" />
       <span className="home-hero__ring home-hero__ring--inner" aria-hidden="true" />

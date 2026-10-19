@@ -8,20 +8,11 @@ import {
   deletePortfolioImage,
   type PortfolioImage,
 } from "../../services/businessPortfolioService";
+import { compressImage } from "../../utils/compressImage";
 import "./BusinessPortfolio.css";
 
-/* Backend ~10MB-a qədər base64 şəkli qəbul edir, bir az ehtiyatla 5MB saxlayırıq */
-const MAX_FILE_SIZE_MB = 5;
-
-const readFileAsDataUrl = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = () => reject(reader.error);
-
-    reader.readAsDataURL(file);
-  });
+/* Şəkil yüklənməzdən əvvəl kiçildilir, ona görə böyük fayllar da olar */
+const MAX_FILE_SIZE_MB = 20;
 
 function BusinessPortfolio() {
   const navigate = useNavigate();
@@ -73,7 +64,7 @@ function BusinessPortfolio() {
     setIsUploading(true);
 
     try {
-      const dataUrl = await readFileAsDataUrl(file);
+      const dataUrl = await compressImage(file);
 
       await addPortfolioImage({
         dataUrl,

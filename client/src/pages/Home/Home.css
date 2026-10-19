@@ -1420,3 +1420,161 @@
     font-size: 34px;
   }
 }
+
+/* ---------- Sahələr: qızılı medalyonlar ---------- */
+
+.category-showcase {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.category-showcase__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 8px 16px;
+  border: 1px solid transparent;
+  border-radius: 22px;
+  background: transparent;
+  color: var(--color-text);
+  text-align: center;
+  transition:
+    background-color var(--transition-normal),
+    border-color var(--transition-normal),
+    transform var(--transition-normal);
+}
+
+.category-showcase__item:hover {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  transform: translateY(-3px);
+}
+
+/* Qızılı haşiyə + zümrüd emal (giriş ekranındakı medalyonlar kimi) */
+.category-showcase__medal {
+  position: relative;
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 8px;
+  border: 3px solid transparent;
+  border-radius: 50%;
+  color: #f6e3b4;
+  background:
+    radial-gradient(circle at 34% 26%, rgba(255, 255, 255, 0.22), transparent 50%),
+    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    conic-gradient(
+        from 200deg,
+        #f6e3b4,
+        #a8823f,
+        #d9b874,
+        #6f5427,
+        #f6e3b4,
+        #a8823f,
+        #f6e3b4
+      )
+      border-box;
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 10px 24px rgba(15, 29, 24, 0.28);
+  overflow: hidden;
+  transition: box-shadow var(--transition-normal), transform 400ms var(--ease-out);
+}
+
+/* Üzərindən keçən parıltı */
+.category-showcase__medal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 35%,
+    rgba(255, 246, 220, 0.55) 50%,
+    transparent 65%
+  );
+  background-size: 250% 100%;
+  background-position: 120% 0;
+  transition: background-position 900ms var(--ease-out);
+}
+
+.category-showcase__item:hover .category-showcase__medal {
+  transform: rotate(-6deg) scale(1.06);
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.5),
+    0 0 0 6px var(--color-gold-soft),
+    0 14px 30px rgba(15, 29, 24, 0.35);
+}
+
+.category-showcase__item:hover .category-showcase__medal::after {
+  background-position: -20% 0;
+}
+
+.category-showcase__item strong {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.25;
+}
+
+.category-showcase__item small {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+@media (max-width: 1100px) {
+  .category-showcase {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Telefonda üfüqi sürüşən sıra */
+@media (max-width: 760px) {
+  .category-showcase {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin: 0 -16px;
+    padding: 0 16px 6px;
+    scrollbar-width: none;
+  }
+
+  .category-showcase::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-showcase__item {
+    flex: 0 0 116px;
+    scroll-snap-align: start;
+  }
+
+  .category-showcase__medal {
+    width: 58px;
+    height: 58px;
+  }
+}
+
+/* Şəkilli kartlarda nişanlar oxunaqlı qalsın */
+.popular-card__image img + .popular-card__verified,
+.popular-card__image:has(img)::after {
+  z-index: 1;
+}
+
+.popular-card__image:has(img)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 35%, transparent 65%, rgba(0, 0, 0, 0.3));
+  pointer-events: none;
+}
+
+.popular-card__image:has(img)::before {
+  display: none;
+}
+
+.popular-card__verified,
+.popular-card__price {
+  z-index: 2;
+}
