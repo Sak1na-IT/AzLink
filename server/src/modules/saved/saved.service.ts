@@ -11,13 +11,18 @@ export const listSaved = async (userId: string) => {
           area: true,
           services: true,
           reviews: true,
+          portfolio: { take: 1 },
         },
       },
     },
     orderBy: { id: "desc" },
   });
 
-  return saved.map((item) => toProviderDTO(item.business));
+  return saved.map((item) => ({
+    ...toProviderDTO(item.business),
+    /* Portfoliodakı ilk şəkil kartın üz qabığıdır */
+    image: item.business.portfolio[0]?.imageUrl ?? null,
+  }));
 };
 
 /*

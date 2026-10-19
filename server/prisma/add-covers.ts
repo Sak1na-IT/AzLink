@@ -61,16 +61,28 @@ async function main() {
   }
 
   let added = 0;
+  const covered = new Set<string>();
 
   for (const file of files) {
     const ext = extname(file).toLowerCase();
-    const slug = slugify(file.slice(0, -ext.length));
-    const business = bySlug.get(slug);
+    /*
+     * Windows uzantıları gizlədəndə fayl "cleanpro.jpg.jpg" ola bilir:
+     * bütün şəkil uzantılarını silirik.
+     */
+    const baseName = file.replace(/(\.(jpe?g|png|webp))+$/i, "");
+    const slug = slugify(baseName);
+
+    /* Dəqiq ad, ya da fayl adının içində biznesin adı keçirsə */
+    const business =
+      bySlug.get(slug) ??
+      Array.from(bySlug.entries()).find(([key]) => slug.includes(key))?.[1];
 
     if (!business) {
-      console.warn(`✗ ${file}: bu adda biznes tapılmadı (gözlənilən: ${slug})`);
+      console.warn(`✗ ${file}: bu adda biznes tapılmadı (oxunan ad: ${slug})`);
       continue;
     }
+
+    covered.add(business.id);
 
     const path = join(COVERS_DIR, file);
     const sizeKb = Math.round(statSync(path).size / 1024);
@@ -114,6 +126,15 @@ async function main() {
   }
 
   console.log(`\n${added} biznesə üz qabığı əlavə olundu.`);
+
+  const missing = businesses.filter((business) => !covered.has(business.id));
+
+  if (missing.length > 0) {
+    console.log("\nŞəkli olmayan bizneslər və gözlənilən fayl adları:");
+    for (const business of missing) {
+      console.log(`  ${business.name.padEnd(22)} → ${slugify(business.name)}.jpg`);
+    }
+  }
 }
 
 main()
