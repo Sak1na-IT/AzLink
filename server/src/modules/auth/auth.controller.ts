@@ -215,3 +215,56 @@ export const changePasswordHandler = async (
     res.status(500).json({ message: "Verilənlər bazası xətası" });
   }
 };
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+export const changeEmailHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    const { email, password } = req.body ?? {};
+
+    if (typeof password !== "string" || !password) {
+      return res.status(400).json({ message: "Cari şifrəni yazın" });
+    }
+
+    const newEmail =
+      typeof email === "string" ? email.trim().toLowerCase() : "";
+
+    if (!EMAIL_PATTERN.test(newEmail)) {
+      return res.status(400).json({ message: "Email düzgün deyil" });
+    }
+
+    const user = await authService.changeEmail(req.user.userId, {
+      password,
+      newEmail,
+    });
+
+    res.json(toPublicUser(user));
+  } catch (error) {
+    /*
+     * Yanlış şifrə üçün 401 yox, 400 qaytarılır: 401 frontend-də
+     * "giriş müddəti bitib" kimi başa düşülür.
+     */
+    if (error instanceof Error && error.message === "INVALID_CURRENT_PASSWORD") {
+      return res.status(400).json({ message: "Cari şifrə yanlışdır" });
+    }
+
+    if (error instanceof Error && error.message === "EMAIL_TAKEN") {
+      return res
+        .status(409)
+        .json({ message: "Bu email artıq başqa hesabda istifadə olunur" });
+    }
+
+    if (error instanceof Error && error.message === "SAME_EMAIL") {
+      return res.status(400).json({ message: "Bu, onsuz da cari emailinizdir" });
+    }
+
+    console.error(error);
+    res.status(500).json({ message: "Verilənlər bazası xətası" });
+  }
+};

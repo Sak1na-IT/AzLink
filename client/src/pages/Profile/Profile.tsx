@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import ChangePasswordModal from "../../components/account/ChangePasswordModal";
+import ChangeEmailModal from "../../components/account/ChangeEmailModal";
 import {
   getErrorText,
   readAccount,
@@ -51,6 +52,7 @@ function Profile() {
   const [saveError, setSaveError] = useState("");
   const [notice, setNotice] = useState("");
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isEmailOpen, setIsEmailOpen] = useState(false);
 
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [savedCount, setSavedCount] = useState(0);
@@ -260,9 +262,17 @@ function Profile() {
                 </label>
 
                 <label>
-                  Email (hələ dəyişdirmək olmur)
+                  Email
                   <input type="email" value={email} disabled readOnly />
                 </label>
+
+                <button
+                  type="button"
+                  className="profile-secondary-button"
+                  onClick={() => setIsEmailOpen(true)}
+                >
+                  Emaili dəyiş
+                </button>
 
                 {saveError && (
                   <p
@@ -517,6 +527,14 @@ function Profile() {
 
       {isPasswordOpen && (
         <ChangePasswordModal onClose={() => setIsPasswordOpen(false)} />
+      )}
+
+      {isEmailOpen && (
+        <ChangeEmailModal
+          currentEmail={email}
+          onClose={() => setIsEmailOpen(false)}
+          onChanged={setEmail}
+        />
       )}
     </div>
   );

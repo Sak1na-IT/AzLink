@@ -5,6 +5,7 @@ import { Bell, Lock, LogOut, Mail, UserRound } from "lucide-react";
 import "./BusinessAccountProfile.css";
 import "../../components/business/BusinessTheme.css";
 import ChangePasswordModal from "../../components/account/ChangePasswordModal";
+import ChangeEmailModal from "../../components/account/ChangeEmailModal";
 import { getStoredUser } from "../../services/api";
 import {
   getErrorText,
@@ -20,8 +21,6 @@ const notificationRows = [
   "Müştərinin ləğv etdiyi rezervlər",
   "Yeni rəylər",
 ];
-
-const SOON = "Tezliklə əlavə olunacaq";
 
 const PHONE_PATTERN = /^\+?[0-9\s()-]{7,20}$/;
 
@@ -39,6 +38,7 @@ function BusinessAccountProfile() {
   const [formError, setFormError] = useState("");
   const [notice, setNotice] = useState("");
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isEmailOpen, setIsEmailOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -214,7 +214,7 @@ function BusinessAccountProfile() {
               <span>Email</span>
               <input type="email" value={account.email} disabled readOnly />
               <small className="account-profile__hint">
-                Emaili dəyişmək hələ mümkün deyil.
+                Emaili aşağıdakı "Təhlükəsizlik" bölməsindən dəyişə bilərsiniz.
               </small>
             </label>
 
@@ -317,8 +317,7 @@ function BusinessAccountProfile() {
             <button
               type="button"
               className="account-profile__button"
-              disabled
-              title={SOON}
+              onClick={() => setIsEmailOpen(true)}
             >
               Emaili dəyiş
             </button>
@@ -375,6 +374,16 @@ function BusinessAccountProfile() {
 
       {isPasswordOpen && (
         <ChangePasswordModal onClose={() => setIsPasswordOpen(false)} />
+      )}
+
+      {isEmailOpen && (
+        <ChangeEmailModal
+          currentEmail={account.email}
+          onClose={() => setIsEmailOpen(false)}
+          onChanged={(email) =>
+            setAccount((current) => ({ ...current, email }))
+          }
+        />
       )}
     </main>
   );

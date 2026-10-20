@@ -72,5 +72,28 @@ export const changePassword = (input: ChangePasswordInput) =>
     body: input,
   });
 
+export interface ChangeEmailInput {
+  email: string;
+  password: string;
+}
+
+/* Emaili dəyişir və brauzerdə yadda saxlanmış istifadəçini təzələyir */
+export const changeEmail = async (input: ChangeEmailInput) => {
+  const result = await apiRequest<unknown>("/auth/email", {
+    method: "PATCH",
+    body: input,
+  });
+
+  const info = readAccount(result);
+  const newEmail = info?.email || input.email.trim().toLowerCase();
+  const stored = getStoredUser();
+
+  if (stored) {
+    setStoredUser({ ...stored, email: newEmail });
+  }
+
+  return newEmail;
+};
+
 export const getErrorText = (error: unknown, fallback: string) =>
   error instanceof Error && error.message ? error.message : fallback;

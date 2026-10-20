@@ -8,6 +8,7 @@ import {
   meHandler,
   updateProfileHandler,
   changePasswordHandler,
+  changeEmailHandler,
 } from "./auth.controller";
 import { authenticate } from "../../middleware/authenticate";
 
@@ -20,5 +21,6 @@ router.post("/logout", logoutHandler);
 router.get("/me", authenticate, meHandler);
 router.patch("/me", authenticate, updateProfileHandler);
 router.patch("/password", authenticate, changePasswordHandler);
+router.patch("/email", authenticate, changeEmailHandler);
 
 export default router;

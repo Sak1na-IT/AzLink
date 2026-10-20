@@ -145,3 +145,40 @@ export const changePassword = async (
     data: { password: hashedPassword },
   });
 };
+/*
+ * Email dəyişmə: təhlükəsizlik üçün cari şifrə ilə təsdiqlənir.
+ * Yeni email başqa hesabda istifadə olunursa dəyişmək olmur.
+ */
+export const changeEmail = async (
+  userId: string,
+  input: { password: string; newEmail: string }
+) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  if (!user) {
+    throw new Error("USER_NOT_FOUND");
+  }
+
+  const matches = await bcrypt.compare(input.password, user.password);
+
+  if (!matches) {
+    throw new Error("INVALID_CURRENT_PASSWORD");
+  }
+
+  if (input.newEmail === user.email) {
+    throw new Error("SAME_EMAIL");
+  }
+
+  const taken = await prisma.user.findUnique({
+    where: { email: input.newEmail },
+  });
+
+  if (taken) {
+    throw new Error("EMAIL_TAKEN");
+  }
+
+  return prisma.user.update({
+    where: { id: userId },
+    data: { email: input.newEmail },
+  });
+};
