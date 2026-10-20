@@ -224,6 +224,7 @@ export const getProviderById = async (id: string) => {
     portfolio: business.portfolio.map((p) => ({
       id: p.id,
       imageUrl: p.imageUrl,
+      caption: p.caption,
     })),
     /* İş saatları: dayOfWeek 0 = Bazar ... 6 = Şənbə (rezerv addımında lazım olacaq) */
     availability: business.availability.map((a) => ({

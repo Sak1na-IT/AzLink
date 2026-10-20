@@ -327,6 +327,26 @@
   color: var(--color-primary);
 }
 
+.provider-portfolio__item {
+  position: relative;
+  margin: 0;
+}
+
+/* Şəklin altındakı yazı: şəklin üzərində, aşağıda tünd keçidlə */
+.provider-portfolio__caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 22px 12px 10px;
+  border-radius: 0 0 15px 15px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.62));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
 .provider-portfolio__item span {
   font-size: 26px;
   font-weight: 800;

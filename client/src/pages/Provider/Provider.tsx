@@ -391,10 +391,10 @@ function Provider() {
             ) : (
               <div className="provider-portfolio">
                 {provider.portfolio.map((image) => (
-                  <div className="provider-portfolio__item" key={image.id}>
+                  <figure className="provider-portfolio__item" key={image.id}>
                     <img
                       src={image.imageUrl}
-                      alt={provider.name}
+                      alt={image.caption || provider.name}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -402,7 +402,13 @@ function Provider() {
                         borderRadius: "inherit",
                       }}
                     />
-                  </div>
+
+                    {image.caption && (
+                      <figcaption className="provider-portfolio__caption">
+                        {image.caption}
+                      </figcaption>
+                    )}
+                  </figure>
                 ))}
               </div>
             )}

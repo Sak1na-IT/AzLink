@@ -18,6 +18,8 @@ export interface ProviderReview {
 export interface ProviderPortfolioImage {
   id: string;
   imageUrl: string;
+  /* Şəklin altındakı yazı (məs. "Fransız manikürü") */
+  caption?: string | null;
 }
 
 export interface ProviderDetail extends Provider {
