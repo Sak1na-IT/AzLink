@@ -29,11 +29,9 @@
   padding: 30px 32px 0;
   border: 1px solid rgba(217, 184, 116, 0.32);
   border-radius: 28px;
-  background:
-    radial-gradient(circle at 10% 0%, rgba(255, 255, 255, 0.1), transparent 42%),
-    radial-gradient(circle at 90% 130%, #1f604e 0%, #0b241d 68%);
-  color: #f6f1e7;
-  box-shadow: 0 26px 54px rgba(12, 36, 29, 0.22);
+  background: var(--deep-panel);
+  color: var(--deep-text);
+  box-shadow: var(--deep-shadow);
 }
 
 /* İncə qızılı dairələr — fon naxışı */
@@ -62,7 +60,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  color: #e6c98a;
+  color: var(--deep-gold);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -73,12 +71,12 @@
   content: "";
   width: 42px;
   height: 1px;
-  background: linear-gradient(90deg, #e6c98a, transparent);
+  background: linear-gradient(90deg, var(--deep-gold), transparent);
 }
 
 .biz-hero h1 {
   margin: 12px 0 0;
-  color: #fff;
+  color: var(--deep-title);
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: clamp(38px, 5vw, 56px);
   font-weight: 600;
@@ -88,7 +86,7 @@
 
 .biz-hero p {
   margin: 12px 0 0;
-  color: rgba(246, 241, 231, 0.75);
+  color: var(--deep-muted);
   font-size: 15px;
 }
 
@@ -115,11 +113,11 @@
 }
 
 .biz-hero__stats button:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--deep-glass);
 }
 
 .biz-hero__stats dt {
-  color: #f6e3b4;
+  color: var(--deep-gold-strong);
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 44px;
   font-weight: 600;
@@ -128,13 +126,13 @@
 }
 
 .biz-hero__stats dt.is-alert {
-  color: #ffd27a;
+  color: var(--deep-alert);
   text-shadow: 0 0 18px rgba(255, 210, 122, 0.45);
 }
 
 .biz-hero__stats dd {
   margin: 8px 0 0;
-  color: rgba(246, 241, 231, 0.65);
+  color: var(--deep-muted);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -325,9 +323,9 @@
   border-radius: 50%;
   border: 2px solid transparent;
   background:
-    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    var(--medal-face) padding-box,
     conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
-  color: #f6e3b4;
+  color: var(--medal-ink);
   box-shadow: 0 6px 14px rgba(12, 36, 29, 0.18);
 }
 

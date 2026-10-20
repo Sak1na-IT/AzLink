@@ -145,6 +145,41 @@
   --gradient-pink: linear-gradient(135deg, #D98A93, #B75C67);
   --gradient-blue: linear-gradient(135deg, #6E8FC4, #4F6FA8);
   --gradient-purple: linear-gradient(135deg, #8B7FC7, #6558A8);
+
+  /* =========================
+     "VİTRİN" SƏTHLƏRİ
+     Başlıq panelləri, medalyonlar, tarix blokları.
+     Açıq rejimdə: fil sümüyü fon, qızılı haşiyə, tünd mətn.
+     Qaranlıq rejimdə: zümrüd məxmər (aşağıda).
+     ========================= */
+
+  --deep-panel:
+    radial-gradient(ellipse 55% 90% at 100% 0%, rgba(214, 178, 110, 0.16), transparent 70%),
+    radial-gradient(ellipse 60% 90% at 0% 100%, rgba(23, 97, 76, 0.07), transparent 70%),
+    linear-gradient(160deg, #fffdf8 0%, #f6f1e6 100%);
+  --deep-velvet: var(--deep-panel);
+  --deep-vignette: none;
+  --deep-text: #14241d;
+  --deep-title: #0f2a21;
+  --deep-muted: #5a6862;
+  --deep-gold: #94702c;
+  --deep-gold-strong: #8a6624;
+  --deep-alert: #b0701a;
+  --deep-glass: rgba(255, 255, 255, 0.72);
+  --deep-glass-hover: rgba(169, 130, 47, 0.08);
+  --deep-field: #ffffff;
+  --deep-shadow: 0 18px 44px rgba(90, 70, 30, 0.08);
+
+  --medal-face: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f1 55%, #e2ece5 100%);
+  --medal-ink: #17614c;
+  --medal-inset: inset 0 1px 3px rgba(60, 48, 20, 0.1);
+
+  --deep-tile: linear-gradient(160deg, #eef5f0, #dfebe3);
+  --deep-tile-ink: #17614c;
+  --deep-tile-muted: #4f6a5f;
+
+  --deep-solid: #17614c;
+  --deep-solid-ink: #ffffff;
 }
 
 
@@ -181,6 +216,39 @@
   --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.18);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.24);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.32);
+
+  /* Vitrin səthləri: zümrüd məxmər */
+  --deep-panel:
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.1), transparent 45%),
+    radial-gradient(circle at 85% 120%, #1d5a49 0%, #0b241d 70%);
+  --deep-velvet:
+    radial-gradient(ellipse 55% 45% at 12% 92%, rgba(214, 162, 92, 0.16), transparent 70%),
+    radial-gradient(ellipse 40% 35% at 88% 18%, rgba(230, 190, 120, 0.07), transparent 70%),
+    radial-gradient(ellipse 90% 70% at 50% 12%, #21594a 0%, #0f2c25 45%, #06130f 100%);
+  --deep-vignette: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
+  --deep-text: #f6f1e7;
+  --deep-title: #ffffff;
+  --deep-muted: rgba(246, 241, 231, 0.72);
+  --deep-gold: #e6c98a;
+  --deep-gold-strong: #f6e3b4;
+  --deep-alert: #ffd27a;
+  --deep-glass: rgba(255, 255, 255, 0.05);
+  --deep-glass-hover: rgba(255, 255, 255, 0.1);
+  --deep-field: rgba(0, 0, 0, 0.22);
+  --deep-shadow: 0 24px 50px rgba(12, 36, 29, 0.22);
+
+  --medal-face: radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%);
+  --medal-ink: #f6e3b4;
+  --medal-inset: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+
+  --deep-tile:
+    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.12), transparent 60%),
+    linear-gradient(160deg, #1f5a4a, #0e2c24);
+  --deep-tile-ink: #f6f1e7;
+  --deep-tile-muted: rgba(246, 241, 231, 0.7);
+
+  --deep-solid: linear-gradient(135deg, #1d5a49, #0d2a22);
+  --deep-solid-ink: #f6e3b4;
 }
 
 

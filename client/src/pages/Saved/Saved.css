@@ -451,8 +451,8 @@
   border-radius: 18px;
   background:
     radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.12), transparent 55%),
-    radial-gradient(circle at 60% 80%, #1d5a49 0%, #0b241d 100%);
-  color: #f6e3b4;
+    var(--medal-face);
+  color: var(--medal-ink);
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 32px;
   font-weight: 600;
@@ -508,9 +508,9 @@
   border-radius: 50%;
   border: 2px solid transparent;
   background:
-    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    var(--medal-face) padding-box,
     conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
-  color: #f6e3b4;
+  color: var(--medal-ink);
 }
 
 .saved-empty h2 {
