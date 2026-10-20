@@ -108,6 +108,7 @@ Backend skriptləri:
 | `npm run build` | TypeScript-i `dist/`-ə kompilyasiya edir           |
 | `npm run start` | `dist/index.js`-i işə salır                        |
 | `npm run seed`  | Demo məlumatı bazaya yazır                         |
+| `npm run covers` | Demo bizneslərə üz qabığı şəkli yazır (`prisma/covers/`) |
 
 `schema.prisma`-nı redaktə edəndən sonra:
 
@@ -166,7 +167,10 @@ Bütün demo hesabların parolu: `parol123` (yalnız demo üçündür).
 | Fayl                 | Təyinatı                                            |
 | -------------------- | --------------------------------------------------- |
 | `add-areas.ts`       | Bakının 12 rayonunu bazaya əlavə edir               |
+| `add-covers.ts`      | `prisma/covers/` qovluğundakı şəkilləri bizneslərə üz qabığı kimi yazır (`npm run covers`) |
 | `businesses-tool.ts` | Bizneslərin siyahısını göstərir və təhlükəsiz silir |
+
+Üz qabığı üçün şəklin adı biznesin adı ilə eyni olmalıdır: kiçik hərflər, boşluq yerinə `-`, Azərbaycan hərfləri latın hərfi ilə ("Rəşad Auto Wash" → `resad-auto-wash.jpg`). Skript şəkli `Business.coverUrl`-a yazır, portfolioya toxunmur. Təkrar işlətmək təhlükəsizdir.
 
 Bizneslərin siyahısı (sahib email-i, xidmət, rezerv, rəy sayları ilə):
 
@@ -198,13 +202,17 @@ client/
 ├── public/
 └── src/
     ├── assets/
+    │   └── fonts/               ← Onest və Cormorant Garamond (lisenziya faylları ilə)
     │
     ├── components/
     │   ├── AreaSelector/        ← ərazi seçimi modalı (rayonlar və metro)
     │   ├── account/             ← ChangePasswordModal (şifrə dəyişmə pəncərəsi)
-    │   ├── business/            ← BusinessLayout ("Biznesim" alt-naviqasiyası)
-    │   ├── home/                ← HomeHero, UpcomingBookings, PopularNearby, TodayOverview,
-    │   │                          HowItWorks, HelpfulInfo
+    │   ├── auth/                ← AuthBackLink (giriş/qeydiyyatdan hesab növünə qayıdış)
+    │   ├── brand/               ← VelvetStage, ServiceBoutique, GoldDust (giriş ekranı vitrini)
+    │   ├── business/            ← BusinessLayout ("Biznesim" alt-naviqasiyası), BusinessTheme.css
+    │   ├── common/              ← Interactions (bütün saytda hərəkət effektləri)
+    │   ├── home/                ← HomeHero, CategoryShowcase, UpcomingBookings, PopularNearby,
+    │   │                          TodayOverview, HowItWorks, HelpfulInfo
     │   └── layout/              ← AppLayout, TopNav, BusinessSubNav ("Rezerv et" alt-naviqasiyası)
     │
     ├── data/
@@ -229,10 +237,10 @@ client/
     │   ├── Profile/             ← Profile (user), BusinessAccountProfile (biznes sahibinin
     │   │                          şəxsi profili), ProfileRoute (rola görə seçir)
     │   ├── BusinessDashboard/
-    │   ├── BusinessProfile/     ← biznes vitrini (canlı önbaxışla)
+    │   ├── BusinessProfile/     ← biznes vitrini: loqo, üz qabığı, məlumatlar (canlı önbaxışla)
     │   ├── BusinessServices/
     │   ├── BusinessBookings/    ← biznesə gələn rezervlər
-    │   ├── BusinessPortfolio/
+    │   ├── BusinessPortfolio/   ← iş nümunələri (yalnız görülən işlər, üz qabığı deyil)
     │   ├── BusinessReviews/     ← biznesin rəyləri
     │   ├── BusinessCustomers/
     │   └── BusinessHours/       ← iş saatları
@@ -246,18 +254,22 @@ client/
     │   ├── accountService.ts    ← ad, telefon, şifrə dəyişmə
     │   ├── areasService.ts
     │   ├── categoriesService.ts
-    │   ├── providersService.ts  ← bizneslər, tək biznes, dolu saatlar
+    │   ├── providersService.ts  ← bizneslər, tək biznes
+    │   ├── busySlotsService.ts  ← dolu saatlar
     │   ├── bookingsService.ts
     │   ├── savedService.ts
     │   ├── reviewsService.ts
     │   ├── activityService.ts   ← profil sayları
+    │   ├── businessService.ts           ← biznes profili, loqo və üz qabığı (branding)
     │   ├── businessDashboardService.ts
-    │   └── businessServicesService.ts
+    │   ├── businessServicesService.ts
+    │   └── businessPortfolioService.ts
     │
     ├── styles/
     │   └── variables.css        ← rənglər və ölçülər (light/dark)
     ├── types/                   ← area.ts, booking.ts, portfolio.ts, provider.ts, schedule.ts
-    ├── utils/                   ← areaMatch.ts, categoryVisual.ts, formatDuration.ts
+    ├── utils/                   ← areaMatch.ts, categoryVisual.ts, compressImage.ts,
+    │                              formatDate.ts, formatDuration.ts
     │
     ├── App.tsx                  ← bütün route-lar
     ├── App.css                  ← qlobal reset, shell və naviqasiya
@@ -294,6 +306,8 @@ server/
 │   ├── migrations/
 │   ├── seed.ts
 │   ├── add-areas.ts
+│   ├── add-covers.ts             ← üz qabıqlarını yazır (npm run covers)
+│   ├── covers/                   ← demo bizneslərin üz qabığı şəkilləri
 │   ├── businesses-tool.ts
 │   └── dev.db                    ← SQLite faylı (Git-ə düşmür)
 ├── .env                          ← gizli açarlar (Git-ə düşmür)
@@ -462,7 +476,14 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 
 ## Dizayn sistemi
 
-Əsas istiqamət: **yumşaq yaşıl-boz tonlar**, əsas accent rəng `#2E7D5B`.
+Əsas istiqamət: **zümrüd yaşılı və qızılı**, premium və sakit görünüş.
+
+| Rəng           | Light     | Dark      | Dəyişən           |
+| -------------- | --------- | --------- | ----------------- |
+| Əsas (zümrüd)  | `#17614C` | `#63BE8C` | `--color-primary` |
+| Qızılı accent  | `#a9822f` | `#e6c98a` | `--color-gold`    |
+
+Şriftlər: başlıqlar **Cormorant Garamond**, mətn **Onest**. Hər ikisi Azərbaycan hərflərini dəstəkləyir və layihənin içindədir (`assets/fonts/`).
 
 - Ümumi görünüş premium və minimal olmalıdır. Həm gözəllik, həm santexnik, həm repetitor eyni dizaynda düzgün görünməlidir.
 - Light və Dark mode dəstəklənir. Seçim brauzerin yaddaşında saxlanır (`hooks/useTheme.ts`).
@@ -476,7 +497,6 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 - **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd fon, aşağıda isti "şam işığı" parıltısı, incə dən toxuması, siçanın arxasınca hərəkət edən yumşaq işıq.
 - **Medalyonlar** (`components/brand/ServiceBoutique.tsx`): 8 xidmət sahəsi (`data/categories.ts`) qızılı haşiyəli, zümrüd emallı medalyonlardır və mərkəzdəki AzLink-ə qızılı saplarla bağlıdır. Sadə 2D fizika ilə işləyir: açılışda kənarlardan uçub gəlir, siçan yaxınlaşanda yana çəkilir, medalyonu tutub atmaq olur (digərlərinə dəyib sıçrayır, sap dartılır, sonra yerinə qayıdır). Arxada qızıl tozu süzülür.
 - **Üstünə gələndə** sahədə neçə biznes olduğu və qiymətin neçədən başladığı görünür. **Klikləyəndə** menyu kimi kart açılır: ən sərfəli xidmətlər qiymətləri ilə və "Ustaları gör" düyməsi. Bütün rəqəmlər bazadan (`GET /api/providers`) hesablanır.
-- **Başlıq** Cormorant Garamond, mətn Onest şrifti ilədir. Hər ikisi Azərbaycan hərflərini dəstəkləyir və layihənin içindədir (`assets/fonts/`).
 
 ### Interaktivlik (bütün sayt)
 
@@ -537,6 +557,8 @@ POST   /api/reviews             ← giriş tələb olunur: yalnız COMPLETED rez
 Business                        ← authenticate + requireRole("BUSINESS")
 GET    /api/business/profile
 PATCH  /api/business/profile    → ad, kateqoriya, ərazi, telefon, təsvir, iş saatları (schedule)
+PATCH  /api/business/profile/branding → loqo (logoUrl), üz qabığı (coverUrl), onun mövqeyi
+                                  (coverPosition, 0–100). null göndərmək şəkli silir
 GET    /api/business/dashboard  → xidmət/rezerv/gəlir/müştəri sayları, profil tamamlanma faizi
 GET    /api/business/customers  → müştəri siyahısı, qruplaşdırılıb
 GET    /api/business/reviews    → biznesə yazılmış rəylər
@@ -551,6 +573,7 @@ DELETE /api/business/portfolio/:id
 
 Qeydlər:
 
+- `/api/providers` cavabında `image` biznesin üz qabığıdır (`coverUrl`), `logo` isə profil şəklidir. Üz qabığı yoxdursa `image` `null` olur: portfolio şəkli üz qabığı kimi istifadə olunmur.
 - `/api/providers` cavabında `service` sahəsi biznesin kateqoriya adıdır (məs. "Dırnaq"). `ownerId` biznes sahibinin istifadəçi id-sidir (öz biznesini gizlətmək üçün), `distance` hazırda həmişə `null`-dur.
 - Biznes üçün gələn rezervlər ayrıca endpoint-də deyil, ümumi `GET /api/bookings`-dədir (biznes sahibi üçün avtomatik ona gələnləri də qaytarır).
 - Dashboard-dakı profil tamamlanma faizi 7 şərtdən hesablanır: ad, kateqoriya, ərazi, telefon, ən azı bir açıq gün, ən azı bir xidmət, ən azı bir portfolio şəkli.
@@ -569,18 +592,18 @@ Review, Portfolio, SavedProvider, Availability, Notification
 | Model           | Əsas məqamlar                                                                          |
 | --------------- | -------------------------------------------------------------------------------------- |
 | `User`          | `email` unikal, `role` (`USER` / `BUSINESS`), `phone` könüllü                          |
-| `Business`      | `User` ilə 1:1, bir `Area`-ya bağlıdır, `verified` bayrağı, `Category` ilə çoxdan-çoxa |
+| `Business`      | `User` ilə 1:1, bir `Area`-ya bağlıdır, `verified` bayrağı, `Category` ilə çoxdan-çoxa. `logoUrl`, `coverUrl` (base64 data URL), `coverPosition` (0–100) |
 | `Category`      | `parentId` var (məs. Gözəllik → Dırnaq)                                                |
 | `Service`       | Biznesə və alt kateqoriyaya bağlıdır, `price`, `duration` (dəqiqə)                     |
 | `Area`          | `name` unikal, `type`                                                                  |
 | `Booking`       | `date` tək `DateTime` (Bakı divar saatı UTC kimi), `status`                            |
 | `Review`        | `bookingId` unikal (bir rezerv, bir rəy), `rating` 1–5                                 |
-| `Portfolio`     | `imageUrl` (base64 data URL), `caption`                                                |
+| `Portfolio`     | `imageUrl` (base64 data URL), `caption`. Yalnız iş nümunələri üçündür                   |
 | `SavedProvider` | `@@unique([userId, businessId])` təkrar qeydin qarşısını alır                          |
 | `Availability`  | `dayOfWeek` (0 = Bazar … 6 = Şənbə), `startTime`, `endTime`                            |
 | `Notification`  | Cədvəl var, amma hələ heç yerdə istifadə olunmur                                       |
 
-Köhnə migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_verified`, `add_portfolio_caption`.
+Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_verified`, `add_portfolio_caption`, `add_business_branding`.
 
 ---
 
@@ -598,7 +621,7 @@ Köhnə migration-lar: `init`, `add_savedprovider_business_relation`, `add_busin
 - Refresh token bazada saxlanmır, ona görə `logout` onu serverdə ləğv edə bilmir (yalnız müddəti bitəndə qüvvədən düşür). Production üçün `RefreshToken` cədvəli əlavə edib logout-da silmək daha təhlükəsizdir.
 - Email dəyişmə və email təsdiqi yoxdur.
 - Sorğu limiti (rate limiting) yoxdur, CORS standart (hamıya açıq) konfiqurasiyadadır.
-- Portfolio şəkilləri base64 kimi bazada saxlanır (`express.json` limiti 15 MB), çox şəkil olanda cavablar ağırlaşa bilər.
+- Portfolio, loqo və üz qabığı şəkilləri base64 kimi bazada saxlanır (`express.json` limiti 15 MB). Şəkillər yüklənməzdən əvvəl brauzerdə kiçildilir (`utils/compressImage.ts`), amma çox şəkil olanda cavablar yenə ağırlaşa bilər.
 - Demo hesabların parolu hamısı eynidir (`parol123`), real mühitdə istifadə olunmamalıdır.
 
 ---
@@ -614,6 +637,8 @@ Köhnə migration-lar: `init`, `add_savedprovider_business_relation`, `add_busin
 - Rezerv axını: real iş saatları, dolu saatlar, üst-üstə düşmə yoxlaması
 - Müştərinin rezervləri (ləğv, silmə), seçilmişlər, rəy yazmaq
 - Biznesim: Dashboard, Profil (canlı önbaxışla), İş saatları, Xidmətlər, Rezervlər (təsdiq/tamamla/ləğv), Portfolio, Müştərilər, Rəylər
+- Biznes vitrini: loqo və üz qabığı yükləmə, üz qabığının yerini sürüşdürərək düzəltmə. Portfolio yalnız iş nümunələri üçündür
+- Premium dizayn: giriş ekranında interaktiv "Xidmət butiki", bütün saytda hərəkət effektləri
 - Hesab: ad, telefon, şifrə dəyişmə (hər iki profil səhifəsində)
 - Ərazi: 12 rayon və metro stansiyaları
 - Light/dark mode, responsive görünüş
@@ -627,11 +652,10 @@ Köhnə migration-lar: `init`, `add_savedprovider_business_relation`, `add_busin
 | Emaili dəyişmə      | Backend endpoint-i və frontend düyməsi                                                                                          |
 | Bildirişlər         | `Notification` cədvəli hazırdır, hadisələrdə yaradılması və göstərilməsi qalıb. Profildə bildiriş sətirləri "Tezliklə" göstərir |
 | Məsafə (`distance`) | Backend hesablamır. Ya koordinat əlavə edilməli, ya da sahə çıxarılmalıdır                                                      |
-| Portfolio şəkilləri | Fayl kimi saxlamaq (base64 əvəzinə)                                                                                             |
+| Şəkillər            | Portfolio, loqo və üz qabığını fayl kimi saxlamaq (base64 əvəzinə)                                                              |
 | Təhlükəsizlik       | Refresh token-in bazada saxlanması və logout-da ləğvi                                                                           |
 | Son işlənmə         | Yüklənmə/xəta/boş vəziyyətlərin yoxlanması, mobil görünüşün tam yoxlanması                                                      |
 | Metro rayonları     | Real xəritə ilə təsdiqləmək                                                                                                     |
-| Paylaşılan tiplər   | `shared/` qovluğu planlaşdırılıb, hələ yaradılmayıb                                                                             |
 | Avtomatik testlər   | Yoxdur, bütün axınlar əl ilə yoxlanılır                                                                                         |
 
 ### İlk versiyaya daxil olmayanlar
@@ -654,6 +678,7 @@ Real ödəniş, mürəkkəb AI, canlı xəritə və məsafəyə görə axtarış
 - Backend modulları `modules/<ad>/` altında `service`, `controller`, `routes` fayllarına bölünür.
 - `schema.prisma`-da dəyişiklik etdikdən sonra mütləq `npx prisma migrate dev --name <təsvir>` işlət.
 - **Demo məlumat yalnız `seed.ts` vasitəsilə əlavə olunur**, bazaya əl ilə eyni adlı təkrar biznes yazma.
+- Üz qabığı və loqo `Business` cədvəlində saxlanır. Portfolioya yalnız görülən işlərin şəkilləri düşür.
 - Rayon adları üç yerdə eyni olmalıdır (bax: [Ərazi seçimi](#ərazi-seçimi)).
 
 ---
@@ -676,7 +701,11 @@ Token 15 dəqiqəyə bitir. Test zamanı "Əməliyyat mümkün olmadı" kimi mes
 
 ## Git iş qaydası
 
-Hər tamamlanmış işdən sonra commit et:
+- **`main` həmişə işlək versiyadır.** GitHub-da hamının gördüyü və təqdimatda göstərilən versiya budur.
+- Kiçik işlər birbaşa `main`-də edilir. Böyük və ya riskli dəyişiklik (məs. tam yenidən dizayn) üçün qısa ömürlü branch açılır, iş alınandan sonra `main`-ə birləşdirilir və branch silinir.
+- Commit-lər bir müəllif adı ilə gedir: `git config --global user.name "Sak1na-IT"`.
+
+Hər tamamlanmış işdən sonra:
 
 ```bash
 git add .
@@ -684,15 +713,12 @@ git commit -m "qısa təsvir"
 git push
 ```
 
-Nümunə mesajlar:
+Commit mesajları qısa olur və nə edildiyini deyir:
 
 ```text
-areas: 12 Baku districts + metro stations, remove custom areas
-booking flow wired to API
-busy slots shown on booking page
-profile editing and change password wired to API
-demo seed: businesses, reviews, demo customers
-remove old localStorage/demo files
+Add cover upload to business profile
+Fix booking delete for cancelled bookings
+Update README
 ```
 
 Böyük dəyişiklikdən (fayl silmək, qovluq köçürmək, migration işlətmək, bazanı sıfırlamaq) əvvəl mütləq commit et və bazanın ehtiyat surətini al. Beləcə istənilən vaxt geri qayıtmaq olar.

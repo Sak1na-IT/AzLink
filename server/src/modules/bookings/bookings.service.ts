@@ -36,8 +36,7 @@ const DEFAULT_SLOTS: Slot[] = [1, 2, 3, 4, 5, 6].map((dayOfWeek) => ({
 }));
 
 const bookingInclude = {
-  /* portfolio: kartda biznesin üz qabığı şəkli üçün */
-  business: { include: { area: true, portfolio: { take: 1 } } },
+  business: { include: { area: true } },
   customer: true,
   service: true,
 } as const;

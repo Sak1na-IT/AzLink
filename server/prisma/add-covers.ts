@@ -9,9 +9,12 @@
  *      (jpg, jpeg, png və webp olar)
  *   2. server qovluğunda: npm run covers
  *
- * Şəkil biznesin portfoliosuna birinci şəkil kimi əlavə olunur və
- * kartlarda, profil səhifəsində görünür. Təkrar işlətmək təhlükəsizdir:
- * eyni biznesin artıq üz qabığı varsa, yenisi ilə əvəz olunur.
+ * Şəkil biznesin üz qabığı (Business.coverUrl) kimi yazılır və
+ * kartlarda, profil səhifəsində görünür. Portfolioya toxunulmur:
+ * portfolio yalnız iş nümunələri üçündür. Skriptin köhnə versiyası
+ * üz qabığını portfolioya "Üz qabığı" adı ilə yazırdı; belə şəkillər
+ * də silinir. Təkrar işlətmək təhlükəsizdir: eyni biznesin artıq üz
+ * qabığı varsa, yenisi ilə əvəz olunur.
  */
 import { readdirSync, readFileSync, statSync } from "fs";
 import { extname, join } from "path";
@@ -21,7 +24,8 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const COVERS_DIR = join(__dirname, "covers");
-const COVER_CAPTION = "Üz qabığı";
+/* Köhnə versiyanın portfolioya yazdığı üz qabıqlarının adı */
+const OLD_COVER_CAPTION = "Üz qabığı";
 const MAX_SIZE_KB = 700;
 
 const MIME: Record<string, string> = {
@@ -95,30 +99,14 @@ async function main() {
 
     const dataUrl = `data:${MIME[ext]};base64,${readFileSync(path).toString("base64")}`;
 
-    /*
-     * Kartda portfolionun birinci şəkli göstərilir. Üz qabığının
-     * birinci olması üçün köhnə şəkillər silinib yenidən, üz
-     * qabığından sonra yazılır.
-     */
-    const existing = await prisma.portfolio.findMany({
-      where: { businessId: business.id, NOT: { caption: COVER_CAPTION } },
-      orderBy: { id: "asc" },
-    });
-
     await prisma.$transaction([
-      prisma.portfolio.deleteMany({ where: { businessId: business.id } }),
-      prisma.portfolio.create({
-        data: { businessId: business.id, imageUrl: dataUrl, caption: COVER_CAPTION },
+      prisma.business.update({
+        where: { id: business.id },
+        data: { coverUrl: dataUrl, coverPosition: 50 },
       }),
-      ...existing.map((image) =>
-        prisma.portfolio.create({
-          data: {
-            businessId: business.id,
-            imageUrl: image.imageUrl,
-            caption: image.caption,
-          },
-        })
-      ),
+      prisma.portfolio.deleteMany({
+        where: { businessId: business.id, caption: OLD_COVER_CAPTION },
+      }),
     ]);
 
     added += 1;

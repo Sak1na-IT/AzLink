@@ -5,8 +5,7 @@
   "description": "AzLink service marketplace",
   "workspaces": [
     "client",
-    "server",
-    "shared"
+    "server"
   ],
   "scripts": {
     "dev": "npm run dev --workspace=client",

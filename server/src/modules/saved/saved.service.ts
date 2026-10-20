@@ -11,7 +11,6 @@ export const listSaved = async (userId: string) => {
           area: true,
           services: true,
           reviews: true,
-          portfolio: { take: 1 },
         },
       },
     },

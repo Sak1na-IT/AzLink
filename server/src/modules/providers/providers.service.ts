@@ -55,7 +55,6 @@ const cardInclude = {
   categories: { include: { parent: true } },
   services: { include: { category: { include: { parent: true } } } },
   reviews: true,
-  portfolio: { take: 1 },
 } satisfies Prisma.BusinessInclude;
 
 type BusinessCard = Prisma.BusinessGetPayload<{
