@@ -5,7 +5,7 @@ import { ArrowDown, Briefcase, UserRound } from "lucide-react";
 import ServiceBoutique, {
   type CategoryStats,
 } from "../../components/brand/ServiceBoutique";
-import VelvetStage from "../../components/brand/VelvetStage";
+import GoldDust from "../../components/brand/GoldDust";
 import LanguageSwitch from "../../i18n/LanguageSwitch";
 import DayStory from "./DayStory";
 import { categories } from "../../data/categories";
@@ -111,7 +111,11 @@ function AccountType() {
 
   return (
     <div className="account-type-page">
-      <VelvetStage className="account-type">
+      <section className="account-type">
+        <div className="account-type__dust" aria-hidden="true">
+          <GoldDust count={26} />
+        </div>
+
         <header className="account-type__bar">
           <span className="account-type__brand">AzLink</span>
 
@@ -146,7 +150,7 @@ function AccountType() {
             <div className="account-type__actions">
               <button
                 type="button"
-                className="velvet-button velvet-button--primary"
+                className="pearl-button pearl-button--primary"
                 onClick={() => navigate("/register?role=user")}
               >
                 {t("Xidmət seçin")}
@@ -154,7 +158,7 @@ function AccountType() {
 
               <button
                 type="button"
-                className="velvet-button velvet-button--ghost"
+                className="pearl-button pearl-button--ghost"
                 onClick={() => navigate("/register?role=business")}
               >
                 {t("Biznesimi əlavə edirəm")}
@@ -192,14 +196,14 @@ function AccountType() {
           <span>{t("Necə işləyir")}</span>
           <ArrowDown size={16} strokeWidth={1.8} />
         </a>
-      </VelvetStage>
+      </section>
 
       <div id="how-it-works">
         <DayStory providers={providers} />
       </div>
 
       {/* ---------- Son: iki yol ---------- */}
-      <VelvetStage className="account-type-final">
+      <section className="account-type-final">
         <h2>{t("Hansı tərəfdəsiniz?")}</h2>
 
         <div className="account-type-final__doors">
@@ -230,7 +234,7 @@ function AccountType() {
           {t("Artıq hesabınız var?")}{" "}
           <Link to="/login">{t("Daxil olun")}</Link>
         </p>
-      </VelvetStage>
+      </section>
     </div>
   );
 }

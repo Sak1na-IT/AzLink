@@ -15,13 +15,13 @@ import { formatDayMonth, weekdayShort } from "../../utils/formatDate";
 import "./DayStory.css";
 
 /*
- * "Bakıda bir gün": aşağı sürüşdürdükcə arxada gün keçir (sübh →
- * günorta → axşam → gecə), günəş Xəzərin üfüqü üzərində qövslə
- * hərəkət edir. Solda hekayə, sağda həmin addımın canlı nümayişi.
- * Hər fəslin saatı həm günün vaxtı, həm də nümayişdəki rezerv vaxtıdır.
+ * "Bakıda bir gün": aşağı sürüşdürdükcə arxada işıqlı bir gün keçir
+ * (səhər → günorta → qızıl saat → çəhrayı axşam → alaqaranlıq),
+ * günəş Xəzərin üfüqü üzərində qövslə hərəkət edib batır. Solda
+ * hekayə, sağda həmin addımın canlı nümayişi.
  */
 
-type Scene = "dawn" | "noon" | "dusk" | "night";
+type Scene = "dawn" | "noon" | "golden" | "rose" | "twilight";
 
 interface Chapter {
   time: string;
@@ -49,23 +49,23 @@ const CHAPTERS: Chapter[] = [
   },
   {
     time: "18:30",
-    scene: "dusk",
+    scene: "golden",
     title: t("Boş saatı seçin"),
     text: t(
       "Ustanın iş qrafiki və dolu saatları görünür. Sizə uyğun vaxtı seçin, bir toxunuşla rezerv edin."
     ),
   },
   {
-    time: "21:00",
-    scene: "night",
+    time: "19:40",
+    scene: "rose",
     title: t("Usta təsdiqləyir"),
     text: t(
       "Usta rezervi təsdiqləyəndə bildiriş gəlir. Xidmətdən sonra rəy yazırsınız, növbəti müştərilər də sizin təcrübənizdən öyrənir."
     ),
   },
   {
-    time: "23:40",
-    scene: "night",
+    time: "21:00",
+    scene: "twilight",
     title: t("Ustalar üçün də"),
     text: t(
       "Biznes sahibi sabahın rezervlərini bir paneldə görür: yeni sorğuları təsdiqləyir, xidmətlərini və iş saatlarını idarə edir, müştərilərini tanıyır."
@@ -132,13 +132,13 @@ function DayStory({ providers }: DayStoryProps) {
       const total = Math.max(1, rect.height - viewport);
       const progress = clamp(-rect.top / total);
 
-      /* Günəş: soldan sağa qövs; gecə yarısından sonra aya çevrilir */
-      const dayProgress = clamp(progress / 0.62);
+      /* Günəş: soldan sağa qövs, sonda üfüqdə batır */
+      const dayProgress = clamp(progress / 0.8);
       const sunX = 8 + dayProgress * 84;
       const sunY = 72 - Math.sin(dayProgress * Math.PI) * 52;
 
-      /* Ay: gecə hissəsində soldan yuxarı-sağa qalxır */
-      const nightProgress = clamp((progress - 0.62) / 0.38);
+      /* Ay: alaqaranlıqda soldan yuxarı qalxır */
+      const nightProgress = clamp((progress - 0.75) / 0.25);
       const moonX = 22 + nightProgress * 50;
       const moonY = 58 - nightProgress * 34;
 
@@ -227,8 +227,9 @@ function DayStory({ providers }: DayStoryProps) {
       <div className="day-story__sky" aria-hidden="true">
         <div className="day-sky day-sky--dawn" />
         <div className="day-sky day-sky--noon" />
-        <div className="day-sky day-sky--dusk" />
-        <div className="day-sky day-sky--night" />
+        <div className="day-sky day-sky--golden" />
+        <div className="day-sky day-sky--rose" />
+        <div className="day-sky day-sky--twilight" />
 
         <div className="day-sun" />
         <div className="day-moon" />

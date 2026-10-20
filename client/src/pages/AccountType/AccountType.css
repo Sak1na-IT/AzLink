@@ -1,19 +1,49 @@
 /* =========================================================
-   ACCOUNT TYPE — saytın ilk ekranı
-   Tünd zümrüd vitrin: solda başlıq və iki seçim, sağda
-   AzLink-ə qızılı saplarla bağlı 8 xidmət medalyonu (ServiceBoutique).
+   ANA SƏHİFƏ (giriş) — açıq rəngli lüks
+   Mirvari fon, zümrüd və şampan qızılı. Saytın tema seçimindən
+   asılı olmayaraq həmişə açıq görünür.
    ========================================================= */
 
 .account-type-page {
+  --pearl: #fbf8f1;
+  --ivory: #f3ede0;
+  --ink: #17332b;
+  --ink-muted: #51665f;
+  --emerald: #14594a;
+  --emerald-deep: #0e4236;
+  --champagne: #c9a35e;
+  --gold-text: #9c7432;
+  --hairline: rgba(156, 116, 50, 0.22);
+
   /* AppLayout-un yan boşluqlarını ləğv edib ekranı tam tuturuq */
   margin: calc(var(--space-8) * -1) -120px calc(var(--space-16) * -1);
+  background: var(--pearl);
+  color: var(--ink);
+  font-family: "Onest", var(--font-family);
 }
 
+/* ---------- İlk ekran ---------- */
+
 .account-type {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 100vh;
   display: grid;
   grid-template-rows: auto 1fr;
   padding: 28px 56px 48px;
+  background:
+    radial-gradient(ellipse 60% 55% at 78% 42%, rgba(212, 236, 226, 0.9), transparent 70%),
+    radial-gradient(ellipse 45% 40% at 10% 90%, rgba(244, 220, 178, 0.55), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 30% 0%, rgba(255, 255, 255, 0.9), transparent 70%),
+    linear-gradient(180deg, #fdfbf6 0%, var(--pearl) 60%, var(--ivory) 100%);
+}
+
+.account-type__dust {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.7;
 }
 
 /* ---------- Yuxarı zolaq ---------- */
@@ -27,7 +57,7 @@
 }
 
 .account-type__brand {
-  color: var(--velvet-text);
+  color: var(--emerald-deep);
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -0.04em;
@@ -39,27 +69,30 @@
   gap: 10px;
 }
 
-/* Dil seçimi tünd vitrində: zolağın öz rəngləri ilə */
 .account-type__bar .language-switch {
   height: 40px;
-  border-color: var(--velvet-line);
-  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--hairline);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .account-type__bar .language-switch button {
-  color: var(--velvet-text-muted);
+  color: var(--ink-muted);
 }
 
 .account-type__bar .language-switch button.is-active {
-  background: rgba(232, 204, 146, 0.18);
-  color: var(--velvet-gold);
+  background: var(--emerald);
+  color: #fff;
 }
 
 .account-type__login {
-  padding: 9px 18px;
-  border: 1px solid var(--velvet-line);
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--hairline);
   border-radius: 999px;
-  color: var(--velvet-text);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
   font-size: 14px;
   font-weight: 600;
   transition:
@@ -68,8 +101,8 @@
 }
 
 .account-type__login:hover {
-  border-color: var(--velvet-gold);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--champagne);
+  background: #fff;
 }
 
 /* ---------- Əsas hissə ---------- */
@@ -89,15 +122,14 @@
   max-width: 620px;
 }
 
-/* Başlıq: klassik serif şrift, sözlər açılışda bir-bir üzə çıxır */
 .account-type__content h1 {
   margin: 0;
-  color: var(--velvet-text);
+  color: var(--ink);
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(44px, 4.4vw, 70px);
+  font-size: clamp(46px, 4.6vw, 74px);
   font-weight: 500;
   line-height: 1;
-  letter-spacing: -0.012em;
+  letter-spacing: -0.015em;
 }
 
 .account-type__line {
@@ -105,14 +137,13 @@
   animation: word-in 1s var(--ease-out) backwards;
 }
 
-/* Başlıq altında incə qızılı xətt */
 .account-type__content h1::after {
   content: "";
   display: block;
   width: 72px;
   height: 1px;
   margin-top: 28px;
-  background: linear-gradient(90deg, var(--velvet-gold), transparent);
+  background: linear-gradient(90deg, var(--champagne), transparent);
   animation: line-in 1.2s 0.8s var(--ease-out) backwards;
   transform-origin: left;
 }
@@ -124,10 +155,11 @@
 }
 
 .account-type__content p {
+  max-width: 34em;
   margin: 24px 0 0;
-  color: var(--velvet-text-muted);
+  color: var(--ink-muted);
   font-size: 17px;
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .account-type__actions {
@@ -137,20 +169,73 @@
   margin-top: 34px;
 }
 
-/* Real rəqəmlər: incə xətlə ayrılmış üç fakt */
+/* Düymələr: zümrüd əsas, incə qızılı haşiyəli ikinci */
+.pearl-button {
+  min-height: 52px;
+  padding: 0 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.pearl-button--primary {
+  border: 0;
+  background: linear-gradient(180deg, #1a6b59 0%, var(--emerald) 100%);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 0 1px rgba(201, 163, 94, 0.55),
+    0 14px 30px rgba(20, 89, 74, 0.25);
+}
+
+.pearl-button--primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 0 0 1px rgba(201, 163, 94, 0.85),
+    0 18px 36px rgba(20, 89, 74, 0.3);
+}
+
+.pearl-button--ghost {
+  border: 1px solid var(--hairline);
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--ink);
+}
+
+.pearl-button--ghost:hover {
+  border-color: var(--champagne);
+  background: #fff;
+}
+
+.pearl-button:focus-visible,
+.account-type__login:focus-visible {
+  outline: 2px solid var(--emerald);
+  outline-offset: 3px;
+}
+
+/* Real rəqəmlər: incə qızılı xətlə ayrılmış üç fakt */
 .account-type__facts {
   display: flex;
   flex-wrap: wrap;
-  gap: 0;
   margin: 40px 0 0;
   padding-top: 22px;
-  border-top: 1px solid rgba(227, 201, 143, 0.16);
+  border-top: 1px solid var(--hairline);
   animation-delay: 0.9s;
 }
 
 .account-type__facts div {
   padding: 0 26px;
-  border-left: 1px solid rgba(227, 201, 143, 0.16);
+  border-left: 1px solid var(--hairline);
 }
 
 .account-type__facts div:first-child {
@@ -159,7 +244,7 @@
 }
 
 .account-type__facts dt {
-  color: var(--velvet-text);
+  color: var(--emerald-deep);
   font-variant-numeric: lining-nums;
   /* ₼ işarəsi Cormorant-da yoxdur, Onest-dən götürülür */
   font-family: "Cormorant Garamond", "Onest", Georgia, serif;
@@ -170,7 +255,7 @@
 
 .account-type__facts dd {
   margin: 6px 0 0;
-  color: var(--velvet-text-muted);
+  color: var(--ink-muted);
   font-size: 13px;
 }
 
@@ -178,6 +263,223 @@
   position: relative;
   height: min(620px, 72vh);
 }
+
+/* ---------- Medalyonlar mirvari fonda ---------- */
+/* Daşlar zümrüd qalır, kölgələr yumşaq və yazılar tünd olur */
+
+.account-type .boutique__core {
+  box-shadow:
+    0 0 0 10px rgba(201, 163, 94, 0.1),
+    0 0 70px rgba(201, 163, 94, 0.3),
+    0 22px 46px rgba(20, 70, 58, 0.28);
+}
+
+.account-type .boutique__core-ring {
+  border-color: rgba(156, 116, 50, 0.35);
+}
+
+.account-type .boutique__medal {
+  color: var(--ink);
+}
+
+.account-type .boutique__face {
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.35),
+    0 12px 26px rgba(20, 70, 58, 0.24),
+    0 0 0 1px rgba(156, 116, 50, 0.2);
+}
+
+.account-type .boutique__medal.is-active .boutique__face {
+  box-shadow:
+    inset 0 2px 8px rgba(0, 0, 0, 0.35),
+    0 0 0 6px rgba(201, 163, 94, 0.18),
+    0 0 40px rgba(201, 163, 94, 0.45),
+    0 16px 32px rgba(20, 70, 58, 0.28);
+}
+
+.account-type .boutique__name {
+  color: var(--ink);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.account-type .boutique__hint {
+  border-color: var(--hairline);
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--ink-muted);
+  box-shadow: 0 8px 20px rgba(20, 70, 58, 0.12);
+}
+
+.account-type .boutique__hint b {
+  color: var(--gold-text);
+}
+
+.account-type .boutique__card {
+  border-color: rgba(201, 163, 94, 0.45);
+  background: rgba(255, 255, 255, 0.96);
+  color: var(--ink);
+  box-shadow:
+    0 30px 70px rgba(20, 70, 58, 0.2),
+    inset 0 1px 0 #fff;
+}
+
+.account-type .boutique__close {
+  background: rgba(20, 89, 74, 0.06);
+  color: var(--ink-muted);
+}
+
+.account-type .boutique__close:hover {
+  background: rgba(20, 89, 74, 0.12);
+  color: var(--ink);
+}
+
+.account-type .boutique__card-head p,
+.account-type .boutique__empty {
+  color: var(--ink-muted);
+}
+
+.account-type .boutique__menu {
+  border-top-color: var(--hairline);
+}
+
+.account-type .boutique__menu i {
+  border-bottom-color: var(--hairline);
+}
+
+.account-type .boutique__menu b {
+  color: var(--gold-text);
+}
+
+.account-type .boutique__cta {
+  background: linear-gradient(180deg, #1a6b59, var(--emerald));
+  color: #fff;
+  box-shadow: 0 10px 26px rgba(20, 89, 74, 0.25);
+}
+
+/* ---------- Aşağı sürüşdürmə işarəsi ---------- */
+
+.account-type__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 4;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  translate: -50% 0;
+  color: var(--ink-muted);
+  font-size: 13px;
+  transition: color var(--transition-fast);
+}
+
+.account-type__scroll:hover {
+  color: var(--emerald);
+}
+
+.account-type__scroll svg {
+  animation: account-type-nudge 2.2s ease-in-out infinite;
+}
+
+html:has(.account-type-page) {
+  scroll-behavior: smooth;
+}
+
+/* ---------- Son: iki yol ---------- */
+
+.account-type-final {
+  padding: 120px 56px 104px;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 50% 60% at 50% 0%, rgba(212, 236, 226, 0.7), transparent 70%),
+    linear-gradient(180deg, var(--pearl), var(--ivory));
+}
+
+.account-type-final h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 4vw, 60px);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.account-type-final__doors {
+  width: min(880px, 100%);
+  margin: 48px auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.account-type-final__door {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 32px 30px;
+  border: 1px solid var(--hairline);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 0 18px 40px rgba(20, 70, 58, 0.08);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.account-type-final__door:hover {
+  border-color: var(--champagne);
+  box-shadow: 0 24px 50px rgba(20, 70, 58, 0.14);
+  transform: translateY(-2px);
+}
+
+.account-type-final__door:focus-visible {
+  outline: 2px solid var(--emerald);
+  outline-offset: 3px;
+}
+
+.account-type-final__door svg {
+  color: var(--emerald);
+}
+
+.account-type-final__door strong {
+  margin-top: 6px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.account-type-final__door span {
+  color: var(--ink-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.account-type-final__door em {
+  margin-top: 10px;
+  color: var(--emerald);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.account-type-final__login {
+  margin: 32px 0 0;
+  color: var(--ink-muted);
+  font-size: 15px;
+}
+
+.account-type-final__login a {
+  color: var(--emerald);
+  font-weight: 600;
+}
+
+/* ---------- Animasiyalar ---------- */
 
 @keyframes word-in {
   from {
@@ -208,6 +510,12 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes account-type-nudge {
+  50% {
+    translate: 0 5px;
   }
 }
 
@@ -246,6 +554,11 @@
     text-align: center;
   }
 
+  .account-type__content p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
   .account-type__actions,
   .account-type__facts {
     justify-content: center;
@@ -254,7 +567,7 @@
   .account-type__content h1::after {
     margin-left: auto;
     margin-right: auto;
-    background: linear-gradient(90deg, transparent, var(--velvet-gold), transparent);
+    background: linear-gradient(90deg, transparent, var(--champagne), transparent);
   }
 }
 
@@ -265,6 +578,14 @@
 
   .account-type {
     padding: 20px 16px 36px;
+  }
+
+  .account-type__bar-actions {
+    gap: 6px;
+  }
+
+  .account-type__login {
+    padding: 0 14px;
   }
 
   .account-type__content p {
@@ -283,155 +604,8 @@
     flex-direction: column;
   }
 
-  .account-type__actions .velvet-button {
+  .account-type__actions .pearl-button {
     width: 100%;
-  }
-}
-
-
-/* ---------- Aşağı sürüşdürmə işarəsi ---------- */
-
-.account-type {
-  position: relative;
-}
-
-.account-type__scroll {
-  position: absolute;
-  left: 50%;
-  bottom: 22px;
-  z-index: 4;
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  translate: -50% 0;
-  color: var(--velvet-text-muted);
-  font-size: 13px;
-  transition: color var(--transition-fast);
-}
-
-.account-type__scroll:hover {
-  color: var(--velvet-gold);
-}
-
-.account-type__scroll svg {
-  animation: account-type-nudge 2.2s ease-in-out infinite;
-}
-
-@keyframes account-type-nudge {
-  50% {
-    translate: 0 5px;
-  }
-}
-
-html:has(.account-type-page) {
-  scroll-behavior: smooth;
-}
-
-/* ---------- Son: iki yol ---------- */
-
-.account-type-final {
-  padding: 120px 56px 96px;
-  text-align: center;
-}
-
-.account-type-final h2 {
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  color: var(--velvet-text);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(38px, 4vw, 60px);
-  font-weight: 500;
-  line-height: 1.05;
-}
-
-.account-type-final__doors {
-  position: relative;
-  z-index: 2;
-  width: min(880px, 100%);
-  margin: 48px auto 0;
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-
-.account-type-final__door {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 30px 28px;
-  border: 1px solid var(--velvet-line);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.04);
-  color: var(--velvet-text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color var(--transition-fast),
-    background-color var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.account-type-final__door:hover {
-  border-color: var(--velvet-gold);
-  background: rgba(232, 204, 146, 0.08);
-  transform: translateY(-2px);
-}
-
-.account-type-final__door:focus-visible {
-  outline: 2px solid var(--velvet-gold);
-  outline-offset: 3px;
-}
-
-.account-type-final__door svg {
-  color: var(--velvet-gold);
-}
-
-.account-type-final__door strong {
-  margin-top: 6px;
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 30px;
-  font-weight: 500;
-  line-height: 1.1;
-}
-
-.account-type-final__door span {
-  color: var(--velvet-text-muted);
-  font-size: 15px;
-  line-height: 1.55;
-}
-
-.account-type-final__door em {
-  margin-top: 10px;
-  color: var(--velvet-gold);
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 600;
-}
-
-.account-type-final__login {
-  position: relative;
-  z-index: 2;
-  margin: 32px 0 0;
-  color: var(--velvet-text-muted);
-  font-size: 15px;
-}
-
-.account-type-final__login a {
-  color: var(--velvet-gold);
-  font-weight: 600;
-}
-
-@media (max-width: 760px) {
-  .account-type__bar-actions {
-    gap: 6px;
-  }
-
-  .account-type__login {
-    padding: 8px 14px;
   }
 
   .account-type__scroll {
@@ -448,7 +622,12 @@ html:has(.account-type-page) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .account-type__scroll svg {
+  .account-type__scroll svg,
+  .account-type__line,
+  .account-type__content h1::after,
+  .account-type__content p,
+  .account-type__actions,
+  .account-type__facts {
     animation: none;
   }
 
