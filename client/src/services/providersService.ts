@@ -31,3 +31,13 @@ export interface ProviderDetail extends Provider {
 
 export const getProviderById = (id: string) =>
   apiRequest<ProviderDetail>(`/providers/${id}`);
+
+/* "Son baxdıqlarınız" (giriş tələb olunur) */
+export const getRecentlyViewed = () =>
+  apiRequest<Provider[]>("/providers/recent");
+
+/* Biznes səhifəsi açılanda baxışı yadda saxlayır */
+export const recordProviderView = (id: string) =>
+  apiRequest<{ recorded: boolean }>(`/providers/${id}/view`, {
+    method: "POST",
+  });

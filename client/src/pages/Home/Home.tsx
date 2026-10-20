@@ -11,7 +11,10 @@ import HelpfulInfo from "../../components/home/HelpfulInfo";
 import AreaSelector from "../../components/AreaSelector/AreaSelector";
 import { getStoredUser } from "../../services/api";
 import { getBookings, type Booking } from "../../services/bookingsService";
-import { getProviders } from "../../services/providersService";
+import {
+  getProviders,
+  getRecentlyViewed,
+} from "../../services/providersService";
 import type { Provider } from "../../types/provider";
 import type { Area } from "../../types/area";
 import { matchesArea } from "../../utils/areaMatch";
@@ -29,6 +32,7 @@ function Home() {
   const [isAreaSelectorOpen, setIsAreaSelectorOpen] = useState(false);
 
   const [providers, setProviders] = useState<Provider[]>([]);
+  const [recentProviders, setRecentProviders] = useState<Provider[]>([]);
   const [myBookings, setMyBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -72,6 +76,13 @@ function Home() {
     };
 
     load();
+
+    /* Son baxılanlar ayrıca yüklənir: alınmasa bölmə sadəcə görünmür */
+    getRecentlyViewed()
+      .then((result) => {
+        if (!cancelled) setRecentProviders(result);
+      })
+      .catch(() => undefined);
 
     return () => {
       cancelled = true;
@@ -217,6 +228,15 @@ function Home() {
                 onBookingClick={handleBookingClick}
                 onSeeAllClick={() => navigate("/bookings")}
               />
+
+              {recentProviders.length > 0 && (
+                <PopularNearby
+                  title="Son baxdıqlarınız"
+                  caption={null}
+                  providers={recentProviders}
+                  onProviderClick={handleProviderClick}
+                />
+              )}
 
               <PopularNearby
                 providers={filteredProviders}

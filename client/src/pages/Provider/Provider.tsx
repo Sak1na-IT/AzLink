@@ -16,6 +16,7 @@ import {
 import {
   getProviderById,
   type ProviderDetail,
+  recordProviderView,
 } from "../../services/providersService";
 import {
   getReviewsByProvider,
@@ -86,6 +87,11 @@ function Provider() {
           ]);
 
         if (cancelled) return;
+
+        /* "Son baxdıqlarınız" üçün baxışı yadda saxla (uğursuz olsa səhifəyə təsir etmir) */
+        if (currentUser?.id) {
+          recordProviderView(providerId).catch(() => undefined);
+        }
 
         setProvider(providerResult);
         setReviews(reviewsResult);

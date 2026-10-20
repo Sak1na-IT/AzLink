@@ -46,6 +46,7 @@ model User {
   reviews        Review[]
   savedProviders SavedProvider[]
   notifications  Notification[]
+  recentViews    RecentView[]
 }
 
 // =========================================================
@@ -78,6 +79,7 @@ model Business {
   portfolio     Portfolio[]
   availability  Availability[]
   savedBy       SavedProvider[]
+  viewedBy      RecentView[]
 
   @@index([areaId])
 }
@@ -201,6 +203,20 @@ model Portfolio {
 // =========================================================
 // SAVED PROVIDER (seçilmişlər)
 // =========================================================
+
+/// "Son baxdıqlarınız": istifadəçi biznes səhifəsini açanda yenilənir
+model RecentView {
+  id         String   @id @default(cuid())
+  userId     String
+  businessId String
+  viewedAt   DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, businessId])
+  @@index([userId])
+}
 
 model SavedProvider {
   id         String @id @default(cuid())

@@ -72,8 +72,7 @@ async function removeBusiness(id: string) {
   const ownerLinks =
     (await prisma.booking.count({ where: { customerId: ownerId } })) +
     (await prisma.review.count({ where: { userId: ownerId } })) +
-    (await prisma.savedProvider.count({ where: { userId: ownerId } })) +
-    (await prisma.notification.count({ where: { userId: ownerId } }));
+    (await prisma.savedProvider.count({ where: { userId: ownerId } }));
 
   const deleteOwner = ownerLinks === 0;
 
@@ -110,6 +109,8 @@ async function removeBusiness(id: string) {
     await tx.business.delete({ where: { id } });
 
     if (deleteOwner) {
+      /* Bildirişlər yalnız sahibin özünə aiddir, onunla birlikdə silinir */
+      await tx.notification.deleteMany({ where: { userId: ownerId } });
       await tx.user.delete({ where: { id: ownerId } });
     }
   });

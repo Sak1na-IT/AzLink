@@ -12,12 +12,17 @@ interface PopularNearbyProps {
   providers: Provider[];
   onProviderClick: (providerId: string) => void;
   onSeeAllClick?: () => void;
+  /* Eyni kartlar "Son baxdıqlarınız" üçün də istifadə olunur */
+  title?: string;
+  caption?: string | null;
 }
 
 function PopularNearby({
   providers,
   onProviderClick,
   onSeeAllClick,
+  title = "Yaxınlıqda populyar",
+  caption = "Populyar profillər seçdiyiniz əraziyə və platformadakı reytinqə əsasən göstərilir.",
 }: PopularNearbyProps) {
   return (
     <section className="home-section">
@@ -26,19 +31,21 @@ function PopularNearby({
          ========================= */}
 
       <div className="home-section__header">
-        <h2>Yaxınlıqda populyar</h2>
+        <h2>{title}</h2>
 
-        <button
-          type="button"
-          className="home-section__link"
-          onClick={onSeeAllClick}
-        >
-          Daha çox
-          <ChevronRight
-            size={15}
-            strokeWidth={1.8}
-          />
-        </button>
+        {onSeeAllClick && (
+          <button
+            type="button"
+            className="home-section__link"
+            onClick={onSeeAllClick}
+          >
+            Daha çox
+            <ChevronRight
+              size={15}
+              strokeWidth={1.8}
+            />
+          </button>
+        )}
       </div>
 
       {/* =========================
@@ -131,10 +138,7 @@ function PopularNearby({
             })}
           </div>
 
-          <p className="popular-caption">
-            Populyar profillər seçdiyiniz əraziyə və
-            platformadakı reytinqə əsasən göstərilir.
-          </p>
+          {caption && <p className="popular-caption">{caption}</p>}
         </>
       ) : (
         /* =========================

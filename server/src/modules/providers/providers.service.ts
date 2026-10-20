@@ -148,6 +148,50 @@ export const getProviders = async (filters: {
   return businesses.map(toProviderCard);
 };
 
+/* "Son baxdıqlarınız": ana səhifədə göstərilən say */
+const RECENT_LIMIT = 4;
+
+/*
+ * İstifadəçi biznes səhifəsini açanda çağırılır. Eyni biznesə
+ * təkrar baxanda yeni qeyd yaranmır, yalnız vaxtı yenilənir.
+ * Öz biznesinə baxış yadda saxlanmır.
+ */
+export const recordView = async (userId: string, businessId: string) => {
+  const business = await prisma.business.findUnique({
+    where: { id: businessId },
+    select: { userId: true },
+  });
+
+  if (!business) {
+    throw new Error("PROVIDER_NOT_FOUND");
+  }
+
+  if (business.userId === userId) {
+    return;
+  }
+
+  await prisma.recentView.upsert({
+    where: { userId_businessId: { userId, businessId } },
+    create: { userId, businessId },
+    update: { viewedAt: new Date() },
+  });
+};
+
+export const getRecentlyViewed = async (userId: string) => {
+  const views = await prisma.recentView.findMany({
+    where: {
+      userId,
+      /* Xidməti silinmiş biznes kartda çıxmasın */
+      business: { services: { some: {} } },
+    },
+    orderBy: { viewedAt: "desc" },
+    take: RECENT_LIMIT,
+    include: { business: { include: cardInclude } },
+  });
+
+  return views.map((view) => toProviderCard(view.business));
+};
+
 export const getProviderById = async (id: string) => {
   const business = await prisma.business.findUnique({
     where: { id },

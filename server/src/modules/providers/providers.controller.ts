@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
 
+import type { AuthenticatedRequest } from "../../middleware/authenticate";
+
 import * as providersService from "./providers.service";
 import { getBusySlots } from "./provider-busy.service";
 
@@ -60,6 +62,44 @@ export const getBusySlotsHandler = async (req: Request, res: Response) => {
       return res.status(400).json({
         message: "Tarix aralığı düzgün deyil (maksimum 62 gün, YYYY-MM-DD)",
       });
+    }
+
+    console.error(error);
+    res.status(500).json({ message: "Verilənlər bazası xətası" });
+  }
+};
+/* Giriş etmiş istifadəçinin son baxdığı bizneslər */
+export const getRecentlyViewedHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    res.json(await providersService.getRecentlyViewed(req.user.userId));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Verilənlər bazası xətası" });
+  }
+};
+
+export const recordViewHandler = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Giriş tələb olunur" });
+    }
+
+    await providersService.recordView(req.user.userId, String(req.params.id));
+
+    res.json({ recorded: true });
+  } catch (error) {
+    if (error instanceof Error && error.message === "PROVIDER_NOT_FOUND") {
+      return res.status(404).json({ message: "Profil tapılmadı" });
     }
 
     console.error(error);
