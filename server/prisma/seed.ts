@@ -237,8 +237,11 @@ const PROVIDERS: SeedProvider[] = [
 
 const DEMO_PASSWORD = "parol123";
 
-/* Təqdimat hesabının adı (köhnə seed "Demo Müştəri" yazırdı) */
-const DEMO_CUSTOMER_NAME = "Aytən Məmmədova";
+/* Təqdimat hesabının adı */
+const DEMO_CUSTOMER_NAME = "Elay Pashazade";
+
+/* Bu hesabın əvvəlki adları: bildiriş mətnlərində yeni adla əvəz olunur */
+const OLD_DEMO_CUSTOMER_NAMES = ["Demo Müştəri", "Aytən Məmmədova"];
 
 const CUSTOMERS = [
   { key: "demo", name: DEMO_CUSTOMER_NAME, email: "musteri@azlink.demo" },
@@ -580,7 +583,7 @@ async function main() {
   for (const customer of CUSTOMERS) {
     const user = await prisma.user.upsert({
       where: { email: customer.email },
-      /* Köhnə seed-in "Demo Müştəri" adı real adla əvəz olunur */
+      /* Təqdimat hesabının adı hər dəfə yenilənir */
       update: customer.key === "demo" ? { name: customer.name } : {},
       create: {
         name: customer.name,
@@ -1012,6 +1015,20 @@ async function seedDemoScenario(
       true,
       new Date(now - 26 * HOUR_MS)
     );
+  }
+
+  /* Köhnə adla yazılmış bildirişlər yeni adla əvəz olunur, ikiqat yaranmasın */
+  for (const oldName of OLD_DEMO_CUSTOMER_NAMES) {
+    const outdated = await prisma.notification.findMany({
+      where: { message: { contains: oldName } },
+    });
+
+    for (const item of outdated) {
+      await prisma.notification.update({
+        where: { id: item.id },
+        data: { message: item.message.replace(oldName, DEMO_CUSTOMER_NAME) },
+      });
+    }
   }
 
   await ensureNotification(
