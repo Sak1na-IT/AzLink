@@ -1,40 +1,31 @@
-import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowDown,
   BadgeCheck,
   Briefcase,
   CalendarCheck,
-  CalendarClock,
-  ChevronDown,
-  Images,
   LayoutGrid,
   MapPin,
   Moon,
-  Search,
-  Star,
   Sun,
   UserRound,
-  Users,
 } from "lucide-react";
 
-import { categories } from "../../data/categories";
 import { useTheme } from "../../hooks/useTheme";
 import { t } from "../../i18n";
 import LanguageSwitch from "../../i18n/LanguageSwitch";
-import { isLoggedIn } from "../../services/api";
-import { getProviders } from "../../services/providersService";
-import { getReviewsByProvider, type Review } from "../../services/reviewsService";
-import { areas } from "../../types/area";
-import type { Provider } from "../../types/provider";
-import HowItWorks from "./HowItWorks";
 import "./AccountType.css";
 
 /*
- * Ana səhifə. Arxada Bakının real fotoşəkilləri: aşağı sürüşdürdükcə
- * şəkil yumşaq keçidlə növbəti görməli yerə dəyişir, şəkil özü də
- * yavaşca yaxınlaşır. Açıq rejimdə gündüz, qaranlıq rejimdə gecə
- * Bakısı göstərilir. Küncdə həmin yerin adı yazılır.
+ * Ana səhifə. Açılan kimi əsas seçim görünür: müştəri və ya biznes.
+ * Aşağıda qısa izah: necə işləyir və niyə AzLink.
+ *
+ * Arxada Bakının fotoşəkilləri. Hər bölmənin öz şəkli var: bölmə
+ * ekrana daxil olduqca onun şəkli əvvəlkinin üstünə yavaş-yavaş çıxır,
+ * bölmənin məzmunu da eyni anda yuxarı qalxıb aydınlaşır. Keçid
+ * sürüşdürməyə bağlıdır: geri qayıdanda eyni yolla geri gedir.
+ * Açıq rejimdə gündüz, qaranlıq rejimdə axşam/gecə Bakısı.
  */
 
 interface Photo {
@@ -47,62 +38,43 @@ interface Photo {
 const DAY_PHOTOS: Photo[] = [
   { src: "/landing/oldcity-day.jpg", place: t("İçərişəhər və Alov qüllələri"), focus: "62% 40%" },
   { src: "/landing/maiden-day.jpg", place: t("Qız qalası"), focus: "50% 40%" },
-  { src: "/landing/oldcity-street.jpg", place: t("İçərişəhərin küçələri"), focus: "60% 50%" },
   { src: "/landing/heydar-aliyev-day.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "32% 50%" },
-  { src: "/landing/boulevard-evening.jpg", place: t("Dənizkənarı bulvar"), focus: "42% 50%" },
 ];
 
 const NIGHT_PHOTOS: Photo[] = [
   { src: "/landing/boulevard-evening.jpg", place: t("Dənizkənarı bulvar"), focus: "42% 50%" },
-  { src: "/landing/maiden-night.jpg", place: t("Qız qalası"), focus: "48% 40%" },
-  { src: "/landing/flame-towers-night.jpg", place: t("Alov qüllələri"), focus: "74% 40%" },
-  { src: "/landing/heydar-aliyev-night.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "34% 50%" },
   { src: "/landing/maiden-evening.jpg", place: t("Qız qalası"), focus: "30% 50%" },
+  { src: "/landing/heydar-aliyev-night.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "34% 50%" },
 ];
 
-/* Hər bölmənin arxasında hansı şəkil görünür */
-const SECTION_PHOTOS = [0, 1, 1, 2, 2, 3, 3, 4];
-
-const DISTRICTS = areas.filter((area) => area.type === "district");
-
-const FAQ = [
+const CUSTOMER_STEPS = [
   {
-    question: t("AzLink-dən istifadə pulsuzdur?"),
-    answer: t(
-      "Bəli. Müştərilər üçün qeydiyyat və rezerv pulsuzdur. Xidmətin haqqını ustaya birbaşa, xidmət zamanı ödəyirsiniz."
-    ),
+    title: t("Xidməti seçin"),
+    text: t("Nə lazım olduğunu və rayonunuzu yazın: manikür, santexnik, repetitor və s."),
   },
   {
-    question: t("Rezervim nə vaxt təsdiqlənir?"),
-    answer: t(
-      "Usta sorğunuzu görüb təsdiqləyəndə sizə bildiriş gəlir. Təsdiqə qədər rezerv \"Təsdiq gözlənilir\" statusunda olur."
-    ),
+    title: t("Ustanı müqayisə edin"),
+    text: t("Qiymətlərə, iş nümunələrinə və real müştəri rəylərinə baxın."),
   },
   {
-    question: t("Rezervi ləğv edə bilərəm?"),
-    answer: t(
-      "Bəli. \"Rezervlərim\" bölməsindən istənilən aktiv rezervi ləğv edə bilərsiniz, usta da bu barədə bildiriş alır."
-    ),
-  },
-  {
-    question: t("Rəylər həqiqidir?"),
-    answer: t(
-      "Rəyi yalnız rezervi tamamlanmış müştəri yaza bilər və hər rezerv üçün yalnız bir rəy. Ona görə ulduzlar real təcrübəni göstərir."
-    ),
-  },
-  {
-    question: t("Biznesimi necə əlavə edim?"),
-    answer: t(
-      "Biznes hesabı yaradın, xidmətlərinizi, qiymətləri və iş saatlarını əlavə edin. Profiliniz dərhal axtarışda görünəcək."
-    ),
+    title: t("Onlayn rezerv edin"),
+    text: t("Boş saatı seçin. Usta təsdiqləyəndə bildiriş alırsınız."),
   },
 ];
 
-const BUSINESS_POINTS = [
-  { icon: CalendarClock, text: t("Müştərilər gecə-gündüz onlayn rezerv edir") },
-  { icon: CalendarCheck, text: t("İş saatlarınız və dolu saatlar avtomatik nəzərə alınır") },
-  { icon: Users, text: t("Müştəri siyahısı, rezerv tarixçəsi və rəylər bir paneldə") },
-  { icon: Images, text: t("İş nümunələriniz profil səhifənizdə görünür") },
+const BUSINESS_STEPS = [
+  {
+    title: t("Profilinizi yaradın"),
+    text: t("Biznesinizin adını, ünvanını və iş nümunələrinizi əlavə edin."),
+  },
+  {
+    title: t("Xidmət və qiymətləri yazın"),
+    text: t("İş saatlarınızı qeyd edin, boş saatlar avtomatik hesablanır."),
+  },
+  {
+    title: t("Rezervləri qəbul edin"),
+    text: t("Gələn sorğuları bir paneldən təsdiqləyin, müştərilərinizi izləyin."),
+  },
 ];
 
 const WHY = [
@@ -129,86 +101,47 @@ const WHY = [
   },
 ];
 
+const clamp = (value: number) => Math.min(1, Math.max(0, value));
+
 function AccountType() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
 
-  const pageRef = useRef<HTMLDivElement>(null);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
+  const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [current, setCurrent] = useState(0);
 
-  const [providers, setProviders] = useState<Provider[]>([]);
-  const [reviews, setReviews] = useState<(Review & { providerName: string })[]>([]);
-  const [slide, setSlide] = useState(0);
-  const [query, setQuery] = useState("");
+  const photos = isDark ? NIGHT_PHOTOS : DAY_PHOTOS;
 
-  /* ---------- Məlumat: bizneslər və bir neçə real rəy ---------- */
-
-  useEffect(() => {
-    let cancelled = false;
-
-    getProviders()
-      .then(async (result) => {
-        if (cancelled) return;
-        setProviders(result);
-
-        const top = [...result]
-          .sort((a, b) => b.reviewCount - a.reviewCount)
-          .slice(0, 4);
-
-        const lists = await Promise.all(
-          top.map((provider) =>
-            getReviewsByProvider(provider.id)
-              .then((items) => items.map((item) => ({ ...item, providerName: provider.name })))
-              .catch(() => [])
-          )
-        );
-
-        if (cancelled) return;
-
-        /* Hər biznesdən ən yaxşı, mətni olan bir rəy */
-        const picked = lists
-          .map((items) =>
-            items
-              .filter((item) => item.comment.trim().length > 20)
-              .sort((a, b) => b.rating - a.rating)[0]
-          )
-          .filter(Boolean)
-          .slice(0, 3);
-
-        setReviews(picked);
-      })
-      .catch(() => {
-        /* Məlumat gəlməsə də səhifə işləyir, sadəcə rəqəmlər görünmür */
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  /* ---------- Sürüşdürmə: kamera və bölmənin "vaxtı" ---------- */
+  /* ---------- Sürüşdürməyə bağlı keçid ---------- */
 
   useEffect(() => {
-    const page = pageRef.current;
-    if (!page) return;
-
     let frame = 0;
 
     const update = () => {
       frame = 0;
-      const total = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const progress = Math.min(1, Math.max(0, window.scrollY / total));
+      const viewport = window.innerHeight;
+      let visible = 0;
 
-      page.style.setProperty("--cam", progress.toFixed(4));
+      sectionRefs.current.forEach((section, index) => {
+        if (!section) return;
 
-      const middle = window.innerHeight * 0.5;
-      let current = 0;
+        /* Bölmə ekranın aşağısından ortasına çatana qədər 0 → 1 */
+        const top = section.getBoundingClientRect().top;
+        const value = index === 0 ? 1 : clamp((viewport * 0.95 - top) / (viewport * 0.6));
 
-      sectionRefs.current.forEach((element, index) => {
-        if (element && element.getBoundingClientRect().top <= middle) current = index;
+        section.style.setProperty("--in", value.toFixed(3));
+
+        const photo = photoRefs.current[index];
+        if (photo) {
+          photo.style.opacity = value.toFixed(3);
+          photo.style.transform = `scale(${(1.08 - value * 0.06).toFixed(4)})`;
+        }
+
+        if (value > 0.5) visible = index;
       });
 
-      setSlide(SECTION_PHOTOS[current] ?? 0);
+      setCurrent(visible);
     };
 
     const handleScroll = () => {
@@ -224,83 +157,34 @@ function AccountType() {
       window.removeEventListener("resize", handleScroll);
       cancelAnimationFrame(frame);
     };
-  }, []);
-
-  /* ---------- Rəqəmlər ---------- */
-
-  const stats = useMemo(() => {
-    const rated = providers.filter((provider) => provider.reviewCount > 0);
-    const reviewTotal = providers.reduce((sum, provider) => sum + provider.reviewCount, 0);
-    const average = rated.length
-      ? rated.reduce((sum, provider) => sum + provider.rating * provider.reviewCount, 0) /
-        Math.max(1, reviewTotal)
-      : 0;
-
-    return {
-      businesses: providers.length,
-      reviews: reviewTotal,
-      average: average ? average.toFixed(1) : null,
-    };
-  }, [providers]);
-
-  const categoryInfo = useMemo(
-    () =>
-      categories.map((category) => {
-        const inCategory = providers.filter((provider) =>
-          provider.categories?.includes(category.name)
-        );
-        const prices = inCategory.map((provider) => provider.priceFrom).filter((price) => price > 0);
-
-        return {
-          category,
-          count: inCategory.length,
-          priceFrom: prices.length ? Math.min(...prices) : null,
-        };
-      }),
-    [providers]
-  );
-
-  const areaCounts = useMemo(() => {
-    const counts = new Map<string, number>();
-    providers.forEach((provider) => counts.set(provider.area, (counts.get(provider.area) ?? 0) + 1));
-    return counts;
-  }, [providers]);
-
-  /* ---------- Hərəkətlər ---------- */
-
-  /* Girişlidirsə birbaşa axtarışa, deyilsə qeydiyyata */
-  const goSearch = (params: string) =>
-    navigate(isLoggedIn() ? `/search?${params}` : "/register?role=user");
-
-  const handleSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const clean = query.trim();
-    goSearch(clean ? `q=${encodeURIComponent(clean)}` : "");
-  };
+  }, [isDark]);
 
   const setSection = (index: number) => (element: HTMLElement | null) => {
     sectionRefs.current[index] = element;
   };
 
-  const photos = isDark ? NIGHT_PHOTOS : DAY_PHOTOS;
+  const startAs = (role: "user" | "business") => navigate(`/register?role=${role}`);
 
   return (
-    <div ref={pageRef} className="landing" data-dark={isDark || undefined}>
+    <div className="landing" data-dark={isDark || undefined}>
       {/* ================= ARXA FON: BAKI ================= */}
       <div className="landing__backdrop" aria-hidden="true">
         {photos.map((photo, index) => (
           <div
-            key={`${isDark}-${photo.src}`}
-            className={index === slide ? "landing-photo is-shown" : "landing-photo"}
+            key={photo.src}
+            ref={(element) => {
+              photoRefs.current[index] = element;
+            }}
+            className="landing-photo"
             style={{ backgroundImage: `url(${photo.src})`, backgroundPosition: photo.focus }}
           />
         ))}
         <div className="landing__veil" />
       </div>
 
-      <p className="landing-place" key={photos[slide].place + slide}>
+      <p className="landing-place" key={photos[current].src}>
         <MapPin size={14} strokeWidth={1.8} />
-        {photos[slide].place}
+        {photos[current].place}
       </p>
 
       {/* ================= YUXARI ZOLAQ ================= */}
@@ -327,85 +211,87 @@ function AccountType() {
       </header>
 
       <main className="landing__content">
-        {/* ================= 1. GİRİŞ ================= */}
+        {/* ================= 1. SEÇİM ================= */}
         <section ref={setSection(0)} className="landing-hero">
-          <h1>{t("Bakıda usta axtarmağın ən rahat yolu")}</h1>
+          <h1>{t("Bakının ustaları və müştəriləri bir yerdə")}</h1>
 
           <p className="landing-hero__lead">
-            {t(
-              "Manikürdən santexnikə, repetitordan avtoyumaya — Bakının yerli ustaları bir yerdə. Qiymətləri və real rəyləri müqayisə edin, boş saatı seçin, onlayn rezerv edin."
-            )}
+            {t("Xidmət axtarırsınız, yoxsa xidmət göstərirsiniz? Seçin və bir dəqiqəyə hesab yaradın.")}
           </p>
 
-          <form className="landing-search" onSubmit={handleSearch} role="search">
-            <Search size={19} strokeWidth={1.8} />
-            <input
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={t("Hansı xidmət lazımdır? Məsələn, manikür")}
-              aria-label={t("Xidmət axtar")}
-            />
-            <button type="submit">{t("Usta tap")}</button>
-          </form>
+          <div className="landing-doors">
+            <button
+              type="button"
+              className="landing-glass landing-door"
+              onClick={() => startAs("user")}
+            >
+              <span className="landing-icon">
+                <UserRound size={22} strokeWidth={1.6} />
+              </span>
+              <strong>{t("Xidmət axtarıram")}</strong>
+              <span>{t("Usta tapın, müqayisə edin və rezerv edin. Qeydiyyat pulsuzdur.")}</span>
+              <em>{t("Müştəri kimi başla")}</em>
+            </button>
 
-          <div className="landing-hero__chips">
-            {categories.map((category) => {
-              const Icon = category.icon;
-
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  className="landing-chip"
-                  onClick={() => goSearch(`category=${category.id}`)}
-                >
-                  <Icon size={15} strokeWidth={1.8} />
-                  {t(category.name)}
-                </button>
-              );
-            })}
+            <button
+              type="button"
+              className="landing-glass landing-door"
+              onClick={() => startAs("business")}
+            >
+              <span className="landing-icon">
+                <Briefcase size={22} strokeWidth={1.6} />
+              </span>
+              <strong>{t("Xidmət göstərirəm")}</strong>
+              <span>{t("Profilinizi qurun, xidmətlərinizi əlavə edin və onlayn rezerv qəbul edin.")}</span>
+              <em>{t("Biznesimi əlavə et")}</em>
+            </button>
           </div>
 
-          <dl className="landing-hero__stats">
-            {stats.businesses > 0 && (
-              <div>
-                <dt>{stats.businesses}</dt>
-                <dd>{t("usta və biznes")}</dd>
-              </div>
-            )}
-            <div>
-              <dt>{categories.length}</dt>
-              <dd>{t("xidmət sahəsi")}</dd>
-            </div>
-            <div>
-              <dt>{DISTRICTS.length}</dt>
-              <dd>{t("rayon")}</dd>
-            </div>
-            {stats.average && (
-              <div>
-                <dt>{stats.average}</dt>
-                <dd>{t("orta reytinq")}</dd>
-              </div>
-            )}
-          </dl>
+          <p className="landing-hero__login">
+            {t("Artıq hesabınız var?")} <Link to="/login">{t("Daxil olun")}</Link>
+          </p>
 
-          <a href="#niye" className="landing-hero__more">
-            {t("Ətraflı tanış olun")}
+          <a href="#necə" className="landing-hero__more">
+            {t("Necə işləyir?")}
             <ArrowDown size={16} strokeWidth={1.8} />
           </a>
         </section>
 
-        {/* ================= 2. NİYƏ AZLINK ================= */}
-        <section ref={setSection(1)} id="niye" className="landing-section">
-          <div className="landing-glass landing-section__head">
-            <h2>{t("Zəng-zəng usta axtarmağa son")}</h2>
-            <p>
-              {t(
-                "AzLink yerli xidmət göstərənləri və müştəriləri bir platformada birləşdirir. Kimin hansı işi gördüyünü, neçəyə və nə vaxt boş olduğunu dərhal görürsünüz."
-              )}
-            </p>
+        {/* ================= 2. NECƏ İŞLƏYİR ================= */}
+        <section ref={setSection(1)} id="necə" className="landing-section">
+          <h2 className="landing-section__title">{t("Necə işləyir?")}</h2>
+
+          <div className="landing-paths">
+            {[
+              { title: t("Müştərilər üçün"), icon: UserRound, steps: CUSTOMER_STEPS },
+              { title: t("Bizneslər üçün"), icon: Briefcase, steps: BUSINESS_STEPS },
+            ].map((path) => {
+              const Icon = path.icon;
+
+              return (
+                <article key={path.title} className="landing-glass landing-path">
+                  <h3>
+                    <Icon size={20} strokeWidth={1.7} />
+                    {path.title}
+                  </h3>
+
+                  <ol>
+                    {path.steps.map((step) => (
+                      <li key={step.title}>
+                        <strong>{step.title}</strong>
+                        <span>{step.text}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </article>
+              );
+            })}
           </div>
+        </section>
+
+        {/* ================= 3. NİYƏ AZLINK ================= */}
+        <section ref={setSection(2)} className="landing-section landing-section--last">
+          <h2 className="landing-section__title">{t("Niyə AzLink?")}</h2>
 
           <div className="landing-why">
             {WHY.map((item) => {
@@ -422,219 +308,21 @@ function AccountType() {
               );
             })}
           </div>
-        </section>
 
-        {/* ================= 3. NECƏ İŞLƏYİR ================= */}
-        <section ref={setSection(2)} className="landing-section">
-          <div className="landing-glass landing-section__head">
-            <h2>{t("Rezerv 4 addımda")}</h2>
-            <p>{t("Axtarışdan təsdiqə qədər hər şey bir neçə dəqiqə çəkir.")}</p>
-          </div>
-
-          <HowItWorks providers={providers} />
-        </section>
-
-        {/* ================= 4. XİDMƏT SAHƏLƏRİ ================= */}
-        <section ref={setSection(3)} className="landing-section">
-          <div className="landing-glass landing-section__head">
-            <h2>{t("Hansı xidmətləri tapa bilərsiniz?")}</h2>
-            <p>{t("Sahəni seçin və o sahədəki bütün ustaları qiymət və reytinqləri ilə görün.")}</p>
-          </div>
-
-          <div className="landing-categories">
-            {categoryInfo.map(({ category, count, priceFrom }) => {
-              const Icon = category.icon;
-
-              return (
-                <button
-                  key={category.id}
-                  type="button"
-                  className="landing-glass landing-category"
-                  onClick={() => goSearch(`category=${category.id}`)}
-                >
-                  <span className="landing-icon">
-                    <Icon size={20} strokeWidth={1.7} />
-                  </span>
-                  <strong>{t(category.name)}</strong>
-                  <span className="landing-category__services">
-                    {category.services.map((name) => t(name)).join(", ")}
-                  </span>
-                  <span className="landing-category__meta">
-                    {count > 0
-                      ? priceFrom !== null
-                        ? `${t("{count} usta", { count })} · ${t("{price} ₼-dən", { price: priceFrom })}`
-                        : t("{count} usta", { count })
-                      : t("Tezliklə ustalar qoşulacaq")}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ================= 5. RƏYLƏR ================= */}
-        {reviews.length > 0 && (
-          <section ref={setSection(4)} className="landing-section">
-            <div className="landing-glass landing-section__head">
-              <h2>{t("Müştərilər nə deyir")}</h2>
-              <p>
-                {stats.reviews > 0
-                  ? t("Platformada {count} rəy var. Hamısı tamamlanmış rezervlərdən sonra yazılıb.", {
-                      count: stats.reviews,
-                    })
-                  : null}
-              </p>
-            </div>
-
-            <div className="landing-reviews">
-              {reviews.map((review) => (
-                <figure key={review.id} className="landing-glass landing-review">
-                  <span className="landing-review__stars" aria-label={t("{count} ulduz", { count: review.rating })}>
-                    {Array.from({ length: review.rating }, (_, index) => (
-                      <Star key={index} size={15} strokeWidth={1.6} fill="currentColor" />
-                    ))}
-                  </span>
-                  <blockquote>{review.comment}</blockquote>
-                  <figcaption>
-                    <strong>{review.customerName}</strong>
-                    {review.providerName}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* ================= 6. USTALAR ÜÇÜN ================= */}
-        <section ref={setSection(5)} className="landing-section landing-business">
-          <div className="landing-glass landing-business__text">
-            <h2>{t("Ustasınız? Müştəriləriniz sizi burada tapsın")}</h2>
-            <p>
-              {t(
-                "Pulsuz biznes profili yaradın, xidmətlərinizi və qiymətlərinizi əlavə edin, rezervləri bir paneldən idarə edin."
-              )}
-            </p>
-
-            <ul>
-              {BUSINESS_POINTS.map((point) => {
-                const Icon = point.icon;
-
-                return (
-                  <li key={point.text}>
-                    <Icon size={18} strokeWidth={1.7} />
-                    {point.text}
-                  </li>
-                );
-              })}
-            </ul>
-
-            <button
-              type="button"
-              className="landing-button landing-button--primary"
-              onClick={() => navigate("/register?role=business")}
-            >
-              {t("Biznesimi əlavə et")}
-            </button>
-          </div>
-
-          <div className="landing-glass landing-agenda" aria-hidden="true">
-            <p className="landing-agenda__title">
-              <CalendarCheck size={16} strokeWidth={1.8} />
-              {t("Sabahın rezervləri")}
-            </p>
-
-            {[
-              { time: "11:00", name: "Leyla H.", service: t("Pedikür"), done: true },
-              { time: "15:00", name: "Nigar Ə.", service: t("Manikür"), done: false },
-              { time: "18:30", name: "Elay P.", service: t("Gel lak"), done: true },
-            ].map((item) => (
-              <div key={item.time} className="landing-agenda__row">
-                <time>{item.time}</time>
-                <span>
-                  <strong>{item.name}</strong>
-                  {item.service}
-                </span>
-                <em className={item.done ? "" : "is-pending"}>
-                  {item.done ? t("Təsdiqlənib") : t("Təsdiqlə")}
-                </em>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* ================= 7. RAYONLAR ================= */}
-        <section ref={setSection(6)} className="landing-section">
-          <div className="landing-glass landing-section__head">
-            <h2>{t("Bakının 12 rayonunda")}</h2>
-            <p>{t("Rayonunuzu seçin və yaxınlıqdakı ustaları görün.")}</p>
-          </div>
-
-          <div className="landing-districts">
-            {DISTRICTS.map((district) => {
-              const count = areaCounts.get(district.name) ?? 0;
-
-              return (
-                <button
-                  key={district.id}
-                  type="button"
-                  className="landing-district"
-                  onClick={() => goSearch(`area=${encodeURIComponent(district.name)}`)}
-                >
-                  <MapPin size={15} strokeWidth={1.8} />
-                  {district.name}
-                  {count > 0 && <b>{count}</b>}
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ================= 8. SUALLAR VƏ SON ================= */}
-        <section ref={setSection(7)} className="landing-section">
-          <div className="landing-glass landing-faq">
-            <h2>{t("Tez-tez verilən suallar")}</h2>
-
-            {FAQ.map((item) => (
-              <details key={item.question}>
-                <summary>
-                  {item.question}
-                  <ChevronDown size={18} strokeWidth={1.8} />
-                </summary>
-                <p>{item.answer}</p>
-              </details>
-            ))}
-          </div>
-
-          <div className="landing-final">
-            <h2>{t("Hansı tərəfdəsiniz?")}</h2>
-
-            <div className="landing-final__doors">
+          <div className="landing-glass landing-cta">
+            <p>{t("Hazırsınız? Bir dəqiqəyə başlayın.")}</p>
+            <div>
+              <button type="button" className="landing-button" onClick={() => startAs("user")}>
+                {t("Müştəri kimi başla")}
+              </button>
               <button
                 type="button"
-                className="landing-glass landing-door"
-                onClick={() => navigate("/register?role=user")}
+                className="landing-button landing-button--primary"
+                onClick={() => startAs("business")}
               >
-                <UserRound size={26} strokeWidth={1.5} />
-                <strong>{t("Xidmət axtarıram")}</strong>
-                <span>{t("Usta tapın, müqayisə edin və rezerv edin. Qeydiyyat pulsuzdur.")}</span>
-                <em>{t("Müştəri kimi başla")}</em>
-              </button>
-
-              <button
-                type="button"
-                className="landing-glass landing-door"
-                onClick={() => navigate("/register?role=business")}
-              >
-                <Briefcase size={26} strokeWidth={1.5} />
-                <strong>{t("Xidmət göstərirəm")}</strong>
-                <span>{t("Profilinizi qurun, xidmətlərinizi əlavə edin və onlayn rezerv qəbul edin.")}</span>
-                <em>{t("Biznesimi əlavə et")}</em>
+                {t("Biznesimi əlavə et")}
               </button>
             </div>
-
-            <p className="landing-final__login">
-              {t("Artıq hesabınız var?")} <Link to="/login">{t("Daxil olun")}</Link>
-            </p>
           </div>
         </section>
       </main>
