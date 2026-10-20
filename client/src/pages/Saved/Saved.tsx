@@ -15,6 +15,7 @@ import {
 } from "../../services/savedService";
 import type { Provider } from "../../types/provider";
 import "./Saved.css";
+import { t } from "../../i18n";
 
 function Saved() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ function Saved() {
         }
       } catch {
         if (!cancelled) {
-          setError("Seçilmişləri yükləmək mümkün olmadı.");
+          setError(t("Seçilmişləri yükləmək mümkün olmadı."));
         }
       } finally {
         if (!cancelled) {
@@ -61,7 +62,7 @@ function Saved() {
         current.filter((provider) => provider.id !== providerId)
       );
     } catch {
-      alert("Seçilmişlərdən çıxarmaq mümkün olmadı.");
+      alert(t("Seçilmişlərdən çıxarmaq mümkün olmadı."));
     } finally {
       setRemovingId(null);
     }
@@ -73,11 +74,10 @@ function Saved() {
         <div>
           <span className="saved-header__eyebrow">AzLink</span>
 
-          <h1>Seçilmişlər</h1>
+          <h1>{t("Seçilmişlər")}</h1>
 
           <p>
-            Bəyəndiyiniz xidmət göstərən profilləri burada saxlaya
-            bilərsiniz.
+            {t("Bəyəndiyiniz xidmət göstərən profilləri burada saxlaya bilərsiniz.")}
           </p>
         </div>
 
@@ -88,7 +88,7 @@ function Saved() {
             onClick={() => navigate("/search")}
           >
             <Search size={16} strokeWidth={1.8} />
-            Profil əlavə et
+            {t("Profil əlavə et")}
           </button>
 
           <div className="saved-header__count">
@@ -100,7 +100,7 @@ function Saved() {
 
       {isLoading || error ? (
         <section className="saved-empty">
-          <h2>{error || "Yüklənir..."}</h2>
+          <h2>{error || t("Yüklənir...")}</h2>
         </section>
       ) : savedProviders.length === 0 ? (
         <section className="saved-empty">
@@ -108,11 +108,10 @@ function Saved() {
             <Heart size={28} strokeWidth={1.8} />
           </div>
 
-          <h2>Hələ heç bir profil saxlanılmayıb</h2>
+          <h2>{t("Hələ heç bir profil saxlanılmayıb")}</h2>
 
           <p>
-            Bəyəndiyiniz profilin ürək işarəsinə klikləyin. Daha sonra
-            həmin profilləri burada asanlıqla tapa bilərsiniz.
+            {t("Bəyəndiyiniz profilin ürək işarəsinə klikləyin. Daha sonra həmin profilləri burada asanlıqla tapa bilərsiniz.")}
           </p>
 
           <button
@@ -121,7 +120,7 @@ function Saved() {
             onClick={() => navigate("/search")}
           >
             <Search size={17} strokeWidth={1.8} />
-            Xidmət axtar
+            {t("Xidmət axtar")}
           </button>
         </section>
       ) : (
@@ -158,7 +157,7 @@ function Saved() {
                     </div>
 
                     <span className="saved-card__service">
-                      {provider.service}
+                      {t(provider.service)}
                     </span>
 
                     <span className="saved-card__location">
@@ -180,7 +179,7 @@ function Saved() {
                   </div>
 
                   <div className="saved-card__price">
-                    <span>Başlanğıc</span>
+                    <span>{t("Başlanğıc")}</span>
                     <strong>
                       {provider.priceFrom}
                       <small className="manat">₼</small>
@@ -191,8 +190,8 @@ function Saved() {
                 <button
                   type="button"
                   className="saved-card__remove"
-                  title="Seçilmişlərdən çıxar"
-                  aria-label="Seçilmişlərdən çıxar"
+                  title={t("Seçilmişlərdən çıxar")}
+                  aria-label={t("Seçilmişlərdən çıxar")}
                   disabled={removingId === provider.id}
                   onClick={() => removeSaved(provider.id)}
                 >

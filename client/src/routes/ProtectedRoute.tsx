@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import { Navigate } from "react-router-dom";
 
 import { isLoggedIn, getStoredUser } from "../services/api";
+import { t } from "../i18n";
 
 interface ProtectedRouteProps {
   children: ReactElement;
@@ -33,7 +34,7 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
      */
     if (role === "BUSINESS" && user?.role === "USER") {
       alert(
-        "Bu hesab istifadəçi hesabı kimi qeydiyyatdan keçib. Biznes panelinə daxil olmaq üçün biznes hesabı ilə daxil olun."
+        t("Bu hesab istifadəçi hesabı kimi qeydiyyatdan keçib. Biznes panelinə daxil olmaq üçün biznes hesabı ilə daxil olun.")
       );
     }
 

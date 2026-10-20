@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 /* Şifrə pəncərəsi ilə eyni görünüş */
 import "./ChangePasswordModal.css";
 import { changeEmail, getErrorText } from "../../services/accountService";
+import { t } from "../../i18n";
 
 interface ChangeEmailModalProps {
   currentEmail: string;
@@ -43,17 +44,17 @@ function ChangeEmailModal({
     const cleanEmail = email.trim().toLowerCase();
 
     if (!EMAIL_PATTERN.test(cleanEmail)) {
-      setError("Düzgün email yazın.");
+      setError(t("Düzgün email yazın."));
       return;
     }
 
     if (cleanEmail === currentEmail.toLowerCase()) {
-      setError("Bu, onsuz da cari emailinizdir.");
+      setError(t("Bu, onsuz da cari emailinizdir."));
       return;
     }
 
     if (!password) {
-      setError("Təsdiq üçün cari şifrənizi yazın.");
+      setError(t("Təsdiq üçün cari şifrənizi yazın."));
       return;
     }
 
@@ -66,7 +67,7 @@ function ChangeEmailModal({
       onChanged(newEmail);
       setDone(true);
     } catch (caught) {
-      setError(getErrorText(caught, "Emaili dəyişmək mümkün olmadı."));
+      setError(getErrorText(caught, t("Emaili dəyişmək mümkün olmadı.")));
     } finally {
       setIsSaving(false);
     }
@@ -77,7 +78,7 @@ function ChangeEmailModal({
       <button
         type="button"
         className="password-modal__backdrop"
-        aria-label="Bağla"
+        aria-label={t("Bağla")}
         onClick={onClose}
       />
 
@@ -88,12 +89,12 @@ function ChangeEmailModal({
         aria-labelledby="email-modal-title"
       >
         <div className="password-modal__header">
-          <h2 id="email-modal-title">Emaili dəyiş</h2>
+          <h2 id="email-modal-title">{t("Emaili dəyiş")}</h2>
 
           <button
             type="button"
             className="password-modal__close"
-            aria-label="Bağla"
+            aria-label={t("Bağla")}
             onClick={onClose}
           >
             <X size={18} strokeWidth={1.8} />
@@ -103,7 +104,7 @@ function ChangeEmailModal({
         {done ? (
           <>
             <p className="password-modal__success">
-              Emailiniz dəyişdirildi. Növbəti girişdə yeni emaildən istifadə edin.
+              {t("Emailiniz dəyişdirildi. Növbəti girişdə yeni emaildən istifadə edin.")}
             </p>
 
             <div className="password-modal__actions">
@@ -112,19 +113,19 @@ function ChangeEmailModal({
                 className="password-modal__primary"
                 onClick={onClose}
               >
-                Bağla
+                {t("Bağla")}
               </button>
             </div>
           </>
         ) : (
           <form onSubmit={handleSubmit} noValidate>
             <label className="password-modal__field">
-              <span>Cari email</span>
+              <span>{t("Cari email")}</span>
               <input type="email" value={currentEmail} disabled readOnly />
             </label>
 
             <label className="password-modal__field">
-              <span>Yeni email</span>
+              <span>{t("Yeni email")}</span>
               <input
                 type="email"
                 autoComplete="email"
@@ -134,14 +135,14 @@ function ChangeEmailModal({
             </label>
 
             <label className="password-modal__field">
-              <span>Cari şifrə</span>
+              <span>{t("Cari şifrə")}</span>
               <input
                 type="password"
                 autoComplete="current-password"
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
               />
-              <small>Təhlükəsizlik üçün şifrənizlə təsdiqləyin.</small>
+              <small>{t("Təhlükəsizlik üçün şifrənizlə təsdiqləyin.")}</small>
             </label>
 
             {error && <p className="password-modal__error">{error}</p>}
@@ -153,7 +154,7 @@ function ChangeEmailModal({
                 onClick={onClose}
                 disabled={isSaving}
               >
-                Ləğv et
+                {t("Ləğv et")}
               </button>
 
               <button
@@ -161,7 +162,7 @@ function ChangeEmailModal({
                 className="password-modal__primary"
                 disabled={isSaving}
               >
-                {isSaving ? "Saxlanılır..." : "Emaili dəyiş"}
+                {isSaving ? t("Saxlanılır...") : t("Emaili dəyiş")}
               </button>
             </div>
           </form>

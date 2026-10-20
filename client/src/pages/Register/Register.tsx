@@ -24,6 +24,7 @@ import {
 } from "../../services/businessService";
 import AuthBackLink from "../../components/auth/AuthBackLink";
 import "./Register.css";
+import { t } from "../../i18n";
 
 function Register() {
   const navigate = useNavigate();
@@ -66,13 +67,13 @@ function Register() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Şifrələr uyğun gəlmir.");
+      setError(t("Şifrələr uyğun gəlmir."));
       return;
     }
 
     if (isBusiness && (!category.trim() || !areaId || !phone.trim())) {
       setError(
-        "Zəhmət olmasa kateqoriya, rayon və telefon nömrəsini doldurun."
+        t("Zəhmət olmasa kateqoriya, rayon və telefon nömrəsini doldurun.")
       );
       return;
     }
@@ -105,7 +106,7 @@ function Register() {
       setError(
         err instanceof ApiError
           ? err.message
-          : "Qeydiyyat zamanı xəta baş verdi. Yenidən cəhd edin."
+          : t("Qeydiyyat zamanı xəta baş verdi. Yenidən cəhd edin.")
       );
     } finally {
       setIsSubmitting(false);
@@ -138,20 +139,20 @@ function Register() {
 
           <h1>
             {isBusiness
-              ? "Biznes hesabı yaradın"
-              : "İstifadəçi hesabı yaradın"}
+              ? t("Biznes hesabı yaradın")
+              : t("İstifadəçi hesabı yaradın")}
           </h1>
 
           <p>
             {isBusiness
-              ? "Xidmətlərinizi AzLink-də təqdim etmək üçün biznes hesabınızı yaradın."
-              : "AzLink-də xidmət axtarmaq və rezerv yaratmaq üçün hesabınızı yaradın."}
+              ? t("Xidmətlərinizi AzLink-də təqdim etmək üçün biznes hesabınızı yaradın.")
+              : t("AzLink-də xidmət axtarmaq və rezerv yaratmaq üçün hesabınızı yaradın.")}
           </p>
         </div>
 
         <form className="register-form" onSubmit={handleSubmit}>
           <label className="register-field">
-            <span>{isBusiness ? "Biznes adı" : "Ad və soyad"}</span>
+            <span>{isBusiness ? t("Biznes adı") : t("Ad və soyad")}</span>
 
             <div className="register-input-wrapper">
               {isBusiness ? (
@@ -164,8 +165,8 @@ function Register() {
                 type="text"
                 placeholder={
                   isBusiness
-                    ? "Biznes adını daxil edin"
-                    : "Ad və soyadınızı daxil edin"
+                    ? t("Biznes adını daxil edin")
+                    : t("Ad və soyadınızı daxil edin")
                 }
                 value={name}
                 onChange={(event) => setName(event.target.value)}
@@ -175,7 +176,7 @@ function Register() {
           </label>
 
           <label className="register-field">
-            <span>Email</span>
+            <span>{t("Email")}</span>
 
             <div className="register-input-wrapper">
               <Mail size={18} strokeWidth={1.8} />
@@ -193,14 +194,14 @@ function Register() {
           {isBusiness && (
             <>
               <label className="register-field">
-                <span>Kateqoriya</span>
+                <span>{t("Kateqoriya")}</span>
 
                 <div className="register-input-wrapper">
                   <Tag size={18} strokeWidth={1.8} />
 
                   <input
                     type="text"
-                    placeholder="Məsələn: Dırnaq baxımı"
+                    placeholder={t("Məsələn: Dırnaq baxımı")}
                     value={category}
                     onChange={(event) => setCategory(event.target.value)}
                     required
@@ -209,7 +210,7 @@ function Register() {
               </label>
 
               <label className="register-field">
-                <span>Rayon</span>
+                <span>{t("Rayon")}</span>
 
                 <div className="register-input-wrapper">
                   <MapPin size={18} strokeWidth={1.8} />
@@ -221,7 +222,7 @@ function Register() {
                     required
                   >
                     <option value="" disabled>
-                      Xidmət ərazinizi seçin
+                      {t("Xidmət ərazinizi seçin")}
                     </option>
 
                     {areas.map((area) => (
@@ -234,7 +235,7 @@ function Register() {
               </label>
 
               <label className="register-field">
-                <span>Telefon</span>
+                <span>{t("Telefon")}</span>
 
                 <div className="register-input-wrapper">
                   <Phone size={18} strokeWidth={1.8} />
@@ -252,14 +253,14 @@ function Register() {
           )}
 
           <label className="register-field">
-            <span>Şifrə</span>
+            <span>{t("Şifrə")}</span>
 
             <div className="register-input-wrapper">
               <LockKeyhole size={18} strokeWidth={1.8} />
 
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Şifrənizi daxil edin"
+                placeholder={t("Şifrənizi daxil edin")}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 minLength={6}
@@ -271,7 +272,7 @@ function Register() {
                 className="register-password-button"
                 onClick={() => setShowPassword((current) => !current)}
                 aria-label={
-                  showPassword ? "Şifrəni gizlət" : "Şifrəni göstər"
+                  showPassword ? t("Şifrəni gizlət") : t("Şifrəni göstər")
                 }
               >
                 {showPassword ? (
@@ -284,14 +285,14 @@ function Register() {
           </label>
 
           <label className="register-field">
-            <span>Şifrəni təkrar edin</span>
+            <span>{t("Şifrəni təkrar edin")}</span>
 
             <div className="register-input-wrapper">
               <LockKeyhole size={18} strokeWidth={1.8} />
 
               <input
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="Şifrənizi yenidən daxil edin"
+                placeholder={t("Şifrənizi yenidən daxil edin")}
                 value={confirmPassword}
                 onChange={(event) =>
                   setConfirmPassword(event.target.value)
@@ -308,8 +309,8 @@ function Register() {
                 }
                 aria-label={
                   showConfirmPassword
-                    ? "Şifrəni gizlət"
-                    : "Şifrəni göstər"
+                    ? t("Şifrəni gizlət")
+                    : t("Şifrəni göstər")
                 }
               >
                 {showConfirmPassword ? (
@@ -328,7 +329,7 @@ function Register() {
             className="register-submit-button"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Göndərilir..." : "Qeydiyyatdan keç"}
+            {isSubmitting ? t("Göndərilir...") : t("Qeydiyyatdan keç")}
           </button>
         </form>
 
@@ -340,7 +341,7 @@ function Register() {
             className="register-login-button"
             onClick={handleLogin}
           >
-            Daxil olun
+            {t("Daxil olun")}
           </button>
         </div>
       </div>

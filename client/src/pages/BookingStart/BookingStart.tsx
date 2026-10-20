@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 import "./BookingStart.css";
+import { t } from "../../i18n";
 
 type Category = {
   id: string;
@@ -25,8 +26,8 @@ type Category = {
 const categories: Category[] = [
   {
     id: "beauty",
-    title: "Gözəllik",
-    description: "Saç, dırnaq, makiyaj və digər xidmətlər",
+    title: t("Gözəllik"),
+    description: t("Saç, dırnaq, makiyaj və digər xidmətlər"),
     icon: <Sparkles size={25} strokeWidth={1.8} />,
     subcategories: [
       "Dırnaq",
@@ -39,8 +40,8 @@ const categories: Category[] = [
   },
   {
     id: "home",
-    title: "Ev və məişət",
-    description: "Təmizlik, təmir və ev xidmətləri",
+    title: t("Ev və məişət"),
+    description: t("Təmizlik, təmir və ev xidmətləri"),
     icon: <Home size={25} strokeWidth={1.8} />,
     subcategories: [
       "Təmizlik",
@@ -54,7 +55,7 @@ const categories: Category[] = [
   {
     id: "auto",
     title: "Avtomobil",
-    description: "Avtoyuma, servis və avtomobil xidmətləri",
+    description: t("Avtoyuma, servis və avtomobil xidmətləri"),
     icon: <Car size={25} strokeWidth={1.8} />,
     subcategories: [
       "Avtoyuma",
@@ -66,8 +67,8 @@ const categories: Category[] = [
   },
   {
     id: "education",
-    title: "Təhsil",
-    description: "Repetitor, dil və digər təhsil xidmətləri",
+    title: t("Təhsil"),
+    description: t("Repetitor, dil və digər təhsil xidmətləri"),
     icon: <GraduationCap size={25} strokeWidth={1.8} />,
     subcategories: [
       "Repetitor",
@@ -79,8 +80,8 @@ const categories: Category[] = [
   },
   {
     id: "events",
-    title: "Foto və tədbir",
-    description: "Fotoqraf, video və tədbir xidmətləri",
+    title: t("Foto və tədbir"),
+    description: t("Fotoqraf, video və tədbir xidmətləri"),
     icon: <Camera size={25} strokeWidth={1.8} />,
     subcategories: [
       "Fotoqraf",
@@ -94,7 +95,7 @@ const categories: Category[] = [
   {
     id: "pets",
     title: "Heyvanlar",
-    description: "Ev heyvanları üçün xidmətlər",
+    description: t("Ev heyvanları üçün xidmətlər"),
     icon: <PawPrint size={25} strokeWidth={1.8} />,
     subcategories: [
       "Grooming",
@@ -105,8 +106,8 @@ const categories: Category[] = [
   },
   {
     id: "personal",
-    title: "Fərdi xidmətlər",
-    description: "Şəxsi inkişaf və gündəlik xidmətlər",
+    title: t("Fərdi xidmətlər"),
+    description: t("Şəxsi inkişaf və gündəlik xidmətlər"),
     icon: <UserRound size={25} strokeWidth={1.8} />,
     subcategories: [
       "Fərdi məşqçi",
@@ -118,8 +119,8 @@ const categories: Category[] = [
   },
   {
     id: "fitness",
-    title: "İdman",
-    description: "Məşq və idman xidmətləri",
+    title: t("İdman"),
+    description: t("Məşq və idman xidmətləri"),
     icon: <Dumbbell size={25} strokeWidth={1.8} />,
     subcategories: [
       "Trainer",
@@ -169,24 +170,24 @@ function BookingStart() {
           className="booking-start__back"
           onClick={handleBack}
         >
-          ← Geri
+          {t("← Geri")}
         </button>
 
         <section className="booking-start__hero">
           <span className="booking-start__eyebrow">
-            Yeni rezerv
+            {t("Yeni rezerv")}
           </span>
 
           <h1>
             {selectedCategory
-              ? `${selectedCategory.title} xidmətini seçin`
-              : "Hansı xidmətə ehtiyacınız var?"}
+              ? t("{title} xidmətini seçin", { title: t(selectedCategory.title) })
+              : t("Hansı xidmətə ehtiyacınız var?")}
           </h1>
 
           <p>
             {selectedCategory
-              ? "Davam etmək üçün sizə lazım olan xidməti seçin."
-              : "Kateqoriya seçin və sizə uyğun biznesləri tapın."}
+              ? t("Davam etmək üçün sizə lazım olan xidməti seçin.")
+              : t("Kateqoriya seçin və sizə uyğun biznesləri tapın.")}
           </p>
         </section>
 
@@ -206,7 +207,7 @@ function BookingStart() {
                 </div>
 
                 <div className="booking-start__category-content">
-                  <h2>{category.title}</h2>
+                  <h2>{t(category.title)}</h2>
                   <p>{category.description}</p>
                 </div>
 
@@ -232,7 +233,7 @@ function BookingStart() {
                     )
                   }
                 >
-                  <span>{subcategory}</span>
+                  <span>{t(subcategory)}</span>
 
                   <ArrowRight
                     size={18}

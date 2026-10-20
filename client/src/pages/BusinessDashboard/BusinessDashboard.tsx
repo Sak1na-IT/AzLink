@@ -24,12 +24,13 @@ import {
   updateBookingStatus,
   type Booking,
 } from "../../services/bookingsService";
+import { t } from "../../i18n";
 
 const statusText: Record<Booking["status"], string> = {
-  PENDING: "Gözləyir",
-  CONFIRMED: "Təsdiqlənib",
-  CANCELLED: "Ləğv edilib",
-  COMPLETED: "Tamamlanıb",
+  PENDING: t("Gözləyir"),
+  CONFIRMED: t("Təsdiqlənib"),
+  CANCELLED: t("Ləğv edilib"),
+  COMPLETED: t("Tamamlanıb"),
 };
 
 const todayKey = () => {
@@ -74,7 +75,7 @@ function BusinessDashboard() {
     if (servicesResult.status === "fulfilled") {
       setServices(servicesResult.value);
     } else {
-      failed.push("xidmətlər");
+      failed.push(t("xidmətlər"));
       console.error("[Dashboard] /business/services:", servicesResult.reason);
     }
 
@@ -92,7 +93,7 @@ function BusinessDashboard() {
 
       setTodayBookings(todays);
     } else {
-      failed.push("rezervlər");
+      failed.push(t("rezervlər"));
       console.error("[Dashboard] /bookings:", bookingsResult.reason);
     }
 
@@ -109,7 +110,7 @@ function BusinessDashboard() {
       const detail = reason instanceof Error ? reason.message : "";
 
       setError(
-        `Yüklənmədi: ${failed.join(", ")}${detail ? ` (${detail})` : ""}`
+        `${t("Yüklənmədi: {list}", { list: failed.join(", ") })}${detail ? ` (${detail})` : ""}`
       );
     }
 
@@ -125,14 +126,14 @@ function BusinessDashboard() {
       await updateBookingStatus(id, "CONFIRMED");
       reload();
     } catch {
-      alert("Rezervi təsdiqləmək mümkün olmadı.");
+      alert(t("Rezervi təsdiqləmək mümkün olmadı."));
     }
   };
 
   if (isLoading) {
     return (
       <main className="business-dashboard">
-        <p className="business-dashboard__loading">Yüklənir...</p>
+        <p className="business-dashboard__loading">{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -141,7 +142,7 @@ function BusinessDashboard() {
     return (
       <main className="business-dashboard">
         <p className="business-dashboard__loading">
-          {error || "Məlumat tapılmadı."}
+          {error || t("Məlumat tapılmadı.")}
         </p>
       </main>
     );
@@ -152,7 +153,7 @@ function BusinessDashboard() {
   /* Günün vaxtına görə salam */
   const hour = new Date().getHours();
   const greeting =
-    hour < 12 ? "Sabahınız xeyir" : hour < 18 ? "Günortanız xeyir" : "Axşamınız xeyir";
+    hour < 12 ? t("Sabahınız xeyir") : hour < 18 ? t("Günortanız xeyir") : t("Axşamınız xeyir");
 
   const todayLabel = formatReadable(new Date());
 
@@ -163,8 +164,8 @@ function BusinessDashboard() {
   /* Biznes sahibi üçün bir cümləlik xülasə */
   const summary =
     todayBookings.length > 0
-      ? `Bu gün ${todayBookings.length} rezerviniz var.`
-      : "Bu gün üçün rezerv yoxdur.";
+      ? t("Bu gün {count} rezerviniz var.", { count: todayBookings.length })
+      : t("Bu gün üçün rezerv yoxdur.");
 
   return (
     <main className="business-dashboard">
@@ -179,7 +180,7 @@ function BusinessDashboard() {
             <p>
               {summary}
               {stats.pendingCount > 0
-                ? ` ${stats.pendingCount} rezerv təsdiqinizi gözləyir.`
+                ? ` ${t("{count} rezerv təsdiqinizi gözləyir.", { count: stats.pendingCount })}`
                 : ""}
             </p>
           </div>
@@ -190,7 +191,7 @@ function BusinessDashboard() {
             onClick={() => navigate("/business/services")}
           >
             <Plus size={18} strokeWidth={2} />
-            Yeni xidmət
+            {t("Yeni xidmət")}
           </button>
         </div>
 
@@ -198,19 +199,19 @@ function BusinessDashboard() {
         <dl className="biz-hero__stats">
           <button type="button" onClick={() => navigate("/business/bookings")}>
             <dt>{todayBookings.length}</dt>
-            <dd>Bu günkü rezerv</dd>
+            <dd>{t("Bu günkü rezerv")}</dd>
           </button>
 
           <button type="button" onClick={() => navigate("/business/bookings")}>
             <dt className={stats.pendingCount > 0 ? "is-alert" : ""}>
               {stats.pendingCount}
             </dt>
-            <dd>Təsdiq gözləyir</dd>
+            <dd>{t("Təsdiq gözləyir")}</dd>
           </button>
 
           <button type="button" onClick={() => navigate("/business/customers")}>
             <dt>{stats.uniqueCustomerCount}</dt>
-            <dd>Müştəri</dd>
+            <dd>{t("Müştəri")}</dd>
           </button>
 
           <button type="button" onClick={() => navigate("/business/bookings")}>
@@ -218,7 +219,7 @@ function BusinessDashboard() {
               {stats.revenue}
               <small className="manat">₼</small>
             </dt>
-            <dd>Təsdiqlənmiş gəlir</dd>
+            <dd>{t("Təsdiqlənmiş gəlir")}</dd>
           </button>
         </dl>
       </section>
@@ -237,12 +238,12 @@ function BusinessDashboard() {
           </span>
           <span className="biz-alert__text">
             <strong>
-              {stats.pendingCount} yeni rezerv təsdiqinizi gözləyir
+              {t("{count} yeni rezerv təsdiqinizi gözləyir", { count: stats.pendingCount })}
             </strong>
-            <span>Müştəri cavabınızı gözləyir, təsdiqləyin və ya ləğv edin.</span>
+            <span>{t("Müştəri cavabınızı gözləyir, təsdiqləyin və ya ləğv edin.")}</span>
           </span>
           <span className="biz-alert__cta">
-            Bax
+            {t("Bax")}
             <ArrowRight size={15} strokeWidth={1.8} />
           </span>
         </button>
@@ -252,13 +253,13 @@ function BusinessDashboard() {
       <section className="biz-grid">
         <div className="biz-card">
           <header className="biz-card__header">
-            <h2>Bugünkü rezervlər</h2>
+            <h2>{t("Bugünkü rezervlər")}</h2>
             <button
               type="button"
               className="biz-link"
               onClick={() => navigate("/business/bookings")}
             >
-              Hamısı
+              {t("Hamısı")}
               <ArrowRight size={15} strokeWidth={1.8} />
             </button>
           </header>
@@ -269,8 +270,8 @@ function BusinessDashboard() {
                 <Clock3 size={20} strokeWidth={1.7} />
               </span>
               <div>
-                <strong>Bu gün sakit gündür</strong>
-                <p>Yeni rezerv gələndə burada saat sırası ilə görünəcək.</p>
+                <strong>{t("Bu gün sakit gündür")}</strong>
+                <p>{t("Yeni rezerv gələndə burada saat sırası ilə görünəcək.")}</p>
               </div>
             </div>
           ) : (
@@ -301,7 +302,7 @@ function BusinessDashboard() {
                         onClick={() => handleConfirm(booking.id)}
                       >
                         <Check size={14} strokeWidth={2} />
-                        Təsdiqlə
+                        {t("Təsdiqlə")}
                       </button>
                     ) : null}
                   </div>
@@ -312,7 +313,7 @@ function BusinessDashboard() {
         </div>
 
         <aside className="biz-card biz-profile">
-          <h2>Profiliniz</h2>
+          <h2>{t("Profiliniz")}</h2>
 
           <div
             className="biz-ring"
@@ -320,14 +321,14 @@ function BusinessDashboard() {
           >
             <div className="biz-ring__inner">
               <strong>{completion}%</strong>
-              <span>hazır</span>
+              <span>{t("hazır")}</span>
             </div>
           </div>
 
           <p>
             {isProfileComplete
-              ? "Profiliniz tam hazırdır. Müştərilər sizi asanlıqla tapır."
-              : "Şəkil, təsvir və iş saatlarını əlavə edin ki, müştərilər sizi daha tez seçsin."}
+              ? t("Profiliniz tam hazırdır. Müştərilər sizi asanlıqla tapır.")
+              : t("Şəkil, təsvir və iş saatlarını əlavə edin ki, müştərilər sizi daha tez seçsin.")}
           </p>
 
           <button
@@ -335,7 +336,7 @@ function BusinessDashboard() {
             className="biz-outline-button"
             onClick={() => navigate("/business/profile")}
           >
-            {isProfileComplete ? "Profili redaktə et" : "Profili tamamla"}
+            {isProfileComplete ? t("Profili redaktə et") : t("Profili tamamla")}
             <ArrowRight size={15} strokeWidth={1.8} />
           </button>
         </aside>
@@ -345,19 +346,19 @@ function BusinessDashboard() {
       <section className="biz-grid">
         <div className="biz-card">
           <header className="biz-card__header">
-            <h2>Xidmətləriniz</h2>
+            <h2>{t("Xidmətləriniz")}</h2>
             <button
               type="button"
               className="biz-link"
               onClick={() => navigate("/business/services")}
             >
-              İdarə et
+              {t("İdarə et")}
               <ArrowRight size={15} strokeWidth={1.8} />
             </button>
           </header>
 
           {services.length === 0 ? (
-            <p className="biz-muted">Hələ xidmət əlavə etməmisiniz.</p>
+            <p className="biz-muted">{t("Hələ xidmət əlavə etməmisiniz.")}</p>
           ) : (
             /* Menyu kimi: ad ...... qiymət */
             <ul className="biz-menu">
@@ -377,15 +378,15 @@ function BusinessDashboard() {
 
         <div className="biz-card">
           <header className="biz-card__header">
-            <h2>Sürətli əməliyyatlar</h2>
+            <h2>{t("Sürətli əməliyyatlar")}</h2>
           </header>
 
           <div className="biz-actions">
             {[
-              { label: "Yeni xidmət", hint: "Qiymət və müddət", icon: Plus, to: "/business/services" },
-              { label: "Şəkil əlavə et", hint: "Portfolio", icon: ImagePlus, to: "/business/portfolio" },
-              { label: "Profili redaktə et", hint: "Ad, ərazi, təsvir", icon: Settings, to: "/business/profile" },
-              { label: "İş saatları", hint: "Açıq günlər", icon: Clock3, to: "/business/hours" },
+              { label: t("Yeni xidmət"), hint: t("Qiymət və müddət"), icon: Plus, to: "/business/services" },
+              { label: t("Şəkil əlavə et"), hint: t("Portfolio"), icon: ImagePlus, to: "/business/portfolio" },
+              { label: t("Profili redaktə et"), hint: t("Ad, ərazi, təsvir"), icon: Settings, to: "/business/profile" },
+              { label: t("İş saatları"), hint: t("Açıq günlər"), icon: Clock3, to: "/business/hours" },
             ].map(({ label, hint, icon: Icon, to }) => (
               <button
                 key={label}
@@ -403,7 +404,7 @@ function BusinessDashboard() {
           </div>
 
           <p className="biz-muted biz-actions__note">
-            <Store size={14} strokeWidth={1.8} /> {stats.serviceCount} aktiv xidmət
+            <Store size={14} strokeWidth={1.8} /> {t("{count} aktiv xidmət", { count: stats.serviceCount })}
           </p>
         </div>
       </section>

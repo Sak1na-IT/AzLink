@@ -28,6 +28,7 @@ import { getSavedProviders, saveProvider, unsaveProvider } from "../../services/
 import { getBookings, type Booking } from "../../services/bookingsService";
 import { getStoredUser } from "../../services/api";
 import "./Provider.css";
+import { t } from "../../i18n";
 
 /* "+994501110001" → "+994 50 111 00 01" */
 const formatPhone = (phone: string) => {
@@ -116,7 +117,7 @@ function Provider() {
         setReviewableBooking(completed[0] ?? null);
       } catch {
         if (!cancelled) {
-          setLoadError("Profil yüklənmədi. Yenidən cəhd edin.");
+          setLoadError(t("Profil yüklənmədi. Yenidən cəhd edin."));
         }
       } finally {
         if (!cancelled) {
@@ -146,7 +147,7 @@ function Provider() {
     return (
       <div className="provider-page">
         <p className="provider-muted-text" style={{ padding: "60px 20px" }}>
-          Yüklənir...
+          {t("Yüklənir...")}
         </p>
       </div>
     );
@@ -160,10 +161,10 @@ function Provider() {
             <MapPin size={26} strokeWidth={1.8} />
           </div>
 
-          <h1>Profil tapılmadı</h1>
+          <h1>{t("Profil tapılmadı")}</h1>
 
           <p>
-            Axtardığınız xidmət göstərən profil mövcud deyil və ya silinib.
+            {t("Axtardığınız xidmət göstərən profil mövcud deyil və ya silinib.")}
           </p>
 
           <button
@@ -171,7 +172,7 @@ function Provider() {
             className="provider-primary-button"
             onClick={() => navigate("/search")}
           >
-            Axtarışa qayıt
+            {t("Axtarışa qayıt")}
           </button>
         </div>
       </div>
@@ -182,10 +183,10 @@ function Provider() {
   const displayReviewCount = provider.reviewCount;
 
   const reviewLabel =
-    displayReviewCount === 1 ? "1 rəy" : `${displayReviewCount} rəy`;
+    displayReviewCount === 1 ? t("1 rəy") : t("{count} rəy", { count: displayReviewCount });
 
   /* WhatsApp üçün hazır mətn (istifadəçi öz mətnini yazmasa) */
-  const defaultMessage = `Salam, ${provider.name}! AzLink-də profilinizi gördüm, xidmətləriniz haqqında məlumat almaq istəyirəm.`;
+  const defaultMessage = t("Salam, {name}! AzLink-də profilinizi gördüm, xidmətləriniz haqqında məlumat almaq istəyirəm.", { name: provider.name });
 
   /* Biznes sahibi öz profilinə baxanda ürək düyməsi göstərilmir */
   const isOwnBusiness =
@@ -201,7 +202,7 @@ function Provider() {
         setIsSaved(true);
       }
     } catch {
-      alert("Əməliyyat mümkün olmadı. Yenidən cəhd edin.");
+      alert(t("Əməliyyat mümkün olmadı. Yenidən cəhd edin."));
     }
   };
 
@@ -248,7 +249,7 @@ function Provider() {
       setReviewableBooking(null);
       setIsReviewOpen(false);
     } catch {
-      alert("Rəyi göndərmək mümkün olmadı. Yenidən cəhd edin.");
+      alert(t("Rəyi göndərmək mümkün olmadı. Yenidən cəhd edin."));
     } finally {
       setIsSubmittingReview(false);
     }
@@ -263,7 +264,7 @@ function Provider() {
           onClick={() => navigate(-1)}
         >
           <ArrowLeft size={18} strokeWidth={1.8} />
-          <span>Geri</span>
+          <span>{t("Geri")}</span>
         </button>
       </div>
 
@@ -286,12 +287,12 @@ function Provider() {
                 {provider.verified && (
                   <span className="provider-verified">
                     <CheckCircle2 size={17} strokeWidth={2} />
-                    Təsdiqlənib
+                    {t("Təsdiqlənib")}
                   </span>
                 )}
               </div>
 
-              <p className="provider-service">{provider.service}</p>
+              <p className="provider-service">{t(provider.service)}</p>
 
               <div className="provider-location">
                 <MapPin size={16} strokeWidth={1.8} />
@@ -300,7 +301,7 @@ function Provider() {
                 {provider.distance != null && (
                   <>
                     <span className="provider-location__dot">•</span>
-                    <span>{provider.distance.toFixed(1)} km</span>
+                    <span>{provider.distance.toFixed(1)}{" "}{t("km")}</span>
                   </>
                 )}
               </div>
@@ -320,10 +321,10 @@ function Provider() {
                 type="button"
                 className="provider-save-button"
                 aria-label={
-                  isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
+                  isSaved ? t("Seçilmişlərdən çıxar") : t("Seçilmişlərə əlavə et")
                 }
                 title={
-                  isSaved ? "Seçilmişlərdən çıxar" : "Seçilmişlərə əlavə et"
+                  isSaved ? t("Seçilmişlərdən çıxar") : t("Seçilmişlərə əlavə et")
                 }
                 onClick={handleToggleSave}
               >
@@ -338,28 +339,28 @@ function Provider() {
 
           <section className="provider-section">
             <div className="provider-section__header">
-              <h2>Haqqında</h2>
+              <h2>{t("Haqqında")}</h2>
             </div>
 
             <p className="provider-description">
               {provider.description?.trim() ||
-                `${provider.name} — ${provider.service} xidməti üzrə AzLink platformasında yerləşdirilmiş profildir. Xidmət ərazisi ${provider.area} olaraq göstərilir. Başlanğıc qiymət ${provider.priceFrom} ₼-dir.`}
+                t("{name} — {service} xidməti üzrə AzLink platformasında yerləşdirilmiş profildir. Xidmət ərazisi {area} olaraq göstərilir. Başlanğıc qiymət {priceFrom} ₼-dir.", { name: provider.name, service: provider.service, area: provider.area, priceFrom: provider.priceFrom })}
             </p>
           </section>
 
           <section className="provider-section">
             <div className="provider-section__header">
               <div>
-                <h2>Xidmətlər</h2>
+                <h2>{t("Xidmətlər")}</h2>
                 <span className="provider-section__subtitle">
-                  Biznesin təqdim etdiyi xidmətlər
+                  {t("Biznesin təqdim etdiyi xidmətlər")}
                 </span>
               </div>
             </div>
 
             {provider.services.length === 0 ? (
               <p className="provider-muted-text">
-                Bu profil üçün hələ xidmət əlavə olunmayıb.
+                {t("Bu profil üçün hələ xidmət əlavə olunmayıb.")}
               </p>
             ) : (
               <div className="provider-services-list">
@@ -381,12 +382,12 @@ function Provider() {
 
           <section className="provider-section">
             <div className="provider-section__header">
-              <h2>İş nümunələri</h2>
+              <h2>{t("İş nümunələri")}</h2>
             </div>
 
             {provider.portfolio.length === 0 ? (
               <p className="provider-muted-text">
-                Bu biznes hələ portfolio şəkli əlavə etməyib.
+                {t("Bu biznes hələ portfolio şəkli əlavə etməyib.")}
               </p>
             ) : (
               <div className="provider-portfolio">
@@ -417,7 +418,7 @@ function Provider() {
           <section className="provider-section">
             <div className="provider-section__header">
               <div className="provider-reviews-heading">
-                <h2>Rəylər</h2>
+                <h2>{t("Rəylər")}</h2>
 
                 <div className="provider-reviews-badge">
                   <Star size={14} fill="currentColor" strokeWidth={0} />
@@ -433,14 +434,14 @@ function Provider() {
                   onClick={openReviewForm}
                 >
                   <Star size={16} strokeWidth={1.8} />
-                  Rəy yaz
+                  {t("Rəy yaz")}
                 </button>
               )}
             </div>
 
             {reviews.length === 0 ? (
               <p className="provider-muted-text">
-                Hələ rəy yazılmayıb. İlk rəyi siz yaza bilərsiniz.
+                {t("Hələ rəy yazılmayıb. İlk rəyi siz yaza bilərsiniz.")}
               </p>
             ) : (
               <div className="provider-review-list">
@@ -477,7 +478,7 @@ function Provider() {
                           </div>
                         </div>
 
-                        <p>{review.comment || "Rəy mətni yazılmayıb."}</p>
+                        <p>{review.comment || t("Rəy mətni yazılmayıb.")}</p>
                       </div>
                     </div>
                   );
@@ -490,7 +491,7 @@ function Provider() {
         <aside className="provider-sidebar">
           <section className="provider-booking-card">
             <div className="provider-booking-card__price">
-              <span>Başlanğıc qiymət</span>
+              <span>{t("Başlanğıc qiymət")}</span>
               <strong>{provider.priceFrom} ₼</strong>
             </div>
 
@@ -500,8 +501,8 @@ function Provider() {
               <CalendarDays size={18} strokeWidth={1.8} />
 
               <div>
-                <span>Rezerv</span>
-                <strong>Onlayn rezerv imkanı</strong>
+                <span>{t("Rezerv")}</span>
+                <strong>{t("Onlayn rezerv imkanı")}</strong>
               </div>
             </div>
 
@@ -509,8 +510,8 @@ function Provider() {
               <Clock3 size={18} strokeWidth={1.8} />
 
               <div>
-                <span>Mövcudluq</span>
-                <strong>Tarix və saat seçimi</strong>
+                <span>{t("Mövcudluq")}</span>
+                <strong>{t("Tarix və saat seçimi")}</strong>
               </div>
             </div>
 
@@ -520,7 +521,7 @@ function Provider() {
               onClick={() => navigate(`/booking/${provider.id}`)}
             >
               <CalendarDays size={18} strokeWidth={1.8} />
-              Rezerv et
+              {t("Rezerv et")}
             </button>
 
             <button
@@ -529,7 +530,7 @@ function Provider() {
               onClick={() => setIsContactOpen(true)}
             >
               <MessageCircle size={18} strokeWidth={1.8} />
-              Əlaqə saxla
+              {t("Əlaqə saxla")}
             </button>
 
             <a
@@ -542,13 +543,13 @@ function Provider() {
           </section>
 
           <section className="provider-sidebar-card">
-            <h3>Profil məlumatları</h3>
+            <h3>{t("Profil məlumatları")}</h3>
 
             <div className="provider-sidebar-item">
               <MapPin size={17} strokeWidth={1.8} />
 
               <div>
-                <span>Ərazi</span>
+                <span>{t("Ərazi")}</span>
                 <strong>{provider.area}</strong>
               </div>
             </div>
@@ -557,7 +558,7 @@ function Provider() {
               <Star size={17} strokeWidth={1.8} />
 
               <div>
-                <span>Reytinq</span>
+                <span>{t("Reytinq")}</span>
                 <strong>
                   {displayRating.toFixed(1)} · {reviewLabel}
                 </strong>
@@ -568,11 +569,11 @@ function Provider() {
               <CheckCircle2 size={17} strokeWidth={1.8} />
 
               <div>
-                <span>Status</span>
+                <span>{t("Status")}</span>
                 <strong>
                   {provider.verified
-                    ? "Təsdiqlənmiş profil"
-                    : "Standart profil"}
+                    ? t("Təsdiqlənmiş profil")
+                    : t("Standart profil")}
                 </strong>
               </div>
             </div>
@@ -585,7 +586,7 @@ function Provider() {
           <button
             type="button"
             className="area-modal__backdrop"
-            aria-label="Pəncərəni bağla"
+            aria-label={t("Pəncərəni bağla")}
             onClick={closeContact}
           />
 
@@ -599,10 +600,10 @@ function Provider() {
               <div>
                 <span className="area-modal__eyebrow">AzLink</span>
 
-                <h2 id="contact-title">{provider.name} ilə əlaqə</h2>
+                <h2 id="contact-title">{t("{name} ilə əlaqə", { name: provider.name })}</h2>
 
                 <p>
-                  {provider.service} · {provider.area}
+                  {t(provider.service)} · {provider.area}
                 </p>
               </div>
 
@@ -610,7 +611,7 @@ function Provider() {
                 type="button"
                 className="area-modal__close"
                 onClick={closeContact}
-                aria-label="Bağla"
+                aria-label={t("Bağla")}
               >
                 <X size={18} strokeWidth={1.8} />
               </button>
@@ -620,10 +621,10 @@ function Provider() {
               <div className="provider-section">
                 <div className="provider-section__header">
                   <div>
-                    <h2>WhatsApp-da yazın</h2>
+                    <h2>{t("WhatsApp-da yazın")}</h2>
 
                     <span className="provider-section__subtitle">
-                      Mesajınız WhatsApp-da hazır açılacaq, sadəcə göndərin
+                      {t("Mesajınız WhatsApp-da hazır açılacaq, sadəcə göndərin")}
                     </span>
                   </div>
                 </div>
@@ -666,7 +667,7 @@ function Provider() {
                 onClick={closeContact}
               >
                 <MessageCircle size={16} strokeWidth={1.8} />
-                WhatsApp-da aç
+                {t("WhatsApp-da aç")}
               </a>
             </div>
           </section>
@@ -678,7 +679,7 @@ function Provider() {
           <button
             type="button"
             className="area-modal__backdrop"
-            aria-label="Bağla"
+            aria-label={t("Bağla")}
             onClick={closeReviewForm}
           />
 
@@ -692,7 +693,7 @@ function Provider() {
               <div>
                 <span className="area-modal__eyebrow">AzLink</span>
 
-                <h2 id="review-title">{provider.name} üçün rəy</h2>
+                <h2 id="review-title">{t("{name} üçün rəy", { name: provider.name })}</h2>
 
                 <p>{reviewableBooking.service}</p>
               </div>
@@ -701,7 +702,7 @@ function Provider() {
                 type="button"
                 className="area-modal__close"
                 onClick={closeReviewForm}
-                aria-label="Bağla"
+                aria-label={t("Bağla")}
               >
                 <X size={18} strokeWidth={1.8} />
               </button>
@@ -714,7 +715,7 @@ function Provider() {
                     type="button"
                     key={value}
                     onClick={() => setReviewRating(value)}
-                    aria-label={`${value} ulduz`}
+                    aria-label={t("{count} ulduz", { count: value })}
                   >
                     <Star
                       size={26}
@@ -728,7 +729,7 @@ function Provider() {
               <textarea
                 value={reviewComment}
                 onChange={(event) => setReviewComment(event.target.value)}
-                placeholder="Təcrübənizi qısaca yazın (vacib deyil)..."
+                placeholder={t("Təcrübənizi qısaca yazın (vacib deyil)...")}
                 rows={5}
                 maxLength={300}
                 style={{
@@ -761,7 +762,7 @@ function Provider() {
                 style={{ opacity: isSubmittingReview ? 0.6 : 1 }}
               >
                 <Star size={16} strokeWidth={1.8} />
-                {isSubmittingReview ? "Göndərilir..." : "Rəyi göndər"}
+                {isSubmittingReview ? t("Göndərilir...") : t("Rəyi göndər")}
               </button>
             </div>
           </section>

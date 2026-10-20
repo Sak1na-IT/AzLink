@@ -24,12 +24,13 @@ import { getStoredUser } from "../../services/api";
 import { formatDuration } from "../../utils/formatDuration";
 import { formatRelativeDay, getDayParts } from "../../utils/formatDate";
 import "./Bookings.css";
+import { t } from "../../i18n";
 
 const statusLabels: Record<BookingStatus, string> = {
-  PENDING: "Gözləyir",
-  CONFIRMED: "Təsdiqlənib",
-  CANCELLED: "Ləğv edilib",
-  COMPLETED: "Tamamlanıb",
+  PENDING: t("Gözləyir"),
+  CONFIRMED: t("Təsdiqlənib"),
+  CANCELLED: t("Ləğv edilib"),
+  COMPLETED: t("Tamamlanıb"),
 };
 
 const statusClasses: Record<BookingStatus, string> = {
@@ -78,7 +79,7 @@ function Bookings() {
         new Set(myReviews.map((review) => review.bookingId))
       );
     } catch {
-      setError("Rezervləri yükləmək mümkün olmadı.");
+      setError(t("Rezervləri yükləmək mümkün olmadı."));
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +124,7 @@ function Bookings() {
   }, [sortedBookings, filter]);
 
   const handleCancel = async (id: string) => {
-    const confirmed = window.confirm("Rezervi ləğv etmək istəyirsiniz?");
+    const confirmed = window.confirm(t("Rezervi ləğv etmək istəyirsiniz?"));
 
     if (!confirmed) {
       return;
@@ -133,14 +134,14 @@ function Bookings() {
       await updateBookingStatus(id, "CANCELLED");
       reload();
     } catch {
-      alert("Rezervi ləğv etmək mümkün olmadı.");
+      alert(t("Rezervi ləğv etmək mümkün olmadı."));
     }
   };
 
   /* Yalnız ləğv edilmiş rezerv silinə bilər (backend də bunu yoxlayır) */
   const handleDelete = async (id: string) => {
     const confirmed = window.confirm(
-      "Ləğv edilmiş rezervi siyahıdan silmək istəyirsiniz?"
+      t("Ləğv edilmiş rezervi siyahıdan silmək istəyirsiniz?")
     );
 
     if (!confirmed) {
@@ -153,7 +154,7 @@ function Bookings() {
         current.filter((booking) => booking.id !== id)
       );
     } catch {
-      alert("Rezervi silmək mümkün olmadı.");
+      alert(t("Rezervi silmək mümkün olmadı."));
     }
   };
 
@@ -195,7 +196,7 @@ function Bookings() {
 
       setReviewTarget(null);
     } catch {
-      alert("Rəyi göndərmək mümkün olmadı.");
+      alert(t("Rəyi göndərmək mümkün olmadı."));
     } finally {
       setIsSubmittingReview(false);
     }
@@ -205,7 +206,7 @@ function Bookings() {
     return (
       <main className="bookings-page">
         <div className="bookings-page__container">
-          <p className="bookings-page__empty-text">Yüklənir...</p>
+          <p className="bookings-page__empty-text">{t("Yüklənir...")}</p>
         </div>
       </main>
     );
@@ -216,11 +217,11 @@ function Bookings() {
       <div className="bookings-page__container">
         <section className="bookings-page__header">
           <div>
-            <span className="bookings-page__eyebrow">Rezervlər</span>
+            <span className="bookings-page__eyebrow">{t("Rezervlər")}</span>
 
-            <h1>Rezervlərim</h1>
+            <h1>{t("Rezervlərim")}</h1>
 
-            <p>Yaratdığınız rezervləri buradan idarə edə bilərsiniz.</p>
+            <p>{t("Yaratdığınız rezervləri buradan idarə edə bilərsiniz.")}</p>
           </div>
 
           <button
@@ -229,7 +230,7 @@ function Bookings() {
             onClick={() => navigate("/booking")}
           >
             <Plus size={18} strokeWidth={2} />
-            Yeni rezerv yarat
+            {t("Yeni rezerv yarat")}
           </button>
         </section>
 
@@ -245,7 +246,7 @@ function Bookings() {
             }
             onClick={() => setFilter("all")}
           >
-            Hamısı
+            {t("Hamısı")}
           </button>
 
           <button
@@ -257,7 +258,7 @@ function Bookings() {
             }
             onClick={() => setFilter("active")}
           >
-            Aktiv
+            {t("Aktiv")}
           </button>
 
           <button
@@ -269,7 +270,7 @@ function Bookings() {
             }
             onClick={() => setFilter("completed")}
           >
-            Tamamlanmış
+            {t("Tamamlanmış")}
           </button>
 
           <button
@@ -281,7 +282,7 @@ function Bookings() {
             }
             onClick={() => setFilter("cancelled")}
           >
-            Ləğv edilənlər
+            {t("Ləğv edilənlər")}
           </button>
         </section>
 
@@ -293,13 +294,13 @@ function Bookings() {
 
             <h2>
               {filter === "cancelled"
-                ? "Ləğv edilmiş rezerv yoxdur"
+                ? t("Ləğv edilmiş rezerv yoxdur")
                 : filter === "completed"
-                  ? "Hələ tamamlanmış rezerv yoxdur"
-                  : "Hələ rezerviniz yoxdur"}
+                  ? t("Hələ tamamlanmış rezerv yoxdur")
+                  : t("Hələ rezerviniz yoxdur")}
             </h2>
 
-            <p>Xidmət seçərək ilk rezervinizi yarada bilərsiniz.</p>
+            <p>{t("Xidmət seçərək ilk rezervinizi yarada bilərsiniz.")}</p>
 
             <button
               type="button"
@@ -307,7 +308,7 @@ function Bookings() {
               onClick={() => navigate("/booking")}
             >
               <Plus size={17} strokeWidth={2} />
-              Yeni rezerv yarat
+              {t("Yeni rezerv yarat")}
             </button>
           </section>
         ) : (
@@ -381,7 +382,7 @@ function Bookings() {
                       <CalendarDays size={17} strokeWidth={1.8} />
 
                       <div>
-                        <span>Tarix</span>
+                        <span>{t("Tarix")}</span>
                         <strong>{formatDate(booking.date)}</strong>
                         {!isCancelled && !isCompleted ? (
                           <small>{formatRelativeDay(booking.date)}</small>
@@ -393,7 +394,7 @@ function Bookings() {
                       <Clock3 size={17} strokeWidth={1.8} />
 
                       <div>
-                        <span>Saat</span>
+                        <span>{t("Saat")}</span>
                         <strong>{booking.time}</strong>
                       </div>
                     </div>
@@ -402,14 +403,14 @@ function Bookings() {
                       <MapPin size={17} strokeWidth={1.8} />
 
                       <div>
-                        <span>Ərazi</span>
+                        <span>{t("Ərazi")}</span>
                         <strong>{booking.area || "—"}</strong>
                       </div>
                     </div>
 
                     <div className="booking-card__detail">
                       <div>
-                        <span>Qiymət</span>
+                        <span>{t("Qiymət")}</span>
                         <strong className="booking-card__price">
                           {booking.priceFrom}
                           <small className="manat">₼</small>
@@ -426,7 +427,7 @@ function Bookings() {
                         navigate("/provider/" + booking.providerId)
                       }
                     >
-                      Biznes profilinə bax
+                      {t("Biznes profilinə bax")}
                     </button>
 
                     {isPending || booking.status === "CONFIRMED" ? (
@@ -436,7 +437,7 @@ function Bookings() {
                         onClick={() => handleCancel(booking.id)}
                       >
                         <XCircle size={16} strokeWidth={1.8} />
-                        Rezervi ləğv et
+                        {t("Rezervi ləğv et")}
                       </button>
                     ) : null}
 
@@ -447,7 +448,7 @@ function Bookings() {
                         onClick={() => handleDelete(booking.id)}
                       >
                         <Trash2 size={16} strokeWidth={1.8} />
-                        Sil
+                        {t("Sil")}
                       </button>
                     ) : null}
 
@@ -458,14 +459,14 @@ function Bookings() {
                         onClick={() => openReviewForm(booking)}
                       >
                         <Star size={16} strokeWidth={1.8} />
-                        Rəy yaz
+                        {t("Rəy yaz")}
                       </button>
                     ) : null}
 
                     {isCompleted && alreadyReviewed ? (
                       <span className="booking-card__reviewed">
                         <CheckCircle2 size={16} strokeWidth={1.8} />
-                        Rəy yazılıb
+                        {t("Rəy yazılıb")}
                       </span>
                     ) : null}
                   </div>
@@ -481,7 +482,7 @@ function Bookings() {
           <button
             type="button"
             className="area-modal__backdrop"
-            aria-label="Bağla"
+            aria-label={t("Bağla")}
             onClick={closeReviewForm}
           />
 
@@ -496,7 +497,7 @@ function Bookings() {
                 <span className="area-modal__eyebrow">AzLink</span>
 
                 <h2 id="review-title">
-                  {reviewTarget.providerName} üçün rəy
+                  {t("{name} üçün rəy", { name: reviewTarget.providerName })}
                 </h2>
 
                 <p>
@@ -508,7 +509,7 @@ function Bookings() {
                 type="button"
                 className="area-modal__close"
                 onClick={closeReviewForm}
-                aria-label="Bağla"
+                aria-label={t("Bağla")}
               >
                 <X size={18} strokeWidth={1.8} />
               </button>
@@ -521,7 +522,7 @@ function Bookings() {
                     type="button"
                     key={value}
                     onClick={() => setReviewRating(value)}
-                    aria-label={`${value} ulduz`}
+                    aria-label={t("{count} ulduz", { count: value })}
                   >
                     <Star
                       size={26}
@@ -535,7 +536,7 @@ function Bookings() {
               <textarea
                 value={reviewComment}
                 onChange={(event) => setReviewComment(event.target.value)}
-                placeholder="Təcrübənizi qısaca yazın (vacib deyil)..."
+                placeholder={t("Təcrübənizi qısaca yazın (vacib deyil)...")}
                 rows={5}
                 maxLength={300}
                 style={{
@@ -568,7 +569,7 @@ function Bookings() {
                 style={{ opacity: isSubmittingReview ? 0.6 : 1 }}
               >
                 <Star size={16} strokeWidth={1.8} />
-                {isSubmittingReview ? "Göndərilir..." : "Rəyi göndər"}
+                {isSubmittingReview ? t("Göndərilir...") : t("Rəyi göndər")}
               </button>
             </div>
           </section>

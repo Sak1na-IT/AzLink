@@ -6,6 +6,7 @@ import { categories } from "../../data/categories";
 import { getProviders } from "../../services/providersService";
 import type { Provider } from "../../types/provider";
 import "./ExplorePage.css";
+import { t } from "../../i18n";
 
 const normalize = (value: string) => value.toLocaleLowerCase("az").trim();
 
@@ -76,7 +77,7 @@ function ExplorePage() {
           onClick={() => navigate(-1)}
         >
           <ArrowLeft size={18} strokeWidth={1.8} />
-          Geri
+          {t("Geri")}
         </button>
       </div>
 
@@ -87,7 +88,7 @@ function ExplorePage() {
           <h1>Hansı xidmətə ehtiyacınız var?</h1>
 
           <p>
-            Kateqoriya seçin, o sahədəki bütün ustaları dərhal görün.
+            {t("Kateqoriya seçin, o sahədəki bütün ustaları dərhal görün.")}
           </p>
         </div>
       </header>
@@ -97,7 +98,7 @@ function ExplorePage() {
 
         <input
           type="text"
-          placeholder="Kateqoriya axtar..."
+          placeholder={t("Kateqoriya axtar...")}
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
@@ -106,8 +107,8 @@ function ExplorePage() {
       <section className="explore-section">
         <div className="explore-section__header">
           <div>
-            <span>Kateqoriyalar</span>
-            <h2>Xidmət sahəsi seçin</h2>
+            <span>{t("Kateqoriyalar")}</span>
+            <h2>{t("Xidmət sahəsi seçin")}</h2>
           </div>
         </div>
 
@@ -115,9 +116,9 @@ function ExplorePage() {
           <div className="explore-empty">
             <Search size={24} strokeWidth={1.8} />
 
-            <h3>Kateqoriya tapılmadı</h3>
+            <h3>{t("Kateqoriya tapılmadı")}</h3>
 
-            <p>Başqa bir kateqoriya adı axtarın.</p>
+            <p>{t("Başqa bir kateqoriya adı axtarın.")}</p>
           </div>
         ) : (
           <div className="explore-category-grid">
@@ -154,18 +155,18 @@ function ExplorePage() {
                   </div>
 
                   <div className="explore-category-card__content">
-                    <h3>{category.name}</h3>
+                    <h3>{t(category.name)}</h3>
 
                     <span>
                       {providerCount === null
-                        ? "Yüklənir..."
+                        ? t("Yüklənir...")
                         : providerCount === 0
-                          ? "Hələ usta yoxdur"
+                          ? t("Hələ usta yoxdur")
                           : providerCount === 1
-                            ? "1 usta"
-                            : `${providerCount} usta`}
+                            ? t("1 usta")
+                            : t("{count} usta", { count: providerCount })}
                       {priceFrom !== null && providerCount
-                        ? ` · ${priceFrom} ₼-dən`
+                        ? ` · ${t("{price} ₼-dən", { price: priceFrom })}`
                         : ""}
                     </span>
                   </div>

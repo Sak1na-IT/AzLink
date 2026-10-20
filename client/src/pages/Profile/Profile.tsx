@@ -4,6 +4,7 @@ import {
   Bell,
   CheckCircle2,
   ChevronRight,
+  Languages,
   LogOut,
   Mail,
   Pencil,
@@ -26,12 +27,14 @@ import { getStoredUser, type AuthUser } from "../../services/api";
 import { formatDayMonth } from "../../utils/formatDate";
 import "./Profile.css";
 import { OPEN_NOTIFICATIONS_EVENT } from "../../components/layout/NotificationBell";
+import { t } from "../../i18n";
+import LanguageSwitch from "../../i18n/LanguageSwitch";
 
 const STATUS_LABEL: Record<string, string> = {
-  PENDING: "Gözləyir",
-  CONFIRMED: "Təsdiqlənib",
-  CANCELLED: "Ləğv edilib",
-  COMPLETED: "Tamamlanıb",
+  PENDING: t("Gözləyir"),
+  CONFIRMED: t("Təsdiqlənib"),
+  CANCELLED: t("Ləğv edilib"),
+  COMPLETED: t("Tamamlanıb"),
 };
 
 const PHONE_PATTERN = /^\+?[0-9\s()-]{7,20}$/;
@@ -156,17 +159,17 @@ function Profile() {
     const trimmedPhone = phone.trim();
 
     if (trimmedName.length < 2 || trimmedName.length > 60) {
-      setSaveError("Ad 2-60 simvol arasında olmalıdır.");
+      setSaveError(t("Ad 2-60 simvol arasında olmalıdır."));
       return;
     }
 
     if (trimmedPhone && !PHONE_PATTERN.test(trimmedPhone)) {
-      setSaveError("Telefon nömrəsini düzgün yazın (məs. +994 50 123 45 67).");
+      setSaveError(t("Telefon nömrəsini düzgün yazın (məs. +994 50 123 45 67)."));
       return;
     }
 
     if (!trimmedPhone && savedPhone) {
-      setSaveError("Telefon nömrəsini boş qoymaq olmaz.");
+      setSaveError(t("Telefon nömrəsini boş qoymaq olmaz."));
       return;
     }
 
@@ -189,12 +192,12 @@ function Profile() {
       setUser((current) => (current ? { ...current, name: nextName } : current));
 
       setIsEditing(false);
-      setNotice("Dəyişikliklər yadda saxlanıldı.");
+      setNotice(t("Dəyişikliklər yadda saxlanıldı."));
 
       /* yadda saxlanmış istifadəçi məlumatını təzələməyə çalışırıq */
       getMe().catch(() => {});
     } catch (caught) {
-      setSaveError(getErrorText(caught, "Yadda saxlamaq mümkün olmadı."));
+      setSaveError(getErrorText(caught, t("Yadda saxlamaq mümkün olmadı.")));
     } finally {
       setIsSaving(false);
     }
@@ -222,9 +225,9 @@ function Profile() {
         <div>
           <span className="profile-page__eyebrow">AzLink</span>
 
-          <h1>Profilim</h1>
+          <h1>{t("Profilim")}</h1>
 
-          <p>Hesabınızı və fəaliyyətinizi idarə edin.</p>
+          <p>{t("Hesabınızı və fəaliyyətinizi idarə edin.")}</p>
         </div>
       </div>
 
@@ -242,7 +245,7 @@ function Profile() {
             {isEditing ? (
               <>
                 <label>
-                  Ad və soyad
+                  {t("Ad və soyad")}
                   <input
                     type="text"
                     maxLength={60}
@@ -252,7 +255,7 @@ function Profile() {
                 </label>
 
                 <label>
-                  Telefon
+                  {t("Telefon")}
                   <input
                     type="tel"
                     placeholder="+994 50 123 45 67"
@@ -262,7 +265,7 @@ function Profile() {
                 </label>
 
                 <label>
-                  Email
+                  {t("Email")}
                   <input type="email" value={email} disabled readOnly />
                 </label>
 
@@ -271,7 +274,7 @@ function Profile() {
                   className="profile-secondary-button"
                   onClick={() => setIsEmailOpen(true)}
                 >
-                  Emaili dəyiş
+                  {t("Emaili dəyiş")}
                 </button>
 
                 {saveError && (
@@ -290,7 +293,7 @@ function Profile() {
                     onClick={handleSave}
                     disabled={isSaving}
                   >
-                    {isSaving ? "Saxlanılır..." : "Yadda saxla"}
+                    {isSaving ? t("Saxlanılır...") : t("Yadda saxla")}
                   </button>
 
                   <button
@@ -299,7 +302,7 @@ function Profile() {
                     onClick={cancelEdit}
                     disabled={isSaving}
                   >
-                    Ləğv et
+                    {t("Ləğv et")}
                   </button>
                 </div>
               </>
@@ -310,7 +313,7 @@ function Profile() {
 
                   <span className="profile-status">
                     <CheckCircle2 size={15} strokeWidth={1.8} />
-                    Aktiv
+                    {t("Aktiv")}
                   </span>
                 </div>
 
@@ -334,7 +337,7 @@ function Profile() {
                   onClick={openEdit}
                 >
                   <Pencil size={16} strokeWidth={1.8} />
-                  Profili redaktə et
+                  {t("Profili redaktə et")}
                 </button>
               </>
             )}
@@ -343,8 +346,8 @@ function Profile() {
           <button
             type="button"
             className="profile-card__logout"
-            title="Çıxış"
-            aria-label="Çıxış"
+            title={t("Çıxış")}
+            aria-label={t("Çıxış")}
             onClick={handleLogout}
           >
             <LogOut size={18} strokeWidth={1.8} />
@@ -358,7 +361,7 @@ function Profile() {
         <section className="profile-section">
           <div className="profile-section__header">
             <div>
-              <h2>Fəaliyyətim</h2>
+              <h2>{t("Fəaliyyətim")}</h2>
             </div>
           </div>
 
@@ -369,7 +372,7 @@ function Profile() {
               onClick={() => navigate("/bookings")}
             >
               <strong>{showCount(bookings.length)}</strong>
-              <span>Rezerv</span>
+              <span>{t("Rezerv")}</span>
             </button>
 
             <button
@@ -378,12 +381,12 @@ function Profile() {
               onClick={() => navigate("/saved")}
             >
               <strong>{showCount(savedCount)}</strong>
-              <span>Seçilmiş</span>
+              <span>{t("Seçilmiş")}</span>
             </button>
 
             <div className="profile-stat profile-stat--static">
               <strong>{showCount(reviewCount)}</strong>
-              <span>Rəy</span>
+              <span>{t("Rəy")}</span>
             </div>
           </div>
         </section>
@@ -395,7 +398,7 @@ function Profile() {
         <section className="profile-section">
           <div className="profile-section__header">
             <div>
-              <h2>Son rezervlərim</h2>
+              <h2>{t("Son rezervlərim")}</h2>
             </div>
 
             <button
@@ -403,13 +406,13 @@ function Profile() {
               className="profile-section__link"
               onClick={() => navigate("/bookings")}
             >
-              Hamısına bax
+              {t("Hamısına bax")}
             </button>
           </div>
 
           {recentBookings.length === 0 ? (
             <p className="profile-empty-text">
-              Hələ heç bir rezerviniz yoxdur.
+              {t("Hələ heç bir rezerviniz yoxdur.")}
             </p>
           ) : (
             <div className="profile-booking-list">
@@ -448,8 +451,8 @@ function Profile() {
         <section className="profile-section">
           <div className="profile-section__header">
             <div>
-              <h2>Hesabım</h2>
-              <span>AzLink hesabınızla bağlı bölmələr</span>
+              <h2>{t("Hesabım")}</h2>
+              <span>{t("AzLink hesabınızla bağlı bölmələr")}</span>
             </div>
           </div>
 
@@ -467,8 +470,8 @@ function Profile() {
               </div>
 
               <div>
-                <strong>Hesab məlumatları</strong>
-                <span>Ad, email, telefon və şəxsi məlumatlar</span>
+                <strong>{t("Hesab məlumatları")}</strong>
+                <span>{t("Ad, email, telefon və şəxsi məlumatlar")}</span>
               </div>
 
               <ChevronRight
@@ -490,8 +493,8 @@ function Profile() {
               </div>
 
               <div>
-                <strong>Bildirişlər</strong>
-                <span>Rezervlərinizin təsdiqi, ləğvi və tamamlanması</span>
+                <strong>{t("Bildirişlər")}</strong>
+                <span>{t("Rezervlərinizin təsdiqi, ləğvi və tamamlanması")}</span>
               </div>
 
               <ChevronRight
@@ -511,8 +514,8 @@ function Profile() {
               </div>
 
               <div>
-                <strong>Təhlükəsizlik</strong>
-                <span>Şifrə və hesab təhlükəsizliyi</span>
+                <strong>{t("Təhlükəsizlik")}</strong>
+                <span>{t("Şifrə və hesab təhlükəsizliyi")}</span>
               </div>
 
               <ChevronRight
@@ -521,6 +524,20 @@ function Profile() {
                 strokeWidth={1.8}
               />
             </button>
+
+            {/* Dil: telefonda naviqasiyada yer olmadığı üçün burada da var */}
+            <div className="profile-menu__item profile-menu__item--static">
+              <div className="profile-menu__icon">
+                <Languages size={19} strokeWidth={1.8} />
+              </div>
+
+              <div>
+                <strong>{t("Dil")}</strong>
+                <span>{t("Saytın dili")}</span>
+              </div>
+
+              <LanguageSwitch />
+            </div>
           </div>
         </section>
       </div>

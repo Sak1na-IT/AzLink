@@ -12,35 +12,36 @@ import {
 
 import "./BusinessLayout.css";
 import "./BusinessTheme.css";
+import { t } from "../../i18n";
 
 const tabs = [
-  { to: "/business", label: "Dashboard", end: true, icon: LayoutDashboard },
-  { to: "/business/profile", label: "Profil", end: false, icon: Settings },
-  { to: "/business/services", label: "Xidmətlər", end: false, icon: Store },
+  { to: "/business", label: t("Dashboard"), end: true, icon: LayoutDashboard },
+  { to: "/business/profile", label: t("Profil"), end: false, icon: Settings },
+  { to: "/business/services", label: t("Xidmətlər"), end: false, icon: Store },
   {
     to: "/business/bookings",
-    label: "Rezervlər",
+    label: t("Rezervlər"),
     end: false,
     icon: CalendarDays,
   },
   {
     to: "/business/portfolio",
-    label: "Portfolio",
+    label: t("Portfolio"),
     end: false,
     icon: ImagePlus,
   },
-  { to: "/business/reviews", label: "Rəylər", end: false, icon: Star },
-  { to: "/business/customers", label: "Müştərilər", end: false, icon: Users },
-  { to: "/business/hours", label: "İş saatları", end: false, icon: Clock3 },
+  { to: "/business/reviews", label: t("Rəylər"), end: false, icon: Star },
+  { to: "/business/customers", label: t("Müştərilər"), end: false, icon: Users },
+  { to: "/business/hours", label: t("İş saatları"), end: false, icon: Clock3 },
 ];
 
 function BusinessLayout() {
   return (
     <div className="business-layout">
       <div className="business-layout__subnav-inner">
-        <span className="business-layout__title">Biznesim</span>
+        <span className="business-layout__title">{t("Biznesim")}</span>
 
-        <nav className="business-layout__tabs" aria-label="Biznesim menyusu">
+        <nav className="business-layout__tabs" aria-label={t("Biznesim menyusu")}>
           {tabs.map(({ to, label, end, icon: Icon }) => (
             <NavLink
               key={to}

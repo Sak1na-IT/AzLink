@@ -31,6 +31,7 @@ import {
 import { compressImage } from "../../utils/compressImage";
 import { ApiError } from "../../services/api";
 import { weekDays, weekDayLabels } from "../../types/schedule";
+import { t } from "../../i18n";
 
 type AreaOption = Awaited<ReturnType<typeof getAreas>>[number];
 
@@ -73,7 +74,7 @@ function BusinessProfile() {
         /* yalnız əsas kateqoriyalar (alt-kateqoriyalar yox) */
         setCategories(categoriesResult.filter((item) => !item.parentId));
       } catch {
-        setLoadError("Biznes profilini yükləmək mümkün olmadı.");
+        setLoadError(t("Biznes profilini yükləmək mümkün olmadı."));
       } finally {
         setIsLoading(false);
       }
@@ -138,14 +139,14 @@ function BusinessProfile() {
 
       setBrandingNote(
         status === 404
-          ? "Server köhnə versiyadadır: serveri dayandırıb yenidən başladın (npm run dev)."
+          ? t("Server köhnə versiyadadır: serveri dayandırıb yenidən başladın (npm run dev).")
           : status === 413
-            ? "Şəkil çox böyükdür, daha kiçik şəkil seçin."
+            ? t("Şəkil çox böyükdür, daha kiçik şəkil seçin.")
             : status >= 500
-              ? `Server xətası: ${detail}. Bazanı yenilədinizmi? (npx prisma migrate deploy, npx prisma generate)`
+              ? t("Server xətası: {detail}. Bazanı yenilədinizmi? (npx prisma migrate deploy, npx prisma generate)", { detail })
               : status
-                ? `Yadda saxlamaq mümkün olmadı: ${detail}`
-                : "Serverə qoşulmaq mümkün olmadı. Server işləyirmi?"
+                ? t("Yadda saxlamaq mümkün olmadı: {detail}", { detail })
+                : t("Serverə qoşulmaq mümkün olmadı. Server işləyirmi?")
       );
       return false;
     } finally {
@@ -164,14 +165,14 @@ function BusinessProfile() {
     if (!file) return null;
 
     if (!file.type.startsWith("image/")) {
-      setBrandingNote("Yalnız şəkil faylı seçin.");
+      setBrandingNote(t("Yalnız şəkil faylı seçin."));
       return null;
     }
 
     try {
       return await compressImage(file, maxSide);
     } catch {
-      setBrandingNote("Şəkli oxumaq mümkün olmadı.");
+      setBrandingNote(t("Şəkli oxumaq mümkün olmadı."));
       return null;
     }
   };
@@ -179,7 +180,7 @@ function BusinessProfile() {
   const handleLogoFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const dataUrl = await readImage(event, 480);
     if (dataUrl) {
-      await applyBranding({ logoUrl: dataUrl }, "Profil şəkli yeniləndi.");
+      await applyBranding({ logoUrl: dataUrl }, t("Profil şəkli yeniləndi."));
     }
   };
 
@@ -188,7 +189,7 @@ function BusinessProfile() {
     if (dataUrl) {
       await applyBranding(
         { coverUrl: dataUrl, coverPosition: 50 },
-        "Üz qabığı yeniləndi. İstəsəniz yerini düzəldin."
+        t("Üz qabığı yeniləndi. İstəsəniz yerini düzəldin.")
       );
     }
   };
@@ -222,7 +223,7 @@ function BusinessProfile() {
   const saveAdjusting = async () => {
     const ok = await applyBranding(
       { coverPosition: draftPosition },
-      "Üz qabığının yeri yadda saxlanıldı."
+      t("Üz qabığının yeri yadda saxlanıldı.")
     );
     if (ok) setIsAdjusting(false);
   };
@@ -230,7 +231,7 @@ function BusinessProfile() {
   if (isLoading) {
     return (
       <main className="business-profile">
-        <p className="business-profile__message">Yüklənir...</p>
+        <p className="business-profile__message">{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -239,7 +240,7 @@ function BusinessProfile() {
     return (
       <main className="business-profile">
         <p className="business-profile__message">
-          {loadError || "Məlumat tapılmadı."}
+          {loadError || t("Məlumat tapılmadı.")}
         </p>
       </main>
     );
@@ -258,9 +259,9 @@ function BusinessProfile() {
     <main className="business-profile">
       <section className="business-profile__header">
         <div>
-          <span className="biz-eyebrow">Profil</span>
-          <h1>Biznes profili</h1>
-          <p>Müştərilərin sizin haqqınızda gördüyü məlumatlar.</p>
+          <span className="biz-eyebrow">{t("Profil")}</span>
+          <h1>{t("Biznes profili")}</h1>
+          <p>{t("Müştərilərin sizin haqqınızda gördüyü məlumatlar.")}</p>
         </div>
 
         {profile.id && (
@@ -268,7 +269,7 @@ function BusinessProfile() {
             to={`/provider/${profile.id}`}
             className="business-profile__view"
           >
-            Profilə bax
+            {t("Profilə bax")}
             <ArrowRight size={15} strokeWidth={1.8} />
           </Link>
         )}
@@ -277,7 +278,7 @@ function BusinessProfile() {
       {/* ===== CANLI ÖNBAXIŞ ===== */}
       <section
         className="business-profile__preview"
-        aria-label="Müştərilər sizi belə görür"
+        aria-label={t("Müştərilər sizi belə görür")}
       >
         <div
           className={
@@ -304,7 +305,7 @@ function BusinessProfile() {
             <>
               <span className="business-profile__drag-hint">
                 <Move size={16} strokeWidth={1.8} />
-                Şəkli yuxarı və ya aşağı sürüşdürün
+                {t("Şəkli yuxarı və ya aşağı sürüşdürün")}
               </span>
 
               <div className="business-profile__cover-tools">
@@ -315,7 +316,7 @@ function BusinessProfile() {
                   disabled={brandingBusy}
                 >
                   <Check size={15} strokeWidth={2} />
-                  Yadda saxla
+                  {t("Yadda saxla")}
                 </button>
 
                 <button
@@ -325,7 +326,7 @@ function BusinessProfile() {
                   disabled={brandingBusy}
                 >
                   <X size={15} strokeWidth={2} />
-                  Ləğv et
+                  {t("Ləğv et")}
                 </button>
               </div>
             </>
@@ -338,7 +339,7 @@ function BusinessProfile() {
                 disabled={brandingBusy}
               >
                 <Camera size={15} strokeWidth={1.8} />
-                {coverImage ? "Üz qabığını dəyiş" : "Üz qabığı əlavə et"}
+                {coverImage ? t("Üz qabığını dəyiş") : t("Üz qabığı əlavə et")}
               </button>
 
               {coverImage && (
@@ -350,7 +351,7 @@ function BusinessProfile() {
                     disabled={brandingBusy}
                   >
                     <Move size={15} strokeWidth={1.8} />
-                    Yerini düzəlt
+                    {t("Yerini düzəlt")}
                   </button>
 
                   <button
@@ -359,12 +360,12 @@ function BusinessProfile() {
                     onClick={() =>
                       applyBranding(
                         { coverUrl: null, coverPosition: 50 },
-                        "Üz qabığı silindi."
+                        t("Üz qabığı silindi.")
                       )
                     }
                     disabled={brandingBusy}
-                    aria-label="Üz qabığını sil"
-                    title="Üz qabığını sil"
+                    aria-label={t("Üz qabığını sil")}
+                    title={t("Üz qabığını sil")}
                   >
                     <Trash2 size={15} strokeWidth={1.8} />
                   </button>
@@ -373,7 +374,7 @@ function BusinessProfile() {
             </div>
           )}
 
-          {!isAdjusting && <span>Müştərilər sizi belə görür</span>}
+          {!isAdjusting && <span>{t("Müştərilər sizi belə görür")}</span>}
         </div>
 
         <input
@@ -400,8 +401,8 @@ function BusinessProfile() {
               className="business-profile__avatar"
               onClick={() => logoInputRef.current?.click()}
               disabled={brandingBusy}
-              aria-label="Profil şəklini dəyiş"
-              title="Profil şəklini dəyiş"
+              aria-label={t("Profil şəklini dəyiş")}
+              title={t("Profil şəklini dəyiş")}
             >
               {profile.logoUrl ? (
                 <img src={profile.logoUrl} alt="" />
@@ -411,7 +412,7 @@ function BusinessProfile() {
 
               <span className="business-profile__avatar-overlay">
                 <Camera size={20} strokeWidth={1.8} />
-                {profile.logoUrl ? "Dəyiş" : "Şəkil"}
+                {profile.logoUrl ? t("Dəyiş") : t("Şəkil")}
               </span>
             </button>
 
@@ -420,11 +421,11 @@ function BusinessProfile() {
                 type="button"
                 className="business-profile__avatar-remove"
                 onClick={() =>
-                  applyBranding({ logoUrl: null }, "Profil şəkli silindi.")
+                  applyBranding({ logoUrl: null }, t("Profil şəkli silindi."))
                 }
                 disabled={brandingBusy}
-                aria-label="Profil şəklini sil"
-                title="Profil şəklini sil"
+                aria-label={t("Profil şəklini sil")}
+                title={t("Profil şəklini sil")}
               >
                 <X size={14} strokeWidth={2} />
               </button>
@@ -432,7 +433,7 @@ function BusinessProfile() {
           </div>
 
         <div className="business-profile__preview-info">
-            <h2>{profile.businessName.trim() || "Biznes adı"}</h2>
+            <h2>{profile.businessName.trim() || t("Biznes adı")}</h2>
 
             <div className="business-profile__chips">
               {profile.category && (
@@ -463,14 +464,14 @@ function BusinessProfile() {
 
             {(brandingBusy || brandingNote) && (
               <p className="business-profile__branding-note">
-                {brandingBusy ? "Yadda saxlanılır..." : brandingNote}
+                {brandingBusy ? t("Yadda saxlanılır...") : brandingNote}
               </p>
             )}
 
             {!profile.logoUrl && !brandingNote && (
               <p className="business-profile__branding-tip">
                 <Camera size={14} strokeWidth={1.8} />
-                Profil şəkli əlavə etmək üçün dairəyə basın.
+                {t("Profil şəkli əlavə etmək üçün dairəyə basın.")}
               </p>
             )}
           </div>
@@ -482,16 +483,16 @@ function BusinessProfile() {
         {/* ===== ƏSAS MƏLUMATLAR ===== */}
         <section className="business-profile__card">
           <div className="business-profile__card-header">
-            <h2>Əsas məlumatlar</h2>
+            <h2>{t("Əsas məlumatlar")}</h2>
           </div>
 
           <div className="business-profile__fields">
             <label className="business-profile__field">
-              <span>Biznes adı</span>
+              <span>{t("Biznes adı")}</span>
 
               <input
                 type="text"
-                placeholder="Məsələn, Bakı Beauty Studio"
+                placeholder={t("Məsələn, Bakı Beauty Studio")}
                 value={profile.businessName}
                 onChange={(event) =>
                   update("businessName", event.target.value)
@@ -501,18 +502,18 @@ function BusinessProfile() {
             </label>
 
             <label className="business-profile__field">
-              <span>Kateqoriya</span>
+              <span>{t("Kateqoriya")}</span>
 
               <select
                 value={profile.category}
                 onChange={(event) => update("category", event.target.value)}
                 required
               >
-                <option value="">Kateqoriya seçin</option>
+                <option value="">{t("Kateqoriya seçin")}</option>
 
                 {categories.map((category) => (
                   <option key={category.id} value={category.name}>
-                    {category.name}
+                    {t(category.name)}
                   </option>
                 ))}
               </select>
@@ -523,12 +524,12 @@ function BusinessProfile() {
         {/* ===== ƏLAQƏ ===== */}
         <section className="business-profile__card">
           <div className="business-profile__card-header">
-            <h2>Əlaqə və ərazi</h2>
+            <h2>{t("Əlaqə və ərazi")}</h2>
           </div>
 
           <div className="business-profile__fields">
             <label className="business-profile__field">
-              <span>Telefon</span>
+              <span>{t("Telefon")}</span>
 
               <input
                 type="tel"
@@ -540,14 +541,14 @@ function BusinessProfile() {
             </label>
 
             <label className="business-profile__field">
-              <span>Ərazi</span>
+              <span>{t("Ərazi")}</span>
 
               <select
                 value={profile.areaId}
                 onChange={(event) => update("areaId", event.target.value)}
                 required
               >
-                <option value="">Ərazi seçin</option>
+                <option value="">{t("Ərazi seçin")}</option>
 
                 {areas.map((area) => (
                   <option key={area.id} value={area.id}>
@@ -562,12 +563,12 @@ function BusinessProfile() {
         {/* ===== HAQQINDA ===== */}
         <section className="business-profile__card">
           <div className="business-profile__card-header">
-            <h2>Haqqında</h2>
+            <h2>{t("Haqqında")}</h2>
           </div>
 
           <label className="business-profile__field">
             <textarea
-              placeholder="Biznesiniz və göstərdiyiniz xidmətlər haqqında qısa məlumat yazın..."
+              placeholder={t("Biznesiniz və göstərdiyiniz xidmətlər haqqında qısa məlumat yazın...")}
               value={description}
               maxLength={DESCRIPTION_LIMIT}
               onChange={(event) => update("description", event.target.value)}
@@ -583,11 +584,11 @@ function BusinessProfile() {
         {/* ===== İŞ SAATLARI XÜLASƏSİ ===== */}
         <section className="business-profile__card">
           <div className="business-profile__card-header">
-            <h2>İş saatları</h2>
+            <h2>{t("İş saatları")}</h2>
 
             <Link to="/business/hours" className="business-profile__link">
               <Clock3 size={15} strokeWidth={1.8} />
-              Dəyiş
+              {t("Dəyiş")}
             </Link>
           </div>
 
@@ -604,7 +605,7 @@ function BusinessProfile() {
                       {item.start} – {item.end}
                     </strong>
                   ) : (
-                    <em>Bağlı</em>
+                    <em>{t("Bağlı")}</em>
                   )}
                 </li>
               );
@@ -615,13 +616,13 @@ function BusinessProfile() {
         <div className="business-profile__footer">
           {status === "saved" && (
             <span className="business-profile__status business-profile__status--ok">
-              Dəyişikliklər yadda saxlanıldı.
+              {t("Dəyişikliklər yadda saxlanıldı.")}
             </span>
           )}
 
           {status === "error" && (
             <span className="business-profile__status business-profile__status--error">
-              Yadda saxlamaq mümkün olmadı.
+              {t("Yadda saxlamaq mümkün olmadı.")}
             </span>
           )}
 
@@ -631,7 +632,7 @@ function BusinessProfile() {
             disabled={isSaving}
           >
             <Save size={18} strokeWidth={1.9} />
-            {isSaving ? "Saxlanılır..." : "Dəyişiklikləri yadda saxla"}
+            {isSaving ? t("Saxlanılır...") : t("Dəyişiklikləri yadda saxla")}
           </button>
         </div>
       </form>

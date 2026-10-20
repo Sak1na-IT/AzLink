@@ -26,11 +26,12 @@ import {
   saveProvider,
   unsaveProvider,
 } from "../../services/savedService";
+import { t } from "../../i18n";
 type PriceFilter = "all" | "under-20" | "20-30" | "30-50" | "50-plus";
 
 const priceLabels: Record<PriceFilter, string> = {
-  all: "Bütün qiymətlər",
-  "under-20": "20 ₼-dən aşağı",
+  all: t("Bütün qiymətlər"),
+  "under-20": t("20 ₼-dən aşağı"),
   "20-30": "20–30 ₼",
   "30-50": "30–50 ₼",
   "50-plus": "50 ₼+",
@@ -119,7 +120,7 @@ function SearchResults() {
 
       } catch {
         if (!cancelled) {
-          setLoadError("Bizneslər yüklənmədi. Bir az sonra yenidən cəhd edin.");
+          setLoadError(t("Bizneslər yüklənmədi. Bir az sonra yenidən cəhd edin."));
         }
       } finally {
         if (!cancelled) {
@@ -428,7 +429,7 @@ function SearchResults() {
       <main className="search-results-page">
         <div className="search-results-container">
           <section className="search-empty">
-            <h2>{loadError || "Yüklənir..."}</h2>
+            <h2>{loadError || t("Yüklənir...")}</h2>
           </section>
         </div>
       </main>
@@ -446,30 +447,30 @@ function SearchResults() {
               type="button"
               className="search-results-back"
               onClick={() => navigate(-1)}
-              aria-label="Geri"
+              aria-label={t("Geri")}
             >
               <ArrowLeft size={19} strokeWidth={1.8} />
             </button>
 
             <div className="search-results-title">
-              <span className="search-results-eyebrow">Yeni rezerv</span>
+              <span className="search-results-eyebrow">{t("Yeni rezerv")}</span>
 
               <h1>
                 {selectedService
-                  ? selectedService
+                  ? t(selectedService)
                   : activeCategory
-                    ? activeCategory.name
+                    ? t(activeCategory.name)
                     : query
                       ? `“${query}”`
-                      : "Bütün xidmətlər"}
+                      : t("Bütün xidmətlər")}
               </h1>
 
               <p>
                 {selectedService
-                  ? `${selectedService} xidməti göstərən bizneslər`
+                  ? t("{selectedService} xidməti göstərən bizneslər", { selectedService: t(selectedService) })
                   : activeCategory
-                    ? `${activeCategory.name} sahəsində bütün bizneslər`
-                    : "Sizə uyğun xidmətləri tapın"}
+                    ? t("{name} sahəsində bütün bizneslər", { name: t(activeCategory.name) })
+                    : t("Sizə uyğun xidmətləri tapın")}
               </p>
             </div>
           </header>
@@ -480,7 +481,7 @@ function SearchResults() {
             <div className="search-summary__count">
               <strong>{filteredProviders.length}</strong>
 
-              <span> nəticə</span>
+              <span>{" "}{t("nəticə")}</span>
             </div>
 
             {selectedAreas.length > 0 && (
@@ -494,7 +495,7 @@ function SearchResults() {
                     <button
                       type="button"
                       onClick={() => removeArea(area)}
-                      aria-label={`${area} sil`}
+                      aria-label={t("{area} sil", { area })}
                     >
                       <X size={11} />
                     </button>
@@ -510,7 +511,7 @@ function SearchResults() {
             >
               <Plus size={14} strokeWidth={2} />
 
-              {selectedAreas.length > 0 ? "Ərazi əlavə et" : "Ərazi seç"}
+              {selectedAreas.length > 0 ? t("Ərazi əlavə et") : t("Ərazi seç")}
             </button>
           </section>
 
@@ -519,7 +520,7 @@ function SearchResults() {
           <section className="search-filters">
             <div className="search-filter-label">
               <Filter size={16} />
-              Filtrlər
+              {t("Filtrlər")}
             </div>
 
             <div className="search-filter-group">
@@ -545,7 +546,7 @@ function SearchResults() {
               <span>Reytinq:</span>
 
               {[
-                { value: 0, label: "Hamısı" },
+                { value: 0, label: t("Hamısı") },
                 { value: 4, label: "4.0+" },
                 { value: 4.5, label: "4.5+" },
               ].map((item) => (
@@ -570,7 +571,7 @@ function SearchResults() {
                 className="search-clear"
                 onClick={clearFilters}
               >
-                Təmizlə
+                {t("Təmizlə")}
               </button>
             )}
           </section>
@@ -598,7 +599,7 @@ function SearchResults() {
                       {provider.verified && (
                         <span className="search-provider-card__verified">
                           <Check size={13} />
-                          Təsdiqlənib
+                          {t("Təsdiqlənib")}
                         </span>
                       )}
                     </div>
@@ -611,7 +612,7 @@ function SearchResults() {
                       </div>
 
                       <div className="search-provider-card__service">
-                        {provider.service}
+                        {t(provider.service)}
                       </div>
 
                       <div className="search-provider-card__location">
@@ -623,7 +624,7 @@ function SearchResults() {
                           <>
                             <span>·</span>
 
-                            <span>{provider.distance} km</span>
+                            <span>{provider.distance}{" "}{t("km")}</span>
                           </>
                         )}
                       </div>
@@ -635,13 +636,13 @@ function SearchResults() {
                           {provider.rating}
                         </span>
 
-                        <span>{provider.reviewCount} rəy</span>
+                        <span>{t("{count} rəy", { count: provider.reviewCount })}</span>
                       </div>
 
                       <div className="search-provider-card__footer">
-                        <span>Başlayan qiymət</span>
+                        <span>{t("Başlayan qiymət")}</span>
 
-                        <strong>{provider.priceFrom} ₼-dən</strong>
+                        <strong>{t("{price} ₼-dən", { price: provider.priceFrom })}</strong>
                       </div>
                     </div>
                   </button>
@@ -653,8 +654,8 @@ function SearchResults() {
                     className="search-provider-card__save"
                     aria-label={
                       savedIds.has(provider.id)
-                        ? `${provider.name} seçilmişlərdən çıxar`
-                        : `${provider.name} seçilmişlərə əlavə et`
+                        ? t("{name} seçilmişlərdən çıxar", { name: provider.name })
+                        : t("{name} seçilmişlərə əlavə et", { name: provider.name })
                     }
                     onClick={(event) => {
                       event.stopPropagation();
@@ -676,16 +677,16 @@ function SearchResults() {
                 <Search size={22} />
               </div>
 
-              <h2>Uyğun nəticə tapılmadı</h2>
+              <h2>{t("Uyğun nəticə tapılmadı")}</h2>
 
-              <p>Bu xidmət üzrə hazırda uyğun biznes tapılmadı.</p>
+              <p>{t("Bu xidmət üzrə hazırda uyğun biznes tapılmadı.")}</p>
 
               <button
                 type="button"
                 className="search-empty__button"
                 onClick={clearFilters}
               >
-                Filtrləri təmizlə
+                {t("Filtrləri təmizlə")}
               </button>
             </section>
           )}

@@ -9,6 +9,7 @@ import {
 } from "../../services/businessPortfolioService";
 import { compressImage } from "../../utils/compressImage";
 import "./BusinessPortfolio.css";
+import { t } from "../../i18n";
 
 /* Şəkil yüklənməzdən əvvəl kiçildilir, ona görə böyük fayllar da olar */
 const MAX_FILE_SIZE_MB = 20;
@@ -28,7 +29,7 @@ function BusinessPortfolio() {
       const result = await getPortfolio();
       setImages(result);
     } catch {
-      setError("Portfolio yüklənmədi. Yenidən cəhd edin.");
+      setError(t("Portfolio yüklənmədi. Yenidən cəhd edin."));
     } finally {
       setIsLoading(false);
     }
@@ -49,12 +50,12 @@ function BusinessPortfolio() {
     }
 
     if (!file.type.startsWith("image/")) {
-      setError("Yalnız şəkil faylı yükləyə bilərsiniz.");
+      setError(t("Yalnız şəkil faylı yükləyə bilərsiniz."));
       return;
     }
 
     if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      setError(`Şəkil ${MAX_FILE_SIZE_MB}MB-dan böyük ola bilməz.`);
+      setError(t("Şəkil {MAX_FILE_SIZE_MB}MB-dan böyük ola bilməz.", { MAX_FILE_SIZE_MB }));
       return;
     }
 
@@ -72,7 +73,7 @@ function BusinessPortfolio() {
       setCaption("");
       await reload();
     } catch {
-      setError("Şəkli yükləmək mümkün olmadı. Yenidən sınayın.");
+      setError(t("Şəkli yükləmək mümkün olmadı. Yenidən sınayın."));
     } finally {
       setIsUploading(false);
     }
@@ -81,7 +82,7 @@ function BusinessPortfolio() {
   const handleDelete = async (image: PortfolioImage) => {
     if (
       !window.confirm(
-        "Bu şəkli silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz."
+        t("Bu şəkli silmək istəyirsiniz? Bu əməliyyat geri qaytarıla bilməz.")
       )
     ) {
       return;
@@ -91,14 +92,14 @@ function BusinessPortfolio() {
       await deletePortfolioImage(image.id);
       await reload();
     } catch {
-      setError("Şəkli silmək mümkün olmadı.");
+      setError(t("Şəkli silmək mümkün olmadı."));
     }
   };
 
   if (isLoading) {
     return (
       <main className="business-portfolio">
-        <p className="business-portfolio__hint">Yüklənir...</p>
+        <p className="business-portfolio__hint">{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -107,12 +108,11 @@ function BusinessPortfolio() {
     <main className="business-portfolio">
       <section className="business-portfolio__header">
         <div>
-          <span className="biz-eyebrow">Portfolio</span>
-          <h1>İş nümunələri</h1>
+          <span className="biz-eyebrow">{t("Portfolio")}</span>
+          <h1>{t("İş nümunələri")}</h1>
 
           <p>
-            İş nümunələrinizi əlavə edin. Müştərilər bunları profil
-            səhifənizdə görəcək.
+            {t("İş nümunələrinizi əlavə edin. Müştərilər bunları profil səhifənizdə görəcək.")}
           </p>
         </div>
       </section>
@@ -120,7 +120,7 @@ function BusinessPortfolio() {
       <section className="business-portfolio__upload">
         <input
           type="text"
-          placeholder="Şəkil üçün qısa izah (vacib deyil)"
+          placeholder={t("Şəkil üçün qısa izah (vacib deyil)")}
           value={caption}
           maxLength={80}
           onChange={(event) => setCaption(event.target.value)}
@@ -141,14 +141,13 @@ function BusinessPortfolio() {
           disabled={isUploading}
         >
           <Upload size={18} strokeWidth={1.9} />
-          {isUploading ? "Yüklənir..." : "Şəkil yüklə"}
+          {isUploading ? t("Yüklənir...") : t("Şəkil yüklə")}
         </button>
 
         {error && <small className="business-portfolio__error">{error}</small>}
 
         <small className="business-portfolio__hint">
-          Ən çox {MAX_FILE_SIZE_MB}MB. Şəkillər serverdə saxlanılır və
-          profilinizdə hər kəsə görünür.
+          {t("Ən çox {size}MB. Şəkillər serverdə saxlanılır və profilinizdə hər kəsə görünür.", { size: MAX_FILE_SIZE_MB })}
         </small>
       </section>
 
@@ -158,15 +157,15 @@ function BusinessPortfolio() {
             <Images size={24} strokeWidth={1.8} />
           </div>
 
-          <h2>Hələ şəkil yoxdur</h2>
+          <h2>{t("Hələ şəkil yoxdur")}</h2>
 
-          <p>İlk iş nümunənizi yükləyin.</p>
+          <p>{t("İlk iş nümunənizi yükləyin.")}</p>
         </section>
       ) : (
         <section className="business-portfolio__grid">
           {images.map((image) => (
             <article key={image.id} className="business-portfolio-item">
-              <img src={image.dataUrl} alt={image.caption || "Portfolio"} />
+              <img src={image.dataUrl} alt={image.caption || t("Portfolio")} />
 
               {image.caption && (
                 <span className="business-portfolio-item__caption">
@@ -178,7 +177,7 @@ function BusinessPortfolio() {
                 type="button"
                 className="business-portfolio-item__delete"
                 onClick={() => handleDelete(image)}
-                aria-label="Şəkli sil"
+                aria-label={t("Şəkli sil")}
               >
                 <Trash2 size={16} strokeWidth={1.8} />
               </button>
@@ -194,7 +193,7 @@ function BusinessPortfolio() {
           onClick={() => fileInputRef.current?.click()}
         >
           <ImagePlus size={18} strokeWidth={1.8} />
-          İlk şəkli yüklə
+          {t("İlk şəkli yüklə")}
         </button>
       )}
     </main>

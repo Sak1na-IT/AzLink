@@ -7,6 +7,7 @@ import {
 } from "../../services/reviewsService";
 import { formatFullDate } from "../../utils/formatDate";
 import "./BusinessReviews.css";
+import { t } from "../../i18n";
 
 /* 2026-10-19T... → 19 oktyabr 2026 */
 const formatDate = formatFullDate;
@@ -20,7 +21,7 @@ const getInitials = (name: string) =>
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <span className="business-reviews__stars" aria-label={`${rating} ulduz`}>
+    <span className="business-reviews__stars" aria-label={t("{count} ulduz", { count: rating })}>
       {[1, 2, 3, 4, 5].map((value) => (
         <Star
           key={value}
@@ -41,7 +42,7 @@ function BusinessReviews() {
   useEffect(() => {
     getBusinessReviews()
       .then(setReviews)
-      .catch(() => setError("Rəyləri yükləmək mümkün olmadı."))
+      .catch(() => setError(t("Rəyləri yükləmək mümkün olmadı.")))
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -66,7 +67,7 @@ function BusinessReviews() {
   if (isLoading) {
     return (
       <main className="business-reviews">
-        <p className="business-reviews__muted">Yüklənir...</p>
+        <p className="business-reviews__muted">{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -82,9 +83,9 @@ function BusinessReviews() {
   return (
     <main className="business-reviews">
       <header className="business-reviews__header">
-        <span className="biz-eyebrow">Rəylər</span>
-        <h1>Müştəri rəyləri</h1>
-        <p>Müştərilərin tamamlanmış rezervlərdən sonra yazdığı rəylər.</p>
+        <span className="biz-eyebrow">{t("Rəylər")}</span>
+        <h1>{t("Müştəri rəyləri")}</h1>
+        <p>{t("Müştərilərin tamamlanmış rezervlərdən sonra yazdığı rəylər.")}</p>
       </header>
 
       {reviews.length === 0 ? (
@@ -92,9 +93,9 @@ function BusinessReviews() {
           <div className="business-reviews__empty-icon">
             <MessageSquareText size={24} strokeWidth={1.8} />
           </div>
-          <h2>Hələ rəy yoxdur</h2>
+          <h2>{t("Hələ rəy yoxdur")}</h2>
           <p>
-            Rezervi "Tamamlandı" etdikdən sonra müştəri rəy yaza biləcək.
+            {t('Rezervi "Tamamlandı" etdikdən sonra müştəri rəy yaza biləcək.')}
           </p>
         </section>
       ) : (
@@ -103,7 +104,7 @@ function BusinessReviews() {
             <div className="business-reviews__average">
               <strong>{summary.average.toFixed(1)}</strong>
               <Stars rating={Math.round(summary.average)} />
-              <span>{reviews.length} rəy</span>
+              <span>{t("{count} rəy", { count: reviews.length })}</span>
             </div>
 
             <div className="business-reviews__bars">
@@ -146,7 +147,7 @@ function BusinessReviews() {
                   </p>
                 ) : (
                   <p className="business-review-card__comment is-empty">
-                    Şərh yazılmayıb
+                    {t("Şərh yazılmayıb")}
                   </p>
                 )}
               </article>

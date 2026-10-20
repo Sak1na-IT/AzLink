@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Bell, CheckCheck } from "lucide-react";
 
 import "./NotificationBell.css";
+import { locale, t } from "../../i18n";
+import { translateNotification } from "../../i18n/notifications";
 import {
   getNotifications,
   getUnreadCount,
@@ -21,16 +23,16 @@ const POLL_MS = 45_000;
 const timeAgo = (value: string) => {
   const minutes = Math.floor((Date.now() - new Date(value).getTime()) / 60_000);
 
-  if (minutes < 1) return "indi";
-  if (minutes < 60) return `${minutes} dəq əvvəl`;
+  if (minutes < 1) return t("indi");
+  if (minutes < 60) return t("{count} dəq əvvəl", { count: minutes });
 
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} saat əvvəl`;
+  if (hours < 24) return t("{count} saat əvvəl", { count: hours });
 
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} gün əvvəl`;
+  if (days < 30) return t("{count} gün əvvəl", { count: days });
 
-  return new Date(value).toLocaleDateString("az-AZ");
+  return new Date(value).toLocaleDateString(locale());
 };
 
 function NotificationBell() {
@@ -97,7 +99,7 @@ function NotificationBell() {
       setItems(result.items);
       setUnreadCount(result.unreadCount);
     } catch {
-      setLoadError("Bildirişləri yükləmək mümkün olmadı.");
+      setLoadError(t("Bildirişləri yükləmək mümkün olmadı."));
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +147,7 @@ function NotificationBell() {
       setItems((current) => current.map((item) => ({ ...item, isRead: true })));
       setUnreadCount(0);
     } catch {
-      setLoadError("Əməliyyat mümkün olmadı. Yenidən cəhd edin.");
+      setLoadError(t("Əməliyyat mümkün olmadı. Yenidən cəhd edin."));
     }
   };
 
@@ -159,11 +161,11 @@ function NotificationBell() {
         onClick={toggle}
         aria-label={
           unreadCount > 0
-            ? `Bildirişlər, ${unreadCount} oxunmamış`
-            : "Bildirişlər"
+            ? t("Bildirişlər, {count} oxunmamış", { count: unreadCount })
+            : t("Bildirişlər")
         }
         aria-expanded={isOpen}
-        title="Bildirişlər"
+        title={t("Bildirişlər")}
       >
         <Bell size={18} strokeWidth={1.8} />
         {unreadCount > 0 && (
@@ -172,9 +174,9 @@ function NotificationBell() {
       </button>
 
       {isOpen && (
-        <div className="notification-bell__panel" role="dialog" aria-label="Bildirişlər">
+        <div className="notification-bell__panel" role="dialog" aria-label={t("Bildirişlər")}>
           <div className="notification-bell__head">
-            <strong>Bildirişlər</strong>
+            <strong>{t("Bildirişlər")}</strong>
 
             {unreadCount > 0 && (
               <button
@@ -183,19 +185,19 @@ function NotificationBell() {
                 onClick={readAll}
               >
                 <CheckCheck size={15} strokeWidth={1.8} />
-                Hamısı oxundu
+                {t("Hamısı oxundu")}
               </button>
             )}
           </div>
 
           {isLoading ? (
-            <p className="notification-bell__empty">Yüklənir...</p>
+            <p className="notification-bell__empty">{t("Yüklənir...")}</p>
           ) : loadError ? (
             <p className="notification-bell__empty">{loadError}</p>
           ) : items.length === 0 ? (
             <div className="notification-bell__empty">
               <Bell size={22} strokeWidth={1.6} />
-              <span>Hələ bildiriş yoxdur</span>
+              <span>{t("Hələ bildiriş yoxdur")}</span>
             </div>
           ) : (
             <ul className="notification-bell__list">
@@ -212,7 +214,7 @@ function NotificationBell() {
                   >
                     <span className="notification-bell__dot" aria-hidden="true" />
                     <span className="notification-bell__text">
-                      <span>{item.message}</span>
+                      <span>{translateNotification(item.message)}</span>
                       <small>{timeAgo(item.createdAt)}</small>
                     </span>
                   </button>

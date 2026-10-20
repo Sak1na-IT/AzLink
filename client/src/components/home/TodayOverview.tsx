@@ -1,3 +1,5 @@
+import { t } from "../../i18n";
+
 interface TodayOverviewProps {
   verifiedProfiles: number;
   totalProfiles: number;
@@ -12,30 +14,30 @@ function TodayOverview({
   return (
     <section className="home-section">
       <div className="home-section__header">
-        <h2>Platforma</h2>
+        <h2>{t("Platforma")}</h2>
       </div>
 
       <div className="today-overview">
         <div className="today-overview__text">
           <strong>
-            Platformada hazırda xidmət göstərən profillər
+            {t("Platformada hazırda xidmət göstərən profillər")}
           </strong>
         </div>
 
         <div className="today-overview__stats">
           <div>
             <strong>{totalProfiles}</strong>
-            <span>Aktiv profil</span>
+            <span>{t("Aktiv profil")}</span>
           </div>
 
           <div>
             <strong>{verifiedProfiles}</strong>
-            <span>Təsdiqlənmiş profil</span>
+            <span>{t("Təsdiqlənmiş profil")}</span>
           </div>
 
           <div>
             <strong>{highlyRated}</strong>
-            <span>4.5+ reytinqli profil</span>
+            <span>{t("4.5+ reytinqli profil")}</span>
           </div>
         </div>
       </div>

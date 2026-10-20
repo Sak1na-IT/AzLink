@@ -3,6 +3,7 @@ import { CalendarDays, ChevronRight, Clock } from "lucide-react";
 import type { Booking } from "../../services/bookingsService";
 import { formatDuration } from "../../utils/formatDuration";
 import { formatRelativeDay, getDayParts } from "../../utils/formatDate";
+import { t } from "../../i18n";
 
 interface UpcomingBookingsProps {
   bookings: Booking[];
@@ -11,10 +12,10 @@ interface UpcomingBookingsProps {
 }
 
 const statusLabel: Record<Booking["status"], string> = {
-  PENDING: "Təsdiq gözlənilir",
-  CONFIRMED: "Təsdiqlənib",
-  CANCELLED: "Ləğv edilib",
-  COMPLETED: "Tamamlanıb",
+  PENDING: t("Təsdiq gözlənilir"),
+  CONFIRMED: t("Təsdiqlənib"),
+  CANCELLED: t("Ləğv edilib"),
+  COMPLETED: t("Tamamlanıb"),
 };
 
 /*
@@ -34,7 +35,7 @@ function UpcomingBookings({
   return (
     <section className="home-section">
       <div className="home-section__header">
-        <h2>Növbəti rezervləriniz</h2>
+        <h2>{t("Növbəti rezervləriniz")}</h2>
 
         {upcoming.length > 0 && (
           <button
@@ -42,7 +43,7 @@ function UpcomingBookings({
             className="home-section__link"
             onClick={onSeeAllClick}
           >
-            Hamısına bax
+            {t("Hamısına bax")}
             <ChevronRight size={15} strokeWidth={1.8} />
           </button>
         )}
@@ -52,8 +53,8 @@ function UpcomingBookings({
         <div className="upcoming-bookings upcoming-bookings--empty">
           <CalendarDays size={20} strokeWidth={1.6} />
           <div>
-            <strong>Yaxın vaxtlarda rezerviniz yoxdur</strong>
-            <p>Bir profil seçib rezerv yaradın, burada görünəcək.</p>
+            <strong>{t("Yaxın vaxtlarda rezerviniz yoxdur")}</strong>
+            <p>{t("Bir profil seçib rezerv yaradın, burada görünəcək.")}</p>
           </div>
         </div>
       ) : (

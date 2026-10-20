@@ -10,9 +10,10 @@ import { isLoggedIn } from "../../services/api";
 import { getProviders } from "../../services/providersService";
 import type { Provider } from "../../types/provider";
 import "./AccountType.css";
+import { t } from "../../i18n";
 
 /* Başlıq sətirləri; hər sətir açılışda növbə ilə üzə çıxır */
-const HEADLINE = ["Özünüzə vaxt ayırın,", "qalanını biz tapaq"];
+const HEADLINE = [t("Özünüzə vaxt ayırın,"), t("qalanını biz tapaq")];
 
 /*
  * Bazadakı bizneslərdən hər sahə üçün real rəqəmlər:
@@ -107,7 +108,7 @@ function AccountType() {
           <span className="account-type__brand">AzLink</span>
 
           <Link to="/login" className="account-type__login">
-            Daxil olun
+            {t("Daxil olun")}
           </Link>
         </header>
 
@@ -127,9 +128,7 @@ function AccountType() {
             </h1>
 
             <p>
-              Manikürdən ev təmizliyinə, dərsdən avtomobil yumasına: Bakının
-              mütəxəssisləri bir platformada. Qiymətləri müqayisə edin, boş
-              vaxtı seçin, bir toxunuşla rezerv edin.
+              {t("Manikürdən ev təmizliyinə, dərsdən avtomobil yumasına: Bakının mütəxəssisləri bir platformada. Qiymətləri müqayisə edin, boş vaxtı seçin, bir toxunuşla rezerv edin.")}
             </p>
 
             <div className="account-type__actions">
@@ -138,7 +137,7 @@ function AccountType() {
                 className="velvet-button velvet-button--primary"
                 onClick={() => navigate("/register?role=user")}
               >
-                Xidmət seçin
+                {t("Xidmət seçin")}
               </button>
 
               <button
@@ -146,7 +145,7 @@ function AccountType() {
                 className="velvet-button velvet-button--ghost"
                 onClick={() => navigate("/register?role=business")}
               >
-                Biznesimi əlavə edirəm
+                {t("Biznesimi əlavə edirəm")}
               </button>
             </div>
 
@@ -154,19 +153,19 @@ function AccountType() {
               {businessCount ? (
                 <div>
                   <dt>{businessCount}</dt>
-                  <dd>biznes</dd>
+                  <dd>{t("biznes")}</dd>
                 </div>
               ) : null}
 
               <div>
                 <dt>{categories.length}</dt>
-                <dd>xidmət sahəsi</dd>
+                <dd>{t("xidmət sahəsi")}</dd>
               </div>
 
               {lowestPrice ? (
                 <div>
                   <dt>{lowestPrice} ₼</dt>
-                  <dd>başlanğıc qiymət</dd>
+                  <dd>{t("başlanğıc qiymət")}</dd>
                 </div>
               ) : null}
             </dl>

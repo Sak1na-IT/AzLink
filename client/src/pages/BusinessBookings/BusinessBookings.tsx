@@ -10,6 +10,7 @@ import {
   type Booking,
   type BookingStatus,
 } from "../../services/bookingsService";
+import { t } from "../../i18n";
 
 type StatusFilter = "all" | BookingStatus;
 type PeriodFilter = "week" | "month" | "all";
@@ -20,24 +21,24 @@ interface BusinessBookingsProps {
 }
 
 const statusText: Record<BookingStatus, string> = {
-  PENDING: "Gözləyir",
-  CONFIRMED: "Təsdiqlənib",
-  CANCELLED: "Ləğv edilib",
-  COMPLETED: "Tamamlanıb",
+  PENDING: t("Gözləyir"),
+  CONFIRMED: t("Təsdiqlənib"),
+  CANCELLED: t("Ləğv edilib"),
+  COMPLETED: t("Tamamlanıb"),
 };
 
 const statusTabs: { value: StatusFilter; label: string }[] = [
-  { value: "all", label: "Hamısı" },
-  { value: "PENDING", label: "Gözləyir" },
-  { value: "CONFIRMED", label: "Təsdiqlənmiş" },
-  { value: "COMPLETED", label: "Tamamlanmış" },
-  { value: "CANCELLED", label: "Ləğv edilib" },
+  { value: "all", label: t("Hamısı") },
+  { value: "PENDING", label: t("Gözləyir") },
+  { value: "CONFIRMED", label: t("Təsdiqlənmiş") },
+  { value: "COMPLETED", label: t("Tamamlanmış") },
+  { value: "CANCELLED", label: t("Ləğv edilib") },
 ];
 
 const periodTabs: { value: PeriodFilter; label: string }[] = [
-  { value: "week", label: "Bu həftə" },
-  { value: "month", label: "Bu ay" },
-  { value: "all", label: "Ümumi" },
+  { value: "week", label: t("Bu həftə") },
+  { value: "month", label: t("Bu ay") },
+  { value: "all", label: t("Ümumi") },
 ];
 
 /* 2026-09-25 → 25.09.2026 */
@@ -96,7 +97,7 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
         result.filter((booking) => booking.customerId !== currentUserId)
       );
     } catch {
-      setError("Rezervləri yükləmək mümkün olmadı.");
+      setError(t("Rezervləri yükləmək mümkün olmadı."));
     } finally {
       setIsLoading(false);
     }
@@ -141,14 +142,14 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
       await updateBookingStatus(id, status);
       await reload();
     } catch {
-      alert("Statusu dəyişmək mümkün olmadı.");
+      alert(t("Statusu dəyişmək mümkün olmadı."));
     } finally {
       setBusyId(null);
     }
   };
 
   const handleCancel = (id: string) => {
-    if (!window.confirm("Bu rezervi ləğv etmək istəyirsiniz?")) {
+    if (!window.confirm(t("Bu rezervi ləğv etmək istəyirsiniz?"))) {
       return;
     }
 
@@ -160,8 +161,8 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
       <CalendarDays size={19} strokeWidth={1.8} />
 
       <span>
-        {activeCount} rezerv
-        {pendingCount > 0 ? ` · ${pendingCount} gözləyir` : ""}
+        {t("{count} rezerv", { count: activeCount })}
+        {pendingCount > 0 ? t(" · {pendingCount} gözləyir", { pendingCount }) : ""}
       </span>
     </div>
   );
@@ -169,7 +170,7 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
   if (isLoading) {
     return (
       <main className="business-bookings">
-        <p className="business-bookings__message">Yüklənir...</p>
+        <p className="business-bookings__message">{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -197,13 +198,12 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
       ) : (
         <section className="business-bookings__header">
           <div>
-            <span className="biz-eyebrow">Rezervlər</span>
+            <span className="biz-eyebrow">{t("Rezervlər")}</span>
 
-            <h1>Rezervləri idarə edin</h1>
+            <h1>{t("Rezervləri idarə edin")}</h1>
 
             <p>
-              Statusa görə seçin: gözləyən rezervi təsdiqləyin, təsdiqlənmiş
-              işi tamamlayın.
+              {t("Statusa görə seçin: gözləyən rezervi təsdiqləyin, təsdiqlənmiş işi tamamlayın.")}
             </p>
           </div>
 
@@ -253,9 +253,9 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
             <Clock3 size={22} strokeWidth={1.8} />
           </div>
 
-          <h3>Bu bölmədə rezerv yoxdur</h3>
+          <h3>{t("Bu bölmədə rezerv yoxdur")}</h3>
 
-          <p>Seçilmiş filtrə uyğun heç bir rezerv tapılmadı.</p>
+          <p>{t("Seçilmiş filtrə uyğun heç bir rezerv tapılmadı.")}</p>
         </div>
       ) : (
         <div className="business-bookings__list">
@@ -305,7 +305,7 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
                       onClick={() => changeStatus(booking.id, "CONFIRMED")}
                     >
                       <Check size={15} strokeWidth={2} />
-                      Təsdiqlə
+                      {t("Təsdiqlə")}
                     </button>
                   )}
 
@@ -317,7 +317,7 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
                       onClick={() => changeStatus(booking.id, "COMPLETED")}
                     >
                       <Check size={15} strokeWidth={2} />
-                      Tamamla
+                      {t("Tamamla")}
                     </button>
                   )}
 
@@ -328,7 +328,7 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
                     onClick={() => handleCancel(booking.id)}
                   >
                     <X size={15} strokeWidth={2} />
-                    Ləğv et
+                    {t("Ləğv et")}
                   </button>
                 </div>
               )}

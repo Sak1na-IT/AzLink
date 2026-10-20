@@ -1,3 +1,4 @@
+import { t } from "../i18n";
 export type WeekDay =
   | "monday"
   | "tuesday"
@@ -26,13 +27,13 @@ export const weekDays: WeekDay[] = [
 ];
 
 export const weekDayLabels: Record<WeekDay, string> = {
-  monday: "Bazar ertəsi",
-  tuesday: "Çərşənbə axşamı",
-  wednesday: "Çərşənbə",
-  thursday: "Cümə axşamı",
-  friday: "Cümə",
-  saturday: "Şənbə",
-  sunday: "Bazar",
+  monday: t("Bazar ertəsi"),
+  tuesday: t("Çərşənbə axşamı"),
+  wednesday: t("Çərşənbə"),
+  thursday: t("Cümə axşamı"),
+  friday: t("Cümə"),
+  saturday: t("Şənbə"),
+  sunday: t("Bazar"),
 };
 
 /*

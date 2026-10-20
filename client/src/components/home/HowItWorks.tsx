@@ -1,20 +1,21 @@
 import { CalendarCheck, Search, Users } from "lucide-react";
+import { t } from "../../i18n";
 
 const steps = [
   {
     icon: Search,
-    title: "Xidmət və ərazini müəyyən edin",
-    description: "Axtarışdan və ya Kəşf et bölməsindən başlayın.",
+    title: t("Xidmət və ərazini müəyyən edin"),
+    description: t("Axtarışdan və ya Kəşf et bölməsindən başlayın."),
   },
   {
     icon: Users,
-    title: "Uyğun profillərə baxın",
-    description: "Qiymət, reytinq, rəylər və xidmət məlumatlarını nəzərdən keçirin.",
+    title: t("Uyğun profillərə baxın"),
+    description: t("Qiymət, reytinq, rəylər və xidmət məlumatlarını nəzərdən keçirin."),
   },
   {
     icon: CalendarCheck,
-    title: "Uyğun vaxtı seçin",
-    description: "Boş tarix və saatlardan birini seçərək rezervinizi tamamlayın.",
+    title: t("Uyğun vaxtı seçin"),
+    description: t("Boş tarix və saatlardan birini seçərək rezervinizi tamamlayın."),
   },
 ];
 

@@ -21,13 +21,14 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 7. [Rezerv qaydaları](#rezerv-qaydaları)
 8. [Ərazi seçimi](#ərazi-seçimi)
 9. [Dizayn sistemi](#dizayn-sistemi)
-10. [Backend API](#backend-api)
-11. [Verilənlər bazası](#verilənlər-bazası)
-12. [Təhlükəsizlik](#təhlükəsizlik)
-13. [Hazırkı vəziyyət](#hazırkı-vəziyyət)
-14. [Kod qaydaları](#kod-qaydaları)
-15. [Faydalı əmrlər](#faydalı-əmrlər)
-16. [Git iş qaydası](#git-iş-qaydası)
+10. [Dil seçimi (AZ / EN)](#dil-seçimi-az--en)
+11. [Backend API](#backend-api)
+12. [Verilənlər bazası](#verilənlər-bazası)
+13. [Təhlükəsizlik](#təhlükəsizlik)
+14. [Hazırkı vəziyyət](#hazırkı-vəziyyət)
+15. [Kod qaydaları](#kod-qaydaları)
+16. [Faydalı əmrlər](#faydalı-əmrlər)
+17. [Git iş qaydası](#git-iş-qaydası)
 
 ---
 
@@ -226,6 +227,9 @@ client/
     │
     ├── hooks/
     │   └── useTheme.ts          ← light/dark mode
+    │
+    ├── i18n/                    ← dil seçimi: t(), en.ts (ingilis lüğəti), LanguageSwitch,
+    │                              notifications.ts (bildirişlərin tərcüməsi)
     │
     ├── pages/
     │   ├── AccountType/         ← giriş səhifəsi: hesab növü seçimi ("/")
@@ -520,6 +524,25 @@ Ana səhifənin axtarış sahəsində nümunələr ("Manikür", "Ev təmizliyi".
 
 ---
 
+## Dil seçimi (AZ / EN)
+
+Sayt Azərbaycan və ingilis dilindədir. Dil yuxarı naviqasiyadakı **AZ / EN** düyməsi ilə (telefonda Profil səhifəsindən) dəyişir, seçim brauzerdə yadda qalır. Dil dəyişəndə səhifə yenidən yüklənir.
+
+- Kodda mətnlər Azərbaycanca yazılır və `t()` ilə əhatə olunur: `t("Rezerv et")`, `t("{count} rəy", { count })`.
+- İngilis tərcümələri `client/src/i18n/en.ts`-dədir (açar: Azərbaycanca mətn). Tək say üçün `"#one"` forması: `"{count} rəy#one": "{count} review"`.
+- Tərcüməsi olmayan mətn Azərbaycanca göstərilir, sayt sınmır.
+- Server mesajları Azərbaycancadır və frontend-də (`services/api.ts`) tərcümə olunur. Bildirişlər `i18n/notifications.ts`-dəki şablonlarla çevrilir.
+- Bazadakı məlumatlar (biznes adları, xidmətlər, rəylər, "Haqqında" mətnləri) tərcümə olunmur: onları istifadəçilər yazır. Kateqoriya adları isə göstəriləndə tərcümə olunur.
+
+Yeni mətn əlavə edəndən sonra yoxla:
+
+```bash
+cd client
+npm run check:i18n
+```
+
+---
+
 ## Backend API
 
 Baza ünvanı: `http://localhost:4000/api`. Qorunan marşrutlar `Authorization: Bearer <accessToken>` tələb edir. Xəta cavabları `{ "message": "..." }` formasındadır.
@@ -666,6 +689,7 @@ Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_veri
 - Refresh token-lərin bazada saxlanması və logout-da ləğvi
 - Ərazi: 12 rayon və metro stansiyaları
 - Light/dark mode, responsive görünüş
+- Azərbaycan və ingilis dili (AZ / EN)
 - Demo məlumat (seed) və köməkçi skriptlər
 
 ### Qalıb

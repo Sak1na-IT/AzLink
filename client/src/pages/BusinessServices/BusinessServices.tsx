@@ -10,6 +10,7 @@ import {
 } from "../../services/businessServicesService";
 import type { ProviderService } from "../../types/provider";
 import { formatDuration } from "../../utils/formatDuration";
+import { t } from "../../i18n";
 
 type FormState = {
   name: string;
@@ -52,7 +53,7 @@ const validate = (
   const duration = Number(form.duration);
 
   if (name.length < 2 || name.length > 60) {
-    errors.name = "Ad 2-60 simvol arasında olmalıdır.";
+    errors.name = t("Ad 2-60 simvol arasında olmalıdır.");
   } else {
     const isDuplicate = services.some(
       (s) =>
@@ -61,18 +62,18 @@ const validate = (
     );
 
     if (isDuplicate) {
-      errors.name = "Bu adda xidmət artıq mövcuddur.";
+      errors.name = t("Bu adda xidmət artıq mövcuddur.");
     }
   }
 
   if (form.description.trim().length > 120) {
-    errors.description = "Təsvir ən çox 120 simvol ola bilər.";
+    errors.description = t("Təsvir ən çox 120 simvol ola bilər.");
   }
 
   if (form.price.trim() === "" || !Number.isFinite(price) || price <= 0) {
-    errors.price = "Qiyməti 0-dan böyük rəqəm kimi yazın.";
+    errors.price = t("Qiyməti 0-dan böyük rəqəm kimi yazın.");
   } else if (price > 10000) {
-    errors.price = "Qiymət 10 000 ₼-dən çox ola bilməz.";
+    errors.price = t("Qiymət 10 000 ₼-dən çox ola bilməz.");
   }
 
   if (
@@ -81,7 +82,7 @@ const validate = (
     duration < 5 ||
     duration > 480
   ) {
-    errors.duration = "Müddət 5-480 dəqiqə arasında tam ədəd olmalıdır.";
+    errors.duration = t("Müddət 5-480 dəqiqə arasında tam ədəd olmalıdır.");
   }
 
   return errors;
@@ -107,7 +108,7 @@ function BusinessServices() {
       setServices(result);
       return result;
     } catch {
-      setLoadError("Xidmətləri yükləmək mümkün olmadı.");
+      setLoadError(t("Xidmətləri yükləmək mümkün olmadı."));
       return null;
     } finally {
       setIsLoading(false);
@@ -182,8 +183,8 @@ function BusinessServices() {
     } catch {
       setFormError(
         editingId
-          ? "Dəyişikliyi yadda saxlamaq mümkün olmadı."
-          : "Xidməti əlavə etmək mümkün olmadı. Biznes profilində kateqoriyanın seçildiyinə əmin olun."
+          ? t("Dəyişikliyi yadda saxlamaq mümkün olmadı.")
+          : t("Xidməti əlavə etmək mümkün olmadı. Biznes profilində kateqoriyanın seçildiyinə əmin olun.")
       );
     } finally {
       setIsSaving(false);
@@ -192,7 +193,7 @@ function BusinessServices() {
 
   const handleDelete = async (service: ProviderService) => {
     if (
-      !window.confirm(`"${service.name}" xidmətini silmək istəyirsiniz?`)
+      !window.confirm(t("\"{name}\" xidmətini silmək istəyirsiniz?", { name: service.name }))
     ) {
       return;
     }
@@ -210,7 +211,7 @@ function BusinessServices() {
 
       if (fresh && fresh.some((item) => item.id === service.id)) {
         alert(
-          "Xidməti silmək mümkün olmadı. Bu xidmət üzrə rezerv olduğu üçün silinməyə bilər."
+          t("Xidməti silmək mümkün olmadı. Bu xidmət üzrə rezerv olduğu üçün silinməyə bilər.")
         );
         return;
       }
@@ -228,7 +229,7 @@ function BusinessServices() {
   if (isLoading) {
     return (
       <main className="business-services">
-        <p style={messageStyle}>Yüklənir...</p>
+        <p style={messageStyle}>{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -245,12 +246,11 @@ function BusinessServices() {
     <main className="business-services">
       <section className="business-services__header">
         <div>
-          <span className="biz-eyebrow">Xidmətlər</span>
-          <h1>Xidmət menyusu</h1>
+          <span className="biz-eyebrow">{t("Xidmətlər")}</span>
+          <h1>{t("Xidmət menyusu")}</h1>
 
           <p>
-            Müştərilər rezerv edərkən bu xidmətlərdən birini seçir.
-            Dəyişikliklər dərhal rezerv səhifəsində görünür.
+            {t("Müştərilər rezerv edərkən bu xidmətlərdən birini seçir. Dəyişikliklər dərhal rezerv səhifəsində görünür.")}
           </p>
         </div>
 
@@ -261,7 +261,7 @@ function BusinessServices() {
             onClick={openAdd}
           >
             <Plus size={18} strokeWidth={2} />
-            Yeni xidmət
+            {t("Yeni xidmət")}
           </button>
         )}
       </section>
@@ -272,17 +272,17 @@ function BusinessServices() {
           onSubmit={handleSubmit}
           noValidate
         >
-          <h2>{editingId ? "Xidməti redaktə et" : "Yeni xidmət"}</h2>
+          <h2>{editingId ? t("Xidməti redaktə et") : t("Yeni xidmət")}</h2>
 
           <div className="business-services__field">
-            <label htmlFor="service-name">Ad</label>
+            <label htmlFor="service-name">{t("Ad")}</label>
 
             <input
               id="service-name"
               type="text"
               value={form.name}
               maxLength={60}
-              placeholder="Məsələn: Manikür"
+              placeholder={t("Məsələn: Manikür")}
               onChange={(event) => updateField("name", event.target.value)}
             />
 
@@ -290,14 +290,14 @@ function BusinessServices() {
           </div>
 
           <div className="business-services__field">
-            <label htmlFor="service-description">Təsvir</label>
+            <label htmlFor="service-description">{t("Təsvir")}</label>
 
             <input
               id="service-description"
               type="text"
               value={form.description}
               maxLength={120}
-              placeholder="Qısa izah (vacib deyil)"
+              placeholder={t("Qısa izah (vacib deyil)")}
               onChange={(event) =>
                 updateField("description", event.target.value)
               }
@@ -364,7 +364,7 @@ function BusinessServices() {
               onClick={closeForm}
               disabled={isSaving}
             >
-              Ləğv et
+              {t("Ləğv et")}
             </button>
 
             <button
@@ -373,10 +373,10 @@ function BusinessServices() {
               disabled={isSaving}
             >
               {isSaving
-                ? "Saxlanılır..."
+                ? t("Saxlanılır...")
                 : editingId
-                  ? "Yadda saxla"
-                  : "Xidməti əlavə et"}
+                  ? t("Yadda saxla")
+                  : t("Xidməti əlavə et")}
             </button>
           </div>
         </form>
@@ -388,10 +388,10 @@ function BusinessServices() {
             <Store size={24} strokeWidth={1.8} />
           </div>
 
-          <h2>Hələ xidmət yoxdur</h2>
+          <h2>{t("Hələ xidmət yoxdur")}</h2>
 
           <p>
-            Xidmət əlavə edin ki, müştərilər sizdən rezerv edə bilsin.
+            {t("Xidmət əlavə edin ki, müştərilər sizdən rezerv edə bilsin.")}
           </p>
         </section>
       ) : (
@@ -420,10 +420,10 @@ function BusinessServices() {
                   className="business-service-card__button"
                   onClick={() => openEdit(service)}
                   disabled={busyId === service.id}
-                  aria-label={`${service.name} xidmətini redaktə et`}
+                  aria-label={t("{name} xidmətini redaktə et", { name: service.name })}
                 >
                   <Pencil size={16} strokeWidth={1.8} />
-                  Redaktə et
+                  {t("Redaktə et")}
                 </button>
 
                 <button
@@ -431,10 +431,10 @@ function BusinessServices() {
                   className="business-service-card__button business-service-card__button--danger"
                   onClick={() => handleDelete(service)}
                   disabled={busyId === service.id}
-                  aria-label={`${service.name} xidmətini sil`}
+                  aria-label={t("{name} xidmətini sil", { name: service.name })}
                 >
                   <Trash2 size={16} strokeWidth={1.8} />
-                  Sil
+                  {t("Sil")}
                 </button>
               </div>
             </article>

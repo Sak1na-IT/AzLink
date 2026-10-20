@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { Bookmark, CalendarCheck, Compass } from "lucide-react";
 import "./BusinessSubNav.css";
+import { t } from "../../i18n";
 
 /*
  * Yalnız biznes hesabı "Rezerv et" qrupunda olanda görünür:
@@ -15,9 +16,9 @@ function BusinessSubNav() {
   return (
     <div className="business-subnav">
       <div className="business-subnav__inner">
-        <span className="business-subnav__title">Rezerv et</span>
+        <span className="business-subnav__title">{t("Rezerv et")}</span>
 
-        <nav className="business-subnav__tabs" aria-label="Rezerv et menyusu">
+        <nav className="business-subnav__tabs" aria-label={t("Rezerv et menyusu")}>
           <NavLink
             to="/explore"
             className={({ isActive }) =>
@@ -25,7 +26,7 @@ function BusinessSubNav() {
             }
           >
             <Compass size={16} strokeWidth={1.8} />
-            <span>Kəşf et</span>
+            <span>{t("Kəşf et")}</span>
           </NavLink>
 
           <NavLink
@@ -35,7 +36,7 @@ function BusinessSubNav() {
             }
           >
             <Bookmark size={16} strokeWidth={1.8} />
-            <span>Seçilmişlər</span>
+            <span>{t("Seçilmişlər")}</span>
           </NavLink>
 
           <NavLink
@@ -45,7 +46,7 @@ function BusinessSubNav() {
             }
           >
             <CalendarCheck size={16} strokeWidth={1.8} />
-            <span>Mənim rezervlərim</span>
+            <span>{t("Mənim rezervlərim")}</span>
           </NavLink>
         </nav>
       </div>

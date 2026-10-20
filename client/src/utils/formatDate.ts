@@ -1,10 +1,11 @@
 /*
- * Azərbaycan dilində tarix formatı.
+ * Tarix formatı: seçilmiş dilə görə (Azərbaycanca və ya ingiliscə).
  * Brauzerin "az-AZ" lokalı bəzi sistemlərdə ay adlarını bilmir
  * ("M10 10" kimi göstərir), ona görə adları özümüz saxlayırıq.
  */
+import { getLang, t } from "../i18n";
 
-const MONTHS = [
+const MONTHS_AZ = [
   "yanvar",
   "fevral",
   "mart",
@@ -19,7 +20,22 @@ const MONTHS = [
   "dekabr",
 ];
 
-const WEEKDAYS = [
+const MONTHS_EN = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+const WEEKDAYS_AZ = [
   "Bazar",
   "Bazar ertəsi",
   "Çərşənbə axşamı",
@@ -28,6 +44,22 @@ const WEEKDAYS = [
   "Cümə",
   "Şənbə",
 ];
+
+const WEEKDAYS_EN = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+];
+
+const WEEKDAYS_SHORT_AZ = ["B.", "B.e.", "Ç.a.", "Ç.", "C.a.", "C.", "Ş."];
+const WEEKDAYS_SHORT_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+const months = () => (getLang() === "en" ? MONTHS_EN : MONTHS_AZ);
+const weekdays = () => (getLang() === "en" ? WEEKDAYS_EN : WEEKDAYS_AZ);
 
 /* "2026-10-10" → yerli tarix (saat qurşağı sürüşməsi olmadan) */
 const parse = (date: string) => {
@@ -40,13 +72,13 @@ export const getDayParts = (date: string) => {
 
   return {
     day: value.getDate(),
-    month: MONTHS[value.getMonth()],
-    monthShort: MONTHS[value.getMonth()].slice(0, 3),
-    weekday: WEEKDAYS[value.getDay()],
+    month: months()[value.getMonth()],
+    monthShort: months()[value.getMonth()].slice(0, 3),
+    weekday: weekdays()[value.getDay()],
   };
 };
 
-/* "10 oktyabr" */
+/* "10 oktyabr" / "10 October" */
 export const formatDayMonth = (date: string) => {
   const { day, month } = getDayParts(date);
   return `${day} ${month}`;
@@ -61,24 +93,26 @@ export const formatRelativeDay = (date: string) => {
     (parse(date).getTime() - today.getTime()) / (24 * 60 * 60 * 1000)
   );
 
-  if (diff === 0) return "Bu gün";
-  if (diff === 1) return "Sabah";
-  if (diff > 1) return `${diff} gün sonra`;
-  if (diff === -1) return "Dünən";
-  return `${Math.abs(diff)} gün əvvəl`;
+  if (diff === 0) return t("Bu gün");
+  if (diff === 1) return t("Sabah");
+  if (diff > 1) return t("{count} gün sonra", { count: diff });
+  if (diff === -1) return t("Dünən");
+  return t("{count} gün əvvəl", { count: Math.abs(diff) });
 };
 
-const WEEKDAYS_SHORT = ["B.", "B.e.", "Ç.a.", "Ç.", "C.a.", "C.", "Ş."];
-
 /* Date obyekti üçün: təqvim xanaları (Booking səhifəsi) */
-export const weekdayShort = (date: Date) => WEEKDAYS_SHORT[date.getDay()];
-export const monthShort = (date: Date) => MONTHS[date.getMonth()].slice(0, 3);
+export const weekdayShort = (date: Date) =>
+  (getLang() === "en" ? WEEKDAYS_SHORT_EN : WEEKDAYS_SHORT_AZ)[date.getDay()];
+export const monthShort = (date: Date) =>
+  months()[date.getMonth()].slice(0, 3);
 
-/* "cümə axşamı, 24 sentyabr" */
+/* "cümə axşamı, 24 sentyabr" / "Thursday, 24 September" */
 export const formatReadable = (date: Date) =>
-  `${WEEKDAYS[date.getDay()].toLocaleLowerCase("az")}, ${date.getDate()} ${
-    MONTHS[date.getMonth()]
-  }`;
+  getLang() === "en"
+    ? `${WEEKDAYS_EN[date.getDay()]}, ${date.getDate()} ${MONTHS_EN[date.getMonth()]}`
+    : `${WEEKDAYS_AZ[date.getDay()].toLocaleLowerCase("az")}, ${date.getDate()} ${
+        MONTHS_AZ[date.getMonth()]
+      }`;
 
 /* "2026-10-05" və ya ISO vaxt → "5 oktyabr 2026" */
 export const formatFullDate = (date: string) => {

@@ -4,6 +4,7 @@ import { Check, MapPin, Search, X } from "lucide-react";
 import { areas, type Area } from "../../types/area";
 
 import "./AreaSelector.css";
+import { t } from "../../i18n";
 
 interface AreaSelectorProps {
   selectedAreas: Area[];
@@ -142,8 +143,8 @@ function AreaSelector({
 
   const metroHint = (area: Area) =>
     area.districts && area.districts.length > 0
-      ? `Metro · ${area.districts.join(", ")}`
-      : "Metro";
+      ? `${t("Metro")} · ${area.districts.join(", ")}`
+      : t("Metro");
 
   return (
     <div
@@ -158,7 +159,7 @@ function AreaSelector({
         type="button"
         className="area-selector__backdrop"
         onClick={onClose}
-        aria-label="Ərazi seçimini bağla"
+        aria-label={t("Ərazi seçimini bağla")}
       />
 
       {/* MODAL */}
@@ -168,12 +169,12 @@ function AreaSelector({
 
         <header className="area-selector__header">
           <div>
-            <span className="area-selector__eyebrow">Ərazi seçimi</span>
+            <span className="area-selector__eyebrow">{t("Ərazi seçimi")}</span>
 
             <h2 id="area-selector-title">Harada xidmət axtarırsınız?</h2>
 
             <p>
-              Bakı şəhəri daxilində rayon və ya metro stansiyası seçin.
+              {t("Bakı şəhəri daxilində rayon və ya metro stansiyası seçin.")}
             </p>
           </div>
 
@@ -181,7 +182,7 @@ function AreaSelector({
             type="button"
             className="area-selector__close"
             onClick={onClose}
-            aria-label="Bağla"
+            aria-label={t("Bağla")}
           >
             <X size={20} strokeWidth={1.8} />
           </button>
@@ -196,7 +197,7 @@ function AreaSelector({
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Məsələn: Nərimanov, Gənclik, 28 May..."
+            placeholder={t("Məsələn: Nərimanov, Gənclik, 28 May...")}
             autoFocus
           />
 
@@ -205,7 +206,7 @@ function AreaSelector({
               type="button"
               className="area-selector__search-clear"
               onClick={() => setQuery("")}
-              aria-label="Axtarışı təmizlə"
+              aria-label={t("Axtarışı təmizlə")}
             >
               <X size={15} />
             </button>
@@ -217,10 +218,10 @@ function AreaSelector({
         {selected.length > 0 && (
           <section className="area-selector__selected">
             <div className="area-selector__selected-header">
-              <span>Seçilmiş ərazilər</span>
+              <span>{t("Seçilmiş ərazilər")}</span>
 
               <button type="button" onClick={clearAll}>
-                Hamısını təmizlə
+                {t("Hamısını təmizlə")}
               </button>
             </div>
 
@@ -248,9 +249,9 @@ function AreaSelector({
 
           {!query.trim() && allBaku && (
             <section className="area-selector__group">
-              <div className="area-selector__group-title">Ümumi</div>
+              <div className="area-selector__group-title">{t("Ümumi")}</div>
 
-              {renderOption(allBaku, "Bakı üzrə bütün xidmətlər")}
+              {renderOption(allBaku, t("Bakı üzrə bütün xidmətlər"))}
             </section>
           )}
 
@@ -258,10 +259,10 @@ function AreaSelector({
 
           {districtAreas.length > 0 && (
             <section className="area-selector__group">
-              <div className="area-selector__group-title">Rayonlar</div>
+              <div className="area-selector__group-title">{t("Rayonlar")}</div>
 
               <div className="area-selector__options">
-                {districtAreas.map((area) => renderOption(area, "Rayon"))}
+                {districtAreas.map((area) => renderOption(area, t("Rayon")))}
               </div>
             </section>
           )}
@@ -271,7 +272,7 @@ function AreaSelector({
           {metroAreas.length > 0 && (
             <section className="area-selector__group">
               <div className="area-selector__group-title">
-                Metro stansiyaları
+                {t("Metro stansiyaları")}
               </div>
 
               <div className="area-selector__options">
@@ -288,9 +289,9 @@ function AreaSelector({
                 <Search size={22} strokeWidth={1.8} />
               </div>
 
-              <strong>Ərazi tapılmadı</strong>
+              <strong>{t("Ərazi tapılmadı")}</strong>
 
-              <span>Rayon və ya metro stansiyasının adını yazın.</span>
+              <span>{t("Rayon və ya metro stansiyasının adını yazın.")}</span>
             </div>
           )}
         </div>
@@ -303,10 +304,10 @@ function AreaSelector({
               <>
                 <strong>{selected.length}</strong>
 
-                <span>ərazi seçilib</span>
+                <span>{t("ərazi seçilib")}</span>
               </>
             ) : (
-              <span>Ərazi seçilməyib</span>
+              <span>{t("Ərazi seçilməyib")}</span>
             )}
           </div>
 
@@ -316,7 +317,7 @@ function AreaSelector({
               className="area-selector__cancel"
               onClick={onClose}
             >
-              Ləğv et
+              {t("Ləğv et")}
             </button>
 
             <button
@@ -324,7 +325,7 @@ function AreaSelector({
               className="area-selector__apply"
               onClick={handleApply}
             >
-              Tətbiq et
+              {t("Tətbiq et")}
             </button>
           </div>
         </footer>

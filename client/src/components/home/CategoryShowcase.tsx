@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 
 import { categories } from "../../data/categories";
 import type { Provider } from "../../types/provider";
+import { t } from "../../i18n";
 
 interface CategoryShowcaseProps {
   providers: Provider[];
@@ -21,14 +22,14 @@ function CategoryShowcase({
   return (
     <section className="home-section">
       <div className="home-section__header">
-        <h2>Sahələr</h2>
+        <h2>{t("Sahələr")}</h2>
 
         <button
           type="button"
           className="home-section__link"
           onClick={onSeeAllClick}
         >
-          Hamısı
+          {t("Hamısı")}
           <ChevronRight size={15} strokeWidth={1.8} />
         </button>
       </div>
@@ -54,14 +55,14 @@ function CategoryShowcase({
                 <Icon size={24} strokeWidth={1.6} />
               </span>
 
-              <strong>{category.name}</strong>
+              <strong>{t(category.name)}</strong>
 
               <small>
                 {inCategory.length > 0
                   ? `${inCategory.length} biznes${
-                      prices.length ? ` · ${Math.min(...prices)} ₼-dən` : ""
+                      prices.length ? ` · ${t("{price} ₼-dən", { price: Math.min(...prices) })}` : ""
                     }`
-                  : category.services.join(", ")}
+                  : category.services.map((name) => t(name)).join(", ")}
               </small>
             </button>
           );

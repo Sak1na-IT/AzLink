@@ -15,12 +15,13 @@ import {
 } from "../../services/businessDashboardService";
 import { formatFullDate } from "../../utils/formatDate";
 import "./BusinessCustomers.css";
+import { t } from "../../i18n";
 
 const statusLabels: Record<string, string> = {
-  PENDING: "Gözləyir",
-  CONFIRMED: "Təsdiqlənib",
-  CANCELLED: "Ləğv edilib",
-  COMPLETED: "Tamamlanıb",
+  PENDING: t("Gözləyir"),
+  CONFIRMED: t("Təsdiqlənib"),
+  CANCELLED: t("Ləğv edilib"),
+  COMPLETED: t("Tamamlanıb"),
 };
 
 /* 2026-09-25 → 25.09.2026 */
@@ -37,7 +38,7 @@ function BusinessCustomers() {
   useEffect(() => {
     getCustomers()
       .then(setCustomers)
-      .catch(() => setError("Müştəriləri yükləmək mümkün olmadı."))
+      .catch(() => setError(t("Müştəriləri yükləmək mümkün olmadı.")))
       .finally(() => setIsLoading(false));
   }, []);
 
@@ -63,7 +64,7 @@ function BusinessCustomers() {
   if (isLoading) {
     return (
       <main className="business-customers">
-        <p className="business-customers__loading">Yüklənir...</p>
+        <p className="business-customers__loading">{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -72,12 +73,11 @@ function BusinessCustomers() {
     <main className="business-customers">
       <section className="business-customers__header">
         <div>
-          <span className="biz-eyebrow">Müştərilər</span>
-          <h1>Müştərilər</h1>
+          <span className="biz-eyebrow">{t("Müştərilər")}</span>
+          <h1>{t("Müştərilər")}</h1>
 
           <p>
-            Sizdən rezerv edən müştərilərin siyahısı və rezerv
-            tarixçəsi.
+            {t("Sizdən rezerv edən müştərilərin siyahısı və rezerv tarixçəsi.")}
           </p>
         </div>
       </section>
@@ -89,7 +89,7 @@ function BusinessCustomers() {
 
         <input
           type="text"
-          placeholder="Müştəri adı üzrə axtar..."
+          placeholder={t("Müştəri adı üzrə axtar...")}
           value={query}
           onChange={(event) => setQuery(event.target.value)}
         />
@@ -99,7 +99,7 @@ function BusinessCustomers() {
         <section className="business-customers__top">
           <div className="business-customers__top-header">
             <Trophy size={18} strokeWidth={1.8} />
-            <h2>Ən çox gələn müştərilər</h2>
+            <h2>{t("Ən çox gələn müştərilər")}</h2>
           </div>
 
           <div className="business-customers__top-grid">
@@ -121,7 +121,7 @@ function BusinessCustomers() {
 
                   <div>
                     <strong>{customer.customerName}</strong>
-                    <span>{customer.bookingCount} rezerv</span>
+                    <span>{t("{count} rezerv", { count: customer.bookingCount })}</span>
                   </div>
                 </div>
               );
@@ -138,14 +138,14 @@ function BusinessCustomers() {
 
           <h2>
             {customers.length === 0
-              ? "Hələ müştəriniz yoxdur"
-              : "Axtarışa uyğun müştəri tapılmadı"}
+              ? t("Hələ müştəriniz yoxdur")
+              : t("Axtarışa uyğun müştəri tapılmadı")}
           </h2>
 
           <p>
             {customers.length === 0
-              ? "Müştərilər rezerv etdikcə burada görünəcək."
-              : "Başqa ad ilə axtarmağı sınayın."}
+              ? t("Müştərilər rezerv etdikcə burada görünəcək.")
+              : t("Başqa ad ilə axtarmağı sınayın.")}
           </p>
         </section>
       ) : (
@@ -171,7 +171,7 @@ function BusinessCustomers() {
                     <h3>{customer.customerName}</h3>
 
                     <span>
-                      Son rezerv: {formatDate(customer.lastBookingDate)}
+                      {t("Son rezerv:")} {formatDate(customer.lastBookingDate)}
                     </span>
                   </div>
 
@@ -196,7 +196,7 @@ function BusinessCustomers() {
                     <CalendarDays size={16} strokeWidth={1.8} />
 
                     <div>
-                      <span>Ümumi rezerv</span>
+                      <span>{t("Ümumi rezerv")}</span>
                       <strong>{customer.bookingCount}</strong>
                     </div>
                   </div>
@@ -205,7 +205,7 @@ function BusinessCustomers() {
                     <CheckCircle2 size={16} strokeWidth={1.8} />
 
                     <div>
-                      <span>Aktiv</span>
+                      <span>{t("Aktiv")}</span>
                       <strong>{customer.activeCount}</strong>
                     </div>
                   </div>
@@ -214,7 +214,7 @@ function BusinessCustomers() {
                     <Wallet size={16} strokeWidth={1.8} />
 
                     <div>
-                      <span>Ümumi ödəniş</span>
+                      <span>{t("Ümumi ödəniş")}</span>
                       <strong>
                         {customer.totalSpent}
                         <small className="manat">₼</small>

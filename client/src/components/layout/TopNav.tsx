@@ -12,6 +12,8 @@ import {
 
 import { getStoredUser } from "../../services/api";
 import NotificationBell from "./NotificationBell";
+import LanguageSwitch from "../../i18n/LanguageSwitch";
+import { t } from "../../i18n";
 
 interface TopNavProps {
   isDark: boolean;
@@ -27,8 +29,8 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
       type="button"
       className="top-nav__theme"
       onClick={toggleTheme}
-      aria-label={isDark ? "Ağ moda keç" : "Qaranlıq moda keç"}
-      title={isDark ? "Ağ moda keç" : "Qaranlıq moda keç"}
+      aria-label={isDark ? t("Ağ moda keç") : t("Qaranlıq moda keç")}
+      title={isDark ? t("Ağ moda keç") : t("Qaranlıq moda keç")}
     >
       {isDark ? (
         <Sun size={18} strokeWidth={1.8} />
@@ -46,7 +48,7 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
             AzLink
           </NavLink>
 
-          <nav className="top-nav__links" aria-label="Əsas menyu">
+          <nav className="top-nav__links" aria-label={t("Əsas menyu")}>
             <NavLink
               to="/business"
               className={({ isActive }) =>
@@ -54,7 +56,7 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
               }
             >
               <LayoutDashboard size={18} strokeWidth={1.8} />
-              <span>Biznesim</span>
+              <span>{t("Biznesim")}</span>
             </NavLink>
 
             <NavLink
@@ -64,7 +66,7 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
               }
             >
               <Compass size={18} strokeWidth={1.8} />
-              <span>Rezerv et</span>
+              <span>{t("Rezerv et")}</span>
             </NavLink>
 
             <NavLink
@@ -74,10 +76,11 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
               }
             >
               <UserRound size={18} strokeWidth={1.8} />
-              <span>Profil</span>
+              <span>{t("Profil")}</span>
             </NavLink>
           </nav>
 
+          <LanguageSwitch />
           {user && <NotificationBell />}
           {themeButton}
         </div>
@@ -86,11 +89,11 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
   }
 
   const navItems = [
-    { to: "/home", label: "Ana səhifə", icon: Home, end: true },
-    { to: "/explore", label: "Kəşf et", icon: Compass, end: false },
-    { to: "/bookings", label: "Rezervlər", icon: CalendarDays, end: false },
-    { to: "/saved", label: "Seçilmişlər", icon: Bookmark, end: false },
-    { to: "/profile", label: "Profil", icon: UserRound, end: false },
+    { to: "/home", label: t("Ana səhifə"), icon: Home, end: true },
+    { to: "/explore", label: t("Kəşf et"), icon: Compass, end: false },
+    { to: "/bookings", label: t("Rezervlər"), icon: CalendarDays, end: false },
+    { to: "/saved", label: t("Seçilmişlər"), icon: Bookmark, end: false },
+    { to: "/profile", label: t("Profil"), icon: UserRound, end: false },
   ];
 
   return (
@@ -100,7 +103,7 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
           AzLink
         </NavLink>
 
-        <nav className="top-nav__links" aria-label="Əsas menyu">
+        <nav className="top-nav__links" aria-label={t("Əsas menyu")}>
           {navItems.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
@@ -116,6 +119,7 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
           ))}
         </nav>
 
+        <LanguageSwitch />
         {user && <NotificationBell />}
         {themeButton}
       </div>

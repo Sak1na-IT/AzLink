@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "check:i18n": "node scripts/check-translations.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",

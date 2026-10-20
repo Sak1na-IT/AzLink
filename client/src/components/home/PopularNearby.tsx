@@ -7,6 +7,7 @@ import {
 
 import type { Provider } from "../../types/provider";
 import { getCategoryVisual } from "../../utils/categoryVisual";
+import { t } from "../../i18n";
 
 interface PopularNearbyProps {
   providers: Provider[];
@@ -21,8 +22,8 @@ function PopularNearby({
   providers,
   onProviderClick,
   onSeeAllClick,
-  title = "Yaxınlıqda populyar",
-  caption = "Populyar profillər seçdiyiniz əraziyə və platformadakı reytinqə əsasən göstərilir.",
+  title = t("Yaxınlıqda populyar"),
+  caption = t("Populyar profillər seçdiyiniz əraziyə və platformadakı reytinqə əsasən göstərilir."),
 }: PopularNearbyProps) {
   return (
     <section className="home-section">
@@ -39,7 +40,7 @@ function PopularNearby({
             className="home-section__link"
             onClick={onSeeAllClick}
           >
-            Daha çox
+            {t("Daha çox")}
             <ChevronRight
               size={15}
               strokeWidth={1.8}
@@ -94,12 +95,12 @@ function PopularNearby({
                     {provider.verified && (
                       <span className="popular-card__verified">
                         <CheckCircle2 size={13} strokeWidth={2} />
-                        Təsdiqlənib
+                        {t("Təsdiqlənib")}
                       </span>
                     )}
 
                     <span className="popular-card__price">
-                      {provider.priceFrom} ₼-dən
+                      {t("{price} ₼-dən", { price: provider.priceFrom })}
                     </span>
                   </div>
 
@@ -121,7 +122,7 @@ function PopularNearby({
                     </div>
 
                     <p className="popular-card__meta">
-                      {provider.service}
+                      {t(provider.service)}
                       {" · "}
                       {provider.area}
                       {provider.distance != null &&
@@ -129,7 +130,7 @@ function PopularNearby({
                     </p>
 
                     <span className="popular-card__cta">
-                      Profilə bax
+                      {t("Profilə bax")}
                       <ChevronRight size={14} strokeWidth={1.9} />
                     </span>
                   </div>
@@ -152,12 +153,11 @@ function PopularNearby({
           />
 
           <strong>
-            Bu ərazidə profil tapılmadı
+            {t("Bu ərazidə profil tapılmadı")}
           </strong>
 
           <p>
-            Ərazi seçiminizi genişləndirərək
-            daha çox nəticəyə baxa bilərsiniz.
+            {t("Ərazi seçiminizi genişləndirərək daha çox nəticəyə baxa bilərsiniz.")}
           </p>
         </div>
       )}

@@ -1,3 +1,5 @@
+import { t } from "../i18n";
+
 /*
  * Backend API ilə əlaqə üçün mərkəzi fetch wrapper.
  *
@@ -144,7 +146,8 @@ export const apiRequest = async <T>(
       (data && typeof data.message === "string" && data.message) ||
       "Xəta baş verdi";
 
-    throw new ApiError(response.status, message);
+    /* Server mesajları Azərbaycancadır: seçilmiş dilə çevrilir */
+    throw new ApiError(response.status, t(message));
   }
 
   return data as T;

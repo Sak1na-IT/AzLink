@@ -4,6 +4,7 @@ import { MapPin, Search, ChevronRight } from "lucide-react";
 import VelvetStage from "../brand/VelvetStage";
 import { getStoredUser } from "../../services/api";
 import { getCategoryVisual } from "../../utils/categoryVisual";
+import { t } from "../../i18n";
 
 interface HomeHeroProps {
   areaLabel: string;
@@ -26,7 +27,7 @@ const placeholderExamples = [
   "Kompleks yuma",
 ];
 
-const DEFAULT_PLACEHOLDER = "Xidmət və ya mütəxəssis yazın";
+const DEFAULT_PLACEHOLDER = t("Xidmət və ya mütəxəssis yazın");
 
 const quickSearches = [
   "Dırnaq",
@@ -40,9 +41,9 @@ const quickSearches = [
 const getGreeting = () => {
   const hour = new Date().getHours();
 
-  if (hour >= 5 && hour < 12) return "Sabahınız xeyir";
-  if (hour >= 12 && hour < 18) return "Günortanız xeyir";
-  return "Axşamınız xeyir";
+  if (hour >= 5 && hour < 12) return t("Sabahınız xeyir");
+  if (hour >= 12 && hour < 18) return t("Günortanız xeyir");
+  return t("Axşamınız xeyir");
 };
 
 function HomeHero({
@@ -78,7 +79,7 @@ function HomeHero({
       const word = placeholderExamples[example % placeholderExamples.length];
 
       letters += deleting ? -1 : 1;
-      input.placeholder = `Məsələn: ${word.slice(0, letters)}`;
+      input.placeholder = `${t("Məsələn:")} ${word.slice(0, letters)}`;
 
       let delay = deleting ? 35 : 75;
 
@@ -124,14 +125,13 @@ function HomeHero({
       </div>
 
       <h1 className="home-hero__title">
-        Ehtiyacınız olan xidməti
+        {t("Ehtiyacınız olan xidməti")}
         <br />
-        rahatlıqla tapın
+        {t("rahatlıqla tapın")}
       </h1>
 
       <p className="home-hero__description">
-        Xidmət və ya mütəxəssis axtarın, ərazinizi seçin
-        və uyğun profillərə baxın.
+        {t("Xidmət və ya mütəxəssis axtarın, ərazinizi seçin və uyğun profillərə baxın.")}
       </p>
 
       <form
@@ -145,7 +145,7 @@ function HomeHero({
             ref={inputRef}
             name="search"
             type="text"
-            placeholder="Xidmət və ya mütəxəssis yazın"
+            placeholder={t("Xidmət və ya mütəxəssis yazın")}
             autoComplete="off"
           />
         </div>
@@ -159,7 +159,7 @@ function HomeHero({
 
           <span>
             <strong>{areaLabel}</strong>
-            <small>Ərazi seçimi</small>
+            <small>{t("Ərazi seçimi")}</small>
           </span>
 
           <ChevronRight size={16} strokeWidth={1.8} />

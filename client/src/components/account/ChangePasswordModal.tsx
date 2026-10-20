@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 
 import "./ChangePasswordModal.css";
 import { changePassword, getErrorText } from "../../services/accountService";
+import { t } from "../../i18n";
 
 interface ChangePasswordModalProps {
   onClose: () => void;
@@ -34,22 +35,22 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
     event.preventDefault();
 
     if (!currentPassword) {
-      setError("Cari şifrəni yazın.");
+      setError(t("Cari şifrəni yazın."));
       return;
     }
 
     if (newPassword.length < MIN_LENGTH) {
-      setError(`Yeni şifrə ən azı ${MIN_LENGTH} simvol olmalıdır.`);
+      setError(t("Yeni şifrə ən azı {count} simvol olmalıdır.", { count: MIN_LENGTH }));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("Yeni şifrələr uyğun gəlmir.");
+      setError(t("Yeni şifrələr uyğun gəlmir."));
       return;
     }
 
     if (newPassword === currentPassword) {
-      setError("Yeni şifrə cari şifrədən fərqli olmalıdır.");
+      setError(t("Yeni şifrə cari şifrədən fərqli olmalıdır."));
       return;
     }
 
@@ -64,7 +65,7 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
       setError(
         getErrorText(
           caught,
-          "Şifrəni dəyişmək mümkün olmadı. Cari şifrənin düzgün olduğunu yoxlayın."
+          t("Şifrəni dəyişmək mümkün olmadı. Cari şifrənin düzgün olduğunu yoxlayın.")
         )
       );
     } finally {
@@ -77,7 +78,7 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
       <button
         type="button"
         className="password-modal__backdrop"
-        aria-label="Bağla"
+        aria-label={t("Bağla")}
         onClick={onClose}
       />
 
@@ -88,12 +89,12 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
         aria-labelledby="password-modal-title"
       >
         <div className="password-modal__header">
-          <h2 id="password-modal-title">Şifrəni dəyiş</h2>
+          <h2 id="password-modal-title">{t("Şifrəni dəyiş")}</h2>
 
           <button
             type="button"
             className="password-modal__close"
-            aria-label="Bağla"
+            aria-label={t("Bağla")}
             onClick={onClose}
           >
             <X size={18} strokeWidth={1.8} />
@@ -103,7 +104,7 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
         {done ? (
           <>
             <p className="password-modal__success">
-              Şifrəniz uğurla dəyişdirildi.
+              {t("Şifrəniz uğurla dəyişdirildi.")}
             </p>
 
             <div className="password-modal__actions">
@@ -112,14 +113,14 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
                 className="password-modal__primary"
                 onClick={onClose}
               >
-                Bağla
+                {t("Bağla")}
               </button>
             </div>
           </>
         ) : (
           <form onSubmit={handleSubmit} noValidate>
             <label className="password-modal__field">
-              <span>Cari şifrə</span>
+              <span>{t("Cari şifrə")}</span>
               <input
                 type="password"
                 autoComplete="current-password"
@@ -129,14 +130,14 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
             </label>
 
             <label className="password-modal__field">
-              <span>Yeni şifrə</span>
+              <span>{t("Yeni şifrə")}</span>
               <input
                 type="password"
                 autoComplete="new-password"
                 value={newPassword}
                 onChange={(event) => setNewPassword(event.target.value)}
               />
-              <small>Ən azı {MIN_LENGTH} simvol.</small>
+              <small>{t("Ən azı {count} simvol.", { count: MIN_LENGTH })}</small>
             </label>
 
             <label className="password-modal__field">
@@ -158,7 +159,7 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
                 onClick={onClose}
                 disabled={isSaving}
               >
-                Ləğv et
+                {t("Ləğv et")}
               </button>
 
               <button
@@ -166,7 +167,7 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
                 className="password-modal__primary"
                 disabled={isSaving}
               >
-                {isSaving ? "Saxlanılır..." : "Şifrəni dəyiş"}
+                {isSaving ? t("Saxlanılır...") : t("Şifrəni dəyiş")}
               </button>
             </div>
           </form>

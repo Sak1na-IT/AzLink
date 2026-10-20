@@ -19,6 +19,7 @@ import type { Provider } from "../../types/provider";
 import type { Area } from "../../types/area";
 import { matchesArea } from "../../utils/areaMatch";
 import "./Home.css";
+import { t } from "../../i18n";
 
 function Home() {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ function Home() {
         }
       } catch {
         if (!cancelled) {
-          setLoadError("Bizneslər yüklənmədi. Bir az sonra yenidən cəhd edin.");
+          setLoadError(t("Bizneslər yüklənmədi. Bir az sonra yenidən cəhd edin."));
         }
       }
 
@@ -95,18 +96,18 @@ function Home() {
 
   const areaLabel = useMemo(() => {
     if (selectedAreas.length === 0) {
-      return "Bütün Bakı";
+      return t("Bütün Bakı");
     }
 
     if (selectedAreas.some((area) => area.id === "all-baku")) {
-      return "Bütün Bakı";
+      return t("Bütün Bakı");
     }
 
     if (selectedAreas.length === 1) {
       return selectedAreas[0].name;
     }
 
-    return `${selectedAreas.length} ərazi seçildi`;
+    return t("{count} ərazi seçildi", { count: selectedAreas.length });
   }, [selectedAreas]);
 
   /* ========================================================
@@ -231,7 +232,7 @@ function Home() {
 
               {recentProviders.length > 0 && (
                 <PopularNearby
-                  title="Son baxdıqlarınız"
+                  title={t("Son baxdıqlarınız")}
                   caption={null}
                   providers={recentProviders}
                   onProviderClick={handleProviderClick}

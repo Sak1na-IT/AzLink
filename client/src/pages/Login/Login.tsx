@@ -14,6 +14,7 @@ import { signin } from "../../services/authService";
 import { ApiError } from "../../services/api";
 import AuthBackLink from "../../components/auth/AuthBackLink";
 import "./Login.css";
+import { t } from "../../i18n";
 
 function Login() {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ function Login() {
       setError(
         err instanceof ApiError
           ? err.message
-          : "Giriş zamanı xəta baş verdi. Yenidən cəhd edin."
+          : t("Giriş zamanı xəta baş verdi. Yenidən cəhd edin.")
       );
     } finally {
       setIsSubmitting(false);
@@ -72,20 +73,20 @@ function Login() {
 
           <h1>
             {isBusiness
-              ? "Biznes hesabınıza daxil olun"
-              : "İstifadəçi hesabınıza daxil olun"}
+              ? t("Biznes hesabınıza daxil olun")
+              : t("İstifadəçi hesabınıza daxil olun")}
           </h1>
 
           <p>
             {isBusiness
-              ? "Xidmətlərinizi idarə etmək və rezervləri qəbul etmək üçün hesabınıza daxil olun."
-              : "Xidmət axtarmaq və rezerv yaratmaq üçün hesabınıza daxil olun."}
+              ? t("Xidmətlərinizi idarə etmək və rezervləri qəbul etmək üçün hesabınıza daxil olun.")
+              : t("Xidmət axtarmaq və rezerv yaratmaq üçün hesabınıza daxil olun.")}
           </p>
         </div>
 
         <form className="login-form" onSubmit={handleSubmit}>
           <label className="login-field">
-            <span>Email</span>
+            <span>{t("Email")}</span>
 
             <div className="login-input-wrapper">
               <Mail size={18} strokeWidth={1.8} />
@@ -101,14 +102,14 @@ function Login() {
           </label>
 
           <label className="login-field">
-            <span>Şifrə</span>
+            <span>{t("Şifrə")}</span>
 
             <div className="login-input-wrapper">
               <LockKeyhole size={18} strokeWidth={1.8} />
 
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Şifrənizi daxil edin"
+                placeholder={t("Şifrənizi daxil edin")}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
                 required
@@ -119,7 +120,7 @@ function Login() {
                 className="login-password-button"
                 onClick={() => setShowPassword((current) => !current)}
                 aria-label={
-                  showPassword ? "Şifrəni gizlət" : "Şifrəni göstər"
+                  showPassword ? t("Şifrəni gizlət") : t("Şifrəni göstər")
                 }
               >
                 {showPassword ? (
@@ -138,7 +139,7 @@ function Login() {
             className="login-submit-button"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Daxil olunur..." : "Daxil ol"}
+            {isSubmitting ? t("Daxil olunur...") : t("Daxil ol")}
           </button>
         </form>
 
@@ -150,7 +151,7 @@ function Login() {
             className="login-register-button"
             onClick={handleRegister}
           >
-            Qeydiyyatdan keç
+            {t("Qeydiyyatdan keç")}
           </button>
         </div>
       </div>

@@ -1,0 +1,65 @@
+.language-switch {
+  flex: 0 0 auto;
+  height: 42px;
+  padding: 3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 12px);
+  background: var(--color-surface);
+}
+
+.language-switch button {
+  min-width: 36px;
+  height: 100%;
+  padding: 0 8px;
+  border: 0;
+  border-radius: calc(var(--radius-md, 12px) - 4px);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: inherit;
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold, 600);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast, 0.15s),
+    color var(--transition-fast, 0.15s);
+}
+
+.language-switch button:hover {
+  color: var(--color-primary);
+}
+
+.language-switch button.is-active {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+/* Giriş/qeydiyyat səhifələrində naviqasiya yoxdur: sağ yuxarı künc */
+.language-switch.is-floating {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 300;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 760px) {
+  .language-switch {
+    height: 40px;
+  }
+
+  .language-switch button {
+    min-width: 30px;
+    padding: 0 6px;
+  }
+}
+
+/* Telefonda naviqasiya dolu olur: dil Profil səhifəsindən seçilir */
+@media (max-width: 760px) {
+  .top-nav .language-switch {
+    display: none;
+  }
+}

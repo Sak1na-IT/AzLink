@@ -35,6 +35,7 @@ import type { ProviderService } from "../../types/provider";
 import { formatDuration } from "../../utils/formatDuration";
 import { formatReadable, monthShort, weekdayShort } from "../../utils/formatDate";
 import "./Booking.css";
+import { t } from "../../i18n";
 
 /* Saatlar arasındakı addım (dəqiqə) */
 const SLOT_STEP_MINUTES = 30;
@@ -243,19 +244,19 @@ const getBookingErrorText = (error: unknown) => {
   const text = error instanceof Error ? error.message : String(error);
 
   if (text.includes("SLOT_TAKEN")) {
-    return "Bu vaxt artıq rezerv edilib. Zəhmət olmasa başqa saat seçin.";
+    return t("Bu vaxt artıq rezerv edilib. Zəhmət olmasa başqa saat seçin.");
   }
 
   if (text.includes("OUTSIDE_WORKING_HOURS")) {
-    return "Seçdiyiniz vaxt biznesin iş saatlarına uyğun deyil.";
+    return t("Seçdiyiniz vaxt biznesin iş saatlarına uyğun deyil.");
   }
 
   if (text.includes("DATE_IN_PAST")) {
-    return "Bu saat artıq keçib. Zəhmət olmasa başqa saat seçin.";
+    return t("Bu saat artıq keçib. Zəhmət olmasa başqa saat seçin.");
   }
 
   if (text.includes("SERVICE_NOT_FOUND")) {
-    return "Seçdiyiniz xidmət tapılmadı. Səhifəni yeniləyib yenidən cəhd edin.";
+    return t("Seçdiyiniz xidmət tapılmadı. Səhifəni yeniləyib yenidən cəhd edin.");
   }
 
   /* Backend özü başa düşülən mesaj göndəribsə, onu göstəririk */
@@ -269,7 +270,7 @@ const getBookingErrorText = (error: unknown) => {
     return text;
   }
 
-  return "Rezervi yaratmaq mümkün olmadı. Bir az sonra yenidən cəhd edin.";
+  return t("Rezervi yaratmaq mümkün olmadı. Bir az sonra yenidən cəhd edin.");
 };
 
 /* =========================================================
@@ -286,8 +287,8 @@ function Booking() {
   /* Business hesabının ana səhifəsi /business-dir, user-in isə /home */
   const homePath = isBusinessUser ? "/explore" : "/home";
   const homeLabel = isBusinessUser
-    ? "Kəşf etməyə qayıt"
-    : "Ana səhifəyə qayıt";
+    ? t("Kəşf etməyə qayıt")
+    : t("Ana səhifəyə qayıt");
 
   const [provider, setProvider] = useState<ProviderWithHours | null>(null);
   const [myBookings, setMyBookings] = useState<BookingRecord[]>([]);
@@ -416,7 +417,7 @@ function Booking() {
     return (
       <div className="booking-page">
         <div className="booking-not-found">
-          <h1>Yüklənir...</h1>
+          <h1>{t("Yüklənir...")}</h1>
         </div>
       </div>
     );
@@ -430,9 +431,9 @@ function Booking() {
             <CalendarDays size={26} strokeWidth={1.8} />
           </div>
 
-          <h1>Rezerv ediləcək profil tapılmadı</h1>
+          <h1>{t("Rezerv ediləcək profil tapılmadı")}</h1>
 
-          <p>Seçdiyiniz xidmət göstərən profil mövcud deyil.</p>
+          <p>{t("Seçdiyiniz xidmət göstərən profil mövcud deyil.")}</p>
 
           <button
             type="button"
@@ -454,9 +455,9 @@ function Booking() {
             <CalendarDays size={26} strokeWidth={1.8} />
           </div>
 
-          <h1>Öz biznesinizə rezerv edə bilməzsiniz</h1>
+          <h1>{t("Öz biznesinizə rezerv edə bilməzsiniz")}</h1>
 
-          <p>Bu profil sizin biznesinizə aiddir.</p>
+          <p>{t("Bu profil sizin biznesinizə aiddir.")}</p>
 
           <button
             type="button"
@@ -587,7 +588,7 @@ function Booking() {
     }
 
     if (isTimePassed(selectedDate, selectedTime)) {
-      setSubmitError("Bu saat artıq keçib. Zəhmət olmasa başqa saat seçin.");
+      setSubmitError(t("Bu saat artıq keçib. Zəhmət olmasa başqa saat seçin."));
       setSelectedTime("");
       return;
     }
@@ -638,7 +639,7 @@ function Booking() {
             <CheckCircle2 size={28} strokeWidth={1.8} />
           </div>
 
-          <h1>Rezerv uğurla yaradıldı</h1>
+          <h1>{t("Rezerv uğurla yaradıldı")}</h1>
 
           <p>
             <strong>{provider.name}</strong>
@@ -654,7 +655,7 @@ function Booking() {
               className="booking-success__button booking-success__button--primary"
               onClick={() => navigate("/bookings")}
             >
-              Rezervlərə bax
+              {t("Rezervlərə bax")}
             </button>
 
             <button
@@ -683,7 +684,7 @@ function Booking() {
           onClick={() => navigate(`/provider/${provider.id}`)}
         >
           <ArrowLeft size={18} strokeWidth={1.8} />
-          <span>Profilə qayıt</span>
+          <span>{t("Profilə qayıt")}</span>
         </button>
       </div>
 
@@ -691,10 +692,10 @@ function Booking() {
         <main className="booking-main">
           <section className="booking-section">
             <div className="booking-section__header">
-              <h1>Rezerv et</h1>
+              <h1>{t("Rezerv et")}</h1>
 
               <p>
-                Xidmət, tarix və uyğun saat seçərək rezervinizi yaradın.
+                {t("Xidmət, tarix və uyğun saat seçərək rezervinizi yaradın.")}
               </p>
             </div>
 
@@ -708,13 +709,13 @@ function Booking() {
                   {provider.verified && (
                     <span className="booking-provider__verified">
                       <CheckCircle2 size={14} strokeWidth={2} />
-                      Təsdiqlənib
+                      {t("Təsdiqlənib")}
                     </span>
                   )}
                 </div>
 
                 <div className="booking-provider__service">
-                  {provider.service}
+                  {t(provider.service)}
                 </div>
 
                 <div className="booking-provider__location">
@@ -730,12 +731,12 @@ function Booking() {
 
           <section className="booking-section">
             <div className="booking-section__header">
-              <h2>1. Xidmət seçin</h2>
+              <h2>{t("1. Xidmət seçin")}</h2>
             </div>
 
             {services.length === 0 ? (
               <div className="booking-time-empty">
-                Bu biznes hələ xidmət əlavə etməyib.
+                {t("Bu biznes hələ xidmət əlavə etməyib.")}
               </div>
             ) : (
               <div className="booking-services">
@@ -772,28 +773,27 @@ function Booking() {
 
           <section className="booking-section">
             <div className="booking-section__header">
-              <h2>2. Tarix seçin</h2>
+              <h2>{t("2. Tarix seçin")}</h2>
 
               <p>
-                Biznesin iş günləri və artıq dolu olan saatlar nəzərə
-                alınır.
+                {t("Biznesin iş günləri və artıq dolu olan saatlar nəzərə alınır.")}
               </p>
             </div>
 
             <div className="booking-date-legend">
               <span>
                 <i className="booking-date-dot booking-date-dot--empty" />
-                Boş
+                {t("Boş")}
               </span>
 
               <span>
                 <i className="booking-date-dot booking-date-dot--partial" />
-                Qismən dolu
+                {t("Qismən dolu")}
               </span>
 
               <span>
                 <i className="booking-date-dot booking-date-dot--full" />
-                Dolu / Bağlı
+                {t("Dolu / Bağlı")}
               </span>
             </div>
 
@@ -832,10 +832,10 @@ function Booking() {
                     <i className="booking-date-card__dot" />
 
                     <small>
-                      {status === "empty" && "Boş"}
-                      {status === "partial" && "Qismən dolu"}
+                      {status === "empty" && t("Boş")}
+                      {status === "partial" && t("Qismən dolu")}
                       {status === "full" &&
-                        (schedule.isOpen ? "Dolu" : "Bağlı")}
+                        (schedule.isOpen ? t("Dolu") : t("Bağlı"))}
                     </small>
                   </button>
                 );
@@ -845,25 +845,24 @@ function Booking() {
 
           <section className="booking-section">
             <div className="booking-section__header">
-              <h2>3. Saat seçin</h2>
+              <h2>{t("3. Saat seçin")}</h2>
 
               <p>
-                Saatlar seçdiyiniz xidmətin müddətinə və biznesin iş
-                qrafikinə görə hesablanır.
+                {t("Saatlar seçdiyiniz xidmətin müddətinə və biznesin iş qrafikinə görə hesablanır.")}
               </p>
             </div>
 
             {!selectedService ? (
               <div className="booking-time-empty">
-                Əvvəlcə yuxarıdan xidmət seçin.
+                {t("Əvvəlcə yuxarıdan xidmət seçin.")}
               </div>
             ) : !selectedDate ? (
               <div className="booking-time-empty">
-                Əvvəlcə yuxarıdan bir gün seçin.
+                {t("Əvvəlcə yuxarıdan bir gün seçin.")}
               </div>
             ) : selectedDayTimes.length === 0 ? (
               <div className="booking-time-empty">
-                Bu gün biznes üçün bağlıdır.
+                {t("Bu gün biznes üçün bağlıdır.")}
               </div>
             ) : (
               <div className="booking-times">
@@ -904,17 +903,17 @@ function Booking() {
                       {time}
 
                       {passed && (
-                        <span className="booking-time__booked">Keçib</span>
+                        <span className="booking-time__booked">{t("Keçib")}</span>
                       )}
 
                       {!passed && taken && (
                         <span className="booking-time__booked">
-                          Doludur
+                          {t("Doludur")}
                         </span>
                       )}
 
                       {!passed && !taken && tooLate && (
-                        <span className="booking-time__booked">Sığmır</span>
+                        <span className="booking-time__booked">{t("Sığmır")}</span>
                       )}
                     </button>
                   );
@@ -926,15 +925,15 @@ function Booking() {
 
         <aside className="booking-sidebar">
           <section className="booking-summary">
-            <h2 className="booking-summary__title">Rezerv məlumatları</h2>
+            <h2 className="booking-summary__title">{t("Rezerv məlumatları")}</h2>
 
             <div className="booking-summary__item">
               <CalendarDays size={18} strokeWidth={1.8} />
 
               <div>
-                <span>Xidmət</span>
+                <span>{t("Xidmət")}</span>
 
-                <strong>{selectedService?.name ?? "Seçilməyib"}</strong>
+                <strong>{selectedService?.name ?? t("Seçilməyib")}</strong>
               </div>
             </div>
 
@@ -942,12 +941,12 @@ function Booking() {
               <Clock3 size={18} strokeWidth={1.8} />
 
               <div>
-                <span>Müddət</span>
+                <span>{t("Müddət")}</span>
 
                 <strong>
                   {selectedService
                     ? formatDuration(selectedService.duration)
-                    : "Seçilməyib"}
+                    : t("Seçilməyib")}
                 </strong>
               </div>
             </div>
@@ -956,12 +955,12 @@ function Booking() {
               <CalendarDays size={18} strokeWidth={1.8} />
 
               <div>
-                <span>Tarix</span>
+                <span>{t("Tarix")}</span>
 
                 <strong>
                   {selectedDate
                     ? formatReadableDate(selectedDate)
-                    : "Seçilməyib"}
+                    : t("Seçilməyib")}
                 </strong>
               </div>
             </div>
@@ -970,16 +969,16 @@ function Booking() {
               <Clock3 size={18} strokeWidth={1.8} />
 
               <div>
-                <span>Saat</span>
+                <span>{t("Saat")}</span>
 
-                <strong>{selectedTime || "Seçilməyib"}</strong>
+                <strong>{selectedTime || t("Seçilməyib")}</strong>
               </div>
             </div>
 
             <div className="booking-summary__divider" />
 
             <div className="booking-summary__price">
-              <span>{selectedService ? "Qiymət" : "Başlanğıc qiymət"}</span>
+              <span>{selectedService ? t("Qiymət") : t("Başlanğıc qiymət")}</span>
 
               <strong>
                 {selectedService?.price ?? provider.priceFrom} ₼
@@ -1002,11 +1001,11 @@ function Booking() {
               onClick={handleConfirm}
             >
               <CheckCircle2 size={17} strokeWidth={1.8} />
-              {isSubmitting ? "Göndərilir..." : "Rezervi təsdiqlə"}
+              {isSubmitting ? t("Göndərilir...") : t("Rezervi təsdiqlə")}
             </button>
 
             <p className="booking-hint">
-              Rezerv biznes tərəfindən təsdiqləndikdən sonra qüvvəyə minir.
+              {t("Rezerv biznes tərəfindən təsdiqləndikdən sonra qüvvəyə minir.")}
             </p>
           </section>
         </aside>

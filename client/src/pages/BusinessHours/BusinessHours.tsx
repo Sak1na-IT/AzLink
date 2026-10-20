@@ -14,6 +14,7 @@ import {
   type WeekDay,
   type WeeklySchedule,
 } from "../../types/schedule";
+import { t } from "../../i18n";
 
 /* 00:00, 00:30, ... 23:30 */
 const TIME_OPTIONS = Array.from({ length: 48 }, (_, index) => {
@@ -69,7 +70,7 @@ function BusinessHours() {
         setProfile(result);
         setSchedule(result.schedule);
       } catch {
-        setLoadError("İş saatlarını yükləmək mümkün olmadı.");
+        setLoadError(t("İş saatlarını yükləmək mümkün olmadı."));
       } finally {
         setIsLoading(false);
       }
@@ -98,7 +99,7 @@ function BusinessHours() {
     if (invalidDay) {
       setMessage({
         type: "error",
-        text: `${weekDayLabels[invalidDay]}: bağlanış saatı açılış saatından sonra olmalıdır.`,
+        text: t("{day}: bağlanış saatı açılış saatından sonra olmalıdır.", { day: weekDayLabels[invalidDay] }),
       });
       return;
     }
@@ -107,9 +108,9 @@ function BusinessHours() {
       setIsSaving(true);
       setMessage(null);
       await saveBusinessProfile({ ...profile, schedule });
-      setMessage({ type: "ok", text: "İş saatları yadda saxlanıldı." });
+      setMessage({ type: "ok", text: t("İş saatları yadda saxlanıldı.") });
     } catch {
-      setMessage({ type: "error", text: "Yadda saxlamaq mümkün olmadı." });
+      setMessage({ type: "error", text: t("Yadda saxlamaq mümkün olmadı.") });
     } finally {
       setIsSaving(false);
     }
@@ -118,7 +119,7 @@ function BusinessHours() {
   if (isLoading) {
     return (
       <main className="business-hours">
-        <p className="business-hours__loading">Yüklənir...</p>
+        <p className="business-hours__loading">{t("Yüklənir...")}</p>
       </main>
     );
   }
@@ -127,7 +128,7 @@ function BusinessHours() {
     return (
       <main className="business-hours">
         <p className="business-hours__loading">
-          {loadError || "Məlumat tapılmadı."}
+          {loadError || t("Məlumat tapılmadı.")}
         </p>
       </main>
     );
@@ -136,9 +137,9 @@ function BusinessHours() {
   return (
     <main className="business-hours">
       <section className="business-hours__header">
-        <span className="biz-eyebrow">İş saatları</span>
-        <h1>İş saatları</h1>
-        <p>Müştərilərin hansı gün və saatlarda rezerv edə biləcəyini seçin.</p>
+        <span className="biz-eyebrow">{t("İş saatları")}</span>
+        <h1>{t("İş saatları")}</h1>
+        <p>{t("Müştərilərin hansı gün və saatlarda rezerv edə biləcəyini seçin.")}</p>
       </section>
 
       <section className="business-hours__card">
@@ -162,18 +163,18 @@ function BusinessHours() {
                 <div className="business-hours__times">
                   <TimeSelect
                     value={item.start}
-                    label={`${weekDayLabels[day]} açılış saatı`}
+                    label={t("{day} açılış saatı", { day: weekDayLabels[day] })}
                     onChange={(value) => updateDay(day, { start: value })}
                   />
                   <span className="business-hours__dash">–</span>
                   <TimeSelect
                     value={item.end}
-                    label={`${weekDayLabels[day]} bağlanış saatı`}
+                    label={t("{day} bağlanış saatı", { day: weekDayLabels[day] })}
                     onChange={(value) => updateDay(day, { end: value })}
                   />
                 </div>
               ) : (
-                <span className="business-hours__closed">Bağlı</span>
+                <span className="business-hours__closed">{t("Bağlı")}</span>
               )}
             </div>
           );
@@ -196,7 +197,7 @@ function BusinessHours() {
           disabled={isSaving}
         >
           <Save size={18} strokeWidth={1.9} />
-          {isSaving ? "Saxlanılır..." : "Dəyişiklikləri yadda saxla"}
+          {isSaving ? t("Saxlanılır...") : t("Dəyişiklikləri yadda saxla")}
         </button>
       </div>
     </main>

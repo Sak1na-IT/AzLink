@@ -873,3 +873,12 @@
     letter-spacing: 0.08em;
   }
 }
+
+/* Dil seçimi sətri: düymə deyil, içində AZ/EN seçimi var */
+.profile-menu__item--static {
+  cursor: default;
+}
+
+.profile-menu__item--static .language-switch {
+  margin-left: auto;
+}

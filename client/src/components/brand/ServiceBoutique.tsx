@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { categories } from "../../data/categories";
 import "./ServiceBoutique.css";
+import { t } from "../../i18n";
 
 /* Bir sahə haqqında bazadan gələn real məlumat */
 export interface CategoryStats {
@@ -632,26 +633,26 @@ function ServiceBoutique({
                 setSelected((current) => (current === i ? null : i));
               }
             }}
-            aria-label={`${category.name}${
-              info?.businessCount ? `, ${info.businessCount} biznes` : ""
+            aria-label={`${t(category.name)}${
+              info?.businessCount ? `, ${t("{count} biznes", { count: info.businessCount })}` : ""
             }`}
           >
             <span className="boutique__face">
               <Icon size={24} strokeWidth={1.6} />
             </span>
 
-            <span className="boutique__name">{category.name}</span>
+            <span className="boutique__name">{t(category.name)}</span>
 
             <span className="boutique__hint">
               {info?.businessCount ? (
                 <>
-                  <b>{info.businessCount} biznes</b>
+                  <b>{t("{count} biznes", { count: info.businessCount })}</b>
                   {info.priceFrom !== null && (
-                    <span>{info.priceFrom} ₼-dən</span>
+                    <span>{t("{price} ₼-dən", { price: info.priceFrom })}</span>
                   )}
                 </>
               ) : (
-                <span>Tutub atın və ya klikləyin</span>
+                <span>{t("Tutub atın və ya klikləyin")}</span>
               )}
             </span>
           </button>
@@ -663,14 +664,14 @@ function ServiceBoutique({
         <div
           className="boutique__card"
           role="dialog"
-          aria-label={selectedCategory.name}
+          aria-label={t(selectedCategory.name)}
           key={selectedCategory.id}
         >
           <button
             type="button"
             className="boutique__close"
             onClick={() => setSelected(null)}
-            aria-label="Bağla"
+            aria-label={t("Bağla")}
           >
             ×
           </button>
@@ -681,11 +682,11 @@ function ServiceBoutique({
             </span>
 
             <div>
-              <h3>{selectedCategory.name}</h3>
+              <h3>{t(selectedCategory.name)}</h3>
               <p>
                 {selectedStats?.businessCount
-                  ? `${selectedStats.businessCount} biznes`
-                  : selectedCategory.services.join(", ")}
+                  ? t("{count} biznes", { count: selectedStats.businessCount })
+                  : selectedCategory.services.map((name) => t(name)).join(", ")}
               </p>
             </div>
           </div>
@@ -702,7 +703,7 @@ function ServiceBoutique({
             </ul>
           ) : (
             <p className="boutique__empty">
-              {selectedCategory.services.join(", ")}
+              {selectedCategory.services.map((name) => t(name)).join(", ")}
             </p>
           )}
 
@@ -711,7 +712,7 @@ function ServiceBoutique({
             className="boutique__cta"
             onClick={() => onSelect?.(selectedCategory.id)}
           >
-            Ustaları gör
+            {t("Ustaları gör")}
           </button>
         </div>
       )}

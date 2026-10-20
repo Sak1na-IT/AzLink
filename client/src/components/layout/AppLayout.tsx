@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import TopNav from "./TopNav";
 import BusinessSubNav from "./BusinessSubNav";
 import Interactions from "../common/Interactions";
+import LanguageSwitch from "../../i18n/LanguageSwitch";
 import { useTheme } from "../../hooks/useTheme";
 import { getStoredUser } from "../../services/api";
 import "./AppLayout.css";
@@ -41,6 +42,9 @@ function AppLayout() {
       {!hideNav && (
         <TopNav isDark={isDark} toggleTheme={toggleTheme} />
       )}
+
+      {/* Naviqasiya olmayan səhifələrdə dil seçimi küncdə */}
+      {hideNav && <LanguageSwitch floating />}
 
       <main className="app-content">
         {showBusinessSubNav ? (
