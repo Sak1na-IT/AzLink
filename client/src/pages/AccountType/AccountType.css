@@ -64,7 +64,7 @@
   background-size: cover;
   background-repeat: no-repeat;
   opacity: 0;
-  transform: scale(1.08);
+  transform: scale(1.04);
   will-change: opacity, transform;
 }
 
@@ -253,14 +253,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 96px 0 48px;
+  /* Yuxarı zolağın hündürlüyü qədər boşluq: məzmun görünən hissənin ortasında */
+  padding: 110px 0 56px;
   text-align: center;
 }
 
 .landing-hero h1 {
-  max-width: 13em;
+  max-width: 20em;
   margin: 0;
-  font-size: clamp(40px, 5vw, 72px);
+  font-size: clamp(38px, 4.2vw, 64px);
   line-height: 1.02;
   letter-spacing: -0.015em;
   text-wrap: balance;
@@ -268,8 +269,8 @@
 }
 
 .landing-hero__lead {
-  max-width: 34em;
-  margin: 18px 0 0;
+  max-width: 44em;
+  margin: 14px 0 0;
   color: var(--ink);
   font-size: 18px;
   font-weight: 500;
@@ -282,19 +283,21 @@
 
 .landing-doors {
   width: min(860px, 100%);
-  margin-top: 36px;
+  margin-top: 32px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   animation: landing-in 900ms 240ms var(--ease-out) backwards;
 }
 
+/* Seçim kartı: ikon solda, mətn sağda — yığcam */
 .landing-door {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 28px 28px 26px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: 16px;
+  row-gap: 6px;
+  align-items: start;
+  padding: 24px 26px;
   background: var(--glass-strong);
   color: var(--ink);
   font: inherit;
@@ -310,8 +313,12 @@
   transform: translateY(-3px);
 }
 
+.landing-door .landing-icon {
+  grid-row: span 3;
+}
+
 .landing-door strong {
-  margin-top: 6px;
+  margin-top: 4px;
   font-family: "Cormorant Garamond", Georgia, serif;
   font-size: 30px;
   font-weight: 500;
@@ -325,7 +332,7 @@
 }
 
 .landing-door em {
-  margin-top: 6px;
+  margin-top: 4px;
   color: var(--emerald);
   font-size: 15px;
   font-style: normal;

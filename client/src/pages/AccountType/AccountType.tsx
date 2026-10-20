@@ -38,13 +38,13 @@ interface Photo {
 const DAY_PHOTOS: Photo[] = [
   { src: "/landing/oldcity-day.jpg", place: t("İçərişəhər və Alov qüllələri"), focus: "62% 40%" },
   { src: "/landing/maiden-day.jpg", place: t("Qız qalası"), focus: "50% 40%" },
-  { src: "/landing/heydar-aliyev-day.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "32% 50%" },
+  { src: "/landing/heydar-aliyev-day.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "32% 35%" },
 ];
 
 const NIGHT_PHOTOS: Photo[] = [
   { src: "/landing/boulevard-evening.jpg", place: t("Dənizkənarı bulvar"), focus: "42% 50%" },
-  { src: "/landing/maiden-evening.jpg", place: t("Qız qalası"), focus: "30% 50%" },
-  { src: "/landing/heydar-aliyev-night.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "34% 50%" },
+  { src: "/landing/maiden-evening.jpg", place: t("Qız qalası"), focus: "30% 45%" },
+  { src: "/landing/heydar-aliyev-night.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "34% 12%" },
 ];
 
 const CUSTOMER_STEPS = [
@@ -135,7 +135,7 @@ function AccountType() {
         const photo = photoRefs.current[index];
         if (photo) {
           photo.style.opacity = value.toFixed(3);
-          photo.style.transform = `scale(${(1.08 - value * 0.06).toFixed(4)})`;
+          photo.style.transform = `scale(${(1.04 - value * 0.04).toFixed(4)})`;
         }
 
         if (value > 0.5) visible = index;
