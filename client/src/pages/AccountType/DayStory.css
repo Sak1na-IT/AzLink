@@ -1,0 +1,747 @@
+/* =========================================================
+   "Bakıda bir gün" — giriş səhifəsinin hekayə hissəsi
+   Arxada göy günün vaxtına görə dəyişir, günəş qövs boyu
+   hərəkət edir. Mətn solda, canlı nümayiş sağda (sabit).
+   ========================================================= */
+
+.day-story {
+  --sun-x: 8%;
+  --sun-y: 72%;
+  --moon-x: 22%;
+  --moon-y: 58%;
+  --horizon: 74%;
+  --story-text: #f6f1e7;
+  --story-muted: rgba(246, 241, 231, 0.72);
+  --story-gold: #e6c98a;
+  --story-line: rgba(232, 204, 146, 0.24);
+
+  position: relative;
+  color: var(--story-text);
+}
+
+/* ---------- Göy (ekranı tutan, sürüşdürərkən yerində qalan qat) ---------- */
+
+.day-story__sky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #06140f;
+}
+
+.day-sky {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1400ms ease;
+}
+
+.day-sky--dawn {
+  background: linear-gradient(
+    180deg,
+    #0f2d26 0%,
+    #24493d 38%,
+    #7a6a48 62%,
+    #d6a466 var(--horizon),
+    #b98a55 100%
+  );
+}
+
+.day-sky--noon {
+  background: linear-gradient(
+    180deg,
+    #0e3f35 0%,
+    #1d5f4f 40%,
+    #4f8f78 64%,
+    #a9cdb5 var(--horizon),
+    #8db8a0 100%
+  );
+}
+
+.day-sky--dusk {
+  background: linear-gradient(
+    180deg,
+    #13211f 0%,
+    #3a2b28 36%,
+    #8a4b31 60%,
+    #e09455 var(--horizon),
+    #b2683a 100%
+  );
+}
+
+.day-sky--night {
+  background: linear-gradient(
+    180deg,
+    #040e0b 0%,
+    #08201a 45%,
+    #123a30 66%,
+    #1f4a3e var(--horizon),
+    #0d2a22 100%
+  );
+}
+
+.day-story[data-scene="dawn"] .day-sky--dawn,
+.day-story[data-scene="noon"] .day-sky--noon,
+.day-story[data-scene="dusk"] .day-sky--dusk,
+.day-story[data-scene="night"] .day-sky--night {
+  opacity: 1;
+}
+
+/* Mətnin oxunması üçün solda incə qaranlıq */
+.day-story__sky::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(3, 14, 11, 0.62) 0%,
+    rgba(3, 14, 11, 0.3) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* Günəş gündüz qızılı, gecə aya çevrilir */
+.day-sun {
+  position: absolute;
+  left: var(--sun-x);
+  top: var(--sun-y);
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(
+    circle at 40% 38%,
+    #fff6dc 0%,
+    #f4d68f 40%,
+    #e2a957 100%
+  );
+  box-shadow:
+    0 0 60px 18px rgba(244, 196, 110, 0.42),
+    0 0 180px 60px rgba(232, 160, 80, 0.22);
+  transition:
+    left 300ms linear,
+    top 300ms linear,
+    opacity 1200ms ease;
+}
+
+/* Gecə günəş batır, ay çıxır */
+.day-story[data-scene="night"] .day-sun {
+  opacity: 0;
+}
+
+.day-moon {
+  position: absolute;
+  left: var(--moon-x);
+  top: var(--moon-y);
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  translate: -50% -50%;
+  background: radial-gradient(
+    circle at 36% 34%,
+    #fbf7ec 0%,
+    #e9e0c8 55%,
+    #c9bc9a 100%
+  );
+  box-shadow:
+    0 0 40px 10px rgba(238, 228, 200, 0.26),
+    0 0 120px 40px rgba(200, 210, 190, 0.08);
+  opacity: 0;
+  transition:
+    left 300ms linear,
+    top 300ms linear,
+    opacity 1200ms ease;
+}
+
+.day-story[data-scene="night"] .day-moon {
+  opacity: 1;
+}
+
+/* Xəzər: üfüqdən aşağı dəniz və günəşin parıltısı */
+.day-sea {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--horizon);
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 30, 25, 0.35) 0%,
+    rgba(4, 18, 15, 0.82) 100%
+  );
+  border-top: 1px solid rgba(246, 225, 180, 0.28);
+}
+
+.day-sea__glint {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--sun-x);
+  width: 120px;
+  translate: -50% 0;
+  background: repeating-linear-gradient(
+    180deg,
+    rgba(250, 222, 160, 0.5) 0 2px,
+    transparent 2px 9px
+  );
+  mask-image: linear-gradient(180deg, #000 0%, transparent 85%);
+  opacity: 0.7;
+  animation: day-glint 3.2s ease-in-out infinite;
+  transition: left 300ms linear;
+}
+
+/* Gecə parıltı ayın altına keçir */
+.day-story[data-scene="night"] .day-sea__glint {
+  left: var(--moon-x);
+  width: 70px;
+  opacity: 0.35;
+}
+
+@keyframes day-glint {
+  50% {
+    scale: 1.25 1;
+    opacity: 0.45;
+  }
+}
+
+/* Qızıl toz yalnız gecə görünür (şəhərin işıqları kimi) */
+.day-story__dust {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1400ms ease;
+}
+
+.day-story[data-scene="night"] .day-story__dust {
+  opacity: 1;
+}
+
+/* ---------- Məzmun: göyün üzərində ---------- */
+
+.day-story__grid {
+  position: relative;
+  z-index: 1;
+  width: min(1240px, 100%);
+  margin: -100vh auto 0;
+  padding: 0 56px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 64px;
+}
+
+.day-chapter {
+  min-height: 100vh;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0.32;
+  transition: opacity 600ms ease;
+}
+
+.day-chapter.is-active {
+  opacity: 1;
+}
+
+.day-chapter__time {
+  color: var(--story-gold);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(56px, 6vw, 88px);
+  font-weight: 500;
+  font-variant-numeric: lining-nums;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.day-chapter h2 {
+  margin: 18px 0 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(34px, 3.4vw, 50px);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.day-chapter p {
+  margin: 18px 0 0;
+  color: var(--story-muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+/* ---------- Canlı nümayiş ---------- */
+
+.day-story__device-wrap {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-device {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  height: 500px;
+  padding: 18px;
+  border: 1px solid var(--story-line);
+  border-radius: 30px;
+  background: rgba(6, 24, 19, 0.56);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.day-device__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 14px;
+  border-bottom: 1px solid var(--story-line);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.day-device__bell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.day-device__bell i {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--story-gold);
+  color: #12261f;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  animation: day-pop 500ms var(--ease-out, ease-out);
+}
+
+@keyframes day-pop {
+  from {
+    scale: 0;
+  }
+}
+
+/* Ekranlar üst-üstə: yalnız aktiv olan görünür */
+.day-screen {
+  position: absolute;
+  inset: 70px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  visibility: hidden;
+  translate: 0 14px;
+  transition:
+    opacity 500ms ease,
+    translate 500ms ease,
+    visibility 0s 500ms;
+}
+
+.day-screen.is-shown {
+  opacity: 1;
+  visibility: visible;
+  translate: 0 0;
+  transition:
+    opacity 500ms ease,
+    translate 500ms ease;
+}
+
+.day-screen__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  color: var(--story-muted);
+  font-size: 13px;
+}
+
+/* 1. Axtarış */
+.day-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 1px solid rgba(232, 204, 146, 0.4);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 15px;
+}
+
+.day-caret {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  margin-left: 2px;
+  vertical-align: -3px;
+  background: var(--story-gold);
+  animation: day-caret 1s steps(1) infinite;
+}
+
+@keyframes day-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+.day-results {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.day-results li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: opacity 400ms ease;
+}
+
+.day-results span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--story-muted);
+  font-size: 12px;
+}
+
+/* 2. Müqayisə */
+.day-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.day-card.is-best {
+  border-color: rgba(232, 204, 146, 0.55);
+  background: rgba(232, 204, 146, 0.1);
+}
+
+.day-card div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.day-card div:first-child span {
+  color: var(--story-muted);
+  font-size: 12px;
+}
+
+.day-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--story-muted);
+  font-size: 12px;
+}
+
+.day-card__meta b {
+  margin-left: auto;
+  color: var(--story-text);
+  font-size: 13px;
+}
+
+.day-card__rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--story-gold);
+  font-weight: 700;
+}
+
+/* 3. Saat seçimi */
+.day-days,
+.day-slots {
+  display: grid;
+  gap: 8px;
+}
+
+.day-days {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.day-slots {
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 6px;
+}
+
+.day-days span,
+.day-slots span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 0;
+  border: 1px solid var(--story-line);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color 250ms ease,
+    border-color 250ms ease,
+    color 250ms ease;
+}
+
+.day-days small {
+  color: var(--story-muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.day-days .is-picked,
+.day-slots .is-picked {
+  border-color: var(--story-gold);
+  background: var(--story-gold);
+  color: #12261f;
+}
+
+.day-days .is-picked small {
+  color: rgba(18, 38, 31, 0.7);
+}
+
+.day-confirm {
+  margin-top: auto;
+  padding: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--story-muted);
+  font-weight: 600;
+  text-align: center;
+  transition:
+    background-color 400ms ease,
+    color 400ms ease;
+}
+
+.day-confirm.is-ready {
+  background: #f6f1e7;
+  color: #0c2a22;
+}
+
+/* 4. Bildiriş */
+.day-notice {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(232, 204, 146, 0.45);
+  border-radius: 18px;
+  background: rgba(232, 204, 146, 0.12);
+  animation: day-drop 700ms var(--ease-out, ease-out);
+}
+
+.day-screen:not(.is-shown) .day-notice {
+  animation: none;
+}
+
+@keyframes day-drop {
+  from {
+    translate: 0 -24px;
+    opacity: 0;
+  }
+}
+
+.day-notice__icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--story-gold);
+  color: #12261f;
+}
+
+.day-notice p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.day-review {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--story-muted);
+  font-size: 13px;
+}
+
+.day-review__stars {
+  display: flex;
+  gap: 4px;
+  color: var(--story-gold);
+}
+
+/* 5. Biznes paneli */
+.day-agenda {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.day-agenda li {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.day-agenda time {
+  color: var(--story-gold);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.day-agenda span {
+  display: flex;
+  flex-direction: column;
+  color: var(--story-muted);
+  font-size: 12px;
+}
+
+.day-agenda strong {
+  color: var(--story-text);
+  font-size: 14px;
+}
+
+.day-agenda em {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--story-muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.day-agenda em.is-pending {
+  background: var(--story-gold);
+  color: #12261f;
+}
+
+/* ---------- Telefon və planşet ---------- */
+
+@media (max-width: 900px) {
+  .day-story__grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 0 16px;
+  }
+
+  /* Nümayiş yuxarıda sabit qalır, mətn altdan keçir */
+  .day-story__device-wrap {
+    order: -1;
+    top: 16px;
+    height: auto;
+    padding-top: 16px;
+    z-index: 2;
+  }
+
+  .day-device {
+    height: 330px;
+    max-width: 360px;
+  }
+
+  .day-screen {
+    inset: 62px 16px 16px;
+    gap: 8px;
+  }
+
+  .day-chapter {
+    min-height: 85vh;
+    max-width: none;
+    justify-content: flex-end;
+    padding-bottom: 12vh;
+  }
+
+  .day-chapter > * {
+    position: relative;
+  }
+
+  .day-chapter__time {
+    font-size: 48px;
+  }
+
+  .day-chapter h2 {
+    font-size: 32px;
+  }
+
+  .day-chapter p {
+    font-size: 15px;
+  }
+
+  .day-sun {
+    width: 76px;
+    height: 76px;
+  }
+
+  .day-moon {
+    width: 54px;
+    height: 54px;
+  }
+}
+
+/* ---------- Azaldılmış hərəkət ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .day-sky,
+  .day-sun,
+  .day-moon,
+  .day-sea__glint,
+  .day-chapter,
+  .day-screen,
+  .day-story__dust {
+    transition: none;
+  }
+
+  .day-sea__glint,
+  .day-caret,
+  .day-notice,
+  .day-device__bell i {
+    animation: none;
+  }
+}
+
+/* Telefonda nümayiş kiçikdir: müqayisədə iki kart kifayətdir */
+@media (max-width: 900px) {
+  .day-card:nth-child(n + 3),
+  .day-results li:nth-child(n + 3) {
+    display: none;
+  }
+}

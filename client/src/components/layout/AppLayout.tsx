@@ -11,6 +11,9 @@ import "./AppLayout.css";
 /* Bu yollarda TopNav göstərilmir — hələ giriş/rol yoxdur */
 const AUTH_PATHS = ["/", "/account-type", "/login", "/register"];
 
+/* Giriş səhifəsinin öz yuxarı zolağı var, dil seçimi orada durur */
+const LANDING_PATHS = ["/", "/account-type"];
+
 /*
  * "Rezerv et" qrupuna aid yollar — biznes hesabı bunlardan birində
  * olanda BusinessSubNav görünür. Dinamik /provider/:id və
@@ -44,7 +47,9 @@ function AppLayout() {
       )}
 
       {/* Naviqasiya olmayan səhifələrdə dil seçimi küncdə */}
-      {hideNav && <LanguageSwitch floating />}
+      {hideNav && !LANDING_PATHS.includes(location.pathname) && (
+        <LanguageSwitch floating />
+      )}
 
       <main className="app-content">
         {showBusinessSubNav ? (

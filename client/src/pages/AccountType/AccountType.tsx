@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowDown, Briefcase, UserRound } from "lucide-react";
 
 import ServiceBoutique, {
   type CategoryStats,
 } from "../../components/brand/ServiceBoutique";
 import VelvetStage from "../../components/brand/VelvetStage";
+import LanguageSwitch from "../../i18n/LanguageSwitch";
+import DayStory from "./DayStory";
 import { categories } from "../../data/categories";
 import { isLoggedIn } from "../../services/api";
 import { getProviders } from "../../services/providersService";
@@ -12,8 +15,11 @@ import type { Provider } from "../../types/provider";
 import "./AccountType.css";
 import { t } from "../../i18n";
 
-/* Başlıq sətirləri; hər sətir açılışda növbə ilə üzə çıxır */
-const HEADLINE = [t("Özünüzə vaxt ayırın,"), t("qalanını biz tapaq")];
+/*
+ * Başlıq ilk baxışda saytın nə olduğunu deyir; hər sətir açılışda
+ * növbə ilə üzə çıxır.
+ */
+const HEADLINE = [t("Bakıda ustanı tap,"), t("onlayn rezerv et")];
 
 /*
  * Bazadakı bizneslərdən hər sahə üçün real rəqəmlər:
@@ -67,6 +73,7 @@ function AccountType() {
   const [businessCount, setBusinessCount] = useState<number | null>(null);
   const [lowestPrice, setLowestPrice] = useState<number | null>(null);
   const [stats, setStats] = useState<Record<string, CategoryStats>>({});
+  const [providers, setProviders] = useState<Provider[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -84,6 +91,7 @@ function AccountType() {
         setBusinessCount(providers.length);
         setLowestPrice(prices.length ? Math.min(...prices) : null);
         setStats(buildStats(providers));
+        setProviders(providers);
       })
       .catch(() => {
         /* Rəqəmlər yüklənməsə də səhifə işləyir, sadəcə göstərilmir */
@@ -107,9 +115,13 @@ function AccountType() {
         <header className="account-type__bar">
           <span className="account-type__brand">AzLink</span>
 
-          <Link to="/login" className="account-type__login">
-            {t("Daxil olun")}
-          </Link>
+          <div className="account-type__bar-actions">
+            <LanguageSwitch />
+
+            <Link to="/login" className="account-type__login">
+              {t("Daxil olun")}
+            </Link>
+          </div>
         </header>
 
         <div className="account-type__body">
@@ -128,7 +140,7 @@ function AccountType() {
             </h1>
 
             <p>
-              {t("Manikürdən ev təmizliyinə, dərsdən avtomobil yumasına: Bakının mütəxəssisləri bir platformada. Qiymətləri müqayisə edin, boş vaxtı seçin, bir toxunuşla rezerv edin.")}
+              {t("AzLink Bakının yerli xidmətlərini bir yerə toplayır: manikürdən santexnikə, repetitordan avtoyumaya. Ustaların qiymətlərini və rəylərini müqayisə edin, boş saatı seçin, rezervi usta təsdiqləsin.")}
             </p>
 
             <div className="account-type__actions">
@@ -175,6 +187,49 @@ function AccountType() {
             <ServiceBoutique onSelect={handleCategory} stats={stats} />
           </div>
         </div>
+
+        <a href="#how-it-works" className="account-type__scroll">
+          <span>{t("Necə işləyir")}</span>
+          <ArrowDown size={16} strokeWidth={1.8} />
+        </a>
+      </VelvetStage>
+
+      <div id="how-it-works">
+        <DayStory providers={providers} />
+      </div>
+
+      {/* ---------- Son: iki yol ---------- */}
+      <VelvetStage className="account-type-final">
+        <h2>{t("Hansı tərəfdəsiniz?")}</h2>
+
+        <div className="account-type-final__doors">
+          <button
+            type="button"
+            className="account-type-final__door"
+            onClick={() => navigate("/register?role=user")}
+          >
+            <UserRound size={26} strokeWidth={1.5} />
+            <strong>{t("Xidmət axtarıram")}</strong>
+            <span>{t("Usta tapın, müqayisə edin və rezerv edin. Qeydiyyat pulsuzdur.")}</span>
+            <em>{t("Müştəri kimi başla")}</em>
+          </button>
+
+          <button
+            type="button"
+            className="account-type-final__door"
+            onClick={() => navigate("/register?role=business")}
+          >
+            <Briefcase size={26} strokeWidth={1.5} />
+            <strong>{t("Xidmət göstərirəm")}</strong>
+            <span>{t("Profilinizi qurun, xidmətlərinizi əlavə edin və onlayn rezerv qəbul edin.")}</span>
+            <em>{t("Biznesimi əlavə et")}</em>
+          </button>
+        </div>
+
+        <p className="account-type-final__login">
+          {t("Artıq hesabınız var?")}{" "}
+          <Link to="/login">{t("Daxil olun")}</Link>
+        </p>
       </VelvetStage>
     </div>
   );

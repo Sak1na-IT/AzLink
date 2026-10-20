@@ -33,6 +33,28 @@
   letter-spacing: -0.04em;
 }
 
+.account-type__bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Dil seçimi tünd vitrində: zolağın öz rəngləri ilə */
+.account-type__bar .language-switch {
+  height: 40px;
+  border-color: var(--velvet-line);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.account-type__bar .language-switch button {
+  color: var(--velvet-text-muted);
+}
+
+.account-type__bar .language-switch button.is-active {
+  background: rgba(232, 204, 146, 0.18);
+  color: var(--velvet-gold);
+}
+
 .account-type__login {
   padding: 9px 18px;
   border: 1px solid var(--velvet-line);
@@ -263,5 +285,174 @@
 
   .account-type__actions .velvet-button {
     width: 100%;
+  }
+}
+
+
+/* ---------- Aşağı sürüşdürmə işarəsi ---------- */
+
+.account-type {
+  position: relative;
+}
+
+.account-type__scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  z-index: 4;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  translate: -50% 0;
+  color: var(--velvet-text-muted);
+  font-size: 13px;
+  transition: color var(--transition-fast);
+}
+
+.account-type__scroll:hover {
+  color: var(--velvet-gold);
+}
+
+.account-type__scroll svg {
+  animation: account-type-nudge 2.2s ease-in-out infinite;
+}
+
+@keyframes account-type-nudge {
+  50% {
+    translate: 0 5px;
+  }
+}
+
+html:has(.account-type-page) {
+  scroll-behavior: smooth;
+}
+
+/* ---------- Son: iki yol ---------- */
+
+.account-type-final {
+  padding: 120px 56px 96px;
+  text-align: center;
+}
+
+.account-type-final h2 {
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  color: var(--velvet-text);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 4vw, 60px);
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.account-type-final__doors {
+  position: relative;
+  z-index: 2;
+  width: min(880px, 100%);
+  margin: 48px auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.account-type-final__door {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 30px 28px;
+  border: 1px solid var(--velvet-line);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--velvet-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.account-type-final__door:hover {
+  border-color: var(--velvet-gold);
+  background: rgba(232, 204, 146, 0.08);
+  transform: translateY(-2px);
+}
+
+.account-type-final__door:focus-visible {
+  outline: 2px solid var(--velvet-gold);
+  outline-offset: 3px;
+}
+
+.account-type-final__door svg {
+  color: var(--velvet-gold);
+}
+
+.account-type-final__door strong {
+  margin-top: 6px;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 30px;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.account-type-final__door span {
+  color: var(--velvet-text-muted);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.account-type-final__door em {
+  margin-top: 10px;
+  color: var(--velvet-gold);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 600;
+}
+
+.account-type-final__login {
+  position: relative;
+  z-index: 2;
+  margin: 32px 0 0;
+  color: var(--velvet-text-muted);
+  font-size: 15px;
+}
+
+.account-type-final__login a {
+  color: var(--velvet-gold);
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .account-type__bar-actions {
+    gap: 6px;
+  }
+
+  .account-type__login {
+    padding: 8px 14px;
+  }
+
+  .account-type__scroll {
+    display: none;
+  }
+
+  .account-type-final {
+    padding: 80px 16px 64px;
+  }
+
+  .account-type-final__doors {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .account-type__scroll svg {
+    animation: none;
+  }
+
+  html:has(.account-type-page) {
+    scroll-behavior: auto;
   }
 }
