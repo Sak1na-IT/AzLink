@@ -9,7 +9,6 @@ import {
   MapPin,
   MessageCircle,
   Phone,
-  Send,
   Star,
   X,
 } from "lucide-react";
@@ -29,6 +28,20 @@ import { getBookings, type Booking } from "../../services/bookingsService";
 import { getStoredUser } from "../../services/api";
 import "./Provider.css";
 
+/* "+994501110001" → "+994 50 111 00 01" */
+const formatPhone = (phone: string) => {
+  const digits = phone.replace(/\D/g, "");
+  const match = digits.match(/^994(\d{2})(\d{3})(\d{2})(\d{2})$/);
+
+  return match
+    ? `+994 ${match[1]} ${match[2]} ${match[3]} ${match[4]}`
+    : phone;
+};
+
+/* wa.me linki: nömrə yalnız rəqəmlərlə, mətn hazır yazılmış */
+const whatsappLink = (phone: string, text: string) =>
+  `https://wa.me/${phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
+
 function Provider() {
   const { providerId } = useParams();
   const navigate = useNavigate();
@@ -41,7 +54,6 @@ function Provider() {
   const [isSaved, setIsSaved] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [messageSent, setMessageSent] = useState(false);
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewableBooking, setReviewableBooking] = useState<Booking | null>(
@@ -166,6 +178,9 @@ function Provider() {
   const reviewLabel =
     displayReviewCount === 1 ? "1 rəy" : `${displayReviewCount} rəy`;
 
+  /* WhatsApp üçün hazır mətn (istifadəçi öz mətnini yazmasa) */
+  const defaultMessage = `Salam, ${provider.name}! AzLink-də profilinizi gördüm, xidmətləriniz haqqında məlumat almaq istəyirəm.`;
+
   /* Biznes sahibi öz profilinə baxanda ürək düyməsi göstərilmir */
   const isOwnBusiness =
     Boolean(provider.ownerId) && provider.ownerId === currentUser?.id;
@@ -184,39 +199,9 @@ function Provider() {
     }
   };
 
-  const handleSendMessage = () => {
-    const trimmedMessage = message.trim();
-
-    if (!trimmedMessage) {
-      return;
-    }
-
-    /* Demo rejimində: backend-də mesajlaşma hələ yoxdur */
-    const storedMessages = JSON.parse(
-      localStorage.getItem("azlink-demo-messages") ?? "[]"
-    );
-
-    storedMessages.push({
-      id: Date.now(),
-      providerId: provider.id,
-      providerName: provider.name,
-      message: trimmedMessage,
-      createdAt: new Date().toISOString(),
-    });
-
-    localStorage.setItem(
-      "azlink-demo-messages",
-      JSON.stringify(storedMessages)
-    );
-
-    setMessage("");
-    setMessageSent(true);
-  };
-
   const closeContact = () => {
     setIsContactOpen(false);
     setMessage("");
-    setMessageSent(false);
   };
 
   const openReviewForm = () => {
@@ -535,14 +520,13 @@ function Provider() {
               Əlaqə saxla
             </button>
 
-            <button
-              type="button"
+            <a
               className="provider-phone-button"
-              onClick={() => setIsContactOpen(true)}
+              href={`tel:${provider.phone}`}
             >
               <Phone size={17} strokeWidth={1.8} />
-              Əlaqə məlumatlarını aç
-            </button>
+              {formatPhone(provider.phone)}
+            </a>
           </section>
 
           <section className="provider-sidebar-card">
@@ -621,79 +605,58 @@ function Provider() {
             </div>
 
             <div className="area-results">
-              {messageSent ? (
-                <div className="area-empty">
-                  <Send size={24} strokeWidth={1.8} />
+              <div className="provider-section">
+                <div className="provider-section__header">
+                  <div>
+                    <h2>WhatsApp-da yazın</h2>
 
-                  <strong>Mesaj yadda saxlanıldı</strong>
-
-                  <span>
-                    Demo rejimində mesajınız bu brauzerdə saxlanıldı.
-                  </span>
-
-                  <button
-                    type="button"
-                    className="area-modal__apply"
-                    onClick={closeContact}
-                  >
-                    Bağla
-                  </button>
-                </div>
-              ) : (
-                <div className="provider-section">
-                  <div className="provider-section__header">
-                    <div>
-                      <h2>Mesaj göndər</h2>
-
-                      <span className="provider-section__subtitle">
-                        Mesajınızı yazın
-                      </span>
-                    </div>
+                    <span className="provider-section__subtitle">
+                      Mesajınız WhatsApp-da hazır açılacaq, sadəcə göndərin
+                    </span>
                   </div>
-
-                  <textarea
-                    value={message}
-                    onChange={(event) => setMessage(event.target.value)}
-                    placeholder="Salam, xidmət haqqında məlumat almaq istəyirəm..."
-                    rows={6}
-                    style={{
-                      width: "100%",
-                      resize: "vertical",
-                      padding: "12px 14px",
-                      border: "1px solid var(--color-border)",
-                      borderRadius: "10px",
-                      outline: "none",
-                      background: "var(--color-surface)",
-                      color: "var(--color-text)",
-                      font: "inherit",
-                      lineHeight: 1.5,
-                    }}
-                  />
                 </div>
-              )}
+
+                <textarea
+                  value={message}
+                  onChange={(event) => setMessage(event.target.value)}
+                  placeholder={defaultMessage}
+                  rows={5}
+                  style={{
+                    width: "100%",
+                    resize: "vertical",
+                    padding: "12px 14px",
+                    border: "1px solid var(--color-border)",
+                    borderRadius: "10px",
+                    outline: "none",
+                    background: "var(--color-surface)",
+                    color: "var(--color-text)",
+                    font: "inherit",
+                    lineHeight: 1.5,
+                  }}
+                />
+              </div>
             </div>
 
-            {!messageSent && (
-              <div className="area-modal__footer">
-                <div className="area-modal__count">
-                  <strong>{message.length}</strong>
-                  <span>simvol</span>
-                </div>
+            <div className="area-modal__footer">
+              <a
+                className="provider-phone-button"
+                href={`tel:${provider.phone}`}
+              >
+                <Phone size={16} strokeWidth={1.8} />
+                {formatPhone(provider.phone)}
+              </a>
 
-                <button
-                  type="button"
-                  className="area-modal__apply"
-                  onClick={handleSendMessage}
-                  disabled={!message.trim()}
-                  style={{
-                    opacity: message.trim() ? 1 : 0.5,
-                  }}
-                >
-                  <Send size={16} strokeWidth={1.8} />
-                  Göndər
-                </button>
-              </div>
-            )}
+              <a
+                className="area-modal__apply"
+                href={whatsappLink(provider.phone, message.trim() || defaultMessage)}
+                target="_blank"
+                rel="noreferrer"
+                onClick={closeContact}
+              >
+                <MessageCircle size={16} strokeWidth={1.8} />
+                WhatsApp-da aç
+              </a>
+            </div>
           </section>
         </div>
       )}

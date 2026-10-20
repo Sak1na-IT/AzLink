@@ -459,8 +459,9 @@
   .booking-card__provider h2 {
     font-size: 16px;
   }
+}
 
-  .booking-card__reviewed {
+.booking-card__reviewed {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -633,7 +634,6 @@
   color: var(--color-primary);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
-}
 }
 
 .bookings-page__empty-text {

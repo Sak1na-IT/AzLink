@@ -588,6 +588,23 @@
   color: var(--color-primary);
 }
 
+/* Əlaqə linkləri (zəng və WhatsApp) düymə kimi görünür */
+a.provider-phone-button,
+a.area-modal__apply {
+  text-decoration: none;
+}
+
+.area-modal__footer .provider-phone-button {
+  width: auto;
+  margin-top: 0;
+}
+
+a.area-modal__apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* =========================
    SIDEBAR INFO
 ========================= */

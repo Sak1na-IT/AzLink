@@ -22,6 +22,8 @@ export interface ProviderPortfolioImage {
 
 export interface ProviderDetail extends Provider {
   description: string | null;
+  /* Biznesin telefonu: WhatsApp və zəng üçün */
+  phone: string;
   services: ProviderService[];
   reviews: ProviderReview[];
   portfolio: ProviderPortfolioImage[];
