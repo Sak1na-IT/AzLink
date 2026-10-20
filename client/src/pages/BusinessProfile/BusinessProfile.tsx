@@ -11,7 +11,6 @@ import {
   Save,
   Tag,
   Trash2,
-  Upload,
   X,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -29,10 +28,6 @@ import {
   type BrandingInput,
   type BusinessProfile as BusinessProfileData,
 } from "../../services/businessService";
-import {
-  getPortfolio,
-  type PortfolioImage,
-} from "../../services/businessPortfolioService";
 import { compressImage } from "../../utils/compressImage";
 import { ApiError } from "../../services/api";
 import { weekDays, weekDayLabels } from "../../types/schedule";
@@ -48,11 +43,7 @@ function BusinessProfile() {
   const [profile, setProfile] = useState<ProfileWithId | null>(null);
   const [areas, setAreas] = useState<AreaOption[]>([]);
   const [categories, setCategories] = useState<CategoryOption[]>([]);
-  /* Portfolio şəkilləri: üz qabığı seçimi üçün */
-  const [portfolio, setPortfolio] = useState<PortfolioImage[]>([]);
-
   /* Profil şəkli və üz qabığı */
-  const [isCoverPickerOpen, setIsCoverPickerOpen] = useState(false);
   const [isAdjusting, setIsAdjusting] = useState(false);
   const [draftPosition, setDraftPosition] = useState(50);
   const [brandingBusy, setBrandingBusy] = useState(false);
@@ -89,12 +80,6 @@ function BusinessProfile() {
     };
 
     load();
-
-    getPortfolio()
-      .then(setPortfolio)
-      .catch(() => {
-        /* şəkil yoxdursa zümrüd fon qalır */
-      });
   }, []);
 
   const update = <K extends keyof BusinessProfileData>(
@@ -201,26 +186,16 @@ function BusinessProfile() {
   const handleCoverFile = async (event: ChangeEvent<HTMLInputElement>) => {
     const dataUrl = await readImage(event, 1800);
     if (dataUrl) {
-      const ok = await applyBranding(
+      await applyBranding(
         { coverUrl: dataUrl, coverPosition: 50 },
         "Üz qabığı yeniləndi. İstəsəniz yerini düzəldin."
       );
-      if (ok) setIsCoverPickerOpen(false);
     }
-  };
-
-  const chooseFromPortfolio = async (image: PortfolioImage) => {
-    const ok = await applyBranding(
-      { coverUrl: image.dataUrl, coverPosition: 50 },
-      "Üz qabığı seçildi."
-    );
-    if (ok) setIsCoverPickerOpen(false);
   };
 
   /* Yerini düzəlt: şəkli yuxarı-aşağı sürüşdürmək */
   const startAdjusting = () => {
     setDraftPosition(profile?.coverPosition ?? 50);
-    setIsCoverPickerOpen(false);
     setIsAdjusting(true);
   };
 
@@ -275,8 +250,8 @@ function BusinessProfile() {
     areas.find((area) => area.id === profile.areaId)?.name ?? "";
   const initial = profile.businessName.trim().charAt(0).toUpperCase() || "B";
 
-  /* Üz qabığı: seçilmiş şəkil, yoxdursa portfoliodakı ilk şəkil */
-  const coverImage = profile.coverUrl ?? portfolio[0]?.dataUrl ?? null;
+  /* Üz qabığı yalnız ayrıca yüklənən şəkildir; portfolio iş nümunələri üçündür */
+  const coverImage = profile.coverUrl ?? null;
   const coverPosition = isAdjusting ? draftPosition : profile.coverPosition ?? 50;
 
   return (
@@ -359,23 +334,41 @@ function BusinessProfile() {
               <button
                 type="button"
                 className="business-profile__cover-button"
-                onClick={() => setIsCoverPickerOpen((open) => !open)}
+                onClick={() => coverInputRef.current?.click()}
                 disabled={brandingBusy}
               >
                 <Camera size={15} strokeWidth={1.8} />
-                Üz qabığını dəyiş
+                {coverImage ? "Üz qabığını dəyiş" : "Üz qabığı əlavə et"}
               </button>
 
               {coverImage && (
-                <button
-                  type="button"
-                  className="business-profile__cover-button"
-                  onClick={startAdjusting}
-                  disabled={brandingBusy}
-                >
-                  <Move size={15} strokeWidth={1.8} />
-                  Yerini düzəlt
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="business-profile__cover-button"
+                    onClick={startAdjusting}
+                    disabled={brandingBusy}
+                  >
+                    <Move size={15} strokeWidth={1.8} />
+                    Yerini düzəlt
+                  </button>
+
+                  <button
+                    type="button"
+                    className="business-profile__cover-button"
+                    onClick={() =>
+                      applyBranding(
+                        { coverUrl: null, coverPosition: 50 },
+                        "Üz qabığı silindi."
+                      )
+                    }
+                    disabled={brandingBusy}
+                    aria-label="Üz qabığını sil"
+                    title="Üz qabığını sil"
+                  >
+                    <Trash2 size={15} strokeWidth={1.8} />
+                  </button>
+                </>
               )}
             </div>
           )}
@@ -484,61 +477,6 @@ function BusinessProfile() {
         </div>
       </section>
 
-      {/* Üz qabığı seçimi: yeni şəkil və ya portfoliodan */}
-      {isCoverPickerOpen && (
-        <div className="business-profile__cover-picker">
-          <div className="business-profile__cover-picker-head">
-            <strong>Üz qabığı seçin</strong>
-            <span>Enli (üfüqi) şəkil daha yaxşı görünür.</span>
-          </div>
-
-          <div className="business-profile__cover-options">
-            <button
-              type="button"
-              className="business-profile__cover-upload"
-              onClick={() => coverInputRef.current?.click()}
-              disabled={brandingBusy}
-            >
-              <Upload size={20} strokeWidth={1.8} />
-              Kompüterdən yüklə
-            </button>
-
-            {portfolio.map((image) => (
-              <button
-                key={image.id}
-                type="button"
-                className={
-                  image.dataUrl === profile.coverUrl
-                    ? "business-profile__cover-option is-selected"
-                    : "business-profile__cover-option"
-                }
-                onClick={() => chooseFromPortfolio(image)}
-                disabled={brandingBusy}
-                aria-label={image.caption || "Portfolio şəkli"}
-              >
-                <img src={image.dataUrl} alt="" />
-              </button>
-            ))}
-          </div>
-
-          {profile.coverUrl && (
-            <button
-              type="button"
-              className="business-profile__text-button"
-              onClick={() =>
-                applyBranding(
-                  { coverUrl: null, coverPosition: 50 },
-                  "Seçilmiş üz qabığı silindi."
-                )
-              }
-              disabled={brandingBusy}
-            >
-              <Trash2 size={14} strokeWidth={1.8} />
-              Seçimi sil (portfoliodakı ilk şəkil göstərilsin)
-            </button>
-          )}
-        </div>
-      )}
 
       <form className="business-profile__form" onSubmit={handleSubmit}>
         {/* ===== ƏSAS MƏLUMATLAR ===== */}

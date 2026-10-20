@@ -66,12 +66,8 @@ const toBookingDTO = (booking: BookingWithRelations) => ({
   id: booking.id,
   providerId: booking.businessId,
   providerName: booking.business.name,
-  /* Kartdakı dairəvi şəkil: əvvəl loqo, sonra üz qabığı, sonra portfolio */
-  providerImage:
-    booking.business.logoUrl ??
-    booking.business.coverUrl ??
-    booking.business.portfolio[0]?.imageUrl ??
-    null,
+  /* Kartdakı dairəvi şəkil: əvvəl loqo, sonra üz qabığı */
+  providerImage: booking.business.logoUrl ?? booking.business.coverUrl ?? null,
   area: booking.business.area.name,
   customerId: booking.customerId,
   customerName: booking.customer.name,

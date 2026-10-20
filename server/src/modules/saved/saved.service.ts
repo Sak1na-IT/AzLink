@@ -20,9 +20,8 @@ export const listSaved = async (userId: string) => {
 
   return saved.map((item) => ({
     ...toProviderDTO(item.business),
-    /* Portfoliodakı ilk şəkil kartın üz qabığıdır */
-    image:
-      item.business.coverUrl ?? item.business.portfolio[0]?.imageUrl ?? null,
+    /* Kartın üz qabığı: biznesin ayrıca yüklədiyi şəkil */
+    image: item.business.coverUrl ?? null,
     logo: item.business.logoUrl,
   }));
 };

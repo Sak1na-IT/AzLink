@@ -96,8 +96,8 @@ export const toProviderCard = (business: BusinessCard) => ({
     business.categories[0]?.name ??
     "",
   ownerId: business.userId,
-  /* Üz qabığı: biznesin seçdiyi şəkil, yoxdursa portfoliodakı ilk şəkil */
-  image: business.coverUrl ?? business.portfolio[0]?.imageUrl ?? null,
+  /* Üz qabığı yalnız biznesin ayrıca yüklədiyi şəkildir (portfolio deyil) */
+  image: business.coverUrl ?? null,
   coverPosition: business.coverPosition,
   /* Profil şəkli (loqo) */
   logo: business.logoUrl,
