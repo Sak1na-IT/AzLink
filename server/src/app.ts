@@ -9,6 +9,7 @@ import businessRoutes from "./modules/business/business.routes";
 import bookingsRoutes from "./modules/bookings/bookings.routes";
 import savedRoutes from "./modules/saved/saved.routes";
 import reviewsRoutes from "./modules/reviews/reviews.routes";
+import notificationsRoutes from "./modules/notifications/notifications.routes";
 
 const app = express();
 
@@ -36,5 +37,6 @@ app.use("/api/business", businessRoutes);
 app.use("/api/bookings", bookingsRoutes);
 app.use("/api/saved", savedRoutes);
 app.use("/api/reviews", reviewsRoutes);
+app.use("/api/notifications", notificationsRoutes);
 
 export default app;

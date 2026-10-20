@@ -24,6 +24,7 @@ import { getMe, logout } from "../../services/authService";
 import { getStoredUser, type AuthUser } from "../../services/api";
 import { formatDayMonth } from "../../utils/formatDate";
 import "./Profile.css";
+import { OPEN_NOTIFICATIONS_EVENT } from "../../components/layout/NotificationBell";
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING: "Gözləyir",
@@ -467,14 +468,20 @@ function Profile() {
               />
             </button>
 
-            <button type="button" className="profile-menu__item">
+            <button
+              type="button"
+              className="profile-menu__item"
+              onClick={() =>
+                window.dispatchEvent(new Event(OPEN_NOTIFICATIONS_EVENT))
+              }
+            >
               <div className="profile-menu__icon">
                 <Bell size={19} strokeWidth={1.8} />
               </div>
 
               <div>
                 <strong>Bildirişlər</strong>
-                <span>Rezerv və digər bildiriş seçimləri</span>
+                <span>Rezervlərinizin təsdiqi, ləğvi və tamamlanması</span>
               </div>
 
               <ChevronRight

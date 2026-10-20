@@ -454,3 +454,8 @@
   color: #d1554a;
   background: rgba(209, 85, 74, 0.08);
 }
+/* Bildiriş növü işləyir */
+.account-profile__soon--on {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}

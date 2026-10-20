@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { getStoredUser } from "../../services/api";
+import NotificationBell from "./NotificationBell";
 
 interface TopNavProps {
   isDark: boolean;
@@ -77,6 +78,7 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
             </NavLink>
           </nav>
 
+          {user && <NotificationBell />}
           {themeButton}
         </div>
       </header>
@@ -114,6 +116,7 @@ function TopNav({ isDark, toggleTheme }: TopNavProps) {
           ))}
         </nav>
 
+        {user && <NotificationBell />}
         {themeButton}
       </div>
     </header>

@@ -14,11 +14,11 @@ import {
 } from "../../services/accountService";
 import { getMe, logout } from "../../services/authService";
 
+/* Yuxarıdakı zəng ikonunda görünən bildirişlər */
 const notificationRows = [
-  "Rezervasiya bildirişləri",
-  "Rezervasiya dəyişiklikləri",
+  "Yeni rezervlər",
+  "Müştərinin ləğv etdiyi rezervlər",
   "Yeni rəylər",
-  "Sistem bildirişləri",
 ];
 
 const SOON = "Tezliklə əlavə olunacaq";
@@ -340,7 +340,9 @@ function BusinessAccountProfile() {
                 {label}
               </span>
 
-              <span className="account-profile__soon">Tezliklə</span>
+              <span className="account-profile__soon account-profile__soon--on">
+                Aktiv
+              </span>
             </li>
           ))}
         </ul>

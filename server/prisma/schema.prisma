@@ -240,6 +240,8 @@ model Notification {
   id        String   @id @default(cuid())
   userId    String
   message   String
+  /// Bildirişə basanda açılan səhifə (məs. "/bookings")
+  link      String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 

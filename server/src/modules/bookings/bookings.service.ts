@@ -2,6 +2,7 @@ import type { BookingStatus, Prisma } from "@prisma/client";
 
 import { prisma } from "../../config/prisma";
 import type { TokenPayload } from "../../utils/jwt";
+import { formatBookingDate, notify } from "../notifications/notifications.service";
 
 export interface CreateBookingInput {
   providerId: string;
@@ -98,7 +99,7 @@ export const createBooking = async (
     throw new Error("DATE_IN_PAST");
   }
 
-  return prisma.$transaction(async (tx) => {
+  const created = await prisma.$transaction(async (tx) => {
     const service = await tx.service.findUnique({
       where: { id: input.serviceId },
     });
@@ -164,7 +165,7 @@ export const createBooking = async (
       throw new Error("SLOT_TAKEN");
     }
 
-    const created = await tx.booking.create({
+    return tx.booking.create({
       data: {
         customerId,
         businessId: service.businessId,
@@ -173,9 +174,16 @@ export const createBooking = async (
       },
       include: bookingInclude,
     });
-
-    return toBookingDTO(created);
   });
+
+  /* Biznes sahibinə: yeni rezerv gəldi, təsdiqləmək lazımdır */
+  await notify(
+    created.business.userId,
+    `Yeni rezerv: ${created.customer.name}, ${created.service.name} · ${formatBookingDate(created.date)}. Təsdiqləməyi unutmayın.`,
+    "/business/bookings"
+  );
+
+  return toBookingDTO(created);
 };
 
 /*
@@ -255,6 +263,40 @@ const businessTransitions: Partial<Record<BookingStatus, BookingStatus[]>> = {
   CONFIRMED: ["COMPLETED", "CANCELLED"],
 };
 
+/*
+ * Status dəyişəndə qarşı tərəfə bildiriş: biznes dəyişibsə müştəriyə,
+ * müştəri ləğv edibsə biznes sahibinə.
+ */
+const notifyStatusChange = async (
+  booking: BookingWithRelations,
+  changedByBusiness: boolean
+) => {
+  const when = `${booking.service.name} · ${formatBookingDate(booking.date)}`;
+
+  if (!changedByBusiness) {
+    if (booking.status === "CANCELLED") {
+      await notify(
+        booking.business.userId,
+        `${booking.customer.name} rezervi ləğv etdi: ${when}.`,
+        "/business/bookings"
+      );
+    }
+    return;
+  }
+
+  const messages: Partial<Record<BookingStatus, string>> = {
+    CONFIRMED: `${booking.business.name} rezervinizi təsdiqlədi: ${when}.`,
+    CANCELLED: `${booking.business.name} rezervinizi ləğv etdi: ${when}.`,
+    COMPLETED: `${booking.business.name} ilə rezerviniz tamamlandı. Rəy yazmağı unutmayın!`,
+  };
+
+  const message = messages[booking.status];
+
+  if (message) {
+    await notify(booking.customerId, message, "/bookings");
+  }
+};
+
 export const updateBookingStatus = async (
   user: TokenPayload,
   id: string,
@@ -276,6 +318,8 @@ export const updateBookingStatus = async (
     data: { status },
     include: bookingInclude,
   });
+
+  await notifyStatusChange(updated, isBusiness);
 
   return toBookingDTO(updated);
 };

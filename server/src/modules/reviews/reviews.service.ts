@@ -1,6 +1,7 @@
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "../../config/prisma";
+import { notify } from "../notifications/notifications.service";
 
 export interface CreateReviewInput {
   bookingId: string;
@@ -33,6 +34,7 @@ export const createReview = async (
 ) => {
   const booking = await prisma.booking.findUnique({
     where: { id: input.bookingId },
+    include: { business: { select: { userId: true } } },
   });
 
   /* Başqasının rezervi "tapılmadı" kimi görünür, varlığı bildirilmir */
@@ -62,6 +64,13 @@ export const createReview = async (
     },
     include: reviewInclude,
   });
+
+  /* Biznes sahibinə: yeni rəy */
+  await notify(
+    booking.business.userId,
+    `${review.user.name} sizə ${review.rating} ulduzlu rəy yazdı.`,
+    "/business/reviews"
+  );
 
   return toReviewDTO(review);
 };
