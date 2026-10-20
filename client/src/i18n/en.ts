@@ -714,10 +714,8 @@ export const en: Record<string, string> = {
   "Rayonunuzu seçin və yaxınlıqdakı ustaları görün.": "Choose your district and see professionals nearby.",
   "Tez-tez verilən suallar": "Frequently asked questions",
   "Alov qüllələri": "Flame Towers",
-  "Bakı Gözü": "Baku Eye",
   "Qız qalası": "Maiden Tower",
   "Heydər Əliyev Mərkəzi": "Heydar Aliyev Center",
-  "Dövlət Bayrağı Meydanı": "State Flag Square",
   "Xidməti axtarın": "Search for a service",
   "Nə lazım olduğunu və ərazinizi yazın: manikür Nərimanovda, kran təmiri Yasamalda, riyaziyyat dərsi Nəsimidə.": "Type what you need and where: a manicure in Narimanov, a tap repair in Yasamal, a maths lesson in Nasimi.",
   "Ustaları müqayisə edin": "Compare professionals",
@@ -725,4 +723,7 @@ export const en: Record<string, string> = {
   "Ustanın iş qrafiki və dolu saatları görünür. Sizə uyğun günü və saatı seçib rezerv edirsiniz.": "You see the professional's schedule and booked hours, then pick the day and time that suit you.",
   "Təsdiq alın": "Get confirmed",
   "Usta rezervi təsdiqləyəndə bildiriş gəlir. Xidmətdən sonra rəy yazırsınız və növbəti müştərilərə kömək edirsiniz.": "You're notified when the professional confirms. After the service, leave a review to help the next customer.",
+  "İçərişəhər və Alov qüllələri": "Old City and Flame Towers",
+  "İçərişəhərin küçələri": "Streets of the Old City",
+  "Dənizkənarı bulvar": "Seaside Boulevard",
 };

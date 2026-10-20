@@ -27,18 +27,41 @@ import { getProviders } from "../../services/providersService";
 import { getReviewsByProvider, type Review } from "../../services/reviewsService";
 import { areas } from "../../types/area";
 import type { Provider } from "../../types/provider";
-import BakuScene, { LANDMARKS, PANORAMA_WIDTH } from "./BakuScene";
 import HowItWorks from "./HowItWorks";
 import "./AccountType.css";
 
 /*
- * Ana səhifə. Arxada Bakı sahilinin panoraması var: aşağı
- * sürüşdürdükcə "kamera" sahil boyunca hərəkət edir (Alov qüllələri →
- * bulvar və Bakı Gözü → İçərişəhər → Heydər Əliyev Mərkəzi), göyün
- * rəngi bölməyə görə dəyişir. Açıq rejimdə gündüz, qaranlıqda gecə.
+ * Ana səhifə. Arxada Bakının real fotoşəkilləri: aşağı sürüşdürdükcə
+ * şəkil yumşaq keçidlə növbəti görməli yerə dəyişir, şəkil özü də
+ * yavaşca yaxınlaşır. Açıq rejimdə gündüz, qaranlıq rejimdə gecə
+ * Bakısı göstərilir. Küncdə həmin yerin adı yazılır.
  */
 
-type Scene = "morning" | "day" | "afternoon" | "golden";
+interface Photo {
+  src: string;
+  place: string;
+  /* Kiçik ekranda şəklin hansı hissəsi görünsün */
+  focus: string;
+}
+
+const DAY_PHOTOS: Photo[] = [
+  { src: "/landing/oldcity-day.jpg", place: t("İçərişəhər və Alov qüllələri"), focus: "62% 40%" },
+  { src: "/landing/maiden-day.jpg", place: t("Qız qalası"), focus: "50% 40%" },
+  { src: "/landing/oldcity-street.jpg", place: t("İçərişəhərin küçələri"), focus: "60% 50%" },
+  { src: "/landing/heydar-aliyev-day.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "32% 50%" },
+  { src: "/landing/boulevard-evening.jpg", place: t("Dənizkənarı bulvar"), focus: "42% 50%" },
+];
+
+const NIGHT_PHOTOS: Photo[] = [
+  { src: "/landing/boulevard-evening.jpg", place: t("Dənizkənarı bulvar"), focus: "42% 50%" },
+  { src: "/landing/maiden-night.jpg", place: t("Qız qalası"), focus: "48% 40%" },
+  { src: "/landing/flame-towers-night.jpg", place: t("Alov qüllələri"), focus: "74% 40%" },
+  { src: "/landing/heydar-aliyev-night.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "34% 50%" },
+  { src: "/landing/maiden-evening.jpg", place: t("Qız qalası"), focus: "30% 50%" },
+];
+
+/* Hər bölmənin arxasında hansı şəkil görünür */
+const SECTION_PHOTOS = [0, 1, 1, 2, 2, 3, 3, 4];
 
 const DISTRICTS = areas.filter((area) => area.type === "district");
 
@@ -106,9 +129,6 @@ const WHY = [
   },
 ];
 
-/* Hər bölmə arxa fonda öz "vaxtını" seçir */
-const SECTION_SCENES: Scene[] = ["morning", "day", "day", "afternoon", "afternoon", "golden", "golden", "golden"];
-
 function AccountType() {
   const navigate = useNavigate();
   const { isDark, toggleTheme } = useTheme();
@@ -118,7 +138,7 @@ function AccountType() {
 
   const [providers, setProviders] = useState<Provider[]>([]);
   const [reviews, setReviews] = useState<(Review & { providerName: string })[]>([]);
-  const [scene, setScene] = useState<Scene>("morning");
+  const [slide, setSlide] = useState(0);
   const [query, setQuery] = useState("");
 
   /* ---------- Məlumat: bizneslər və bir neçə real rəy ---------- */
@@ -180,7 +200,6 @@ function AccountType() {
       const progress = Math.min(1, Math.max(0, window.scrollY / total));
 
       page.style.setProperty("--cam", progress.toFixed(4));
-      page.style.setProperty("--sun", progress.toFixed(4));
 
       const middle = window.innerHeight * 0.5;
       let current = 0;
@@ -189,30 +208,7 @@ function AccountType() {
         if (element && element.getBoundingClientRect().top <= middle) current = index;
       });
 
-      setScene(SECTION_SCENES[current] ?? "golden");
-
-      /* Ekranın ortasına ən yaxın görməli yerin adı göstərilir */
-      const layer = page.querySelector<SVGElement>(".baku-layer--main");
-      const width = layer?.getBoundingClientRect().width ?? 0;
-
-      if (width > 0) {
-        const viewport = window.innerWidth;
-        const offset = (viewport - width) * progress;
-        let nearest = "";
-        let distance = viewport * 0.32;
-
-        LANDMARKS.forEach((landmark) => {
-          const x = offset + (landmark.x / PANORAMA_WIDTH) * width;
-          const gap = Math.abs(x - viewport * 0.5);
-
-          if (gap < distance) {
-            distance = gap;
-            nearest = landmark.id;
-          }
-        });
-
-        if (page.dataset.landmark !== nearest) page.dataset.landmark = nearest;
-      }
+      setSlide(SECTION_PHOTOS[current] ?? 0);
     };
 
     const handleScroll = () => {
@@ -286,20 +282,26 @@ function AccountType() {
     sectionRefs.current[index] = element;
   };
 
+  const photos = isDark ? NIGHT_PHOTOS : DAY_PHOTOS;
+
   return (
-    <div ref={pageRef} className="landing" data-scene={scene} data-dark={isDark || undefined}>
+    <div ref={pageRef} className="landing" data-dark={isDark || undefined}>
       {/* ================= ARXA FON: BAKI ================= */}
       <div className="landing__backdrop" aria-hidden="true">
-        <div className="landing-sky landing-sky--morning" />
-        <div className="landing-sky landing-sky--day" />
-        <div className="landing-sky landing-sky--afternoon" />
-        <div className="landing-sky landing-sky--golden" />
-        <div className="landing-stars" />
-        <div className="landing-sun" />
-        <div className="landing-sea" />
-        <BakuScene />
+        {photos.map((photo, index) => (
+          <div
+            key={`${isDark}-${photo.src}`}
+            className={index === slide ? "landing-photo is-shown" : "landing-photo"}
+            style={{ backgroundImage: `url(${photo.src})`, backgroundPosition: photo.focus }}
+          />
+        ))}
         <div className="landing__veil" />
       </div>
+
+      <p className="landing-place" key={photos[slide].place + slide}>
+        <MapPin size={14} strokeWidth={1.8} />
+        {photos[slide].place}
+      </p>
 
       {/* ================= YUXARI ZOLAQ ================= */}
       <header className="landing-bar">

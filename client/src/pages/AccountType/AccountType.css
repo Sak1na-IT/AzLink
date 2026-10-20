@@ -1,14 +1,11 @@
 /* =========================================================
-   ANA SƏHİFƏ — Bakı sahili boyunca
-   Arxada sabit Bakı panoraması; məzmun şüşə panellərdə.
+   ANA SƏHİFƏ — Bakının real şəkilləri fonunda
+   Arxada sabit fotoşəkil; məzmun şüşə panellərdə.
    Açıq rejim: gündüz Bakısı. Qaranlıq rejim: gecə Bakısı.
    ========================================================= */
 
 .landing {
   --cam: 0;
-  --sun: 0;
-  /* Panoramanın hündürlüyü: şəhər ekranın aşağı hissəsində qalır */
-  --scene-h: 62vh;
 
   /* Mətn və panel rəngləri (gündüz) */
   --ink: #16322a;
@@ -18,37 +15,9 @@
   --gold: #a8803a;
   --champagne: #d2ad67;
   --hairline: rgba(156, 116, 50, 0.2);
-  --glass: rgba(255, 253, 248, 0.7);
-  --glass-strong: rgba(255, 253, 248, 0.88);
-  --glass-shadow: 0 24px 60px rgba(28, 64, 58, 0.12);
-
-  /* Şəhərin rəngləri (gündüz: daş, şüşə, dəniz) */
-  --hill-far: #c4d3cc;
-  --tower-far: #a9bdb8;
-  --ground: #d4c6a6;
-  --block: #e6dcc8;
-  --block-edge: #cdbd9c;
-  --window: #8fb0ae;
-  --window-opacity: 0.55;
-  --glass-a: #5f97ad;
-  --glass-b: #a9d1de;
-  --glass-c: #47809a;
-  --flame-fill: url(#baku-flame-glass);
-  --flame-line: rgba(255, 255, 255, 0.4);
-  --eye: #5f7d78;
-  --cabin: #e9e2d2;
-  --stone-a: #e7d4ad;
-  --stone-b: #cfb487;
-  --stone-c: #a98e62;
-  --wall: #d9c49c;
-  --wave-a: #fefdf9;
-  --wave-b: #dfe5e8;
-  --wave-line: #c6d0d5;
-  --shore: #d8ccb2;
-  --sea-a: #c2dedd;
-  --sea-b: #87b6b5;
-  --lamp: #4a5652;
-  --lamp-glow: 0;
+  --glass: rgba(255, 253, 248, 0.74);
+  --glass-strong: rgba(255, 253, 248, 0.9);
+  --glass-shadow: 0 24px 60px rgba(28, 64, 58, 0.14);
 
   position: relative;
   min-height: 100vh;
@@ -58,47 +27,23 @@
   font-family: "Onest", var(--font-family);
 }
 
-/* ---------- Gecə Bakısı ---------- */
+/* ---------- Gecə ---------- */
 
 .landing[data-dark] {
   --ink: #f5efe2;
-  --ink-muted: rgba(245, 239, 226, 0.74);
+  --ink-muted: rgba(245, 239, 226, 0.78);
   --emerald: #7fd0b2;
   --emerald-strong: #a6e3cb;
   --gold: #e8c682;
   --champagne: #e8c682;
-  --hairline: rgba(232, 198, 130, 0.22);
-  --glass: rgba(14, 32, 36, 0.62);
-  --glass-strong: rgba(14, 32, 36, 0.82);
-  --glass-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
-
-  --hill-far: #1d3438;
-  --tower-far: #24403f;
-  --ground: #1f3333;
-  --block: #213a3d;
-  --block-edge: #2c4a4b;
-  --window: #f6c96b;
-  --window-opacity: 0.85;
-  --flame-fill: url(#baku-flame-fire);
-  --flame-line: rgba(255, 225, 160, 0.35);
-  --eye: #e8cf94;
-  --cabin: #ffe3a0;
-  --stone-a: #e3b875;
-  --stone-b: #b88850;
-  --stone-c: #7a5733;
-  --wall: #a47b4a;
-  --wave-a: #e9f2f7;
-  --wave-b: #9fb7c6;
-  --wave-line: #c6dbe7;
-  --shore: #b58d55;
-  --sea-a: #17333a;
-  --sea-b: #0b1c22;
-  --lamp: #0d1c1f;
-  --lamp-glow: 1;
+  --hairline: rgba(232, 198, 130, 0.24);
+  --glass: rgba(12, 26, 34, 0.66);
+  --glass-strong: rgba(12, 26, 34, 0.84);
+  --glass-shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
 }
 
 /* =========================================================
-   ARXA FON
+   ARXA FON: FOTOŞƏKİLLƏR
    ========================================================= */
 
 .landing__backdrop {
@@ -107,427 +52,77 @@
   z-index: 0;
   overflow: hidden;
   pointer-events: none;
+  background: #1b2b30;
 }
 
-/* Göy: hər bölmənin öz vaxtı, yumşaq keçidlə */
-.landing-sky {
+/* Hər şəkil bir-birinin üstündədir; görünən şəkil yumşaq keçidlə
+   üzə çıxır və yavaşca yaxınlaşır. Sürüşdürdükcə bir az yuxarı qalxır. */
+.landing-photo {
   position: absolute;
-  inset: 0;
+  inset: -6% -2%;
+  background-size: cover;
+  background-repeat: no-repeat;
   opacity: 0;
-  transition: opacity 1600ms ease;
+  scale: 1.1;
+  translate: 0 calc(var(--cam) * -4%);
+  transition:
+    opacity 1400ms ease,
+    scale 9s ease-out;
 }
 
-.landing-sky--morning {
-  background: linear-gradient(180deg, #dcecef 0%, #eef2ec 45%, #f8ecdc 70%, #f4dcc0 80%);
-}
-
-.landing-sky--day {
-  background: linear-gradient(180deg, #c9e3ec 0%, #e3f0f1 45%, #f7f5ec 72%, #eef0e4 80%);
-}
-
-.landing-sky--afternoon {
-  background: linear-gradient(180deg, #dce8ec 0%, #f2ede0 45%, #f6dfb9 70%, #f0cf9e 80%);
-}
-
-.landing-sky--golden {
-  background: linear-gradient(180deg, #f4e4cf 0%, #f6d3a8 42%, #f0b582 68%, #e79d73 80%);
-}
-
-.landing[data-dark] .landing-sky--morning {
-  background: linear-gradient(180deg, #1b3446 0%, #2c4a5a 45%, #6a6a72 70%, #b68a6c 80%);
-}
-
-.landing[data-dark] .landing-sky--day {
-  background: linear-gradient(180deg, #142a3a 0%, #1f3d4b 48%, #3b5058 72%, #6d6258 80%);
-}
-
-.landing[data-dark] .landing-sky--afternoon {
-  background: linear-gradient(180deg, #0f2230 0%, #18323d 50%, #2b4148 74%, #4b4a48 80%);
-}
-
-.landing[data-dark] .landing-sky--golden {
-  background: linear-gradient(180deg, #0b1b26 0%, #132a33 50%, #213840 74%, #3a3c3d 80%);
-}
-
-.landing[data-scene="morning"] .landing-sky--morning,
-.landing[data-scene="day"] .landing-sky--day,
-.landing[data-scene="afternoon"] .landing-sky--afternoon,
-.landing[data-scene="golden"] .landing-sky--golden {
+.landing-photo.is-shown {
   opacity: 1;
+  scale: 1.02;
 }
 
-/* Ulduzlar: yalnız gecə */
-.landing-stars {
-  position: absolute;
-  inset: 0 0 30% 0;
-  opacity: 0;
-  background-image:
-    radial-gradient(1.2px 1.2px at 12% 18%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 28% 32%, #fff 50%, transparent 51%),
-    radial-gradient(1.4px 1.4px at 46% 12%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 63% 26%, #fff 50%, transparent 51%),
-    radial-gradient(1.3px 1.3px at 78% 14%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 88% 36%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 36% 44%, #fff 50%, transparent 51%),
-    radial-gradient(1.2px 1.2px at 6% 40%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 55% 40%, #fff 50%, transparent 51%),
-    radial-gradient(1px 1px at 94% 8%, #fff 50%, transparent 51%);
-  transition: opacity 1600ms ease;
-  animation: landing-twinkle 5s ease-in-out infinite;
-}
-
-.landing[data-dark] .landing-stars {
-  opacity: 0.8;
-}
-
-@keyframes landing-twinkle {
-  50% {
-    filter: brightness(0.6);
-  }
-}
-
-/* Günəş (gündüz) və ay (gecə): sürüşdürdükcə qövs çəkir */
-.landing-sun {
-  position: absolute;
-  left: calc(10% + var(--sun) * 78%);
-  top: calc(34% - sin(var(--sun) * 180deg) * 18%);
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  translate: -50% -50%;
-  background: radial-gradient(circle at 40% 38%, #fffaf0 0%, #fcd98f 45%, #efae5a 100%);
-  box-shadow:
-    0 0 50px 16px rgba(252, 208, 128, 0.6),
-    0 0 200px 80px rgba(248, 196, 120, 0.28);
-}
-
-.landing[data-dark] .landing-sun {
-  width: 74px;
-  height: 74px;
-  background: radial-gradient(circle at 36% 34%, #ffffff 0%, #f0eadb 58%, #d6ccb4 100%);
-  box-shadow:
-    0 0 40px 12px rgba(240, 232, 210, 0.35),
-    0 0 140px 50px rgba(200, 215, 210, 0.12);
-}
-
-/* Xəzər */
-.landing-sea {
-  position: absolute;
-  left: 0;
-  right: 0;
-  /* Sahil xətti layın 80%-ində olduğu üçün dəniz oradan başlayır */
-  top: calc(100% - var(--scene-h) * 0.2);
-  bottom: 0;
-  background: linear-gradient(180deg, var(--sea-a), var(--sea-b));
-}
-
-.landing-sea::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.14) 0 1px,
-    transparent 1px 7px
-  );
-  animation: landing-ripple 6s linear infinite;
-}
-
-@keyframes landing-ripple {
-  to {
-    background-position: 0 28px;
-  }
-}
-
-/* ---------- Bakı panoraması ---------- */
-
-.baku-scene {
-  position: absolute;
-  inset: 0;
-}
-
-/* Hər lay ekran hündürlüyündədir, eni öz nisbətinə görə.
-   --cam 0-dan 1-ə artdıqca lay sağa qədər sürüşür. */
-.baku-layer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  height: var(--scene-h);
-  width: auto;
-  aspect-ratio: 7.5 / 1;
-  will-change: transform;
-  transform: translateX(calc((100vw - 100%) * var(--cam)));
-  transition: transform 120ms linear;
-}
-
-.baku-layer--far {
-  transform: translateX(calc((100vw - 100%) * var(--cam) * 0.55));
-  opacity: 0.9;
-}
-
-.baku-layer--near {
-  aspect-ratio: 9 / 1;
-}
-
-/* Dövlət Bayrağı */
-.baku-flag-pole {
-  fill: var(--eye);
-}
-
-.baku-flag-cloth {
-  transform-box: fill-box;
-  transform-origin: left center;
-  animation: baku-flag-wave 4s ease-in-out infinite;
-}
-
-.landing[data-dark] .baku-flag-cloth {
-  filter: brightness(0.8);
-}
-
-@keyframes baku-flag-wave {
-  50% {
-    transform: skewY(-3deg) scaleX(0.96);
-  }
-}
-
-/* Görməli yerin adı: kamera yaxınlaşanda incə xətt və yazı çıxır */
-.baku-label {
-  opacity: 0;
-  transition: opacity 500ms ease;
-}
-
-.baku-label line {
-  stroke: var(--gold);
-  stroke-width: 2;
-  stroke-dasharray: 4 5;
-}
-
-.baku-label text {
-  fill: var(--ink);
-  font-family: "Onest", sans-serif;
-  font-size: 34px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  paint-order: stroke;
-  stroke: var(--glass-strong);
-  stroke-width: 8px;
-  stroke-linejoin: round;
-}
-
-.landing[data-dark] .baku-label text {
-  fill: #f4e6c4;
-  stroke: rgba(10, 22, 30, 0.75);
-}
-
-.landing[data-landmark="flames"] .baku-label[data-landmark="flames"],
-.landing[data-landmark="eye"] .baku-label[data-landmark="eye"],
-.landing[data-landmark="maiden"] .baku-label[data-landmark="maiden"],
-.landing[data-landmark="hac"] .baku-label[data-landmark="hac"],
-.landing[data-landmark="flag"] .baku-label[data-landmark="flag"] {
-  opacity: 1;
-}
-
-/* Su üzərində əks: şəhər sahildən aşağı güzgülənir (Chrome, Safari) */
-.baku-layer--main {
-  -webkit-box-reflect: below calc(var(--scene-h) * -0.4)
-    linear-gradient(180deg, transparent 18%, rgba(0, 0, 0, 0.32) 21%, transparent 60%);
-}
-
-.baku-hills {
-  fill: var(--hill-far);
-}
-
-.baku-tv path,
-.baku-tv rect,
-.baku-far-towers {
-  fill: var(--tower-far);
-}
-
-.baku-tv line {
-  stroke: var(--tower-far);
-  stroke-width: 4;
-}
-
-.baku-light--red {
-  fill: #e5533d;
-  animation: landing-blink 1.6s ease-in-out infinite;
-}
-
-@keyframes landing-blink {
-  50% {
-    opacity: 0.2;
-  }
-}
-
-.baku-ground {
-  fill: var(--ground);
-}
-
-.baku-flames path {
-  fill: var(--flame-fill);
-  stroke: rgba(255, 255, 255, 0.25);
-  stroke-width: 1.5;
-}
-
-.landing[data-dark] .baku-flames path {
-  filter: drop-shadow(0 0 18px rgba(255, 140, 60, 0.55));
-}
-
-.baku-flame-lines line {
-  stroke: var(--flame-line);
-  stroke-width: 1.5;
-}
-
-.baku-stop-glass-a {
-  stop-color: var(--glass-a);
-}
-
-.baku-stop-glass-b {
-  stop-color: var(--glass-b);
-}
-
-.baku-stop-glass-c {
-  stop-color: var(--glass-c);
-}
-
-.baku-blocks rect {
-  fill: var(--block);
-  stroke: var(--block-edge);
-  stroke-width: 2;
-}
-
-.baku-blocks--back rect {
-  opacity: 0.85;
-}
-
-.baku-windows rect {
-  fill: var(--window);
-  opacity: var(--window-opacity);
-}
-
-.landing[data-dark] .baku-windows rect:nth-child(3n) {
-  opacity: 0.25;
-}
-
-.baku-eye path,
-.baku-eye circle,
-.baku-eye line {
-  fill: none;
-  stroke: var(--eye);
-  stroke-width: 3;
-}
-
-.baku-eye line {
-  stroke-width: 1.5;
-}
-
-.baku-eye-cabins circle {
-  fill: var(--cabin);
-  stroke: var(--eye);
-  stroke-width: 2;
-}
-
-.landing[data-dark] .baku-eye-cabins circle {
-  filter: drop-shadow(0 0 6px rgba(255, 220, 140, 0.9));
-}
-
-.baku-oldcity path,
-.baku-oldcity rect {
-  fill: var(--wall);
-}
-
-.baku-gate {
-  fill: rgba(0, 0, 0, 0.2) !important;
-}
-
-.landing[data-dark] .baku-gate {
-  fill: #ffd27a !important;
-  opacity: 0.8;
-}
-
-.baku-stop-stone-a {
-  stop-color: var(--stone-a);
-}
-
-.baku-stop-stone-b {
-  stop-color: var(--stone-b);
-}
-
-.baku-stop-stone-c {
-  stop-color: var(--stone-c);
-}
-
-.baku-maiden-top {
-  fill: var(--stone-b);
-}
-
-.baku-maiden-rings line {
-  stroke: rgba(0, 0, 0, 0.12);
-  stroke-width: 2;
-}
-
-.landing[data-dark] .baku-maiden {
-  filter: drop-shadow(0 0 22px rgba(240, 180, 100, 0.45));
-}
-
-.baku-stop-wave-a {
-  stop-color: var(--wave-a);
-}
-
-.baku-stop-wave-b {
-  stop-color: var(--wave-b);
-}
-
-.baku-hac-fold {
-  fill: none;
-  stroke: var(--wave-line);
-  stroke-width: 3;
-}
-
-.landing[data-dark] .baku-hac {
-  filter: drop-shadow(0 0 20px rgba(170, 210, 240, 0.4));
-}
-
-.baku-shore {
-  fill: var(--shore);
-}
-
-.baku-promenade {
-  fill: var(--lamp);
-  opacity: 0.35;
-}
-
-.baku-railing {
-  stroke: var(--lamp);
-  stroke-width: 2;
-  opacity: 0.4;
-}
-
-.baku-lamp rect,
-.baku-lamp path {
-  fill: var(--lamp);
-  opacity: 0.6;
-}
-
-.baku-lamp-glow {
-  fill: #ffd890;
-  opacity: calc(var(--lamp-glow) * 0.75);
-  filter: blur(6px);
-}
-
-/* Məzmunun oxunması üçün yuxarıda yumşaq pərdə */
+/* Yazılar oxunsun deyə şəklin üstündə yumşaq pərdə:
+   sol tərəf (mətn olan yer) daha açıq, sağda şəkil aydın görünür */
 .landing__veil {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(251, 249, 243, 0.35) 0%,
-    transparent 40%
-  );
+  background:
+    linear-gradient(90deg, rgba(250, 247, 240, 0.86) 0%, rgba(250, 247, 240, 0.62) 38%, rgba(250, 247, 240, 0.12) 72%, rgba(250, 247, 240, 0) 100%),
+    linear-gradient(180deg, rgba(250, 247, 240, 0.35) 0%, transparent 22%, transparent 78%, rgba(250, 247, 240, 0.4) 100%);
 }
 
 .landing[data-dark] .landing__veil {
-  background: linear-gradient(180deg, rgba(8, 20, 26, 0.45) 0%, transparent 45%);
+  background:
+    linear-gradient(90deg, rgba(8, 18, 26, 0.84) 0%, rgba(8, 18, 26, 0.58) 40%, rgba(8, 18, 26, 0.12) 75%, rgba(8, 18, 26, 0) 100%),
+    linear-gradient(180deg, rgba(8, 18, 26, 0.45) 0%, transparent 24%, transparent 76%, rgba(8, 18, 26, 0.5) 100%);
+}
+
+/* Şəkildəki yerin adı: sağ aşağı küncdə */
+.landing-place {
+  position: fixed;
+  right: 28px;
+  bottom: 24px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--glass-strong);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  pointer-events: none;
+  animation: landing-place-in 700ms ease both;
+}
+
+.landing-place svg {
+  color: var(--gold);
+}
+
+@keyframes landing-place-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
 }
 
 /* =========================================================
@@ -1823,19 +1418,23 @@ html:has(.landing) {
     font-size: 24px;
   }
 
-  .landing-sun {
-    width: 70px;
-    height: 70px;
+  /* Kiçik ekranda mətn bütün eni tutur: pərdə bərabər olur */
+  .landing__veil {
+    background: linear-gradient(180deg, rgba(250, 247, 240, 0.72), rgba(250, 247, 240, 0.5) 50%, rgba(250, 247, 240, 0.72));
   }
 
-  .landing {
-    --scene-h: 46vh;
+  .landing[data-dark] .landing__veil {
+    background: linear-gradient(180deg, rgba(8, 18, 26, 0.72), rgba(8, 18, 26, 0.5) 50%, rgba(8, 18, 26, 0.72));
+  }
+
+  /* Telefonda yer adı məzmunun üstünə düşür, gizlədirik */
+  .landing-place {
+    display: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .landing-sky,
-  .baku-layer,
+  .landing-photo,
   .how__step,
   .how-screen {
     transition: none;
@@ -1847,10 +1446,7 @@ html:has(.landing) {
   .landing-hero__chips,
   .landing-hero__stats,
   .landing-hero__more svg,
-  .landing-stars,
-  .landing-sea::after,
-  .baku-light--red,
-  .baku-flag-cloth,
+  .landing-place,
   .how-caret,
   .how-notice,
   .how-device__bell i {
