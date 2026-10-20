@@ -238,10 +238,10 @@ const PROVIDERS: SeedProvider[] = [
 const DEMO_PASSWORD = "parol123";
 
 /* Təqdimat hesabının adı */
-const DEMO_CUSTOMER_NAME = "Elay Pashazade";
+const DEMO_CUSTOMER_NAME = "Elay Paşazadə";
 
 /* Bu hesabın əvvəlki adları: bildiriş mətnlərində yeni adla əvəz olunur */
-const OLD_DEMO_CUSTOMER_NAMES = ["Demo Müştəri", "Aytən Məmmədova"];
+const OLD_DEMO_CUSTOMER_NAMES = ["Demo Müştəri", "Aytən Məmmədova", "Elay Pashazade"];
 
 const CUSTOMERS = [
   { key: "demo", name: DEMO_CUSTOMER_NAME, email: "musteri@azlink.demo" },
