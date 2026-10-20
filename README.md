@@ -109,6 +109,7 @@ Backend skriptləri:
 | `npm run start` | `dist/index.js`-i işə salır                        |
 | `npm run seed`  | Demo məlumatı bazaya yazır                         |
 | `npm run covers` | Demo bizneslərə üz qabığı şəkli yazır (`prisma/covers/`) |
+| `npm run portfolio` | Demo bizneslərə iş nümunələri yazır (`prisma/portfolio/`) |
 
 `schema.prisma`-nı redaktə edəndən sonra:
 
@@ -144,12 +145,12 @@ npm run build
 `server/prisma/seed.ts` bazanı aşağıdakılarla doldurur:
 
 - 8 əsas kateqoriya və onların alt kateqoriyaları (13 xidmət kateqoriyası)
-- 13 biznes: hər birinin sahibi (hesabı), kateqoriyası, xidmətləri, iş saatları (B.e–Şənbə 10:00–20:00), təsviri
-- 4 müştəri hesabı
-- 14 tamamlanmış rezerv və onların rəyləri (reytinq və rəy sayları buradan gəlir)
-- `Nail by Aysel` üçün 1 gözləyən rezerv (biznes panelində təsdiqləmək üçün)
+- 13 biznes: sahibi (hesabı), kateqoriyası, xidmətləri, iş saatları (B.e–Şənbə 10:00–20:00) və real görünən "Haqqında" mətni
+- 12 müştəri hesabı
+- 63 tamamlanmış rezerv və onların rəyləri: hər biznesin 3–12 rəyi, fərqli ulduzlar və tarixlər
+- **Təqdimat ssenarisi** (`musteri@azlink.demo` və Nail by Aysel üçün): gələcək təsdiqlənmiş və gözləyən rezervlər, ləğv edilmiş rezerv, seçilmişlər, son baxılanlar, oxunmuş və oxunmamış bildirişlər
 
-Seed təkrar işlədilə bilər: yalnız çatışmayanı əlavə edir, mövcud istifadəçi, xidmət və rezervlərin üzərinə yazmır. Biznesin təsviri, "təsdiqlənib" statusu və kateqoriyası hər dəfə yenilənir.
+Seed təkrar işlədilə bilər: yalnız çatışmayanı əlavə edir, mövcud istifadəçi, xidmət və rezervlərin üzərinə yazmır. Biznesin təsviri, "təsdiqlənib" statusu və kateqoriyası hər dəfə yenilənir. Gələcək rezervlərin tarixi seed işlədiyi gündən hesablanır, ona görə təqdimatdan bir neçə gün əvvəl işlətmək yaxşıdır.
 
 ### Demo hesablar
 
@@ -157,9 +158,9 @@ Bütün demo hesabların parolu: `parol123` (yalnız demo üçündür).
 
 | Rol     | Email                                                                                                                                                                                                                              | Qeyd                                                             |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Müştəri | `musteri@azlink.demo`                                                                                                                                                                                                              | Təmiz hesab, heç bir rezervi yoxdur. Canlı rezerv göstərmək üçün |
-| Müştəri | `nigar@azlink.demo`, `leyla@azlink.demo`, `gunel@azlink.demo`                                                                                                                                                                      | Seed-dəki rezerv və rəylərin sahibləri                           |
-| Biznes  | `nail-by-aysel@azlink.demo`                                                                                                                                                                                                        | Əsas demo biznes                                                 |
+| Müştəri | `musteri@azlink.demo`                                                                                                                                                                                                              | **Təqdimat hesabı** (Aytən Məmmədova): rezervlər, rəylər, seçilmişlər, bildirişlər. Nail by Aysel-dəki "Dırnaq dizaynı" rezervinə rəy yazılmayıb, canlı rəy yazmaq üçün |
+| Müştəri | `nigar@`, `leyla@`, `gunel@`, `aysu@`, `kamala@`, `fidan@`, `orxan@`, `elvin@`, `sebine@`, `murad@`, `narmin@` + `azlink.demo`                                                                                                     | Seed-dəki rezerv və rəylərin sahibləri                           |
+| Biznes  | `nail-by-aysel@azlink.demo`                                                                                                                                                                                                        | **Təqdimat biznesi**: 2 gözləyən rezerv (canlı təsdiqləmək üçün), təsdiqlənmiş rezervlər, 12 rəy, bildirişlər |
 | Biznes  | `studio-nigar@`, `cleanpro@`, `ali-photography@`, `vusale-hair@`, `kamran-santexnik@`, `resad-auto-wash@`, `turbo-servis@`, `nergiz-muellime@`, `paws-grooming@`, `ifix-telefon@`, `tural-trainer@`, `leyla-yoga@` + `azlink.demo` | Digər bizneslər                                                  |
 
 ### Köməkçi skriptlər (`server/prisma/`)
@@ -168,9 +169,12 @@ Bütün demo hesabların parolu: `parol123` (yalnız demo üçündür).
 | -------------------- | --------------------------------------------------- |
 | `add-areas.ts`       | Bakının 12 rayonunu bazaya əlavə edir               |
 | `add-covers.ts`      | `prisma/covers/` qovluğundakı şəkilləri bizneslərə üz qabığı kimi yazır (`npm run covers`) |
+| `add-portfolio.ts`   | `prisma/portfolio/<biznes>/` qovluqlarındakı şəkilləri portfolioya yazır (`npm run portfolio`) |
 | `businesses-tool.ts` | Bizneslərin siyahısını göstərir və təhlükəsiz silir |
 
 Üz qabığı üçün şəklin adı biznesin adı ilə eyni olmalıdır: kiçik hərflər, boşluq yerinə `-`, Azərbaycan hərfləri latın hərfi ilə ("Rəşad Auto Wash" → `resad-auto-wash.jpg`). Skript şəkli `Business.coverUrl`-a yazır, portfolioya toxunmur. Təkrar işlətmək təhlükəsizdir.
+
+Portfolio üçün hər biznesə bir qovluq (`prisma/portfolio/nail-by-aysel/`). Faylın adı şəklin altındakı yazı olur, əvvəlindəki rəqəm sıranı göstərir: `1-qırmızı gel lak.jpg` → "Qırmızı gel lak". Eyni yazılı şəkil təkrar əlavə olunmur, yalnız yenilənir.
 
 Bizneslərin siyahısı (sahib email-i, xidmət, rezerv, rəy sayları ilə):
 
@@ -206,14 +210,15 @@ client/
     │
     ├── components/
     │   ├── AreaSelector/        ← ərazi seçimi modalı (rayonlar və metro)
-    │   ├── account/             ← ChangePasswordModal (şifrə dəyişmə pəncərəsi)
+    │   ├── account/             ← ChangePasswordModal, ChangeEmailModal
     │   ├── auth/                ← AuthBackLink (giriş/qeydiyyatdan hesab növünə qayıdış)
     │   ├── brand/               ← VelvetStage, ServiceBoutique, GoldDust (giriş ekranı vitrini)
     │   ├── business/            ← BusinessLayout ("Biznesim" alt-naviqasiyası), BusinessTheme.css
     │   ├── common/              ← Interactions (bütün saytda hərəkət effektləri)
     │   ├── home/                ← HomeHero, CategoryShowcase, UpcomingBookings, PopularNearby,
     │   │                          TodayOverview, HowItWorks, HelpfulInfo
-    │   └── layout/              ← AppLayout, TopNav, BusinessSubNav ("Rezerv et" alt-naviqasiyası)
+    │   └── layout/              ← AppLayout, TopNav, NotificationBell (bildirişlər),
+    │                              BusinessSubNav ("Rezerv et" alt-naviqasiyası)
     │
     ├── data/
     │   ├── categories.ts        ← Kəşf et üçün kateqoriya siyahısı (ikon, ad, xidmətlər)
@@ -251,10 +256,11 @@ client/
     ├── services/                ← bütün API çağırışları yalnız burada
     │   ├── api.ts               ← mərkəzi fetch wrapper: token saxlama, auto-refresh, ApiError
     │   ├── authService.ts       ← signup / signin / logout / getMe
-    │   ├── accountService.ts    ← ad, telefon, şifrə dəyişmə
+    │   ├── accountService.ts    ← ad, telefon, şifrə və email dəyişmə
     │   ├── areasService.ts
     │   ├── categoriesService.ts
-    │   ├── providersService.ts  ← bizneslər, tək biznes
+    │   ├── providersService.ts  ← bizneslər, tək biznes, son baxılanlar
+    │   ├── notificationsService.ts
     │   ├── busySlotsService.ts  ← dolu saatlar
     │   ├── bookingsService.ts
     │   ├── savedService.ts
@@ -295,6 +301,7 @@ server/
 │   │   ├── bookings/
 │   │   ├── saved/
 │   │   ├── reviews/
+│   │   ├── notifications/        ← bildirişlər (rezerv və rəy hadisələrində yaranır)
 │   │   └── business/             ← profil, dashboard, müştərilər,
 │   │                               business-services.*, business-portfolio.*
 │   ├── utils/
@@ -308,6 +315,8 @@ server/
 │   ├── add-areas.ts
 │   ├── add-covers.ts             ← üz qabıqlarını yazır (npm run covers)
 │   ├── covers/                   ← demo bizneslərin üz qabığı şəkilləri
+│   ├── add-portfolio.ts          ← iş nümunələrini yazır (npm run portfolio)
+│   ├── portfolio/                ← hər biznes üçün iş nümunələri qovluğu
 │   ├── businesses-tool.ts
 │   └── dev.db                    ← SQLite faylı (Git-ə düşmür)
 ├── .env                          ← gizli açarlar (Git-ə düşmür)
@@ -523,17 +532,20 @@ Auth
 POST   /api/auth/signup         → qeydiyyat (email unikal; artıq varsa hansı rolla olduğunu bildirir)
 POST   /api/auth/signin
 POST   /api/auth/refresh
-POST   /api/auth/logout
+POST   /api/auth/logout         → { refreshToken }: token bazadan silinir və daha işləmir
 GET    /api/auth/me             ← giriş tələb olunur
 PATCH  /api/auth/me             ← ad, telefon
 PATCH  /api/auth/password       ← köhnə şifrəni yoxlayıb yenisini yazır
+PATCH  /api/auth/email          ← { email, password }: cari şifrə ilə təsdiqlənir, email unikal olmalıdır
 
 Ümumi
 GET    /api/categories
 GET    /api/areas
 GET    /api/areas/:id
 GET    /api/providers           → biznes kartları (xidməti olanlar): reytinq, rəy sayı, başlanğıc qiymət
-GET    /api/providers/:id       → xidmətlər, rəylər, portfolio, iş saatları (availability)
+GET    /api/providers/recent    ← giriş tələb olunur: son baxılan 4 biznes ("Son baxdıqlarınız")
+GET    /api/providers/:id       → xidmətlər, rəylər, portfolio (yazısı ilə), telefon, iş saatları
+POST   /api/providers/:id/view  ← giriş tələb olunur: baxışı yadda saxlayır (öz biznesi sayılmır)
 GET    /api/providers/:id/busy  ← giriş tələb olunur: ?from=YYYY-MM-DD&to=YYYY-MM-DD (maks. 62 gün),
                                   yalnız tutulmuş vaxt aralıqları, şəxsi məlumat yoxdur
 
@@ -553,6 +565,12 @@ Rəylər
 GET    /api/reviews?providerId=
 GET    /api/reviews/mine        ← giriş tələb olunur
 POST   /api/reviews             ← giriş tələb olunur: yalnız COMPLETED rezervə, bir rezerv üçün bir rəy
+
+Bildirişlər                     ← giriş tələb olunur (hər iki rol)
+GET    /api/notifications       → { unreadCount, items } (son 30)
+GET    /api/notifications/unread-count
+PATCH  /api/notifications/:id/read
+PATCH  /api/notifications/read-all
 
 Business                        ← authenticate + requireRole("BUSINESS")
 GET    /api/business/profile
@@ -575,6 +593,7 @@ Qeydlər:
 
 - `/api/providers` cavabında `image` biznesin üz qabığıdır (`coverUrl`), `logo` isə profil şəklidir. Üz qabığı yoxdursa `image` `null` olur: portfolio şəkli üz qabığı kimi istifadə olunmur.
 - `/api/providers` cavabında `service` sahəsi biznesin kateqoriya adıdır (məs. "Dırnaq"). `ownerId` biznes sahibinin istifadəçi id-sidir (öz biznesini gizlətmək üçün), `distance` hazırda həmişə `null`-dur.
+- Bildirişlər avtomatik yaranır: yeni rezerv və müştərinin ləğvi → biznes sahibinə; təsdiq, biznesin ləğvi və tamamlanma → müştəriyə; yeni rəy → biznes sahibinə. Bildiriş yazıla bilməsə də əsas əməliyyat uğurlu sayılır.
 - Biznes üçün gələn rezervlər ayrıca endpoint-də deyil, ümumi `GET /api/bookings`-dədir (biznes sahibi üçün avtomatik ona gələnləri də qaytarır).
 - Dashboard-dakı profil tamamlanma faizi 7 şərtdən hesablanır: ad, kateqoriya, ərazi, telefon, ən azı bir açıq gün, ən azı bir xidmət, ən azı bir portfolio şəkli.
 
@@ -585,8 +604,8 @@ Qeydlər:
 SQLite, Prisma ilə idarə olunur. Migration-lar `server/prisma/migrations/`-dadır.
 
 ```text
-User, Business, Category, Service, Area, Booking,
-Review, Portfolio, SavedProvider, Availability, Notification
+User, Business, Category, Service, Area, Booking, Review, Portfolio,
+SavedProvider, Availability, Notification, RecentView, RefreshToken
 ```
 
 | Model           | Əsas məqamlar                                                                          |
@@ -601,16 +620,18 @@ Review, Portfolio, SavedProvider, Availability, Notification
 | `Portfolio`     | `imageUrl` (base64 data URL), `caption`. Yalnız iş nümunələri üçündür                   |
 | `SavedProvider` | `@@unique([userId, businessId])` təkrar qeydin qarşısını alır                          |
 | `Availability`  | `dayOfWeek` (0 = Bazar … 6 = Şənbə), `startTime`, `endTime`                            |
-| `Notification`  | Cədvəl var, amma hələ heç yerdə istifadə olunmur                                       |
+| `Notification`  | `message`, `link` (basanda açılan səhifə), `isRead`                                    |
+| `RecentView`    | "Son baxdıqlarınız": `@@unique([userId, businessId])`, `viewedAt`                      |
+| `RefreshToken`  | Refresh token-in SHA-256 hash-i və `expiresAt`. Logout sətri silir                     |
 
-Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_verified`, `add_portfolio_caption`, `add_business_branding`.
+Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_verified`, `add_portfolio_caption`, `add_business_branding`, `add_notification_link`, `add_recent_view`, `add_refresh_token`.
 
 ---
 
 ## Təhlükəsizlik
 
 - Şifrələr plain text saxlanmır, `bcryptjs` ilə hash olunur.
-- Access token (15 dəq) və refresh token (7 gün): stateless JWT (`utils/jwt.ts`). Access token bitəndə frontend (`services/api.ts`) avtomatik bir dəfə refresh cəhdi edir, alınmasa girişi təmizləyir.
+- Access token (15 dəq) və refresh token (7 gün), JWT (`utils/jwt.ts`). Refresh token-in hash-i bazada saxlanır: logout onu ləğv edir, ləğv edilmiş token ilə yeni access token almaq olmur. Access token bitəndə frontend (`services/api.ts`) avtomatik bir dəfə refresh cəhdi edir, alınmasa girişi təmizləyir.
 - Rol yoxlaması backend tərəfindədir (`authenticate` və `requireRole`).
 - Başqasının rezervi "tapılmadı" kimi görünür, varlığı bildirilmir.
 - `.env` faylı Git-ə düşmür.
@@ -618,8 +639,7 @@ Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_veri
 
 ### Məlum məhdudiyyətlər
 
-- Refresh token bazada saxlanmır, ona görə `logout` onu serverdə ləğv edə bilmir (yalnız müddəti bitəndə qüvvədən düşür). Production üçün `RefreshToken` cədvəli əlavə edib logout-da silmək daha təhlükəsizdir.
-- Email dəyişmə və email təsdiqi yoxdur.
+- Email dəyişmək olur, amma yeni emailə təsdiq məktubu göndərilmir.
 - Sorğu limiti (rate limiting) yoxdur, CORS standart (hamıya açıq) konfiqurasiyadadır.
 - Portfolio, loqo və üz qabığı şəkilləri base64 kimi bazada saxlanır (`express.json` limiti 15 MB). Şəkillər yüklənməzdən əvvəl brauzerdə kiçildilir (`utils/compressImage.ts`), amma çox şəkil olanda cavablar yenə ağırlaşa bilər.
 - Demo hesabların parolu hamısı eynidir (`parol123`), real mühitdə istifadə olunmamalıdır.
@@ -639,7 +659,11 @@ Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_veri
 - Biznesim: Dashboard, Profil (canlı önbaxışla), İş saatları, Xidmətlər, Rezervlər (təsdiq/tamamla/ləğv), Portfolio, Müştərilər, Rəylər
 - Biznes vitrini: loqo və üz qabığı yükləmə, üz qabığının yerini sürüşdürərək düzəltmə. Portfolio yalnız iş nümunələri üçündür
 - Premium dizayn: giriş ekranında interaktiv "Xidmət butiki", bütün saytda hərəkət effektləri
-- Hesab: ad, telefon, şifrə dəyişmə (hər iki profil səhifəsində)
+- Hesab: ad, telefon, şifrə və email dəyişmə (hər iki profil səhifəsində)
+- Bildirişlər: yuxarı naviqasiyada zəng ikonu, oxunmamış sayı, "Hamısı oxundu"
+- "Son baxdıqlarınız" ana səhifədə
+- Biznes səhifəsində əlaqə: WhatsApp (hazır mətnlə) və zəng
+- Refresh token-lərin bazada saxlanması və logout-da ləğvi
 - Ərazi: 12 rayon və metro stansiyaları
 - Light/dark mode, responsive görünüş
 - Demo məlumat (seed) və köməkçi skriptlər
@@ -648,12 +672,8 @@ Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_veri
 
 | İş                  | Qeyd                                                                                                                            |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| "Son baxdıqlarınız" | Ana səhifədə real versiya (baxılan bizneslərin yadda saxlanması)                                                                |
-| Emaili dəyişmə      | Backend endpoint-i və frontend düyməsi                                                                                          |
-| Bildirişlər         | `Notification` cədvəli hazırdır, hadisələrdə yaradılması və göstərilməsi qalıb. Profildə bildiriş sətirləri "Tezliklə" göstərir |
 | Məsafə (`distance`) | Backend hesablamır. Ya koordinat əlavə edilməli, ya da sahə çıxarılmalıdır                                                      |
 | Şəkillər            | Portfolio, loqo və üz qabığını fayl kimi saxlamaq (base64 əvəzinə)                                                              |
-| Təhlükəsizlik       | Refresh token-in bazada saxlanması və logout-da ləğvi                                                                           |
 | Son işlənmə         | Yüklənmə/xəta/boş vəziyyətlərin yoxlanması, mobil görünüşün tam yoxlanması                                                      |
 | Metro rayonları     | Real xəritə ilə təsdiqləmək                                                                                                     |
 | Avtomatik testlər   | Yoxdur, bütün axınlar əl ilə yoxlanılır                                                                                         |

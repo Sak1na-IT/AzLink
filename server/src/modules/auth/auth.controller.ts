@@ -226,6 +226,7 @@ export const changePasswordHandler = async (
     res.status(500).json({ message: "Verilənlər bazası xətası" });
   }
 };
+
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const changeEmailHandler = async (

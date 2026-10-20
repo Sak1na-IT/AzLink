@@ -186,6 +186,7 @@ export const changePassword = async (
     data: { password: hashedPassword },
   });
 };
+
 /*
  * Email dəyişmə: təhlükəsizlik üçün cari şifrə ilə təsdiqlənir.
  * Yeni email başqa hesabda istifadə olunursa dəyişmək olmur.
