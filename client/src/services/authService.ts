@@ -3,6 +3,7 @@ import {
   setTokens,
   setStoredUser,
   clearTokens,
+  getRefreshToken,
   type AuthUser,
 } from "./api";
 
@@ -49,7 +50,11 @@ export const signin = async (input: {
 
 export const logout = async () => {
   try {
-    await apiRequest("/auth/logout", { method: "POST" });
+    /* Refresh token server tərəfdə də ləğv olunsun */
+    await apiRequest("/auth/logout", {
+      method: "POST",
+      body: { refreshToken: getRefreshToken() },
+    });
   } finally {
     clearTokens();
   }

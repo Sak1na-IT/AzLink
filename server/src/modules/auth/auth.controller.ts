@@ -109,7 +109,18 @@ export const refreshHandler = async (req: Request, res: Response) => {
   }
 };
 
-export const logoutHandler = async (_req: Request, res: Response) => {
+export const logoutHandler = async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body ?? {};
+
+    if (typeof refreshToken === "string" && refreshToken) {
+      await authService.logout(refreshToken);
+    }
+  } catch (error) {
+    /* Çıxış hər halda uğurlu sayılır: brauzer tokenləri onsuz da silir */
+    console.error(error);
+  }
+
   res.json({ message: "Çıxış edildi" });
 };
 

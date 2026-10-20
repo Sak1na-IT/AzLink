@@ -47,6 +47,20 @@ model User {
   savedProviders SavedProvider[]
   notifications  Notification[]
   recentViews    RecentView[]
+  refreshTokens  RefreshToken[]
+}
+
+/// Girişdə verilən refresh token-in hash-i: logout onu silib ləğv edir
+model RefreshToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // =========================================================

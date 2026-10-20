@@ -1,7 +1,10 @@
+import { createHash } from "crypto";
+
 import bcrypt from "bcryptjs";
 
 import { prisma } from "../../config/prisma";
 import {
+  REFRESH_TOKEN_DAYS,
   signAccessToken,
   signRefreshToken,
   verifyRefreshToken,
@@ -9,6 +12,34 @@ import {
 import type { SignupInput, SigninInput } from "./auth.types";
 
 const SALT_ROUNDS = 10;
+
+/* Bazada tokenin özü yox, yalnız SHA-256 hash-i saxlanır */
+const hashToken = (token: string) =>
+  createHash("sha256").update(token).digest("hex");
+
+/*
+ * Access və refresh token yaradır, refresh token-i bazaya yazır.
+ * Beləcə logout onu serverdə ləğv edə bilir. Hər girişdə həmin
+ * istifadəçinin vaxtı keçmiş tokenləri də təmizlənir.
+ */
+const issueTokens = async (user: { id: string; role: "USER" | "BUSINESS" }) => {
+  const payload = { userId: user.id, role: user.role };
+  const refreshToken = signRefreshToken(payload);
+
+  await prisma.refreshToken.deleteMany({
+    where: { userId: user.id, expiresAt: { lt: new Date() } },
+  });
+
+  await prisma.refreshToken.create({
+    data: {
+      userId: user.id,
+      tokenHash: hashToken(refreshToken),
+      expiresAt: new Date(Date.now() + REFRESH_TOKEN_DAYS * 24 * 60 * 60 * 1000),
+    },
+  });
+
+  return { accessToken: signAccessToken(payload), refreshToken };
+};
 
 /*
  * Qeydiyyat: yalnız User yaradılır. Biznes sahibləri (role: BUSINESS)
@@ -43,10 +74,7 @@ export const signup = async (input: SignupInput) => {
 
   return {
     user,
-    tokens: {
-      accessToken: signAccessToken({ userId: user.id, role: user.role }),
-      refreshToken: signRefreshToken({ userId: user.id, role: user.role }),
-    },
+    tokens: await issueTokens(user),
   };
 };
 
@@ -67,22 +95,28 @@ export const signin = async (input: SigninInput) => {
 
   return {
     user,
-    tokens: {
-      accessToken: signAccessToken({ userId: user.id, role: user.role }),
-      refreshToken: signRefreshToken({ userId: user.id, role: user.role }),
-    },
+    tokens: await issueTokens(user),
   };
 };
 
 /*
- * Refresh token stateless JWT-dir (DB-də saxlanmır). Bu, sadə və
- * sürətlidir, amma bir məhdudiyyəti var: logout refresh tokeni server
- * tərəfindən "ləğv edə" bilmir (blacklist yoxdur) — token yalnız 7 gün
- * sonra öz-özünə bitir. Real production üçün RefreshToken cədvəli
- * əlavə edib logout-da onu silmək daha təhlükəsiz olardı.
+ * Refresh token iki şərtlə qəbul olunur: JWT imzası düzgündür VƏ
+ * bazada hələ də var (logout etməyibsə, vaxtı keçməyibsə).
  */
 export const refresh = async (refreshToken: string) => {
   const payload = verifyRefreshToken(refreshToken);
+
+  const stored = await prisma.refreshToken.findUnique({
+    where: { tokenHash: hashToken(refreshToken) },
+  });
+
+  if (
+    !stored ||
+    stored.userId !== payload.userId ||
+    stored.expiresAt.getTime() < Date.now()
+  ) {
+    throw new Error("REFRESH_TOKEN_REVOKED");
+  }
 
   const user = await prisma.user.findUnique({
     where: { id: payload.userId },
@@ -95,6 +129,13 @@ export const refresh = async (refreshToken: string) => {
   return {
     accessToken: signAccessToken({ userId: user.id, role: user.role }),
   };
+};
+
+/* Çıxış: bu cihazın refresh token-i bazadan silinir və artıq işləmir */
+export const logout = async (refreshToken: string) => {
+  await prisma.refreshToken.deleteMany({
+    where: { tokenHash: hashToken(refreshToken) },
+  });
 };
 
 export const getUserById = async (userId: string) => {
