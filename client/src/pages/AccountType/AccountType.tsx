@@ -306,7 +306,7 @@ function AccountType() {
           <div className="landing-footer__brand">
             <span>AzLink</span>
             <p>
-              {t("AzLink xidmət axtaran insanları və yerli biznesləri vahid platformada birləşdirir.")}
+              {t("Bakıda xidmət axtaranlarla yerli ustaları və biznesləri bir araya gətirən platforma.")}
             </p>
           </div>
 

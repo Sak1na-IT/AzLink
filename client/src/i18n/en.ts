@@ -754,4 +754,5 @@ export const en: Record<string, string> = {
   "Biznes girişi": "Business sign-in",
   "Bakı, Azərbaycan": "Baku, Azerbaijan",
   "AzLink xidmət axtaran insanları və yerli biznesləri vahid platformada birləşdirir.": "AzLink brings people looking for services and local businesses together on one platform.",
+  "Bakıda xidmət axtaranlarla yerli ustaları və biznesləri bir araya gətirən platforma.": "The platform that brings people looking for services together with local professionals and businesses in Baku.",
 };
