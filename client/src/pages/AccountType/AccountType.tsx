@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowDown,
@@ -9,6 +9,7 @@ import {
   Moon,
   Sun,
   UserRound,
+  X,
 } from "lucide-react";
 
 import { useTheme } from "../../hooks/useTheme";
@@ -81,6 +82,48 @@ const WHY = [
   },
 ];
 
+type InfoKey = "about" | "contact" | "faq" | "privacy" | "terms";
+
+const INFO: Record<InfoKey, { title: string; body: ({ text: string } | { q: string; a: string })[] }> = {
+  about: {
+    title: t("Haqqımızda"),
+    body: [
+      { text: t("AzLink Bakıda xidmət axtaran insanları yerli ustalar və bizneslərlə birləşdirən platformadır.") },
+      { text: t("Məqsədimiz usta tapmağı və növbə tutmağı zəngsiz, sadə və şəffaf etməkdir.") },
+    ],
+  },
+  contact: {
+    title: t("Əlaqə"),
+    body: [
+      { text: t("Sual və təklifləriniz üçün bizə yazın: info@azlink.az") },
+      { text: t("Bakı, Azərbaycan") },
+    ],
+  },
+  faq: {
+    title: t("Tez-tez verilən suallar"),
+    body: [
+      { q: t("Qeydiyyat pulludur?"), a: t("Xeyr, həm müştərilər, həm də bizneslər üçün qeydiyyat pulsuzdur.") },
+      { q: t("Rezervi necə edirəm?"), a: t("Ustanın səhifəsində xidməti və boş saatı seçirsiniz. Usta təsdiqləyəndə bildiriş alırsınız.") },
+      { q: t("Rəyi kim yaza bilər?"), a: t("Yalnız xidməti həqiqətən almış müştəri.") },
+      { q: t("Biznesimi necə əlavə edim?"), a: t("“Xidmət göstərirəm” seçin, profilinizi qurun və xidmətlərinizi əlavə edin.") },
+    ],
+  },
+  privacy: {
+    title: t("Məxfilik siyasəti"),
+    body: [
+      { text: t("Qeydiyyat zamanı verdiyiniz ad, email və telefon yalnız rezervlərin işləməsi üçün istifadə olunur.") },
+      { text: t("Məlumatlarınız üçüncü tərəflərə satılmır və ötürülmür.") },
+    ],
+  },
+  terms: {
+    title: t("İstifadə şərtləri"),
+    body: [
+      { text: t("AzLink müştərilərlə biznesləri birləşdirir, xidmətin özünü isə biznes göstərir.") },
+      { text: t("Bizneslər qiymət və iş saatlarının düzgünlüyünə cavabdehdir. Rəylər real təcrübəyə əsaslanmalıdır.") },
+    ],
+  },
+};
+
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
 function AccountType() {
@@ -91,6 +134,15 @@ function AccountType() {
   /* Şəbəkənin mərhələsi: 0 (giriş) → 1 (necə işləyir) → 2 (niyə AzLink) */
   const stageRef = useRef(0);
   const railRef = useRef<HTMLElement>(null);
+  const [info, setInfo] = useState<InfoKey | null>(null);
+
+  /* Pəncərə Esc ilə bağlanır */
+  useEffect(() => {
+    if (!info) return;
+    const onKey = (event: KeyboardEvent) => event.key === "Escape" && setInfo(null);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [info]);
 
   /* ---------- Sürüşdürməyə bağlı keçid ---------- */
 
@@ -305,34 +357,81 @@ function AccountType() {
         <div className="landing-footer__inner">
           <div className="landing-footer__brand">
             <span>AzLink</span>
-            <p>
-              {t("Bakıda xidmət axtaranlarla yerli ustaları və biznesləri bir araya gətirən platforma.")}
-            </p>
+            <p>{t("Xidmət axtarışını və rezerv prosesini bir əlaqədə birləşdiririk.")}</p>
           </div>
 
-          <nav className="landing-footer__links" aria-label={t("Müştərilər üçün")}>
-            <h4>{t("Müştərilər üçün")}</h4>
-            <button type="button" onClick={() => startAs("user")}>{t("Xidmət tap")}</button>
-            <Link to="/login?role=user">{t("Daxil olun")}</Link>
+          <nav className="landing-footer__links" aria-label={t("Kəşf et")}>
+            <h4>{t("Kəşf et")}</h4>
+            <Link to="/search">{t("Xidmətlər")}</Link>
+            <Link to="/explore">{t("Xidmət sahələri")}</Link>
+            <Link to="/home">{t("Populyar xidmətlər")}</Link>
+          </nav>
+
+          <nav className="landing-footer__links" aria-label={t("İstifadəçilər üçün")}>
+            <h4>{t("İstifadəçilər üçün")}</h4>
+            <Link to="/bookings">{t("Rezervlərim")}</Link>
+            <button type="button" onClick={() => scrollToSection(1)}>{t("Necə işləyir?")}</button>
+            <button type="button" onClick={() => scrollToSection(2)}>{t("Faydalı məlumatlar")}</button>
           </nav>
 
           <nav className="landing-footer__links" aria-label={t("Bizneslər üçün")}>
             <h4>{t("Bizneslər üçün")}</h4>
-            <button type="button" onClick={() => startAs("business")}>{t("Biznesimi əlavə et")}</button>
-            <Link to="/login?role=business">{t("Biznes girişi")}</Link>
+            <button type="button" onClick={() => startAs("business")}>{t("Biznesini AzLink-ə qoş")}</button>
+            <Link to="/business/profile">{t("Biznes profilim")}</Link>
           </nav>
 
-          <nav className="landing-footer__links" aria-label="AzLink">
-            <h4>AzLink</h4>
-            <button type="button" onClick={() => scrollToSection(1)}>{t("Necə işləyir?")}</button>
-            <button type="button" onClick={() => scrollToSection(2)}>{t("Niyə AzLink?")}</button>
+          <nav className="landing-footer__links" aria-label={t("AzLink haqqında")}>
+            <h4>{t("AzLink haqqında")}</h4>
+            <button type="button" onClick={() => setInfo("about")}>{t("Haqqımızda")}</button>
+            <button type="button" onClick={() => setInfo("contact")}>{t("Əlaqə")}</button>
+            <button type="button" onClick={() => setInfo("faq")}>{t("Tez-tez verilən suallar")}</button>
           </nav>
         </div>
 
-        <p className="landing-footer__bottom">
-          © {new Date().getFullYear()} AzLink. {t("Bakı, Azərbaycan")}
-        </p>
+        <div className="landing-footer__bottom">
+          <span>© {new Date().getFullYear()} AzLink. {t("Bütün hüquqlar qorunur.")}</span>
+          <span className="landing-footer__legal">
+            <button type="button" onClick={() => setInfo("privacy")}>{t("Məxfilik siyasəti")}</button>
+            <button type="button" onClick={() => setInfo("terms")}>{t("İstifadə şərtləri")}</button>
+          </span>
+        </div>
       </footer>
+
+      {/* Footerdəki məlumat pəncərəsi: haqqımızda, əlaqə, suallar, şərtlər */}
+      {info && (
+        <div className="landing-info" role="presentation" onClick={() => setInfo(null)}>
+          <div
+            className="landing-glass landing-info__panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="landing-info-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="landing-info__close"
+              onClick={() => setInfo(null)}
+              aria-label={t("Bağla")}
+              autoFocus
+            >
+              <X size={18} strokeWidth={1.8} />
+            </button>
+
+            <h3 id="landing-info-title">{INFO[info].title}</h3>
+
+            {INFO[info].body.map((item) =>
+              "q" in item ? (
+                <div key={item.q} className="landing-info__qa">
+                  <strong>{item.q}</strong>
+                  <p>{item.a}</p>
+                </div>
+              ) : (
+                <p key={item.text}>{item.text}</p>
+              )
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
