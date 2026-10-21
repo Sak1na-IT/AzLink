@@ -1,0 +1,15 @@
+# Netlify: yalnız client (React) hissəsi burada yerləşir.
+# Asılılıqlar kök package.json-dadır (workspaces), ona görə build kökdən işləyir.
+
+[build]
+  command = "npm run build"
+  publish = "client/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# React Router: /login kimi səhifələr yenilənəndə 404 olmasın
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
