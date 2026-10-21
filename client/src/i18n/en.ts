@@ -751,7 +751,6 @@ export const en: Record<string, string> = {
   "Hesabınız yoxdur?": "Don't have an account?",
   "Daha çox rəy ({count})": "More reviews ({count})",
   "Bakı, Azərbaycan": "Baku, Azerbaijan",
-  "AzLink xidmət axtaran insanları və yerli biznesləri vahid platformada birləşdirir.": "AzLink brings people looking for services and local businesses together on one platform.",
   "Xidmət axtarışını və rezerv prosesini bir əlaqədə birləşdiririk.": "We bring finding a service and booking it together in one place.",
   "Xidmət sahələri": "Service categories",
   "Populyar xidmətlər": "Popular services",
@@ -778,4 +777,6 @@ export const en: Record<string, string> = {
   "Məlumatlarınız üçüncü tərəflərə satılmır və ötürülmür.": "Your data is never sold or passed to third parties.",
   "AzLink müştərilərlə biznesləri birləşdirir, xidmətin özünü isə biznes göstərir.": "AzLink connects customers with businesses; the service itself is provided by the business.",
   "Bizneslər qiymət və iş saatlarının düzgünlüyünə cavabdehdir. Rəylər real təcrübəyə əsaslanmalıdır.": "Businesses are responsible for accurate prices and hours. Reviews must be based on real experience.",
+  "Axtardığın xidmət. Doğru əlaqə.": "The service you need. The right connection.",
+  "Sənə uyğun xidmətləri tap, seçimlərini müqayisə et və rezervini rahatlıqla yarat. Hamısı bir platformada.": "Find services that suit you, compare your options and book with ease. All on one platform.",
 };

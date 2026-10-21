@@ -242,10 +242,10 @@ function AccountType() {
       <main className="landing__content">
         {/* ================= 1. SEÇİM ================= */}
         <section ref={setSection(0)} className="landing-hero">
-          <h1>{t("Bakının ustaları və müştəriləri bir yerdə")}</h1>
+          <h1>{t("Axtardığın xidmət. Doğru əlaqə.")}</h1>
 
           <p className="landing-hero__lead">
-            {t("AzLink xidmət axtaran insanları və yerli biznesləri vahid platformada birləşdirir.")}
+            {t("Sənə uyğun xidmətləri tap, seçimlərini müqayisə et və rezervini rahatlıqla yarat. Hamısı bir platformada.")}
           </p>
 
           <div className="landing-doors">
