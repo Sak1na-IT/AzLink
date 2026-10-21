@@ -745,4 +745,6 @@ export const en: Record<string, string> = {
   "Bizneslər üçün": "For businesses",
   "Niyə AzLink?": "Why AzLink?",
   "Hazırsınız? Bir dəqiqəyə başlayın.": "Ready? Get started in a minute.",
+  "Bölmələr": "Sections",
+  "Seçim": "Choose",
 };

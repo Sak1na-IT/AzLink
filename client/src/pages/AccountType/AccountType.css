@@ -72,19 +72,92 @@
   display: block;
 }
 
-/* Kənarlarda yüngül kölgə: mətnin oxunması üçün, şəbəkəni gizlətmir */
+/* Sol tərəfdə (mətnin olduğu yerdə) yumşaq kölgə; sağ tərəf canlı qalır */
 .landing__veil {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(250, 247, 240, 0.45) 0%, transparent 16%),
-    radial-gradient(ellipse 60% 45% at 50% 40%, rgba(250, 247, 240, 0.35), transparent 70%);
+    linear-gradient(90deg, rgba(246, 249, 245, 0.88) 0%, rgba(246, 249, 245, 0.6) 34%, rgba(246, 249, 245, 0) 56%),
+    linear-gradient(180deg, rgba(246, 249, 245, 0.5) 0%, transparent 14%);
 }
 
 .landing[data-dark] .landing__veil {
   background:
-    linear-gradient(180deg, rgba(2, 10, 7, 0.55) 0%, transparent 16%),
-    radial-gradient(ellipse 60% 45% at 50% 40%, rgba(2, 10, 7, 0.35), transparent 70%);
+    linear-gradient(90deg, rgba(2, 10, 7, 0.82) 0%, rgba(2, 10, 7, 0.5) 34%, rgba(2, 10, 7, 0) 56%),
+    linear-gradient(180deg, rgba(2, 10, 7, 0.6) 0%, transparent 14%);
+}
+
+/* Mərhələ göstəricisi: sol kənarda üç nöqtə və dolan xətt */
+.landing-rail {
+  --stage: 0;
+  position: fixed;
+  left: 22px;
+  top: 50%;
+  z-index: 4;
+  display: grid;
+  gap: 34px;
+  translate: 0 -50%;
+}
+
+.landing-rail::before,
+.landing-rail::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  width: 2px;
+  height: calc(100% - 12px);
+  border-radius: 2px;
+  background: var(--hairline);
+}
+
+.landing-rail::after {
+  height: calc((100% - 12px) * var(--stage) / 2);
+  background: linear-gradient(180deg, var(--champagne), var(--emerald));
+  box-shadow: 0 0 10px var(--emerald);
+}
+
+.landing-rail button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink-muted);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.landing-rail button::before {
+  content: "";
+  position: relative;
+  z-index: 1;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--champagne);
+  border-radius: 50%;
+  background: var(--glass-strong);
+  /* Mərhələyə çatanda nöqtə dolur */
+  box-shadow: inset 0 0 0 calc(clamp(0, var(--stage) - var(--i) + 1, 1) * 6px) var(--emerald);
+  transition: box-shadow 300ms ease;
+}
+
+.landing-rail span {
+  opacity: 0;
+  translate: -6px 0;
+  transition:
+    opacity 200ms ease,
+    translate 200ms ease;
+}
+
+.landing-rail button:hover span,
+.landing-rail button:focus-visible span {
+  opacity: 1;
+  translate: 0 0;
 }
 
 /* =========================================================
@@ -180,9 +253,9 @@
 .landing__content {
   position: relative;
   z-index: 2;
-  width: min(1180px, 100%);
+  width: min(1320px, 100%);
   margin: 0 auto;
-  padding: 0 40px;
+  padding: 0 64px 0 80px;
 }
 
 /* Şüşə panel: arxadakı Bakı görünür, mətn oxunur */
@@ -217,114 +290,141 @@
 
 /* =========================================================
    1. SEÇİM (açılan kimi görünən hissə)
+   Mətn sol sütundadır; sağ tərəf canlı səhnəyə qalır.
    ========================================================= */
 
 .landing-hero {
   min-height: 100vh;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  /* Yuxarı zolağın hündürlüyü qədər boşluq: məzmun görünən hissənin ortasında */
   padding: 110px 0 56px;
-  text-align: center;
 }
 
 .landing-hero h1 {
-  max-width: 20em;
   margin: 0;
-  font-size: clamp(38px, 4.2vw, 64px);
-  line-height: 1.02;
+  font-size: clamp(42px, 4.6vw, 70px);
+  line-height: 1;
   letter-spacing: -0.015em;
   text-wrap: balance;
-  animation: landing-in 900ms var(--ease-out) backwards;
+  animation: landing-in 1s var(--ease-out) backwards;
+}
+
+/* Başlıqlarda yavaş gəzən işıq: mətn "canlı" görünsün */
+.landing-hero h1,
+.landing-section__title {
+  background: linear-gradient(100deg, var(--ink) 0%, var(--ink) 40%, var(--emerald-strong) 50%, var(--ink) 60%, var(--ink) 100%);
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    landing-in 1s var(--ease-out) backwards,
+    landing-shine 7s ease-in-out 1.2s infinite;
 }
 
 .landing-hero__lead {
-  max-width: 44em;
-  margin: 14px 0 0;
-  color: var(--ink);
+  max-width: 30em;
+  margin: 18px 0 0;
+  color: var(--ink-muted);
   font-size: 18px;
-  font-weight: 500;
   line-height: 1.6;
-  text-shadow:
-    0 0 2px rgba(250, 247, 240, 0.9),
-    0 0 16px rgba(250, 247, 240, 0.95);
-  animation: landing-in 900ms 120ms var(--ease-out) backwards;
+  animation: landing-in 1s 120ms var(--ease-out) backwards;
 }
 
 .landing-doors {
-  width: min(860px, 100%);
+  width: 100%;
   margin-top: 32px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-  animation: landing-in 900ms 240ms var(--ease-out) backwards;
+  gap: 12px;
 }
 
-/* Seçim kartı: ikon solda, mətn sağda — yığcam */
+/* Seçim kartı: ikon solda, mətn sağda; ardıcıl sürüşüb gəlir */
 .landing-door {
+  position: relative;
+  overflow: hidden;
   display: grid;
-  grid-template-columns: 44px 1fr;
+  grid-template-columns: 44px 1fr auto;
   column-gap: 16px;
-  row-gap: 6px;
-  align-items: start;
-  padding: 24px 26px;
+  row-gap: 4px;
+  align-items: center;
+  padding: 20px 22px;
   background: var(--glass-strong);
   color: var(--ink);
   font: inherit;
   text-align: left;
   cursor: pointer;
+  animation: landing-slide 900ms var(--ease-out) backwards;
   transition:
     border-color var(--transition-fast),
-    transform var(--transition-fast);
+    transform 300ms var(--ease-out),
+    box-shadow 300ms var(--ease-out);
+}
+
+.landing-door:nth-child(1) {
+  animation-delay: 260ms;
+}
+
+.landing-door:nth-child(2) {
+  animation-delay: 380ms;
+}
+
+/* Üzərinə gələndə kartın üstündən incə işıq keçir */
+.landing-door::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 35%, rgba(150, 255, 210, 0.14) 50%, transparent 65%);
+  translate: -100% 0;
+  transition: translate 800ms var(--ease-out);
+  pointer-events: none;
 }
 
 .landing-door:hover {
   border-color: var(--champagne);
-  transform: translateY(-3px);
+  transform: translateX(6px);
+  box-shadow: var(--glass-shadow), 0 0 0 1px var(--champagne);
+}
+
+.landing-door:hover::after {
+  translate: 100% 0;
 }
 
 .landing-door .landing-icon {
-  grid-row: span 3;
+  grid-row: span 2;
 }
 
 .landing-door strong {
-  margin-top: 4px;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 30px;
+  font-size: 27px;
   font-weight: 500;
   line-height: 1.1;
 }
 
 .landing-door span:not(.landing-icon) {
+  grid-column: 2;
   color: var(--ink-muted);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 14.5px;
+  line-height: 1.5;
 }
 
 .landing-door em {
-  margin-top: 4px;
+  grid-column: 3;
+  grid-row: 1 / span 2;
   color: var(--emerald);
-  font-size: 15px;
+  font-size: 14px;
   font-style: normal;
   font-weight: 600;
-}
-
-.landing[data-dark] .landing-hero__lead {
-  text-shadow:
-    0 0 2px rgba(0, 0, 0, 0.7),
-    0 0 16px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
 }
 
 .landing-hero__login {
   margin: 22px 0 0;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: var(--glass-strong);
   color: var(--ink-muted);
   font-size: 15px;
-  animation: landing-in 900ms 360ms var(--ease-out) backwards;
+  animation: landing-in 900ms 480ms var(--ease-out) backwards;
 }
 
 .landing-hero__login a {
@@ -333,11 +433,12 @@
 }
 
 .landing-hero__more {
-  margin-top: 28px;
+  margin-top: 26px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 9px 16px;
+  border: 1px solid var(--hairline);
   border-radius: 999px;
   background: var(--glass);
   color: var(--ink);
@@ -351,48 +452,59 @@
 
 /* =========================================================
    BÖLMƏLƏR
-   Məzmun --in (0–1) ilə şəkil ilə eyni anda yuxarı qalxır
+   Məzmun --in (0–1) ilə şəbəkə ilə eyni anda soldan sürüşüb gəlir
    ========================================================= */
 
 .landing-section {
   --in: 1;
   min-height: 100vh;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 12vh 0;
 }
 
-.landing-section--last {
-  min-height: 92vh;
+.landing-section > * {
+  opacity: calc(0.1 + var(--in) * 0.9);
+  transform: translateX(calc((1 - var(--in)) * -70px));
 }
 
-.landing-section > * {
-  opacity: calc(0.15 + var(--in) * 0.85);
-  transform: translateY(calc((1 - var(--in)) * 56px));
+.landing-section > *:nth-child(2) {
+  transform: translateX(calc((1 - var(--in)) * -120px));
+}
+
+.landing-section > *:nth-child(3) {
+  transform: translateX(calc((1 - var(--in)) * -170px));
 }
 
 .landing-section__title {
-  margin: 0 0 22px;
-  font-size: clamp(36px, 4vw, 56px);
-  line-height: 1.05;
-  text-align: center;
-  text-shadow: 0 2px 24px rgba(250, 247, 240, 0.8);
+  position: relative;
+  margin: 0 0 26px;
+  padding-bottom: 14px;
+  font-size: clamp(38px, 4vw, 58px);
+  line-height: 1.02;
 }
 
-.landing[data-dark] .landing-section__title {
-  text-shadow: 0 2px 24px rgba(0, 0, 0, 0.6);
+/* Başlığın altında xətt: bölmə gəldikcə çəkilir */
+.landing-section__title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: calc(var(--in) * 120px);
+  height: 2px;
+  background: linear-gradient(90deg, var(--champagne), var(--emerald), transparent);
 }
 
-/* Necə işləyir: iki yol yan-yana */
+/* Necə işləyir: iki yol alt-alta, addımlar yan-yana */
 .landing-paths {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 14px;
 }
 
 .landing-path {
-  padding: 28px 30px;
+  padding: 22px 24px;
   background: var(--glass-strong);
 }
 
@@ -401,7 +513,7 @@
   align-items: center;
   gap: 10px;
   margin: 0;
-  font-size: 30px;
+  font-size: 26px;
 }
 
 .landing-path h3 svg {
@@ -409,87 +521,95 @@
 }
 
 .landing-path ol {
-  margin: 20px 0 0;
+  margin: 16px 0 0;
   padding: 0;
   list-style: none;
   counter-reset: step;
-  display: grid;
-  gap: 18px;
-}
-
-.landing-path li {
-  counter-increment: step;
-  display: grid;
-  grid-template-columns: 36px 1fr;
-  column-gap: 14px;
-  row-gap: 4px;
-}
-
-.landing-path li::before {
-  content: counter(step);
-  grid-row: span 2;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--champagne);
-  border-radius: 50%;
-  color: var(--gold);
-  font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 20px;
-}
-
-.landing-path strong {
-  font-size: 16px;
-}
-
-.landing-path li span {
-  color: var(--ink-muted);
-  font-size: 15px;
-  line-height: 1.55;
-}
-
-/* Niyə AzLink */
-.landing-why {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
+.landing-path li {
+  counter-increment: step;
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+
+.landing-path li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--champagne);
+  border-radius: 50%;
+  color: var(--gold);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18px;
+}
+
+.landing-path strong {
+  font-size: 15px;
+}
+
+.landing-path li span {
+  color: var(--ink-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+/* Niyə AzLink: üç sətir, ikon solda */
+.landing-why {
+  display: grid;
+  gap: 12px;
+}
+
 .landing-why__item {
-  padding: 28px;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: 16px;
+  row-gap: 4px;
+  align-items: start;
+  padding: 18px 22px;
   background: var(--glass-strong);
 }
 
+.landing-why__item .landing-icon {
+  grid-row: span 2;
+}
+
 .landing-why__item h3 {
-  margin: 18px 0 0;
-  font-size: 28px;
+  margin: 0;
+  font-size: 25px;
   line-height: 1.1;
 }
 
 .landing-why__item p {
-  margin: 10px 0 0;
+  grid-column: 2;
+  margin: 0;
   color: var(--ink-muted);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 14.5px;
+  line-height: 1.55;
 }
 
 /* Son çağırış */
 .landing-cta {
-  margin-top: 16px;
+  margin-top: 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
   flex-wrap: wrap;
-  padding: 22px 26px;
+  padding: 18px 22px;
   background: var(--glass-strong);
 }
 
 .landing-cta p {
   margin: 0;
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: 28px;
+  font-size: 25px;
 }
 
 .landing-cta div {
@@ -499,14 +619,14 @@
 }
 
 .landing-button {
-  min-height: 46px;
-  padding: 0 22px;
+  min-height: 44px;
+  padding: 0 20px;
   border: 1px solid var(--champagne);
   border-radius: 999px;
   background: transparent;
   color: var(--ink);
   font: inherit;
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
   cursor: pointer;
   transition: transform var(--transition-fast);
@@ -518,7 +638,8 @@
   color: #fff;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
-    0 0 0 1px rgba(210, 173, 103, 0.6);
+    0 0 0 1px rgba(210, 173, 103, 0.6),
+    0 0 24px rgba(80, 235, 170, 0.25);
 }
 
 .landing-button:hover {
@@ -527,7 +648,8 @@
 
 .landing-door:focus-visible,
 .landing-button:focus-visible,
-.landing-hero__more:focus-visible {
+.landing-hero__more:focus-visible,
+.landing-rail button:focus-visible {
   outline: 2px solid var(--emerald);
   outline-offset: 3px;
 }
@@ -540,6 +662,24 @@
   from {
     opacity: 0;
     transform: translateY(14px);
+  }
+}
+
+@keyframes landing-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}
+
+@keyframes landing-shine {
+  0%,
+  100% {
+    background-position: 100% 0;
+  }
+
+  50% {
+    background-position: 0 0;
   }
 }
 
@@ -565,13 +705,26 @@ html:has(.landing) {
 }
 
 @media (max-width: 900px) {
-  .landing-why,
-  .landing-paths {
-    grid-template-columns: 1fr;
+  .landing-rail {
+    display: none;
   }
 
+  .landing__content {
+    padding: 0 28px;
+  }
+
+  .landing-hero,
   .landing-section {
-    min-height: auto;
+    max-width: none;
+  }
+
+  /* Dar ekranda səhnə mətnin arxasına düşür: pərdə bərabər olur */
+  .landing__veil {
+    background: linear-gradient(180deg, rgba(246, 249, 245, 0.7), rgba(246, 249, 245, 0.45) 50%, rgba(246, 249, 245, 0.7));
+  }
+
+  .landing[data-dark] .landing__veil {
+    background: linear-gradient(180deg, rgba(2, 10, 7, 0.72), rgba(2, 10, 7, 0.45) 50%, rgba(2, 10, 7, 0.72));
   }
 }
 
@@ -604,22 +757,27 @@ html:has(.landing) {
     font-size: 16px;
   }
 
-  .landing-doors {
-    grid-template-columns: 1fr;
-    gap: 12px;
+  .landing-door {
+    grid-template-columns: 44px 1fr;
+    padding: 18px;
   }
 
-  .landing-door {
-    padding: 22px;
+  .landing-door em {
+    grid-column: 2;
+    grid-row: auto;
   }
 
   .landing-door strong {
-    font-size: 26px;
+    font-size: 24px;
   }
 
   .landing-path,
   .landing-why__item {
-    padding: 22px;
+    padding: 18px;
+  }
+
+  .landing-path ol {
+    grid-template-columns: 1fr;
   }
 
   .landing-cta {
@@ -636,8 +794,9 @@ html:has(.landing) {
 
 @media (prefers-reduced-motion: reduce) {
   .landing-hero h1,
+  .landing-section__title,
   .landing-hero__lead,
-  .landing-doors,
+  .landing-door,
   .landing-hero__login,
   .landing-hero__more svg {
     animation: none;

@@ -1,4 +1,5 @@
 import { CITIES, MAINLAND, NAKHCHIVAN, type LonLat } from "./azerbaijan";
+import { Skyline } from "./skyline";
 
 /*
  * AzLink şəbəkəsi: ana səhifənin arxa fonu.
@@ -57,29 +58,19 @@ interface Palette {
   glassBody: string;
   glassRim: string;
   glassShine: string;
-  skyBuilding: string;
-  skyWindow: string;
-  flameFill: [string, string];
-  flameLine: string;
-  water: [string, string];
 }
 
 const DARK: Palette = {
   dark: true,
-  bgBase: "#020a07",
-  bgCenter: "#0a2c21",
-  bgEdge: "#010604",
-  glow: "70, 220, 160",
-  line: "120, 240, 186",
+  bgBase: "#03100c",
+  bgCenter: "#0f4231",
+  bgEdge: "#010705",
+  glow: "80, 235, 170",
+  line: "130, 250, 196",
   dust: "150, 255, 210",
   glassBody: "rgba(150, 255, 210, 0.07)",
   glassRim: "rgba(170, 255, 220, 0.7)",
   glassShine: "rgba(235, 255, 245, 0.75)",
-  skyBuilding: "#03120d",
-  skyWindow: "rgba(120, 240, 180, 0.55)",
-  flameFill: ["#0d3a2b", "#052016"],
-  flameLine: "rgba(110, 245, 185, 0.85)",
-  water: ["rgba(6, 34, 25, 0.9)", "rgba(2, 10, 7, 1)"],
 };
 
 const LIGHT: Palette = {
@@ -93,11 +84,6 @@ const LIGHT: Palette = {
   glassBody: "rgba(255, 255, 255, 0.4)",
   glassRim: "rgba(22, 104, 78, 0.5)",
   glassShine: "rgba(255, 255, 255, 0.95)",
-  skyBuilding: "rgba(22, 70, 55, 0.13)",
-  skyWindow: "rgba(22, 104, 78, 0.35)",
-  flameFill: ["rgba(22, 104, 78, 0.16)", "rgba(22, 104, 78, 0.06)"],
-  flameLine: "rgba(22, 104, 78, 0.7)",
-  water: ["rgba(214, 230, 220, 0.6)", "rgba(226, 235, 228, 0.9)"],
 };
 
 const CAMERA = 3;
@@ -106,21 +92,22 @@ const MAP_SCALE = 0.58;
 /* 1-ci mərhələdə şüşə kürələrin yeri və ölçüsü (əl ilə düzülüb:
    mətnin ortasını boş saxlayır) */
 const HEROES: { pos: Vec3; r: number }[] = [
-  { pos: [-2.25, 0.62, 0.8], r: 0.24 },
-  { pos: [-1.7, -0.78, 1.3], r: 0.15 },
-  { pos: [2.2, 0.7, 1.0], r: 0.27 },
-  { pos: [1.75, -0.68, 0.5], r: 0.14 },
-  { pos: [-2.9, -0.1, 2.6], r: 0.3 },
-  { pos: [3.0, 0.12, 2.8], r: 0.28 },
-  { pos: [0.95, 1.08, 2.2], r: 0.11 },
-  { pos: [-0.85, 1.12, 2.8], r: 0.15 },
-]
+  { pos: [-0.35, 0.72, 0.6], r: 0.2 },
+  { pos: [0.55, -0.62, 1.1], r: 0.15 },
+  { pos: [1.35, 0.55, 0.9], r: 0.27 },
+  { pos: [0.75, 0.05, 0.2], r: 0.12 },
+  { pos: [-2.75, 1.25, 2.4], r: 0.16 },
+  { pos: [2.15, -0.35, 2.0], r: 0.3 },
+  { pos: [-0.2, -0.15, 2.6], r: 0.1 },
+  { pos: [-2.45, -1.3, 2.2], r: 0.14 },
+];
 
 const HERO_LINKS: [number, number][] = [
-  [0, 1],
+  [0, 3],
   [2, 3],
-  [0, 4],
+  [1, 3],
   [2, 5],
+  [1, 6],
 ];
 
 /* ---------- köməkçilər ---------- */
@@ -210,7 +197,8 @@ export class NetworkScene {
   private palette: Palette = DARK;
   private sprite: HTMLCanvasElement;
   private backdrop: HTMLCanvasElement;
-  private skyline: HTMLCanvasElement;
+  private skyline = new Skyline();
+  private bokeh: { x: number; y: number; r: number; alpha: number; speed: number; phase: number }[] = [];
   private width = 0;
   private height = 0;
   private ratio = 1;
@@ -229,7 +217,6 @@ export class NetworkScene {
     this.ctx = ctx;
     this.sprite = document.createElement("canvas");
     this.backdrop = document.createElement("canvas");
-    this.skyline = document.createElement("canvas");
   }
 
   setDark(dark: boolean) {
@@ -270,10 +257,10 @@ export class NetworkScene {
     HEROES.forEach((hero, index) => {
       const city = toLocal(CITIES[index]);
       /* Telefonda ekran dar olduğu üçün kürələri mərkəzə yaxınlaşdırırıq */
-      const spread = this.compact ? 0.5 : 1;
+      const spread = this.compact ? 0.45 : 1;
       nodes.push({
         kind: "hero",
-        start: [hero.pos[0] * spread, hero.pos[1] * (this.compact ? 1.4 : 1), hero.pos[2]],
+        start: [hero.pos[0] * spread, hero.pos[1] * (this.compact ? 1.5 : 1), hero.pos[2]],
         local: [city[0], city[1], 0],
         radius: [hero.r, 0.026, index === 0 ? 0.034 : 0.026],
         alpha: [1, 1, 1],
@@ -413,6 +400,16 @@ export class NetworkScene {
       alpha: 0.15 + random() * 0.4,
     }));
 
+    /* Fokusdan kənar yumşaq işıq ləkələri: dərinlik və canlılıq */
+    this.bokeh = Array.from({ length: this.compact ? 8 : 16 }, () => ({
+      x: random(),
+      y: random(),
+      r: 18 + random() * 50,
+      alpha: 0.05 + random() * 0.08,
+      speed: 0.004 + random() * 0.01,
+      phase: random() * Math.PI * 2,
+    }));
+
     this.nodes = nodes;
     this.edges = edges;
     this.positions = nodes.map(() => [0, 0, 0]);
@@ -459,100 +456,9 @@ export class NetworkScene {
     bc.fillStyle = fog;
     bc.fillRect(0, 0, w, h);
 
-    this.paintSkyline();
-  }
-
-  private paintSkyline() {
-    const p = this.palette;
-    const r = this.ratio;
-    const w = this.canvas.width;
-    const h = Math.round(this.height * (this.compact ? 0.24 : 0.32) * r);
-    const random = seeded(5);
-    this.skyline.width = w;
-    this.skyline.height = h;
-    const c = this.skyline.getContext("2d")!;
-    const water = h * 0.2;
-    const base = h - water;
-
-    /* Uzaq binalar */
-    let x = 0;
-    while (x < w) {
-      const bw = (14 + random() * 34) * r;
-      const bh = (base * (0.12 + random() * 0.38)) * (Math.abs(x / w - 0.62) < 0.18 ? 0.6 : 1);
-      c.fillStyle = p.skyBuilding;
-      c.fillRect(x, base - bh, bw, bh);
-      c.fillStyle = p.skyWindow;
-      for (let wy = base - bh + 6 * r; wy < base - 4 * r; wy += 7 * r) {
-        for (let wx = x + 3 * r; wx < x + bw - 3 * r; wx += 6 * r) {
-          if (random() > 0.86) c.fillRect(wx, wy, 1.6 * r, 2.2 * r);
-        }
-      }
-      x += bw + random() * 4 * r;
-    }
-
-    /* TV qülləsi */
-    const tv = w * (this.compact ? 0.12 : 0.17);
-    c.fillStyle = p.skyBuilding;
-    c.beginPath();
-    c.moveTo(tv - 3 * r, base);
-    c.lineTo(tv, base - h * 0.62);
-    c.lineTo(tv + 3 * r, base);
-    c.fill();
-    c.fillRect(tv - 6 * r, base - h * 0.5, 12 * r, 8 * r);
-    c.fillStyle = p.flameLine;
-    c.fillRect(tv - 1 * r, base - h * 0.66, 2 * r, h * 0.04);
-
-    /* Alov qüllələri: zümrüd işıqlı fasad xətləri */
-    const fx = w * (this.compact ? 0.68 : 0.72);
-    const unit = Math.min(w * 0.035, 46 * r);
-    const flames: [number, number, number][] = [
-      [fx - unit * 1.7, h * 0.58, 0.18],
-      [fx, h * 0.78, -0.14],
-      [fx + unit * 1.55, h * 0.66, 0.1],
-    ];
-    flames.forEach(([cx, height, lean]) => {
-      const half = unit * 0.62;
-      const top = base - height;
-      const path = new Path2D();
-      path.moveTo(cx - half, base);
-      path.bezierCurveTo(cx - half, base - height * 0.55, cx - half * 1.25, top + height * 0.22, cx + lean * unit, top);
-      path.bezierCurveTo(cx + half * 0.85, top + height * 0.28, cx + half, base - height * 0.5, cx + half, base);
-      path.closePath();
-      const fill = c.createLinearGradient(0, top, 0, base);
-      fill.addColorStop(0, p.flameFill[0]);
-      fill.addColorStop(1, p.flameFill[1]);
-      c.fillStyle = fill;
-      c.fill(path);
-      c.save();
-      c.clip(path);
-      c.strokeStyle = p.flameLine;
-      c.lineWidth = 0.8 * r;
-      c.globalAlpha = 0.55;
-      for (let y = base; y > top; y -= 5 * r) {
-        c.beginPath();
-        c.moveTo(cx - half * 1.3, y);
-        c.lineTo(cx + half * 1.3, y - 2 * r);
-        c.stroke();
-      }
-      c.restore();
-      c.strokeStyle = p.flameLine;
-      c.lineWidth = 1.2 * r;
-      c.stroke(path);
-    });
-
-    /* Su və əks */
-    const sea = c.createLinearGradient(0, base, 0, h);
-    sea.addColorStop(0, p.water[0]);
-    sea.addColorStop(1, p.water[1]);
-    c.fillStyle = sea;
-    c.fillRect(0, base, w, water);
-    c.fillStyle = p.skyWindow;
-    for (let i = 0; i < 90; i += 1) {
-      const rx = random() * w;
-      c.globalAlpha = 0.25 + random() * 0.35;
-      c.fillRect(rx, base + 2 * r + random() * water * 0.8, (4 + random() * 14) * r, 0.8 * r);
-    }
-    c.globalAlpha = 1;
+    const skyWidth = this.compact ? w : w * 0.62;
+    const skyHeight = this.height * (this.compact ? 0.32 : 0.5) * this.ratio;
+    this.skyline.setup(skyWidth, skyHeight, this.ratio, p.dark);
   }
 
   /* ---------- Hər kadr ---------- */
@@ -560,12 +466,15 @@ export class NetworkScene {
   private mapTransform(s: number, time: number) {
     const t = smooth(clamp(s - 1));
     const sway = this.reduced ? 0 : Math.sin(time * 0.07) * 0.06;
+    /* 2-ci mərhələdə xəritə böyükdür; 3-cüdə bir az kiçilib yuxarı
+       qalxır ki, altda Bakı siluetı görünsün */
+    const big = this.compact ? 1.0 : 1.38;
     return {
-      rotX: lerp(0.62, 0.3, t),
-      rotY: lerp(0.14, -0.04, t) + sway,
-      lift: lerp(-0.02, this.compact ? 0.12 : 0.17, t),
-      depth: lerp(1.05, 0.95, t),
-      scale: lerp(1, this.compact ? 1.0 : 1.06, t),
+      rotX: lerp(0.5, 0.36, t),
+      rotY: lerp(-0.18, -0.08, t) + sway,
+      lift: lerp(0.02, this.compact ? 0.3 : 0.5, t),
+      depth: lerp(1.0, 1.25, t),
+      scale: lerp(big, big * 0.72, t),
     };
   }
 
@@ -586,8 +495,8 @@ export class NetworkScene {
     const depth = z + CAMERA;
     const scale = (this.focal / depth) * this.ratio;
     return {
-      x: this.canvas.width / 2 + x * scale,
-      y: this.canvas.height * 0.46 - y * scale,
+      x: this.canvas.width * (this.compact ? 0.5 : 0.67) + x * scale,
+      y: this.canvas.height * 0.5 - y * scale,
       scale,
       depth,
     };
@@ -611,11 +520,11 @@ export class NetworkScene {
     /* Xəritə ətrafında yumşaq işıq: 2-ci və 3-cü mərhələdə güclənir */
     const mapGlow = smooth(clamp(s * 0.8));
     if (mapGlow > 0.01) {
-      const gx = this.canvas.width / 2;
-      const gy = this.canvas.height * 0.44;
-      const gr = Math.max(this.canvas.width, this.canvas.height) * 0.42;
+      const gx = this.canvas.width * (this.compact ? 0.5 : 0.67);
+      const gy = this.canvas.height * 0.45;
+      const gr = Math.max(this.canvas.width, this.canvas.height) * 0.45;
       const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
-      glow.addColorStop(0, `rgba(${p.glow}, ${(p.dark ? 0.16 : 0.08) * mapGlow})`);
+      glow.addColorStop(0, `rgba(${p.glow}, ${(p.dark ? 0.24 : 0.1) * mapGlow})`);
       glow.addColorStop(1, `rgba(${p.glow}, 0)`);
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -623,17 +532,15 @@ export class NetworkScene {
 
     this.drawDust(time, s);
 
-    /* Uzaqda Bakı siluetı */
-    const sky = smooth(clamp((s - 1.2) / 0.8));
+    this.drawBokeh(time);
+
+    /* Uzaqda Bakı siluetı: sağ-aşağıda, aşağıdan yavaşca qalxır */
+    const sky = smooth(clamp((s - 1.15) / 0.85));
     if (sky > 0.01) {
-      ctx.globalAlpha = sky * (p.dark ? 0.9 : 0.85);
-      const drift = this.reduced ? 0 : Math.sin(time * 0.05) * 8 * this.ratio;
-      ctx.drawImage(
-        this.skyline,
-        drift,
-        this.canvas.height - this.skyline.height + (1 - sky) * 40 * this.ratio
-      );
-      ctx.globalAlpha = 1;
+      const drift = this.reduced ? 0 : Math.sin(time * 0.05) * 6 * this.ratio;
+      const sx = this.compact ? 0 : this.canvas.width * 0.38;
+      const sy = this.canvas.height - this.height * (this.compact ? 0.32 : 0.5) * this.ratio + (1 - sky) * 60 * this.ratio;
+      this.skyline.draw(ctx, sx + drift, sy, sky, time);
     }
 
     /* Düyünlərin dünyadakı yeri */
@@ -680,14 +587,14 @@ export class NetworkScene {
       const ex = lerp(a.screen.x, b.screen.x, grow);
       const ey = lerp(a.screen.y, b.screen.y, grow);
       const depthFade = clamp(1.6 - (a.screen.depth + b.screen.depth) / 2 / 4.2, 0.35, 1);
-      ctx.strokeStyle = `rgba(${p.line}, ${alpha * 0.1 * depthFade})`;
-      ctx.lineWidth = 3.2 * this.ratio;
+      ctx.strokeStyle = `rgba(${p.line}, ${alpha * 0.14 * depthFade})`;
+      ctx.lineWidth = 3.6 * this.ratio;
       ctx.beginPath();
       ctx.moveTo(a.screen.x, a.screen.y);
       ctx.lineTo(ex, ey);
       ctx.stroke();
-      ctx.strokeStyle = `rgba(${p.line}, ${alpha * 0.55 * depthFade})`;
-      ctx.lineWidth = 0.9 * this.ratio;
+      ctx.strokeStyle = `rgba(${p.line}, ${alpha * 0.75 * depthFade})`;
+      ctx.lineWidth = 1 * this.ratio;
       ctx.stroke();
     });
 
@@ -701,7 +608,7 @@ export class NetworkScene {
         const t = (time * pulse.speed + pulse.offset) % 1;
         const a = nodeState[edge.a].screen;
         const b = nodeState[edge.b].screen;
-        const size = 9 * this.ratio;
+        const size = 14 * this.ratio;
         ctx.globalAlpha = alpha * Math.sin(t * Math.PI);
         ctx.drawImage(this.sprite, lerp(a.x, b.x, t) - size / 2, lerp(a.y, b.y, t) - size / 2, size, size);
       });
@@ -731,6 +638,27 @@ export class NetworkScene {
         ctx.globalAlpha = 1;
       });
 
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  private drawBokeh(time: number) {
+    const ctx = this.ctx;
+    const p = this.palette;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    ctx.globalCompositeOperation = p.dark ? "lighter" : "source-over";
+    this.bokeh.forEach((b) => {
+      const x = ((b.x + time * b.speed) % 1.2 - 0.1) * w;
+      const y = (b.y + Math.sin(time * 0.2 + b.phase) * 0.03) * h;
+      const r = b.r * this.ratio;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      const strength = b.alpha * (p.dark ? 1 : 0.6);
+      g.addColorStop(0, `rgba(${p.glow}, ${strength})`);
+      g.addColorStop(0.7, `rgba(${p.glow}, ${strength * 0.5})`);
+      g.addColorStop(1, `rgba(${p.glow}, 0)`);
+      ctx.fillStyle = g;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    });
     ctx.globalCompositeOperation = "source-over";
   }
 

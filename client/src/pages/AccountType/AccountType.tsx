@@ -90,6 +90,7 @@ function AccountType() {
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   /* Şəbəkənin mərhələsi: 0 (giriş) → 1 (necə işləyir) → 2 (niyə AzLink) */
   const stageRef = useRef(0);
+  const railRef = useRef<HTMLElement>(null);
 
   /* ---------- Sürüşdürməyə bağlı keçid ---------- */
 
@@ -114,6 +115,7 @@ function AccountType() {
       });
 
       stageRef.current = stage;
+      railRef.current?.style.setProperty("--stage", stage.toFixed(3));
     };
 
     const handleScroll = () => {
@@ -167,6 +169,22 @@ function AccountType() {
           </Link>
         </div>
       </header>
+
+      {/* Sol kənarda üç mərhələnin göstəricisi: hara qədər gəldiyinizi göstərir */}
+      <nav ref={railRef} className="landing-rail" aria-label={t("Bölmələr")}>
+        {[t("Seçim"), t("Necə işləyir?"), t("Niyə AzLink?")].map((label, index) => (
+          <button
+            key={label}
+            type="button"
+            style={{ ["--i" as string]: index }}
+            onClick={() =>
+              sectionRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "start" })
+            }
+          >
+            <span>{label}</span>
+          </button>
+        ))}
+      </nav>
 
       <main className="landing__content">
         {/* ================= 1. SEÇİM ================= */}
