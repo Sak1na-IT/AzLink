@@ -259,10 +259,15 @@ export class NetworkScene {
   private overlay = document.createElement("canvas");
   private main: CanvasRenderingContext2D;
   private landDots: { local: Vec3; delay: number }[] = [];
-  /* HD fotolar (public/landing/stage-1…3.jpg). Hamısı yüklənibsə
-     arxa fon fotodur, şəbəkə onun üstündə canlı çəkilir. */
-  private photos: HTMLImageElement[] = [];
-  private photoMode = false;
+  /* HD fotolar: qaranlıq rejim üçün public/landing/stage-1…3.jpg,
+     ağ rejim üçün stage-1…3-light.jpg. Bir rejimin üç fotosu da
+     yüklənibsə həmin rejimdə arxa fon fotodur. */
+  private photoSets: Record<"dark" | "light", HTMLImageElement[]> = { dark: [], light: [] };
+  private photoReady = { dark: false, light: false };
+
+  private get photos() {
+    return this.photoSets[this.palette.dark ? "dark" : "light"];
+  }
   private skyOrigin = { x: 0, y: 0 };
   private landRings: Vec3[][] = [];
   private badges: { local: Vec3; icon: Icon; city: number; delay: number }[] = [];
@@ -287,16 +292,18 @@ export class NetworkScene {
     this.sprite = document.createElement("canvas");
     this.backdrop = document.createElement("canvas");
 
-    let loaded = 0;
-    this.photos = [1, 2, 3].map((stage) => {
-      const image = new Image();
-      image.decoding = "async";
-      image.onload = () => {
-        loaded += 1;
-        if (loaded === 3) this.photoMode = true;
-      };
-      image.src = `/landing/stage-${stage}.jpg`;
-      return image;
+    (["dark", "light"] as const).forEach((mode) => {
+      let loaded = 0;
+      this.photoSets[mode] = [1, 2, 3].map((stage) => {
+        const image = new Image();
+        image.decoding = "async";
+        image.onload = () => {
+          loaded += 1;
+          if (loaded === 3) this.photoReady[mode] = true;
+        };
+        image.src = `/landing/stage-${stage}${mode === "light" ? "-light" : ""}.jpg`;
+        return image;
+      });
     });
   }
 
@@ -713,7 +720,7 @@ export class NetworkScene {
 
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
-    const photo = this.photoMode && p.dark;
+    const photo = this.photoReady[p.dark ? "dark" : "light"];
     if (photo) this.drawPhotos(s, time);
     else ctx.drawImage(this.backdrop, 0, 0);
 
