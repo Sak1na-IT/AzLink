@@ -991,6 +991,32 @@ export class NetworkScene {
     const stage = Math.min(Math.floor(s), 1);
     const raw = s >= 2 ? 1 : clamp(s - stage);
     const t = smooth(raw);
+
+    /* 1 → 2: fokus dəyişməsi. Kürələr yaxınlaşıb bulanıqlaşır, xəritə
+       bulanıqdan aydınlaşaraq üzə çıxır. */
+    if (stage === 0) {
+      const center = { x: w * (this.compact ? 0.6 : 0.7), y: h * 0.5 };
+      const spheres = place(0, 1 + 0.3 * t, { u: 0.7, v: 0.5 }, null);
+      const blurOut = 10 * t * this.ratio;
+      ctx.save();
+      if (blurOut > 0.5) ctx.filter = `blur(${blurOut.toFixed(1)}px)`;
+      ctx.drawImage(this.photos[0], spheres.x, spheres.y, spheres.w, spheres.h);
+      ctx.restore();
+      void center;
+
+      const reveal = smooth(clamp((raw - 0.2) / 0.6));
+      if (reveal > 0.005) {
+        const map = place(1, 1.08 - 0.08 * t, JOURNEY[1].in, null);
+        const blurIn = 10 * (1 - reveal) * this.ratio;
+        ctx.save();
+        ctx.globalAlpha = reveal;
+        if (blurIn > 0.5) ctx.filter = `blur(${blurIn.toFixed(1)}px)`;
+        ctx.drawImage(this.photos[1], map.x, map.y, map.w, map.h);
+        ctx.restore();
+      }
+      return;
+    }
+
     const from = JOURNEY[stage];
     const to = JOURNEY[stage + 1];
 
