@@ -23,6 +23,7 @@ import {
   defaultWeeklySchedule,
 } from "../../services/businessService";
 import AuthBackLink from "../../components/auth/AuthBackLink";
+import AuthShell from "../../components/auth/AuthShell";
 import "./Register.css";
 import { t } from "../../i18n";
 
@@ -122,20 +123,12 @@ function Register() {
   };
 
   return (
-    <div className="register-page">
+    <AuthShell>
       <div className="register-card">
         <AuthBackLink />
 
         <div className="register-header">
-          <div className="register-icon">
-            {isBusiness ? (
-              <Building2 size={24} strokeWidth={1.8} />
-            ) : (
-              <User size={24} strokeWidth={1.8} />
-            )}
-          </div>
-
-          <span className="register-eyebrow">AzLink</span>
+          <span className="auth-brand">AzLink</span>
 
           <h1>
             {isBusiness
@@ -334,7 +327,7 @@ function Register() {
         </form>
 
         <div className="register-footer">
-          <span>Artıq hesabınız var?</span>
+          <span>{t("Artıq hesabınız var?")}</span>
 
           <button
             type="button"
@@ -345,7 +338,7 @@ function Register() {
           </button>
         </div>
       </div>
-    </div>
+    </AuthShell>
   );
 }
 

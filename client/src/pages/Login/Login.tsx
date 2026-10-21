@@ -13,6 +13,7 @@ import {
 import { signin } from "../../services/authService";
 import { ApiError } from "../../services/api";
 import AuthBackLink from "../../components/auth/AuthBackLink";
+import AuthShell from "../../components/auth/AuthShell";
 import "./Login.css";
 import { t } from "../../i18n";
 
@@ -60,16 +61,12 @@ function Login() {
   };
 
   return (
-    <div className="login-page">
+    <AuthShell>
       <div className="login-card">
         <AuthBackLink />
 
         <div className="login-header">
-          <div className="login-icon">
-            <LockKeyhole size={24} strokeWidth={1.8} />
-          </div>
-
-          <span className="login-eyebrow">AzLink</span>
+          <span className="auth-brand">AzLink</span>
 
           <h1>
             {isBusiness
@@ -144,7 +141,7 @@ function Login() {
         </form>
 
         <div className="login-footer">
-          <span>Hesabınız yoxdur?</span>
+          <span>{t("Hesabınız yoxdur?")}</span>
 
           <button
             type="button"
@@ -155,7 +152,7 @@ function Login() {
           </button>
         </div>
       </div>
-    </div>
+    </AuthShell>
   );
 }
 

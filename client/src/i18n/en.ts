@@ -747,4 +747,6 @@ export const en: Record<string, string> = {
   "Hazırsınız? Bir dəqiqəyə başlayın.": "Ready? Get started in a minute.",
   "Bölmələr": "Sections",
   "Seçim": "Choose",
+  "Pulsuz qeydiyyat": "Free sign-up",
+  "Hesabınız yoxdur?": "Don't have an account?",
 };
