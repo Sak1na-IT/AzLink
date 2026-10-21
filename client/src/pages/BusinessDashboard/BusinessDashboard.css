@@ -328,11 +328,11 @@
 
 /* ---------- Əsas hissə: solda "bu gün", sağda "biznesiniz" ---------- */
 
+/* Bölmələr ardıcıl, alt-alta: bu gün → profil → xidmətlər */
 .biz-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
-  align-items: start;
 }
 
 .biz-side {
