@@ -119,21 +119,6 @@ const JOURNEY = [
   { out: { u: 0.5, v: 0.5 }, in: { u: 0.84, v: 0.53 } }, // Alov qüllələri
 ];
 
-/* 1-ci qaranlıq fotoda (stage-1.jpg) şüşə kürələr: mərkəz və radius
-   (şəklin eninə nisbətdə) və hər kürənin 2-ci fotoda (xəritədə) gedib
-   çatdığı yer */
-const SPHERE_FLIGHTS = [
-  { u: 0.744, v: 0.244, r: 0.071, to: { u: 0.878, v: 0.418 } }, // → Bakı
-  { u: 0.685, v: 0.646, r: 0.06, to: { u: 0.68, v: 0.42 } }, // → mərkəz
-  { u: 0.53, v: 0.355, r: 0.045, to: { u: 0.55, v: 0.32 } }, // → qərb
-  { u: 0.932, v: 0.53, r: 0.057, to: { u: 0.78, v: 0.64 } }, // → cənub
-  { u: 0.464, v: 0.794, r: 0.039, to: { u: 0.48, v: 0.71 } }, // → Naxçıvan
-  { u: 0.631, v: 0.127, r: 0.027, to: { u: 0.62, v: 0.24 } }, // → şimal-qərb
-  { u: 0.881, v: 0.058, r: 0.033, to: { u: 0.74, v: 0.22 } }, // → şimal
-  { u: 0.94, v: 0.26, r: 0.036, to: { u: 0.83, v: 0.33 } }, // → Quba tərəfi
-  { u: 0.512, v: 0.519, r: 0.024, to: { u: 0.66, v: 0.55 } }, // → cənub-qərb
-];
-
 /* Ağ rejimin xəritə fotosunda (stage-2-light.jpg) Bakının yeri */
 const BAKU_IN_LIGHT_MAP = { u: 0.855, v: 0.43 };
 
@@ -297,8 +282,6 @@ export class NetworkScene {
     return this.photoSets[this.palette.dark ? "dark" : "light"];
   }
   private skyOrigin = { x: 0, y: 0 };
-  /* 1-ci fotodan kəsilmiş kürələr (yumşaq kənarlı), bir dəfə hazırlanır */
-  private sphereCuts: HTMLCanvasElement[] = [];
   private landRings: Vec3[][] = [];
   private badges: { local: Vec3; icon: Icon; city: number; delay: number }[] = [];
   private bokeh: { x: number; y: number; r: number; alpha: number; speed: number; phase: number }[] = [];
@@ -961,12 +944,10 @@ export class NetworkScene {
     const ctx = this.ctx;
     const w = this.canvas.width;
     const h = this.canvas.height;
-    if (this.palette.dark) {
-      this.drawDarkJourney(s, time);
-      return;
-    }
-    void w;
-    void h;
+    /* İki rejim eyni keçiddən istifadə edir: fotolar yumşaq bir-birinə
+       keçir, xəritə Bakıya yaxınlaşır */
+    ctx.fillStyle = this.palette.dark ? "#010604" : "#ffffff";
+    ctx.fillRect(0, 0, w, h);
     const weights = [1, smooth(clamp(s)), smooth(clamp(s - 1))];
     this.photos.forEach((image, index) => {
       const alpha = weights[index];
@@ -976,197 +957,6 @@ export class NetworkScene {
       ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
     });
     ctx.globalAlpha = 1;
-  }
-
-  /* Qaranlıq rejim: kamera bir istiqamətdə irəli gedir.
-     1 → 2: şüşə kürəyə yaxınlaşır; xəritə həmin kürənin içində kiçik
-     başlayır və dairə kimi açılaraq böyüyür (kürədən çıxır).
-     2 → 3: Bakının parlaq nöqtəsinə yaxınlaşır; Alov qüllələri o
-     nöqtədən açılır. Hər şey eyni nöqtədən, fasiləsiz hərəkət edir;
-     geri sürüşdürəndə eyni yolla geri qayıdır. */
-  private drawDarkJourney(s: number, time: number) {
-    const ctx = this.ctx;
-    const w = this.canvas.width;
-    const h = this.canvas.height;
-    const drift = this.reduced ? 0 : Math.sin(time * 0.05) * 0.006;
-
-    /* Şəklin "örtük" ölçüsü; lövbər nöqtəsi "at" yerinə qoyulub k dəfə böyüdülür */
-    const place = (index: number, k: number, anchor: { u: number; v: number }, at: { x: number; y: number } | null) => {
-      const image = this.photos[index];
-      const cover = Math.max(w / image.naturalWidth, h / image.naturalHeight) * (1.03 + drift);
-      const bw = image.naturalWidth * cover;
-      const bh = image.naturalHeight * cover;
-      /* Xəritə fotosu kompüterdə sağa çəkilir ki, kartların altında qalmasın
-         (şəklin sol tərəfi onsuz da qaranlıqdır, açılan yer fonla eynidir) */
-      const shift = index === 1 && !this.compact ? w * 0.08 : 0;
-      const bx = (w - bw) * (this.compact ? 0.7 : 0.5) + shift;
-      const by = (h - bh) / 2;
-      const ax = bx + anchor.u * bw;
-      const ay = by + anchor.v * bh;
-      const tx = at ? at.x : ax;
-      const ty = at ? at.y : ay;
-      return { x: tx + (bx - ax) * k, y: ty + (by - ay) * k, w: bw * k, h: bh * k, anchor: { x: ax, y: ay } };
-    };
-
-    const stage = Math.min(Math.floor(s), 1);
-    const raw = s >= 2 ? 1 : clamp(s - stage);
-    const t = smooth(raw);
-
-    ctx.fillStyle = "#010604";
-    ctx.fillRect(0, 0, w, h);
-
-    /* 1 → 2: kürələr kiçilərək xəritənin üstünə üzür, hər biri bir
-       nöqtədə işıq kimi əriyir. Fon sakitcə qaralır, xəritə bulanıqlıq
-       olmadan, yüngülcə yerinə oturaraq aydın şəkildə çıxır. */
-    if (stage === 0) {
-      const spheres = place(0, 1 + 0.04 * t, { u: 0.7, v: 0.5 }, null);
-      const settle = smooth(clamp((raw - 0.15) / 0.6));
-      const map = place(1, 1.04 - 0.04 * settle, JOURNEY[1].in, null);
-
-      const backdrop = 1 - smooth(clamp((raw - 0.1) / 0.45));
-      if (backdrop > 0.005) {
-        ctx.globalAlpha = backdrop;
-        ctx.drawImage(this.photos[0], spheres.x, spheres.y, spheres.w, spheres.h);
-      }
-
-      /* Xəritə kürələrin fonu sönməmiş görünməyə başlayır: boş an olmur */
-      const reveal = smooth(clamp((raw - 0.12) / 0.5));
-      if (reveal > 0.005) {
-        ctx.globalAlpha = reveal;
-        ctx.drawImage(this.photos[1], map.x, map.y, map.w, map.h);
-      }
-      ctx.globalAlpha = 1;
-
-      this.drawFlyingSpheres(raw, spheres, map);
-      return;
-    }
-
-    /* 2 → 3: kamera Bakının parlaq nöqtəsinə yaxınlaşır; o nöqtədə qızılı
-       işıq yanır və Alov qüllələri yumşaq kənarlı dairədə doğulub bütün
-       ekrana açılır. */
-    const from = JOURNEY[stage];
-    const to = JOURNEY[stage + 1];
-
-    const point = place(stage, 1, from.out, null).anchor;
-    const out = place(stage, 1 + 0.7 * t, from.out, point);
-    ctx.globalAlpha = 1;
-    ctx.drawImage(this.photos[stage], out.x, out.y, out.w, out.h);
-    if (raw <= 0.001) return;
-
-    /* Xəritə arxa plana keçir: bir az qaralır */
-    ctx.fillStyle = `rgba(1, 6, 4, ${0.45 * t})`;
-    ctx.fillRect(0, 0, w, h);
-
-    /* Bakı nöqtəsində qızılı parıltı: işığın qüllələrə çevrildiyi an */
-    const flare = Math.sin(Math.PI * clamp(raw / 0.55));
-    if (flare > 0.01) {
-      const size = Math.min(w, h) * 0.32 * flare;
-      ctx.save();
-      ctx.globalCompositeOperation = "lighter";
-      const g = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, size);
-      g.addColorStop(0, `rgba(255, 236, 190, ${0.55 * flare})`);
-      g.addColorStop(0.35, `rgba(236, 206, 140, ${0.22 * flare})`);
-      g.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(point.x - size, point.y - size, size * 2, size * 2);
-      ctx.restore();
-    }
-
-    /* Qüllələr: əvvəl dairənin içində, sonra bütün ekran */
-    const grow = smooth(clamp(raw / 0.62));
-    const home = place(stage + 1, 1, to.in, null).anchor;
-    const k = lerp(0.5, 1, grow);
-    const cx = lerp(point.x, home.x, grow);
-    const cy = lerp(point.y, home.y, grow);
-    const incoming = place(stage + 1, k, to.in, { x: cx, y: cy });
-
-    const layer = this.net;
-    const lc = layer.getContext("2d")!;
-    lc.globalCompositeOperation = "source-over";
-    lc.globalAlpha = 1;
-    lc.clearRect(0, 0, w, h);
-    lc.drawImage(this.photos[stage + 1], incoming.x, incoming.y, incoming.w, incoming.h);
-    /* Dairə şəklin öz kənarına çatmır: kənar xətt heç görünmür */
-    const limit = 0.48 * Math.min(incoming.w, incoming.h);
-    const radius = lerp(Math.min(w, h) * 0.06, limit, grow);
-    const mask = lc.createRadialGradient(cx, cy, radius * 0.35, cx, cy, radius);
-    mask.addColorStop(0, "rgba(0, 0, 0, 1)");
-    mask.addColorStop(1, "rgba(0, 0, 0, 0)");
-    lc.globalCompositeOperation = "destination-in";
-    lc.fillStyle = mask;
-    lc.fillRect(0, 0, w, h);
-    lc.globalCompositeOperation = "source-over";
-
-    ctx.globalAlpha = smooth(clamp(raw / 0.2));
-    ctx.drawImage(layer, 0, 0);
-
-    /* Sonda şəkil bütöv görünür (bu an artıq ekranı tam örtür) */
-    const full = smooth(clamp((raw - 0.6) / 0.35));
-    if (full > 0.005) {
-      ctx.globalAlpha = full;
-      ctx.drawImage(this.photos[stage + 1], incoming.x, incoming.y, incoming.w, incoming.h);
-    }
-    ctx.globalAlpha = 1;
-  }
-
-  /* Hər kürəni 1-ci fotodan yumşaq dairəvi kənarla kəsir (bir dəfə) */
-  private prepareSphereCuts() {
-    const image = this.photos[0];
-    if (this.sphereCuts.length || !image.complete || !image.naturalWidth) return;
-    const iw = image.naturalWidth;
-    const ih = image.naturalHeight;
-    this.sphereCuts = SPHERE_FLIGHTS.map((sphere) => {
-      const radius = sphere.r * iw * 1.18;
-      const size = Math.max(4, Math.round(radius * 2));
-      const cut = document.createElement("canvas");
-      cut.width = size;
-      cut.height = size;
-      const c = cut.getContext("2d")!;
-      c.drawImage(image, sphere.u * iw - radius, sphere.v * ih - radius, size, size, 0, 0, size, size);
-      c.globalCompositeOperation = "destination-in";
-      const mask = c.createRadialGradient(size / 2, size / 2, size * 0.36, size / 2, size / 2, size / 2);
-      mask.addColorStop(0, "rgba(0, 0, 0, 1)");
-      mask.addColorStop(1, "rgba(0, 0, 0, 0)");
-      c.fillStyle = mask;
-      c.fillRect(0, 0, size, size);
-      return cut;
-    });
-  }
-
-  private drawFlyingSpheres(
-    raw: number,
-    spheres: { x: number; y: number; w: number; h: number },
-    map: { x: number; y: number; w: number; h: number }
-  ) {
-    this.prepareSphereCuts();
-    if (!this.sphereCuts.length) return;
-    const ctx = this.ctx;
-    SPHERE_FLIGHTS.forEach((sphere, index) => {
-      const delay = (index % 4) * 0.05;
-      const p = smooth(clamp((raw - delay) / 0.5));
-      const start = { x: spheres.x + sphere.u * spheres.w, y: spheres.y + sphere.v * spheres.h };
-      const end = { x: map.x + sphere.to.u * map.w, y: map.y + sphere.to.v * map.h };
-      /* Yumşaq qövs: əvvəl bir az aşağı enir, sonra yerinə oturur */
-      const control = { x: lerp(start.x, end.x, 0.5), y: Math.max(start.y, end.y) + 60 * this.ratio };
-      const x = (1 - p) * (1 - p) * start.x + 2 * (1 - p) * p * control.x + p * p * end.x;
-      const y = (1 - p) * (1 - p) * start.y + 2 * (1 - p) * p * control.y + p * p * end.y;
-      const radius = sphere.r * spheres.w * 1.18 * lerp(1, 0.16, p);
-      const fade = 1 - smooth(clamp((p - 0.8) / 0.2));
-      if (fade > 0.01) {
-        ctx.globalAlpha = fade;
-        ctx.drawImage(this.sphereCuts[index], x - radius, y - radius, radius * 2, radius * 2);
-      }
-      /* Çatanda xəritədə işıq yanır */
-      const arrive = Math.sin(Math.PI * clamp((p - 0.75) / 0.4));
-      if (arrive > 0.01) {
-        const size = 34 * this.ratio * arrive;
-        ctx.globalCompositeOperation = "lighter";
-        ctx.globalAlpha = arrive;
-        ctx.drawImage(this.sprite, x - size / 2, y - size / 2, size, size);
-        ctx.globalCompositeOperation = "source-over";
-      }
-      ctx.globalAlpha = 1;
-    });
   }
 
   private photoRect(index: number, s: number, time: number) {
@@ -1180,7 +970,18 @@ export class NetworkScene {
     const dh = image.naturalHeight * cover;
     /* Telefonda şəklin sağ hissəsi (səhnə) görünsün */
     const focusX = this.compact ? 0.7 : 0.5;
-    const rect = { x: (w - dw) * focusX, y: (h - dh) / 2 - (local - 1) * h * 0.02, w: dw, h: dh };
+    /* Qaranlıq xəritə fotosu kompüterdə sağa çəkilir ki, kartların altında qalmasın */
+    const shift = this.palette.dark && index === 1 && !this.compact ? w * 0.08 : 0;
+    const rect = { x: (w - dw) * focusX + shift, y: (h - dh) / 2 - (local - 1) * h * 0.02, w: dw, h: dh };
+
+    /* Qaranlıq rejimdə 2 → 3: xəritə Bakıya yaxınlaşır, qüllələr üstünə açılır */
+    if (this.palette.dark && index === 1) {
+      const t = smooth(clamp(s - 1));
+      const k = 1 + 1.1 * t;
+      const anchor = { x: rect.x + JOURNEY[1].out.u * rect.w, y: rect.y + JOURNEY[1].out.v * rect.h };
+      const target = { x: lerp(anchor.x, w * (this.compact ? 0.6 : 0.74), t), y: lerp(anchor.y, h * 0.5, t) };
+      return { x: target.x + (rect.x - anchor.x) * k, y: target.y + (rect.y - anchor.y) * k, w: rect.w * k, h: rect.h * k };
+    }
 
     /* Ağ rejimdə 3-cü mərhələ: xəritə fotosu Bakıya (parlayan nöqtəyə)
        yaxınlaşır; 2-ci və 3-cü təbəqə eyni hərəkəti edir, keçid görünmür */
