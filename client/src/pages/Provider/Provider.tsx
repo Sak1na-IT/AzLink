@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   CalendarDays,
+  ChevronDown,
   CheckCircle2,
   Clock3,
   Heart,
@@ -29,6 +30,10 @@ import { getBookings, type Booking } from "../../services/bookingsService";
 import { getStoredUser } from "../../services/api";
 import "./Provider.css";
 import { t } from "../../i18n";
+
+/* Rəylər: əvvəlcə 3-ü, "Daha çox" hər basışda 4-ü də açılır */
+const REVIEWS_FIRST = 3;
+const REVIEWS_STEP = 4;
 
 /* "+994501110001" → "+994 50 111 00 01" */
 const formatPhone = (phone: string) => {
@@ -58,6 +63,12 @@ function Provider() {
   const [message, setMessage] = useState("");
 
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [visibleReviews, setVisibleReviews] = useState(REVIEWS_FIRST);
+
+  /* Başqa biznesə keçəndə rəylər yenə 3-dən başlasın */
+  useEffect(() => {
+    setVisibleReviews(REVIEWS_FIRST);
+  }, [providerId]);
   const [reviewableBooking, setReviewableBooking] = useState<Booking | null>(
     null
   );
@@ -445,7 +456,7 @@ function Provider() {
               </p>
             ) : (
               <div className="provider-review-list">
-                {reviews.map((review) => {
+                {reviews.slice(0, visibleReviews).map((review) => {
                   const reviewInitials = review.customerName
                     .split(" ")
                     .map((word) => word[0])
@@ -483,6 +494,19 @@ function Provider() {
                     </div>
                   );
                 })}
+
+                {reviews.length > visibleReviews && (
+                  <button
+                    type="button"
+                    className="provider-reviews-more"
+                    onClick={() => setVisibleReviews((count) => count + REVIEWS_STEP)}
+                  >
+                    {t("Daha çox rəy ({count})", {
+                      count: Math.min(REVIEWS_STEP, reviews.length - visibleReviews),
+                    })}
+                    <ChevronDown size={16} strokeWidth={1.8} />
+                  </button>
+                )}
               </div>
             )}
           </section>

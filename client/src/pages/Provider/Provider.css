@@ -398,6 +398,32 @@
   gap: 10px;
 }
 
+/* "Daha çox rəy": hər basışda növbəti rəylər açılır */
+.provider-reviews-more {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 10px 18px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.provider-reviews-more:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
 .provider-review-card {
   display: flex;
   gap: 14px;

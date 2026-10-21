@@ -749,4 +749,5 @@ export const en: Record<string, string> = {
   "Seçim": "Choose",
   "Pulsuz qeydiyyat": "Free sign-up",
   "Hesabınız yoxdur?": "Don't have an account?",
+  "Daha çox rəy ({count})": "More reviews ({count})",
 };
