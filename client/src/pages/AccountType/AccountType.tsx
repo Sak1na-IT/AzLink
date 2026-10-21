@@ -137,6 +137,9 @@ function AccountType() {
     sectionRefs.current[index] = element;
   };
 
+  const scrollToSection = (index: number) =>
+    sectionRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "start" });
+
   const startAs = (role: "user" | "business") => navigate(`/register?role=${role}`);
 
   return (
@@ -177,9 +180,7 @@ function AccountType() {
             key={label}
             type="button"
             style={{ ["--i" as string]: index }}
-            onClick={() =>
-              sectionRefs.current[index]?.scrollIntoView({ behavior: "smooth", block: "start" })
-            }
+            onClick={() => scrollToSection(index)}
           >
             <span>{label}</span>
           </button>
@@ -189,10 +190,10 @@ function AccountType() {
       <main className="landing__content">
         {/* ================= 1. SEÇİM ================= */}
         <section ref={setSection(0)} className="landing-hero">
-          <h1>{t("Bakının ustaları və müştəriləri bir yerdə")}</h1>
+          <h1>{t("Bakıda ustanı tap, növbəni onlayn tut")}</h1>
 
           <p className="landing-hero__lead">
-            {t("Xidmət axtarırsınız, yoxsa xidmət göstərirsiniz? Seçin və bir dəqiqəyə hesab yaradın.")}
+            {t("AzLink Bakının ustalarını və salonlarını bir yerə toplayır. Manikür, santexnik, repetitor və ya avtoservis lazımdırsa, qiymətləri və rəyləri müqayisə edin, boş saatı seçib yazılın. Zəng etməyə ehtiyac yoxdur.")}
           </p>
 
           <div className="landing-doors">
@@ -205,7 +206,7 @@ function AccountType() {
                 <UserRound size={22} strokeWidth={1.6} />
               </span>
               <strong>{t("Xidmət axtarıram")}</strong>
-              <span>{t("Usta tapın, müqayisə edin və rezerv edin. Qeydiyyat pulsuzdur.")}</span>
+              <span>{t("Ustanı tapın, qiymət və rəylərə baxın, uyğun saata onlayn yazılın. Pulsuzdur.")}</span>
               <em>{t("Müştəri kimi başla")}</em>
             </button>
 
@@ -218,7 +219,7 @@ function AccountType() {
                 <Briefcase size={22} strokeWidth={1.6} />
               </span>
               <strong>{t("Xidmət göstərirəm")}</strong>
-              <span>{t("Profilinizi qurun, xidmətlərinizi əlavə edin və onlayn rezerv qəbul edin.")}</span>
+              <span>{t("Ustasınız və ya salonunuz var? Xidmətlərinizi yerləşdirin, müştərilər boş saatlarınıza özləri yazılsın.")}</span>
               <em>{t("Biznesimi əlavə et")}</em>
             </button>
           </div>
@@ -298,6 +299,40 @@ function AccountType() {
           </div>
         </section>
       </main>
+
+      {/* ================= FOOTER ================= */}
+      <footer className="landing-footer">
+        <div className="landing-footer__inner">
+          <div className="landing-footer__brand">
+            <span>AzLink</span>
+            <p>
+              {t("Bakıda xidmət axtaranları ustalar və salonlarla birləşdirən onlayn rezerv platforması.")}
+            </p>
+          </div>
+
+          <nav className="landing-footer__links" aria-label={t("Müştərilər üçün")}>
+            <h4>{t("Müştərilər üçün")}</h4>
+            <button type="button" onClick={() => startAs("user")}>{t("Xidmət tap")}</button>
+            <Link to="/login?role=user">{t("Daxil olun")}</Link>
+          </nav>
+
+          <nav className="landing-footer__links" aria-label={t("Bizneslər üçün")}>
+            <h4>{t("Bizneslər üçün")}</h4>
+            <button type="button" onClick={() => startAs("business")}>{t("Biznesimi əlavə et")}</button>
+            <Link to="/login?role=business">{t("Biznes girişi")}</Link>
+          </nav>
+
+          <nav className="landing-footer__links" aria-label="AzLink">
+            <h4>AzLink</h4>
+            <button type="button" onClick={() => scrollToSection(1)}>{t("Necə işləyir?")}</button>
+            <button type="button" onClick={() => scrollToSection(2)}>{t("Niyə AzLink?")}</button>
+          </nav>
+        </div>
+
+        <p className="landing-footer__bottom">
+          © {new Date().getFullYear()} AzLink. {t("Bakı, Azərbaycan")}
+        </p>
+      </footer>
     </div>
   );
 }
