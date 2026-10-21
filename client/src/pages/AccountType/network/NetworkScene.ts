@@ -1009,71 +1009,82 @@ export class NetworkScene {
     const raw = s >= 2 ? 1 : clamp(s - stage);
     const t = smooth(raw);
 
-    /* 1 → 2: kürələr kiçilərək aşağıya, xəritənin üstünə üzür; hər biri
-       xəritədə bir nöqtəyə çatıb orada işıq kimi əriyir. Arxa fon qaralır,
-       xəritə fotosu bulanıqdan aydınlaşaraq üzə çıxır. */
+    /* 1 → 2: kürələr kiçilərək xəritənin üstünə üzür, hər biri bir
+       nöqtədə işıq kimi əriyir. Fon sakitcə qaralır, xəritə bulanıqlıq
+       olmadan, yüngülcə yerinə oturaraq aydın şəkildə çıxır. */
     if (stage === 0) {
-      const spheres = place(0, 1, { u: 0.7, v: 0.5 }, null);
-      const map = place(1, 1.05 - 0.05 * t, JOURNEY[1].in, null);
+      const spheres = place(0, 1 + 0.04 * t, { u: 0.7, v: 0.5 }, null);
+      const settle = smooth(clamp((raw - 0.3) / 0.5));
+      const map = place(1, 1.04 - 0.04 * settle, JOURNEY[1].in, null);
 
-      /* Kürələrin arxasındakı fon yavaşca qaralır */
       ctx.fillStyle = "#010604";
       ctx.fillRect(0, 0, w, h);
       const backdrop = 1 - smooth(clamp((raw - 0.05) / 0.4));
       if (backdrop > 0.005) {
         ctx.globalAlpha = backdrop;
         ctx.drawImage(this.photos[0], spheres.x, spheres.y, spheres.w, spheres.h);
-        ctx.globalAlpha = 1;
       }
 
-      /* Xəritə: kürələr çatdıqca aydınlaşır */
-      const reveal = smooth(clamp((raw - 0.45) / 0.5));
+      const reveal = smooth(clamp((raw - 0.3) / 0.45));
       if (reveal > 0.005) {
-        const blurIn = 8 * (1 - reveal) * this.ratio;
-        ctx.save();
         ctx.globalAlpha = reveal;
-        if (blurIn > 0.5) ctx.filter = `blur(${blurIn.toFixed(1)}px)`;
         ctx.drawImage(this.photos[1], map.x, map.y, map.w, map.h);
-        ctx.restore();
       }
+      ctx.globalAlpha = 1;
 
       this.drawFlyingSpheres(raw, spheres, map);
       return;
     }
 
+    /* 2 → 3: kamera Bakının parlaq nöqtəsinə yaxınlaşır; o nöqtədə qızılı
+       işıq yanır və Alov qüllələri yumşaq kənarlı dairədə doğulub bütün
+       ekrana açılır. */
     const from = JOURNEY[stage];
     const to = JOURNEY[stage + 1];
 
-    /* Gedən şəkil: yaxınlaşdığımız nöqtə ekranda yerində qalır */
     const point = place(stage, 1, from.out, null).anchor;
-    const out = place(stage, 1 + 2.4 * t, from.out, point);
+    const out = place(stage, 1 + 1.3 * t, from.out, point);
     ctx.globalAlpha = 1;
     ctx.drawImage(this.photos[stage], out.x, out.y, out.w, out.h);
     if (raw <= 0.001) return;
 
-    /* Gələn şəkil: həmin nöqtədə kiçik başlayır, öz yerinə doğru böyüyür */
-    const home = place(stage + 1, 1, to.in, null).anchor;
-    const k = lerp(0.28, 1, t);
-    const incoming = place(stage + 1, k, to.in, {
-      x: lerp(point.x, home.x, t),
-      y: lerp(point.y, home.y, t),
-    });
+    /* Xəritə arxa plana keçir: bir az qaralır */
+    ctx.fillStyle = `rgba(1, 6, 4, ${0.45 * t})`;
+    ctx.fillRect(0, 0, w, h);
 
-    /* Dairəvi açılış: mərkəz yaxınlaşdığımız nöqtədir */
+    /* Bakı nöqtəsində qızılı parıltı: işığın qüllələrə çevrildiyi an */
+    const flare = Math.sin(Math.PI * clamp(raw / 0.55));
+    if (flare > 0.01) {
+      const size = Math.min(w, h) * 0.32 * flare;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      const g = ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, size);
+      g.addColorStop(0, `rgba(255, 236, 190, ${0.55 * flare})`);
+      g.addColorStop(0.35, `rgba(236, 206, 140, ${0.22 * flare})`);
+      g.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = g;
+      ctx.fillRect(point.x - size, point.y - size, size * 2, size * 2);
+      ctx.restore();
+    }
+
+    /* Qüllələr: əvvəl dairənin içində, sonra bütün ekran */
+    const grow = smooth(clamp(raw / 0.62));
+    const home = place(stage + 1, 1, to.in, null).anchor;
+    const k = lerp(0.5, 1, grow);
+    const cx = lerp(point.x, home.x, grow);
+    const cy = lerp(point.y, home.y, grow);
+    const incoming = place(stage + 1, k, to.in, { x: cx, y: cy });
+
     const layer = this.net;
     const lc = layer.getContext("2d")!;
     lc.globalCompositeOperation = "source-over";
     lc.globalAlpha = 1;
     lc.clearRect(0, 0, w, h);
     lc.drawImage(this.photos[stage + 1], incoming.x, incoming.y, incoming.w, incoming.h);
-    /* Dairənin mərkəzi gələn şəklin lövbəri ilə birlikdə hərəkət edir */
-    const cx = lerp(point.x, home.x, t);
-    const cy = lerp(point.y, home.y, t);
-    const opening = lerp(Math.min(w, h) * 0.04, Math.hypot(w, h) * 0.75, smooth(clamp(raw * 1.15)));
-    /* Dairə şəklin öz kənarlarından çıxmasın (düz kənar görünməsin) */
-    const imageCap = 0.5 * Math.min(incoming.w, incoming.h) + smooth(clamp((raw - 0.7) / 0.3)) * Math.hypot(w, h);
-    const radius = Math.min(opening, imageCap);
-    const mask = lc.createRadialGradient(cx, cy, radius * 0.55, cx, cy, radius);
+    /* Dairə şəklin öz kənarına çatmır: kənar xətt heç görünmür */
+    const limit = 0.48 * Math.min(incoming.w, incoming.h);
+    const radius = lerp(Math.min(w, h) * 0.06, limit, grow);
+    const mask = lc.createRadialGradient(cx, cy, radius * 0.35, cx, cy, radius);
     mask.addColorStop(0, "rgba(0, 0, 0, 1)");
     mask.addColorStop(1, "rgba(0, 0, 0, 0)");
     lc.globalCompositeOperation = "destination-in";
@@ -1081,23 +1092,16 @@ export class NetworkScene {
     lc.fillRect(0, 0, w, h);
     lc.globalCompositeOperation = "source-over";
 
-    ctx.globalAlpha = smooth(clamp(raw / 0.25));
+    ctx.globalAlpha = smooth(clamp(raw / 0.2));
     ctx.drawImage(layer, 0, 0);
-    ctx.globalAlpha = 1;
 
-    /* Açılışın kənarında incə işıq halqası */
-    const ring = Math.sin(Math.PI * clamp(raw * 1.1));
-    if (ring > 0.02) {
-      ctx.save();
-      ctx.globalCompositeOperation = "lighter";
-      ctx.strokeStyle = `rgba(${stage === 0 ? "140, 240, 195" : "240, 210, 150"}, ${0.35 * ring})`;
-      ctx.lineWidth = 2 * this.ratio;
-      ctx.filter = `blur(${Math.round(3 * this.ratio)}px)`;
-      ctx.beginPath();
-      ctx.arc(cx, cy, radius * 0.78, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.restore();
+    /* Sonda şəkil bütöv görünür (bu an artıq ekranı tam örtür) */
+    const full = smooth(clamp((raw - 0.6) / 0.35));
+    if (full > 0.005) {
+      ctx.globalAlpha = full;
+      ctx.drawImage(this.photos[stage + 1], incoming.x, incoming.y, incoming.w, incoming.h);
     }
+    ctx.globalAlpha = 1;
   }
 
   /* Hər kürəni 1-ci fotodan yumşaq dairəvi kənarla kəsir (bir dəfə) */
@@ -1133,8 +1137,8 @@ export class NetworkScene {
     if (!this.sphereCuts.length) return;
     const ctx = this.ctx;
     SPHERE_FLIGHTS.forEach((sphere, index) => {
-      const delay = (index % 4) * 0.06;
-      const p = smooth(clamp((raw - delay) / 0.62));
+      const delay = (index % 4) * 0.05;
+      const p = smooth(clamp((raw - delay) / 0.5));
       const start = { x: spheres.x + sphere.u * spheres.w, y: spheres.y + sphere.v * spheres.h };
       const end = { x: map.x + sphere.to.u * map.w, y: map.y + sphere.to.v * map.h };
       /* Yumşaq qövs: əvvəl bir az aşağı enir, sonra yerinə oturur */
