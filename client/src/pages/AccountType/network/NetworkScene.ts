@@ -293,11 +293,12 @@ export class NetworkScene {
   private s = 0;
   private lastTime = 0;
   private positions: Vec3[] = [];
+  private canvas: HTMLCanvasElement;
+  private reduced: boolean;
 
-  constructor(
-    private canvas: HTMLCanvasElement,
-    private reduced: boolean
-  ) {
+  constructor(canvas: HTMLCanvasElement, reduced: boolean) {
+    this.canvas = canvas;
+    this.reduced = reduced;
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D dəstəklənmir");
     this.ctx = ctx;
