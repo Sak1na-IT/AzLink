@@ -119,6 +119,21 @@ const JOURNEY = [
   { out: { u: 0.5, v: 0.5 }, in: { u: 0.84, v: 0.53 } }, // Alov qüllələri
 ];
 
+/* 1-ci qaranlıq fotoda (stage-1.jpg) şüşə kürələr: mərkəz və radius
+   (şəklin eninə nisbətdə) və hər kürənin 2-ci fotoda (xəritədə) gedib
+   çatdığı yer */
+const SPHERE_FLIGHTS = [
+  { u: 0.744, v: 0.244, r: 0.071, to: { u: 0.878, v: 0.418 } }, // → Bakı
+  { u: 0.685, v: 0.646, r: 0.06, to: { u: 0.68, v: 0.42 } }, // → mərkəz
+  { u: 0.53, v: 0.355, r: 0.045, to: { u: 0.55, v: 0.32 } }, // → qərb
+  { u: 0.932, v: 0.53, r: 0.057, to: { u: 0.78, v: 0.64 } }, // → cənub
+  { u: 0.464, v: 0.794, r: 0.039, to: { u: 0.48, v: 0.71 } }, // → Naxçıvan
+  { u: 0.631, v: 0.127, r: 0.027, to: { u: 0.62, v: 0.24 } }, // → şimal-qərb
+  { u: 0.881, v: 0.058, r: 0.033, to: { u: 0.74, v: 0.22 } }, // → şimal
+  { u: 0.94, v: 0.26, r: 0.036, to: { u: 0.83, v: 0.33 } }, // → Quba tərəfi
+  { u: 0.512, v: 0.519, r: 0.024, to: { u: 0.66, v: 0.55 } }, // → cənub-qərb
+];
+
 /* Ağ rejimin xəritə fotosunda (stage-2-light.jpg) Bakının yeri */
 const BAKU_IN_LIGHT_MAP = { u: 0.855, v: 0.43 };
 
@@ -282,6 +297,8 @@ export class NetworkScene {
     return this.photoSets[this.palette.dark ? "dark" : "light"];
   }
   private skyOrigin = { x: 0, y: 0 };
+  /* 1-ci fotodan kəsilmiş kürələr (yumşaq kənarlı), bir dəfə hazırlanır */
+  private sphereCuts: HTMLCanvasElement[] = [];
   private landRings: Vec3[][] = [];
   private badges: { local: Vec3; icon: Icon; city: number; delay: number }[] = [];
   private bokeh: { x: number; y: number; r: number; alpha: number; speed: number; phase: number }[] = [];
@@ -992,28 +1009,35 @@ export class NetworkScene {
     const raw = s >= 2 ? 1 : clamp(s - stage);
     const t = smooth(raw);
 
-    /* 1 → 2: fokus dəyişməsi. Kürələr yaxınlaşıb bulanıqlaşır, xəritə
-       bulanıqdan aydınlaşaraq üzə çıxır. */
+    /* 1 → 2: kürələr kiçilərək aşağıya, xəritənin üstünə üzür; hər biri
+       xəritədə bir nöqtəyə çatıb orada işıq kimi əriyir. Arxa fon qaralır,
+       xəritə fotosu bulanıqdan aydınlaşaraq üzə çıxır. */
     if (stage === 0) {
-      const center = { x: w * (this.compact ? 0.6 : 0.7), y: h * 0.5 };
-      const spheres = place(0, 1 + 0.3 * t, { u: 0.7, v: 0.5 }, null);
-      const blurOut = 10 * t * this.ratio;
-      ctx.save();
-      if (blurOut > 0.5) ctx.filter = `blur(${blurOut.toFixed(1)}px)`;
-      ctx.drawImage(this.photos[0], spheres.x, spheres.y, spheres.w, spheres.h);
-      ctx.restore();
-      void center;
+      const spheres = place(0, 1, { u: 0.7, v: 0.5 }, null);
+      const map = place(1, 1.05 - 0.05 * t, JOURNEY[1].in, null);
 
-      const reveal = smooth(clamp((raw - 0.2) / 0.6));
+      /* Kürələrin arxasındakı fon yavaşca qaralır */
+      ctx.fillStyle = "#010604";
+      ctx.fillRect(0, 0, w, h);
+      const backdrop = 1 - smooth(clamp((raw - 0.05) / 0.4));
+      if (backdrop > 0.005) {
+        ctx.globalAlpha = backdrop;
+        ctx.drawImage(this.photos[0], spheres.x, spheres.y, spheres.w, spheres.h);
+        ctx.globalAlpha = 1;
+      }
+
+      /* Xəritə: kürələr çatdıqca aydınlaşır */
+      const reveal = smooth(clamp((raw - 0.45) / 0.5));
       if (reveal > 0.005) {
-        const map = place(1, 1.08 - 0.08 * t, JOURNEY[1].in, null);
-        const blurIn = 10 * (1 - reveal) * this.ratio;
+        const blurIn = 8 * (1 - reveal) * this.ratio;
         ctx.save();
         ctx.globalAlpha = reveal;
         if (blurIn > 0.5) ctx.filter = `blur(${blurIn.toFixed(1)}px)`;
         ctx.drawImage(this.photos[1], map.x, map.y, map.w, map.h);
         ctx.restore();
       }
+
+      this.drawFlyingSpheres(raw, spheres, map);
       return;
     }
 
@@ -1074,6 +1098,66 @@ export class NetworkScene {
       ctx.stroke();
       ctx.restore();
     }
+  }
+
+  /* Hər kürəni 1-ci fotodan yumşaq dairəvi kənarla kəsir (bir dəfə) */
+  private prepareSphereCuts() {
+    const image = this.photos[0];
+    if (this.sphereCuts.length || !image.complete || !image.naturalWidth) return;
+    const iw = image.naturalWidth;
+    const ih = image.naturalHeight;
+    this.sphereCuts = SPHERE_FLIGHTS.map((sphere) => {
+      const radius = sphere.r * iw * 1.18;
+      const size = Math.max(4, Math.round(radius * 2));
+      const cut = document.createElement("canvas");
+      cut.width = size;
+      cut.height = size;
+      const c = cut.getContext("2d")!;
+      c.drawImage(image, sphere.u * iw - radius, sphere.v * ih - radius, size, size, 0, 0, size, size);
+      c.globalCompositeOperation = "destination-in";
+      const mask = c.createRadialGradient(size / 2, size / 2, size * 0.36, size / 2, size / 2, size / 2);
+      mask.addColorStop(0, "rgba(0, 0, 0, 1)");
+      mask.addColorStop(1, "rgba(0, 0, 0, 0)");
+      c.fillStyle = mask;
+      c.fillRect(0, 0, size, size);
+      return cut;
+    });
+  }
+
+  private drawFlyingSpheres(
+    raw: number,
+    spheres: { x: number; y: number; w: number; h: number },
+    map: { x: number; y: number; w: number; h: number }
+  ) {
+    this.prepareSphereCuts();
+    if (!this.sphereCuts.length) return;
+    const ctx = this.ctx;
+    SPHERE_FLIGHTS.forEach((sphere, index) => {
+      const delay = (index % 4) * 0.06;
+      const p = smooth(clamp((raw - delay) / 0.62));
+      const start = { x: spheres.x + sphere.u * spheres.w, y: spheres.y + sphere.v * spheres.h };
+      const end = { x: map.x + sphere.to.u * map.w, y: map.y + sphere.to.v * map.h };
+      /* Yumşaq qövs: əvvəl bir az aşağı enir, sonra yerinə oturur */
+      const control = { x: lerp(start.x, end.x, 0.5), y: Math.max(start.y, end.y) + 60 * this.ratio };
+      const x = (1 - p) * (1 - p) * start.x + 2 * (1 - p) * p * control.x + p * p * end.x;
+      const y = (1 - p) * (1 - p) * start.y + 2 * (1 - p) * p * control.y + p * p * end.y;
+      const radius = sphere.r * spheres.w * 1.18 * lerp(1, 0.16, p);
+      const fade = 1 - smooth(clamp((p - 0.8) / 0.2));
+      if (fade > 0.01) {
+        ctx.globalAlpha = fade;
+        ctx.drawImage(this.sphereCuts[index], x - radius, y - radius, radius * 2, radius * 2);
+      }
+      /* Çatanda xəritədə işıq yanır */
+      const arrive = Math.sin(Math.PI * clamp((p - 0.75) / 0.4));
+      if (arrive > 0.01) {
+        const size = 34 * this.ratio * arrive;
+        ctx.globalCompositeOperation = "lighter";
+        ctx.globalAlpha = arrive;
+        ctx.drawImage(this.sprite, x - size / 2, y - size / 2, size, size);
+        ctx.globalCompositeOperation = "source-over";
+      }
+      ctx.globalAlpha = 1;
+    });
   }
 
   private photoRect(index: number, s: number, time: number) {
