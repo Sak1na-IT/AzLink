@@ -149,7 +149,7 @@ npm run build
 - 13 biznes: sahibi (hesabı), kateqoriyası, xidmətləri, iş saatları (B.e–Şənbə 10:00–20:00) və real görünən "Haqqında" mətni
 - 12 müştəri hesabı
 - 63 tamamlanmış rezerv və onların rəyləri: hər biznesin 3–12 rəyi, fərqli ulduzlar və tarixlər
-- **Təqdimat ssenarisi** (`musteri@azlink.demo` və Nail by Aysel üçün): gələcək təsdiqlənmiş və gözləyən rezervlər, ləğv edilmiş rezerv, seçilmişlər, son baxılanlar, oxunmuş və oxunmamış bildirişlər
+- **Təqdimat ssenarisi** (`sakinapasha@azlink.demo` və Nail by Aysel üçün): gələcək təsdiqlənmiş və gözləyən rezervlər, ləğv edilmiş rezerv, seçilmişlər, son baxılanlar, oxunmuş və oxunmamış bildirişlər
 
 Seed təkrar işlədilə bilər: yalnız çatışmayanı əlavə edir, mövcud istifadəçi, xidmət və rezervlərin üzərinə yazmır. Biznesin təsviri, "təsdiqlənib" statusu və kateqoriyası hər dəfə yenilənir. Gələcək rezervlərin tarixi seed işlədiyi gündən hesablanır, ona görə təqdimatdan bir neçə gün əvvəl işlətmək yaxşıdır.
 
@@ -159,7 +159,7 @@ Bütün demo hesabların parolu: `parol123` (yalnız demo üçündür).
 
 | Rol     | Email                                                                                                                                                                                                                              | Qeyd                                                             |
 | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| Müştəri | `musteri@azlink.demo`                                                                                                                                                                                                              | **Təqdimat hesabı** (Elay Paşazadə): rezervlər, rəylər, seçilmişlər, bildirişlər. Nail by Aysel-dəki "Dırnaq dizaynı" rezervinə rəy yazılmayıb, canlı rəy yazmaq üçün |
+| Müştəri | `sakinapasha@azlink.demo`                                                                                                                                                                                                              | **Təqdimat hesabı** (Sakina Pashayeva): rezervlər, rəylər, seçilmişlər, bildirişlər. Nail by Aysel-dəki "Dırnaq dizaynı" rezervinə rəy yazılmayıb, canlı rəy yazmaq üçün |
 | Müştəri | `nigar@`, `leyla@`, `gunel@`, `aysu@`, `kamala@`, `fidan@`, `orxan@`, `elvin@`, `sebine@`, `murad@`, `narmin@` + `azlink.demo`                                                                                                     | Seed-dəki rezerv və rəylərin sahibləri                           |
 | Biznes  | `nail-by-aysel@azlink.demo`                                                                                                                                                                                                        | **Təqdimat biznesi**: 2 gözləyən rezerv (canlı təsdiqləmək üçün), təsdiqlənmiş rezervlər, 12 rəy, bildirişlər |
 | Biznes  | `studio-nigar@`, `cleanpro@`, `ali-photography@`, `vusale-hair@`, `kamran-santexnik@`, `resad-auto-wash@`, `turbo-servis@`, `nergiz-muellime@`, `paws-grooming@`, `ifix-telefon@`, `tural-trainer@`, `leyla-yoga@` + `azlink.demo` | Digər bizneslər                                                  |

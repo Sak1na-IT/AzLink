@@ -230,21 +230,31 @@ const PROVIDERS: SeedProvider[] = [
 
 /* ========================================================
    DEMO MÜŞTƏRİLƏR
-   "musteri@azlink.demo" təqdimat hesabıdır: keçmiş rezervləri,
+   "sakinapasha@azlink.demo" təqdimat hesabıdır: keçmiş rezervləri,
    rəyləri, seçilmişləri, bildirişləri var. Bir tamamlanmış rezervinə
    bilərəkdən rəy yazılmayıb ki, təqdimatda canlı rəy yazmaq olsun.
    ======================================================== */
 
 const DEMO_PASSWORD = "parol123";
 
-/* Təqdimat hesabının adı */
-const DEMO_CUSTOMER_NAME = "Elay Paşazadə";
+/* Təqdimat hesabının adı və emaili */
+const DEMO_CUSTOMER_NAME = "Sakina Pashayeva";
+const DEMO_CUSTOMER_EMAIL = "sakinapasha@azlink.demo";
 
 /* Bu hesabın əvvəlki adları: bildiriş mətnlərində yeni adla əvəz olunur */
-const OLD_DEMO_CUSTOMER_NAMES = ["Demo Müştəri", "Aytən Məmmədova", "Elay Pashazade"];
+const OLD_DEMO_CUSTOMER_NAMES = [
+  "Demo Müştəri",
+  "Aytən Məmmədova",
+  "Elay Pashazade",
+  "Elay Paşazadə",
+];
+
+/* Əvvəlki email: belə hesab varsa, yenisi yaradılmır, emaili dəyişdirilir
+   (rezervləri, rəyləri, seçilmişləri və bildirişləri qalır) */
+const OLD_DEMO_CUSTOMER_EMAILS = ["musteri@azlink.demo"];
 
 const CUSTOMERS = [
-  { key: "demo", name: DEMO_CUSTOMER_NAME, email: "musteri@azlink.demo" },
+  { key: "demo", name: DEMO_CUSTOMER_NAME, email: DEMO_CUSTOMER_EMAIL },
   { key: "nigar", name: "Nigar Əliyeva", email: "nigar@azlink.demo" },
   { key: "leyla", name: "Leyla Həsənova", email: "leyla@azlink.demo" },
   { key: "gunel", name: "Günel Rzayeva", email: "gunel@azlink.demo" },
@@ -349,7 +359,7 @@ const DEMO_REVIEWS: SeedReview[] = [
   { provider: "Leyla Yoga", customer: "fidan", service: "Fərdi dərs", date: "2026-10-03", time: "12:00", rating: 4, comment: "Bel ağrım üçün xüsusi hərəkətlər göstərdi." },
   { provider: "Leyla Yoga", customer: "kamala", service: "Qrup dərsi", date: "2026-10-17", time: "10:00", rating: 5, comment: "Hər şənbə gəlirəm, həftənin ən sevimli saatıdır." },
 
-  /* ---- Təqdimat hesabının (musteri@azlink.demo) keçmiş rəyləri ---- */
+  /* ---- Təqdimat hesabının (sakinapasha@azlink.demo) keçmiş rəyləri ---- */
   { provider: "Nail by Aysel", customer: "demo", service: "Manikür", date: "2026-09-24", time: "12:00", rating: 5, comment: "Hər şey çox səliqəli idi, növbəti dəfə gel lak üçün gələcəyəm." },
   { provider: "Vüsalə Hair", customer: "demo", service: "Saç kəsimi", date: "2026-10-03", time: "11:00", rating: 5, comment: "Saçımı çox gözəl kəsdi, tam istədiyim kimi." },
   { provider: "CleanPro", customer: "demo", service: "Ev təmizliyi", date: "2026-09-26", time: "10:00", rating: 4, comment: "Ev təmiz oldu, sadəcə mətbəxdə bir az vaxt itirdilər." },
@@ -580,6 +590,22 @@ async function main() {
 
   const customerIdByKey = new Map<string, string>();
 
+  /* Təqdimat hesabı köhnə emaildədirsə, yeni emailə köçürülür */
+  const demoWithNewEmail = await prisma.user.findUnique({ where: { email: DEMO_CUSTOMER_EMAIL } });
+  if (!demoWithNewEmail) {
+    for (const oldEmail of OLD_DEMO_CUSTOMER_EMAILS) {
+      const oldDemo = await prisma.user.findUnique({ where: { email: oldEmail } });
+      if (oldDemo) {
+        await prisma.user.update({
+          where: { id: oldDemo.id },
+          data: { email: DEMO_CUSTOMER_EMAIL, name: DEMO_CUSTOMER_NAME },
+        });
+        console.log(`Təqdimat hesabı ${oldEmail} → ${DEMO_CUSTOMER_EMAIL} köçürüldü.`);
+        break;
+      }
+    }
+  }
+
   for (const customer of CUSTOMERS) {
     const user = await prisma.user.upsert({
       where: { email: customer.email },
@@ -704,13 +730,13 @@ async function main() {
   console.log("Seed tamamlandı.");
   console.log("");
   console.log("Demo hesablar (parol hamısı üçün: parol123):");
-  console.log("  Müştəri: musteri@azlink.demo");
+  console.log(`  Müştəri: ${DEMO_CUSTOMER_EMAIL}`);
   console.log("  Biznes:  nail-by-aysel@azlink.demo");
 }
 
 /* ========================================================
    TƏQDİMAT SSENARİSİ
-   musteri@azlink.demo və Nail by Aysel üçün canlı görünən məlumat:
+   sakinapasha@azlink.demo və Nail by Aysel üçün canlı görünən məlumat:
    gələcək rezervlər, ləğv edilmiş rezerv, seçilmişlər, son baxılanlar
    və bildirişlər. Təkrar işlədəndə ikiqat yaranmır.
    ======================================================== */
