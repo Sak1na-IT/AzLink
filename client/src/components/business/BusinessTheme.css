@@ -623,13 +623,25 @@ body .account-profile__field > span {
    ========================================================= */
 
 .business-layout .business-customers__top {
+  padding: 22px 24px 24px;
   border: 1px solid rgba(217, 184, 116, 0.32);
   background: var(--deep-panel);
   color: var(--deep-text);
 }
 
+.business-layout .business-customers__top-header {
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
 .business-layout .business-customers__top-header h2 {
   color: var(--deep-title);
+}
+
+@media (max-width: 600px) {
+  .business-layout .business-customers__top {
+    padding: 18px 16px 18px;
+  }
 }
 
 .business-layout .business-customers__top-header svg {
