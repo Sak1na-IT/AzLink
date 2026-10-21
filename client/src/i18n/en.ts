@@ -750,7 +750,6 @@ export const en: Record<string, string> = {
   "Pulsuz qeydiyyat": "Free sign-up",
   "Hesabınız yoxdur?": "Don't have an account?",
   "Daha çox rəy ({count})": "More reviews ({count})",
-  "Bakıda xidmət axtaranları ustalar və salonlarla birləşdirən onlayn rezerv platforması.": "An online booking platform connecting people in Baku with professionals and salons.",
   "Xidmət tap": "Find a service",
   "Biznes girişi": "Business sign-in",
   "Bakı, Azərbaycan": "Baku, Azerbaijan",
