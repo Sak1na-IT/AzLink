@@ -249,9 +249,34 @@ function BusinessDashboard() {
         </button>
       )}
 
-      {/* ===== BUGÜNKÜ REZERVLƏR + PROFİL ===== */}
-      <section className="biz-grid">
-        <div className="biz-card">
+      {/* ===== SÜRƏTLİ ƏMƏLİYYATLAR: alət paneli kimi bir sıra ===== */}
+      <nav className="biz-quick" aria-label={t("Sürətli əməliyyatlar")}>
+        {[
+          { label: t("Yeni xidmət"), hint: t("Qiymət və müddət"), icon: Plus, to: "/business/services" },
+          { label: t("Şəkil əlavə et"), hint: t("Portfolio"), icon: ImagePlus, to: "/business/portfolio" },
+          { label: t("Profili redaktə et"), hint: t("Ad, ərazi, təsvir"), icon: Settings, to: "/business/profile" },
+          { label: t("İş saatları"), hint: t("Açıq günlər"), icon: Clock3, to: "/business/hours" },
+        ].map(({ label, hint, icon: Icon, to }) => (
+          <button
+            key={label}
+            type="button"
+            className="biz-quick__item"
+            onClick={() => navigate(to)}
+          >
+            <span className="biz-medal">
+              <Icon size={16} strokeWidth={1.8} />
+            </span>
+            <span className="biz-quick__text">
+              <strong>{label}</strong>
+              <span>{hint}</span>
+            </span>
+          </button>
+        ))}
+      </nav>
+
+      {/* ===== SOL: BU GÜN · SAĞ: BİZNESİNİZ ===== */}
+      <section className="biz-layout">
+        <div className="biz-card biz-today">
           <header className="biz-card__header">
             <h2>{t("Bugünkü rezervlər")}</h2>
             <button
@@ -312,100 +337,73 @@ function BusinessDashboard() {
           )}
         </div>
 
-        <aside className="biz-card biz-profile">
-          <h2>{t("Profiliniz")}</h2>
-
-          <div
-            className="biz-ring"
-            style={{ ["--value" as string]: `${completion}` }}
-          >
-            <div className="biz-ring__inner">
-              <strong>{completion}%</strong>
-              <span>{t("hazır")}</span>
-            </div>
-          </div>
-
-          <p>
-            {isProfileComplete
-              ? t("Profiliniz tam hazırdır. Müştərilər sizi asanlıqla tapır.")
-              : t("Şəkil, təsvir və iş saatlarını əlavə edin ki, müştərilər sizi daha tez seçsin.")}
-          </p>
-
-          <button
-            type="button"
-            className="biz-outline-button"
-            onClick={() => navigate("/business/profile")}
-          >
-            {isProfileComplete ? t("Profili redaktə et") : t("Profili tamamla")}
-            <ArrowRight size={15} strokeWidth={1.8} />
-          </button>
-        </aside>
-      </section>
-
-      {/* ===== XİDMƏTLƏR + SÜRƏTLİ ƏMƏLİYYATLAR ===== */}
-      <section className="biz-grid">
-        <div className="biz-card">
-          <header className="biz-card__header">
-            <h2>{t("Xidmətləriniz")}</h2>
-            <button
-              type="button"
-              className="biz-link"
-              onClick={() => navigate("/business/services")}
+        <div className="biz-side">
+          {/* Profil: yığcam — solda halqa, sağda mətn */}
+          <section className="biz-card biz-profile">
+            <div
+              className="biz-ring"
+              style={{ ["--value" as string]: `${completion}` }}
             >
-              {t("İdarə et")}
-              <ArrowRight size={15} strokeWidth={1.8} />
-            </button>
-          </header>
+              <div className="biz-ring__inner">
+                <strong>{completion}%</strong>
+                <span>{t("hazır")}</span>
+              </div>
+            </div>
 
-          {services.length === 0 ? (
-            <p className="biz-muted">{t("Hələ xidmət əlavə etməmisiniz.")}</p>
-          ) : (
-            /* Menyu kimi: ad ...... qiymət */
-            <ul className="biz-menu">
-              {services.slice(0, 5).map((service) => (
-                <li key={service.id}>
-                  <span>{service.name}</span>
-                  <i aria-hidden="true" />
-                  <b>
-                    {service.price}
-                    <small className="manat">₼</small>
-                  </b>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+            <div className="biz-profile__body">
+              <h2>{t("Profiliniz")}</h2>
+              <p>
+                {isProfileComplete
+                  ? t("Profiliniz tam hazırdır. Müştərilər sizi asanlıqla tapır.")
+                  : t("Şəkil, təsvir və iş saatlarını əlavə edin ki, müştərilər sizi daha tez seçsin.")}
+              </p>
 
-        <div className="biz-card">
-          <header className="biz-card__header">
-            <h2>{t("Sürətli əməliyyatlar")}</h2>
-          </header>
-
-          <div className="biz-actions">
-            {[
-              { label: t("Yeni xidmət"), hint: t("Qiymət və müddət"), icon: Plus, to: "/business/services" },
-              { label: t("Şəkil əlavə et"), hint: t("Portfolio"), icon: ImagePlus, to: "/business/portfolio" },
-              { label: t("Profili redaktə et"), hint: t("Ad, ərazi, təsvir"), icon: Settings, to: "/business/profile" },
-              { label: t("İş saatları"), hint: t("Açıq günlər"), icon: Clock3, to: "/business/hours" },
-            ].map(({ label, hint, icon: Icon, to }) => (
               <button
-                key={label}
                 type="button"
-                className="biz-action"
-                onClick={() => navigate(to)}
+                className="biz-link"
+                onClick={() => navigate("/business/profile")}
               >
-                <span className="biz-medal">
-                  <Icon size={18} strokeWidth={1.8} />
-                </span>
-                <strong>{label}</strong>
-                <span>{hint}</span>
+                {isProfileComplete ? t("Profili redaktə et") : t("Profili tamamla")}
+                <ArrowRight size={15} strokeWidth={1.8} />
               </button>
-            ))}
-          </div>
+            </div>
+          </section>
 
-          <p className="biz-muted biz-actions__note">
-            <Store size={14} strokeWidth={1.8} /> {t("{count} aktiv xidmət", { count: stats.serviceCount })}
-          </p>
+          <div className="biz-card">
+            <header className="biz-card__header">
+              <h2>{t("Xidmətləriniz")}</h2>
+              <button
+                type="button"
+                className="biz-link"
+                onClick={() => navigate("/business/services")}
+              >
+                {t("İdarə et")}
+                <ArrowRight size={15} strokeWidth={1.8} />
+              </button>
+            </header>
+
+            {services.length === 0 ? (
+              <p className="biz-muted">{t("Hələ xidmət əlavə etməmisiniz.")}</p>
+            ) : (
+              /* Menyu kimi: ad ...... qiymət */
+              <ul className="biz-menu">
+                {services.slice(0, 5).map((service) => (
+                  <li key={service.id}>
+                    <span>{service.name}</span>
+                    <i aria-hidden="true" />
+                    <b>
+                      {service.price}
+                      <small className="manat">₼</small>
+                    </b>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <p className="biz-muted biz-actions__note">
+              <Store size={14} strokeWidth={1.8} /> {t("{count} aktiv xidmət", { count: stats.serviceCount })}
+            </p>
+          </div>
         </div>
       </section>
     </main>
