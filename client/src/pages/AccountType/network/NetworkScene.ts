@@ -119,19 +119,6 @@ const JOURNEY = [
   { out: { u: 0.5, v: 0.5 }, in: { u: 0.84, v: 0.53 } }, // Alov qüllələri
 ];
 
-/* 1-ci qaranlıq fotoda (stage-1.jpg) şüşə kürələrin mərkəzləri */
-const SPHERES_IN_PHOTO = [
-  { u: 0.744, v: 0.244 },
-  { u: 0.685, v: 0.646 },
-  { u: 0.53, v: 0.355 },
-  { u: 0.932, v: 0.53 },
-  { u: 0.464, v: 0.794 },
-  { u: 0.631, v: 0.127 },
-  { u: 0.881, v: 0.058 },
-  { u: 0.94, v: 0.26 },
-  { u: 0.512, v: 0.519 },
-];
-
 /* Ağ rejimin xəritə fotosunda (stage-2-light.jpg) Bakının yeri */
 const BAKU_IN_LIGHT_MAP = { u: 0.855, v: 0.43 };
 
@@ -295,8 +282,6 @@ export class NetworkScene {
     return this.photoSets[this.palette.dark ? "dark" : "light"];
   }
   private skyOrigin = { x: 0, y: 0 };
-  /* 2-ci fotonun parlaq nöqtələri: kürələrdən uzanan xətlər buraya çatır */
-  private mapTargets: { u: number; v: number; from: number; delay: number; near: number[] }[] = [];
   private landRings: Vec3[][] = [];
   private badges: { local: Vec3; icon: Icon; city: number; delay: number }[] = [];
   private bokeh: { x: number; y: number; r: number; alpha: number; speed: number; phase: number }[] = [];
@@ -1007,29 +992,28 @@ export class NetworkScene {
     const raw = s >= 2 ? 1 : clamp(s - stage);
     const t = smooth(raw);
 
-    /* 1 → 2: kürələri birləşdirən qızılı xətlər aşağıya uzanır, xəritənin
-       parlaq nöqtələrinə çatır və xəritəyə çevrilir; xəritə fotosu bu
-       anda bulanıqdan aydınlaşaraq üzə çıxır. */
+    /* 1 → 2: fokus dəyişməsi. Kürələr yaxınlaşıb bulanıqlaşır, xəritə
+       bulanıqdan aydınlaşaraq üzə çıxır. */
     if (stage === 0) {
-      const spheres = place(0, 1 + 0.18 * t, { u: 0.7, v: 0.5 }, null);
-      const blurOut = 5 * smooth(clamp((raw - 0.45) / 0.5)) * this.ratio;
+      const center = { x: w * (this.compact ? 0.6 : 0.7), y: h * 0.5 };
+      const spheres = place(0, 1 + 0.3 * t, { u: 0.7, v: 0.5 }, null);
+      const blurOut = 10 * t * this.ratio;
       ctx.save();
       if (blurOut > 0.5) ctx.filter = `blur(${blurOut.toFixed(1)}px)`;
       ctx.drawImage(this.photos[0], spheres.x, spheres.y, spheres.w, spheres.h);
       ctx.restore();
+      void center;
 
-      const map = place(1, 1.06 - 0.06 * t, JOURNEY[1].in, null);
-      const reveal = smooth(clamp((raw - 0.4) / 0.5));
+      const reveal = smooth(clamp((raw - 0.2) / 0.6));
       if (reveal > 0.005) {
-        const blurIn = 8 * (1 - reveal) * this.ratio;
+        const map = place(1, 1.08 - 0.08 * t, JOURNEY[1].in, null);
+        const blurIn = 10 * (1 - reveal) * this.ratio;
         ctx.save();
         ctx.globalAlpha = reveal;
         if (blurIn > 0.5) ctx.filter = `blur(${blurIn.toFixed(1)}px)`;
         ctx.drawImage(this.photos[1], map.x, map.y, map.w, map.h);
         ctx.restore();
       }
-
-      this.drawThreads(raw, time, spheres, map);
       return;
     }
 
@@ -1090,136 +1074,6 @@ export class NetworkScene {
       ctx.stroke();
       ctx.restore();
     }
-  }
-
-  /* 2-ci fotodan parlaq nöqtələri seçir (bir dəfə) */
-  private sampleMapTargets() {
-    const image = this.photos[1];
-    if (this.mapTargets.length || !image.complete || !image.naturalWidth) return;
-    const cw = 168;
-    const ch = Math.round((image.naturalHeight / image.naturalWidth) * cw);
-    const probe = document.createElement("canvas");
-    probe.width = cw;
-    probe.height = ch;
-    const pc = probe.getContext("2d", { willReadFrequently: true });
-    if (!pc) return;
-    pc.drawImage(image, 0, 0, cw, ch);
-    let data: Uint8ClampedArray;
-    try {
-      data = pc.getImageData(0, 0, cw, ch).data;
-    } catch {
-      return;
-    }
-    const bright: { u: number; v: number }[] = [];
-    for (let y = 0; y < ch; y += 1) {
-      for (let x = Math.round(cw * 0.38); x < cw; x += 1) {
-        const i = (y * cw + x) * 4;
-        if (data[i + 1] > 120 && data[i + 1] > data[i] * 1.25) bright.push({ u: (x + 0.5) / cw, v: (y + 0.5) / ch });
-      }
-    }
-    if (bright.length < 10) return;
-    const random = seeded(41);
-    const count = this.compact ? 36 : 70;
-    const picked: { u: number; v: number }[] = [];
-    let tries = 0;
-    while (picked.length < count && tries < 4000) {
-      tries += 1;
-      const p = bright[Math.floor(random() * bright.length)];
-      if (picked.some((q) => Math.hypot(q.u - p.u, (q.v - p.v) * 0.56) < 0.022)) continue;
-      picked.push(p);
-    }
-    this.mapTargets = picked.map((p, index) => {
-      /* Ən yaxın kürədən başlayır, amma yuxarıdakı kürələr də iştirak edir */
-      const from = SPHERES_IN_PHOTO.map((sphere, k) => ({ k, d: Math.hypot(sphere.u - p.u, sphere.v - p.v) + (index % 3 === 0 ? random() * 0.3 : 0) }))
-        .sort((a, b) => a.d - b.d)[0].k;
-      return { ...p, from, delay: random() * 0.25, near: [] as number[] };
-    });
-    this.mapTargets.forEach((target, index) => {
-      target.near = this.mapTargets
-        .map((other, k) => ({ k, d: Math.hypot(other.u - target.u, (other.v - target.v) * 0.56) }))
-        .filter((item) => item.k !== index)
-        .sort((a, b) => a.d - b.d)
-        .slice(0, 2)
-        .map((item) => item.k);
-    });
-  }
-
-  /* Kürələrdən xəritəyə uzanan qızılı xətlər */
-  private drawThreads(
-    raw: number,
-    time: number,
-    spheres: { x: number; y: number; w: number; h: number },
-    map: { x: number; y: number; w: number; h: number }
-  ) {
-    this.sampleMapTargets();
-    if (!this.mapTargets.length) return;
-    const ctx = this.ctx;
-    /* Əvvəl görünür, sonda xəritənin içində əriyir */
-    const presence = smooth(clamp(raw / 0.12)) * (1 - smooth(clamp((raw - 0.78) / 0.22)));
-    if (presence < 0.01) return;
-    const r = this.ratio;
-    const toScreen = (rect: { x: number; y: number; w: number; h: number }, u: number, v: number) => ({
-      x: rect.x + u * rect.w,
-      y: rect.y + v * rect.h,
-    });
-    const ends = this.mapTargets.map((target) => toScreen(map, target.u, target.v));
-
-    ctx.save();
-    ctx.globalCompositeOperation = "lighter";
-    ctx.lineCap = "round";
-    this.mapTargets.forEach((target, index) => {
-      const grow = smooth(clamp((raw - 0.05 - target.delay) / 0.45));
-      if (grow < 0.01) return;
-      const sphere = SPHERES_IN_PHOTO[target.from];
-      const start = toScreen(spheres, sphere.u, sphere.v);
-      const end = ends[index];
-      /* Xətt aşağıya doğru əyilərək uzanır */
-      const control = { x: lerp(start.x, end.x, 0.3), y: Math.max(start.y, end.y) + 40 * r };
-      const steps = 18;
-      const upto = Math.max(1, Math.round(steps * grow));
-      ctx.beginPath();
-      for (let k = 0; k <= upto; k += 1) {
-        const u = (k / steps);
-        const x = (1 - u) * (1 - u) * start.x + 2 * (1 - u) * u * control.x + u * u * end.x;
-        const y = (1 - u) * (1 - u) * start.y + 2 * (1 - u) * u * control.y + u * u * end.y;
-        if (k === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = `rgba(236, 206, 140, ${0.12 * presence})`;
-      ctx.lineWidth = 3 * r;
-      ctx.stroke();
-      ctx.strokeStyle = `rgba(246, 222, 160, ${0.6 * presence})`;
-      ctx.lineWidth = 0.9 * r;
-      ctx.stroke();
-
-      /* Xəttin ucunda işıq; çatanda xəritədə düyün yanır */
-      const u = upto / steps;
-      const tip = {
-        x: (1 - u) * (1 - u) * start.x + 2 * (1 - u) * u * control.x + u * u * end.x,
-        y: (1 - u) * (1 - u) * start.y + 2 * (1 - u) * u * control.y + u * u * end.y,
-      };
-      const size = (grow >= 1 ? 9 : 12) * r;
-      ctx.globalAlpha = presence * (grow >= 1 ? 0.8 : 1);
-      ctx.drawImage(this.sprite, tip.x - size / 2, tip.y - size / 2, size, size);
-      ctx.globalAlpha = 1;
-
-      /* Çatandan sonra qonşu nöqtələrlə birləşir: xəritənin toru */
-      if (grow >= 0.98) {
-        target.near.forEach((k) => {
-          const link = smooth(clamp((raw - 0.5 - target.delay * 0.5) / 0.25));
-          if (link < 0.01) return;
-          const other = ends[k];
-          ctx.strokeStyle = `rgba(150, 245, 200, ${0.5 * presence * link})`;
-          ctx.lineWidth = 0.8 * r;
-          ctx.beginPath();
-          ctx.moveTo(end.x, end.y);
-          ctx.lineTo(lerp(end.x, other.x, link), lerp(end.y, other.y, link));
-          ctx.stroke();
-        });
-      }
-    });
-    ctx.restore();
-    void time;
   }
 
   private photoRect(index: number, s: number, time: number) {
