@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowDown,
@@ -6,7 +6,6 @@ import {
   Briefcase,
   CalendarCheck,
   LayoutGrid,
-  MapPin,
   Moon,
   Sun,
   UserRound,
@@ -15,37 +14,18 @@ import {
 import { useTheme } from "../../hooks/useTheme";
 import { t } from "../../i18n";
 import LanguageSwitch from "../../i18n/LanguageSwitch";
+import NetworkBackground from "./network/NetworkBackground";
 import "./AccountType.css";
 
 /*
  * Ana səhifə. Açılan kimi əsas seçim görünür: müştəri və ya biznes.
  * Aşağıda qısa izah: necə işləyir və niyə AzLink.
  *
- * Arxada Bakının fotoşəkilləri. Hər bölmənin öz şəkli var: bölmə
- * ekrana daxil olduqca onun şəkli əvvəlkinin üstünə yavaş-yavaş çıxır,
- * bölmənin məzmunu da eyni anda yuxarı qalxıb aydınlaşır. Keçid
- * sürüşdürməyə bağlıdır: geri qayıdanda eyni yolla geri gedir.
- * Açıq rejimdə gündüz, qaranlıq rejimdə axşam/gecə Bakısı.
+ * Arxada canlı AzLink şəbəkəsi (network/NetworkScene.ts). Üç bölmə
+ * şəbəkənin üç mərhələsidir: ayrı kürələr → Azərbaycan xəritəsi →
+ * vahid şəbəkə və Bakı siluetı. Mərhələ sürüşdürməyə bağlıdır və
+ * geri sürüşdürəndə eyni yolla geri qayıdır.
  */
-
-interface Photo {
-  src: string;
-  place: string;
-  /* Kiçik ekranda şəklin hansı hissəsi görünsün */
-  focus: string;
-}
-
-const DAY_PHOTOS: Photo[] = [
-  { src: "/landing/oldcity-day.jpg", place: t("İçərişəhər və Alov qüllələri"), focus: "62% 40%" },
-  { src: "/landing/maiden-day.jpg", place: t("Qız qalası"), focus: "50% 40%" },
-  { src: "/landing/heydar-aliyev-day.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "32% 35%" },
-];
-
-const NIGHT_PHOTOS: Photo[] = [
-  { src: "/landing/boulevard-evening.jpg", place: t("Dənizkənarı bulvar"), focus: "42% 50%" },
-  { src: "/landing/maiden-evening.jpg", place: t("Qız qalası"), focus: "30% 45%" },
-  { src: "/landing/heydar-aliyev-night.jpg", place: t("Heydər Əliyev Mərkəzi"), focus: "34% 12%" },
-];
 
 const CUSTOMER_STEPS = [
   {
@@ -108,10 +88,8 @@ function AccountType() {
   const { isDark, toggleTheme } = useTheme();
 
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
-  const photoRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [current, setCurrent] = useState(0);
-
-  const photos = isDark ? NIGHT_PHOTOS : DAY_PHOTOS;
+  /* Şəbəkənin mərhələsi: 0 (giriş) → 1 (necə işləyir) → 2 (niyə AzLink) */
+  const stageRef = useRef(0);
 
   /* ---------- Sürüşdürməyə bağlı keçid ---------- */
 
@@ -121,7 +99,7 @@ function AccountType() {
     const update = () => {
       frame = 0;
       const viewport = window.innerHeight;
-      let visible = 0;
+      let stage = 0;
 
       sectionRefs.current.forEach((section, index) => {
         if (!section) return;
@@ -132,16 +110,10 @@ function AccountType() {
 
         section.style.setProperty("--in", value.toFixed(3));
 
-        const photo = photoRefs.current[index];
-        if (photo) {
-          photo.style.opacity = value.toFixed(3);
-          photo.style.transform = `scale(${(1.04 - value * 0.04).toFixed(4)})`;
-        }
-
-        if (value > 0.5) visible = index;
+        if (index > 0) stage += value;
       });
 
-      setCurrent(visible);
+      stageRef.current = stage;
     };
 
     const handleScroll = () => {
@@ -157,7 +129,7 @@ function AccountType() {
       window.removeEventListener("resize", handleScroll);
       cancelAnimationFrame(frame);
     };
-  }, [isDark]);
+  }, []);
 
   const setSection = (index: number) => (element: HTMLElement | null) => {
     sectionRefs.current[index] = element;
@@ -167,25 +139,11 @@ function AccountType() {
 
   return (
     <div className="landing" data-dark={isDark || undefined}>
-      {/* ================= ARXA FON: BAKI ================= */}
+      {/* ================= ARXA FON: AZLINK ŞƏBƏKƏSİ ================= */}
       <div className="landing__backdrop" aria-hidden="true">
-        {photos.map((photo, index) => (
-          <div
-            key={photo.src}
-            ref={(element) => {
-              photoRefs.current[index] = element;
-            }}
-            className="landing-photo"
-            style={{ backgroundImage: `url(${photo.src})`, backgroundPosition: photo.focus }}
-          />
-        ))}
+        <NetworkBackground progress={stageRef} dark={isDark} />
         <div className="landing__veil" />
       </div>
-
-      <p className="landing-place" key={photos[current].src}>
-        <MapPin size={14} strokeWidth={1.8} />
-        {photos[current].place}
-      </p>
 
       {/* ================= YUXARI ZOLAQ ================= */}
       <header className="landing-bar">
