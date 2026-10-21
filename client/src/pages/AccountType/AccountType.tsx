@@ -193,7 +193,7 @@ function AccountType() {
           <h1>{t("Bakının ustaları və müştəriləri bir yerdə")}</h1>
 
           <p className="landing-hero__lead">
-            {t("Xidmət axtarırsınız, yoxsa xidmət göstərirsiniz? Seçin və bir dəqiqəyə hesab yaradın.")}
+            {t("AzLink xidmət axtaran insanları və yerli biznesləri vahid platformada birləşdirir.")}
           </p>
 
           <div className="landing-doors">

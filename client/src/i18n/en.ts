@@ -754,4 +754,5 @@ export const en: Record<string, string> = {
   "Xidmət tap": "Find a service",
   "Biznes girişi": "Business sign-in",
   "Bakı, Azərbaycan": "Baku, Azerbaijan",
+  "AzLink xidmət axtaran insanları və yerli biznesləri vahid platformada birləşdirir.": "AzLink brings people looking for services and local businesses together on one platform.",
 };
