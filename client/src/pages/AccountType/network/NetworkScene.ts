@@ -65,8 +65,8 @@ const DARK: Palette = {
   bgBase: "#020b08",
   bgCenter: "#0a3125",
   bgEdge: "#010705",
-  glow: "80, 235, 170",
-  line: "130, 250, 196",
+  glow: "70, 215, 160",
+  line: "236, 206, 140",
   dust: "150, 255, 210",
   glassBody: "rgba(150, 255, 210, 0.07)",
   glassRim: "rgba(170, 255, 220, 0.7)",
@@ -216,6 +216,10 @@ export class NetworkScene {
   private overlay = document.createElement("canvas");
   private main: CanvasRenderingContext2D;
   private landDots: { local: Vec3; delay: number }[] = [];
+  /* HD fotolar (public/landing/stage-1…3.jpg). Hamısı yüklənibsə
+     arxa fon fotodur, şəbəkə onun üstündə canlı çəkilir. */
+  private photos: HTMLImageElement[] = [];
+  private photoMode = false;
   private landRings: Vec3[][] = [];
   private badges: { local: Vec3; icon: Icon; city: number; delay: number }[] = [];
   private bokeh: { x: number; y: number; r: number; alpha: number; speed: number; phase: number }[] = [];
@@ -238,6 +242,18 @@ export class NetworkScene {
     this.main = ctx;
     this.sprite = document.createElement("canvas");
     this.backdrop = document.createElement("canvas");
+
+    let loaded = 0;
+    this.photos = [1, 2, 3].map((stage) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.onload = () => {
+        loaded += 1;
+        if (loaded === 3) this.photoMode = true;
+      };
+      image.src = `/landing/stage-${stage}.jpg`;
+      return image;
+    });
   }
 
   setDark(dark: boolean) {
@@ -623,7 +639,9 @@ export class NetworkScene {
 
     ctx.globalCompositeOperation = "source-over";
     ctx.globalAlpha = 1;
-    ctx.drawImage(this.backdrop, 0, 0);
+    const photo = this.photoMode && p.dark;
+    if (photo) this.drawPhotos(s, time);
+    else ctx.drawImage(this.backdrop, 0, 0);
 
     /* Xəritə ətrafında yumşaq işıq: 2-ci və 3-cü mərhələdə güclənir */
     const mapGlow = smooth(clamp(s * 0.8));
@@ -638,12 +656,12 @@ export class NetworkScene {
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    this.drawFog(time, s);
+    if (!photo) this.drawFog(time, s);
     this.drawBokeh(time);
 
     /* Uzaqda Bakı siluetı: sağ-aşağıda, aşağıdan yavaşca qalxır */
     const sky = smooth(clamp((s - 1.15) / 0.85));
-    if (sky > 0.01) {
+    if (sky > 0.01 && !photo) {
       const drift = this.reduced ? 0 : Math.sin(time * 0.05) * 6 * this.ratio;
       const sx = this.compact ? 0 : this.canvas.width * 0.38;
       const sy = this.canvas.height - this.height * (this.compact ? 0.32 : 0.5) * this.ratio + (1 - sky) * 60 * this.ratio;
@@ -673,7 +691,8 @@ export class NetworkScene {
       pos = [pos[0] * Math.cos(swayAll) + cz * Math.sin(swayAll), pos[1], -pos[0] * Math.sin(swayAll) + cz * Math.cos(swayAll) + 1];
       this.positions[index] = pos;
       const radius = stageValue(node.radius, s, node.delay).value;
-      const alpha = stageValue(node.alpha, s, node.delay).value;
+      let alpha = stageValue(node.alpha, s, node.delay).value;
+      if (photo && node.kind === "hero") alpha *= smooth(clamp((s - 0.35) / 0.5));
       return { node, pos, radius, alpha, screen: this.project(pos) };
     });
 
@@ -698,6 +717,10 @@ export class NetworkScene {
       const a = nodeState[edge.a];
       const b = nodeState[edge.b];
       /* Xətt yalnız hər iki ucu görünəndə tam parlayır */
+      if (photo && a.node.kind === "hero" && b.node.kind === "hero") {
+        edgeAlpha[index] = 0;
+        return;
+      }
       const fade = clamp(0.3 + Math.min(a.alpha, b.alpha));
       const alpha = state.value * fade;
       edgeAlpha[index] = alpha;
@@ -746,7 +769,7 @@ export class NetworkScene {
           return;
         }
         /* Böyük kürə şüşədir; kiçildikcə parlaq düyünə çevrilir */
-        const glass = clamp((px - 7 * this.ratio) / (12 * this.ratio));
+        const glass = photo ? 0 : clamp((px - 7 * this.ratio) / (12 * this.ratio));
         if (glass > 0) {
           glassQueue.push({
             x: state.screen.x,
@@ -796,6 +819,31 @@ export class NetworkScene {
     ctx.globalCompositeOperation = "source-over";
     ctx.drawImage(this.overlay, 0, 0);
     ctx.globalCompositeOperation = "source-over";
+  }
+
+  /* Fotolar üst-üstə: hər mərhələnin fotosu əvvəlkinin üstünə açılır,
+     yavaş yaxınlaşma və yüngül şaquli hərəkətlə (dərinlik hissi) */
+  private drawPhotos(s: number, time: number) {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    const weights = [1, smooth(clamp(s)), smooth(clamp(s - 1))];
+    this.photos.forEach((image, index) => {
+      const alpha = weights[index];
+      if (alpha < 0.01) return;
+      const local = clamp(s - index + 1, 0, 2);
+      const zoom = 1.1 - local * 0.035 + (this.reduced ? 0 : Math.sin(time * 0.05 + index) * 0.006);
+      const cover = Math.max(w / image.naturalWidth, h / image.naturalHeight) * zoom;
+      const dw = image.naturalWidth * cover;
+      const dh = image.naturalHeight * cover;
+      /* Telefonda şəklin sağ hissəsi (səhnə) görünsün */
+      const focusX = this.compact ? 0.7 : 0.5;
+      const x = (w - dw) * focusX;
+      const y = (h - dh) / 2 - (local - 1) * h * 0.02;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(image, x, y, dw, dh);
+    });
+    ctx.globalAlpha = 1;
   }
 
   private drawFog(time: number, s: number) {
