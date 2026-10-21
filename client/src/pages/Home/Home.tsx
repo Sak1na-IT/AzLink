@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import HomeHero from "../../components/home/HomeHero";
-import CategoryShowcase from "../../components/home/CategoryShowcase";
 import UpcomingBookings from "../../components/home/UpcomingBookings";
 import PopularNearby from "../../components/home/PopularNearby";
 import TodayOverview from "../../components/home/TodayOverview";
@@ -216,14 +215,6 @@ function Home() {
         ) : (
           !isLoading && (
             <>
-              <CategoryShowcase
-                providers={providers}
-                onCategoryClick={(categoryId) =>
-                  navigate(`/search?category=${categoryId}`)
-                }
-                onSeeAllClick={() => navigate("/explore")}
-              />
-
               <UpcomingBookings
                 bookings={myBookings}
                 onBookingClick={handleBookingClick}
