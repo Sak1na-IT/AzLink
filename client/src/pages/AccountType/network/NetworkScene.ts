@@ -110,6 +110,9 @@ const PHOTO_TOWERS: TowerShape[] = [
   { cx: 0.908, half: 0.0286, top: 0.362, ground: 0.625, lean: 0.5 },
 ];
 
+/* Ağ rejimin xəritə fotosunda (stage-2-light.jpg) Bakının yeri */
+const BAKU_IN_LIGHT_MAP = { u: 0.855, v: 0.43 };
+
 /* Qüllə konturunda nöqtə: t = 0 sol əsas, 0.5 uc, 1 sağ əsas
    (skyline.ts-dəki forma ilə eyni əyrilər) */
 const towerPoint = (g: TowerShape, t: number): [number, number] => {
@@ -260,7 +263,8 @@ export class NetworkScene {
   private main: CanvasRenderingContext2D;
   private landDots: { local: Vec3; delay: number }[] = [];
   /* HD fotolar: qaranlıq rejim üçün public/landing/stage-1…3.jpg,
-     ağ rejim üçün stage-1…3-light.jpg. Bir rejimin üç fotosu da
+     ağ rejim üçün stage-1-light.jpg və stage-2-light.jpg (3-cü
+     mərhələdə xəritə fotosu Bakıya yaxınlaşır). Bir rejimin fotoları
      yüklənibsə həmin rejimdə arxa fon fotodur. */
   private photoSets: Record<"dark" | "light", HTMLImageElement[]> = { dark: [], light: [] };
   private photoReady = { dark: false, light: false };
@@ -294,7 +298,8 @@ export class NetworkScene {
 
     (["dark", "light"] as const).forEach((mode) => {
       let loaded = 0;
-      this.photoSets[mode] = [1, 2, 3].map((stage) => {
+      const files = mode === "light" ? [1, 2, 2] : [1, 2, 3];
+      this.photoSets[mode] = files.map((stage) => {
         const image = new Image();
         image.decoding = "async";
         image.onload = () => {
@@ -954,7 +959,23 @@ export class NetworkScene {
     const dh = image.naturalHeight * cover;
     /* Telefonda şəklin sağ hissəsi (səhnə) görünsün */
     const focusX = this.compact ? 0.7 : 0.5;
-    return { x: (w - dw) * focusX, y: (h - dh) / 2 - (local - 1) * h * 0.02, w: dw, h: dh };
+    const rect = { x: (w - dw) * focusX, y: (h - dh) / 2 - (local - 1) * h * 0.02, w: dw, h: dh };
+
+    /* Ağ rejimdə 3-cü mərhələ: xəritə fotosu Bakıya (parlayan nöqtəyə)
+       yaxınlaşır; 2-ci və 3-cü təbəqə eyni hərəkəti edir, keçid görünmür */
+    if (!this.palette.dark && index >= 1) {
+      const t = smooth(clamp(s - 1));
+      const k = 1 + 1.1 * t;
+      const anchor = { x: rect.x + BAKU_IN_LIGHT_MAP.u * rect.w, y: rect.y + BAKU_IN_LIGHT_MAP.v * rect.h };
+      const target = { x: lerp(anchor.x, w * (this.compact ? 0.6 : 0.74), t), y: lerp(anchor.y, h * 0.5, t) };
+      return {
+        x: target.x + (rect.x - anchor.x) * k,
+        y: target.y + (rect.y - anchor.y) * k,
+        w: rect.w * k,
+        h: rect.h * k,
+      };
+    }
+    return rect;
   }
 
   /* Qüllə konturunda nöqtənin dünyadakı yeri (foto və ya çəkilmiş siluet) */
