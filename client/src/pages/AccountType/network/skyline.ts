@@ -61,6 +61,15 @@ export class Skyline {
     this.paintGlow();
   }
 
+  /* Qüllələrin ölçüləri (bu təbəqənin pikselləri ilə): şəbəkə 3-cü
+     mərhələdə qüllələrin konturunu çəkmək üçün istifadə edir */
+  towers() {
+    return TOWERS.map((tower) => {
+      const { cx, half, ground, top } = this.towerPath(tower);
+      return { cx, half, ground, top, lean: tower.lean };
+    });
+  }
+
   get horizon() {
     return this.height * 0.8;
   }

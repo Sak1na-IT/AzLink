@@ -24,6 +24,9 @@ type Triple = [number, number, number];
 
 interface Node {
   kind: "hero" | "outline" | "interior" | "hub";
+  /* 3-cü mərhələdə bu düyün Alov qülləsinin konturuna keçir */
+  tower?: number;
+  towerT?: number;
   /* 1-ci mərhələdə dünyadakı yeri */
   start: Vec3;
   /* Xəritə üzərində yeri (xəritənin öz koordinatları) */
@@ -87,6 +90,45 @@ const LIGHT: Palette = {
 };
 
 const CAMERA = 3;
+/* Qüllə düyünləri bu dərinlikdə yerləşir */
+const TOWER_DEPTH = 1.2;
+
+interface TowerShape {
+  cx: number;
+  half: number;
+  ground: number;
+  top: number;
+  lean: number;
+}
+
+/* 3-cü fotoda (stage-3.jpg) Alov qüllələrinin yeri, şəklin eni və
+   hündürlüyünə nisbətdə. Şəbəkə 3-cü mərhələdə bu konturları çəkir. */
+const PHOTO_TOWERS: TowerShape[] = [
+  { cx: 0.778, half: 0.0216, top: 0.473, ground: 0.643, lean: 0.45 },
+  { cx: 0.842, half: 0.0226, top: 0.406, ground: 0.643, lean: 0.5 },
+  { cx: 0.908, half: 0.0286, top: 0.362, ground: 0.625, lean: 0.5 },
+];
+
+/* Qüllə konturunda nöqtə: t = 0 sol əsas, 0.5 uc, 1 sağ əsas
+   (skyline.ts-dəki forma ilə eyni əyrilər) */
+const towerPoint = (g: TowerShape, t: number): [number, number] => {
+  const H = g.ground - g.top;
+  const tip = g.cx + g.lean * g.half;
+  const bezier = (p0: number, p1: number, p2: number, p3: number, u: number) =>
+    (1 - u) ** 3 * p0 + 3 * (1 - u) ** 2 * u * p1 + 3 * (1 - u) * u * u * p2 + u ** 3 * p3;
+  if (t <= 0.5) {
+    const u = t / 0.5;
+    return [
+      bezier(g.cx - g.half, g.cx - g.half * 1.04, g.cx - g.half * 0.72, tip, u),
+      bezier(g.ground, g.ground - H * 0.5, g.top + H * 0.1, g.top, u),
+    ];
+  }
+  const u = (t - 0.5) / 0.5;
+  return [
+    bezier(tip, g.cx + g.half * 0.88, g.cx + g.half, g.cx + g.half, u),
+    bezier(g.top, g.top + H * 0.22, g.ground - H * 0.48, g.ground, u),
+  ];
+};
 const MAP_SCALE = 0.58;
 
 /* 1-ci mərhələdə şüşə kürələrin yeri və ölçüsü (əl ilə düzülüb:
@@ -220,6 +262,7 @@ export class NetworkScene {
      arxa fon fotodur, şəbəkə onun üstündə canlı çəkilir. */
   private photos: HTMLImageElement[] = [];
   private photoMode = false;
+  private skyOrigin = { x: 0, y: 0 };
   private landRings: Vec3[][] = [];
   private badges: { local: Vec3; icon: Icon; city: number; delay: number }[] = [];
   private bokeh: { x: number; y: number; r: number; alpha: number; speed: number; phase: number }[] = [];
@@ -359,6 +402,20 @@ export class NetworkScene {
     }
     const interiorEnd = nodes.length;
 
+    /* Şərqdəki daxili düyünlərin bir hissəsi 3-cü mərhələdə Alov
+       qüllələrinə axır: xəritə qüllələrə çevrilir */
+    const perTower = this.compact ? 7 : 14;
+    const towerNodes = Array.from({ length: interiorEnd - interiorStart }, (_, k) => interiorStart + k)
+      .sort((a, b) => nodes[b].local[0] - nodes[a].local[0])
+      .slice(0, perTower * 3);
+    towerNodes.forEach((index, k) => {
+      const tower = k % 3;
+      const slot = Math.floor(k / 3);
+      nodes[index].tower = tower;
+      nodes[index].towerT = perTower > 1 ? slot / (perTower - 1) : 0.5;
+      nodes[index].radius = [nodes[index].radius[0], nodes[index].radius[1], 0.008];
+    });
+
     /* 4. AzLink mərkəzi */
     const hubIndex = nodes.length;
     nodes.push({
@@ -396,7 +453,7 @@ export class NetworkScene {
         addEdge(city, target, [0, 0.75, 0.8], 0.3 + random() * 0.2)
       );
       nearest(city, interiorStart, interiorEnd, 2).forEach((target) =>
-        addEdge(city, target, [0, 0.4, 0.85], 0.35 + random() * 0.15)
+        addEdge(city, target, [0, 0.4, nodes[target].tower !== undefined ? 0 : 0.85], 0.35 + random() * 0.15)
       );
     }
 
@@ -412,15 +469,31 @@ export class NetworkScene {
         .slice(0, 3)
         .forEach((j, rank) => {
           const both = early && nodes[j].alpha[1] > 0 && rank === 0;
-          addEdge(i, j, [0, both ? 0.5 : 0, 0.75], random() * 0.45);
+          const leaves = nodes[i].tower !== undefined || nodes[j].tower !== undefined;
+          addEdge(i, j, [0, both ? 0.5 : 0, leaves ? 0 : 0.75], random() * 0.45);
         });
     }
 
     /* Mərkəzdən şəhərlərə və yaxın düyünlərə */
     for (let city = 0; city < HEROES.length; city += 1) addEdge(hubIndex, city, [0, 0, 0.8], 0.2 + random() * 0.25);
-    nearest(hubIndex, interiorStart, interiorEnd, 5).forEach((target) =>
-      addEdge(hubIndex, target, [0, 0, 0.55], 0.3 + random() * 0.2)
-    );
+    nearest(hubIndex, interiorStart, interiorEnd, 5)
+      .filter((target) => nodes[target].tower === undefined)
+      .forEach((target) => addEdge(hubIndex, target, [0, 0, 0.55], 0.3 + random() * 0.2));
+
+    /* Qüllələrin konturu, içində "LED" pillələri və xəritəyə bağlayan sap */
+    for (let tower = 0; tower < 3; tower += 1) {
+      const ring = towerNodes
+        .filter((index) => nodes[index].tower === tower)
+        .sort((a, b) => (nodes[a].towerT ?? 0) - (nodes[b].towerT ?? 0));
+      ring.forEach((index, k) => {
+        if (k > 0) addEdge(ring[k - 1], index, [0, 0, 0.95], 0.25 + (k / ring.length) * 0.3);
+        const partner = ring[ring.length - 1 - k];
+        if (k < ring.length / 2 - 1 && partner !== index) addEdge(index, partner, [0, 0, 0.45], 0.45 + random() * 0.1);
+      });
+      const tip = ring[Math.floor(ring.length / 2)];
+      addEdge(hubIndex, tip, [0, 0, 0.85], 0.2);
+      if (tower === 0) addEdge(0, ring[0], [0, 0, 0.8], 0.3);
+    }
 
     /* İşıq impulsları */
     const pulseEdges = edges.map((edge, index) => ({ edge, index })).filter(({ edge }) => edge.weight[2] > 0.5);
@@ -666,6 +739,15 @@ export class NetworkScene {
       const sx = this.compact ? 0 : this.canvas.width * 0.38;
       const sy = this.canvas.height - this.height * (this.compact ? 0.32 : 0.5) * this.ratio + (1 - sky) * 60 * this.ratio;
       this.skyline.draw(ctx, sx + drift, sy, sky, time);
+      this.skyOrigin = { x: sx + drift, y: sy };
+    }
+
+    if (!photo) {
+      const drift = this.reduced ? 0 : Math.sin(time * 0.05) * 6 * this.ratio;
+      this.skyOrigin = {
+        x: (this.compact ? 0 : this.canvas.width * 0.38) + drift,
+        y: this.canvas.height - this.height * (this.compact ? 0.32 : 0.5) * this.ratio + (1 - sky) * 60 * this.ratio,
+      };
     }
 
     /* Düyünlərin dünyadakı yeri */
@@ -689,10 +771,18 @@ export class NetworkScene {
       /* Bütün səhnə yavaşca yellənir */
       const cz = pos[2] - 1;
       pos = [pos[0] * Math.cos(swayAll) + cz * Math.sin(swayAll), pos[1], -pos[0] * Math.sin(swayAll) + cz * Math.cos(swayAll) + 1];
+
+      /* 3-cü mərhələ: xəritədən qopub qüllənin konturuna axır */
+      if (node.tower !== undefined && s > 1) {
+        const f = smooth(clamp((s - 1 - node.delay * 0.5) / 0.6));
+        if (f > 0) {
+          const target = this.towerWorld(node.tower, node.towerT ?? 0, s, time, photo);
+          pos = [lerp(pos[0], target[0], f), lerp(pos[1], target[1], f), lerp(pos[2], target[2], f)];
+        }
+      }
       this.positions[index] = pos;
       const radius = stageValue(node.radius, s, node.delay).value;
-      let alpha = stageValue(node.alpha, s, node.delay).value;
-      if (photo && node.kind === "hero") alpha *= smooth(clamp((s - 0.35) / 0.5));
+      const alpha = stageValue(node.alpha, s, node.delay).value;
       return { node, pos, radius, alpha, screen: this.project(pos) };
     });
 
@@ -717,10 +807,6 @@ export class NetworkScene {
       const a = nodeState[edge.a];
       const b = nodeState[edge.b];
       /* Xətt yalnız hər iki ucu görünəndə tam parlayır */
-      if (photo && a.node.kind === "hero" && b.node.kind === "hero") {
-        edgeAlpha[index] = 0;
-        return;
-      }
       const fade = clamp(0.3 + Math.min(a.alpha, b.alpha));
       const alpha = state.value * fade;
       edgeAlpha[index] = alpha;
@@ -827,23 +913,51 @@ export class NetworkScene {
     const ctx = this.ctx;
     const w = this.canvas.width;
     const h = this.canvas.height;
+    void w;
+    void h;
     const weights = [1, smooth(clamp(s)), smooth(clamp(s - 1))];
     this.photos.forEach((image, index) => {
       const alpha = weights[index];
       if (alpha < 0.01) return;
-      const local = clamp(s - index + 1, 0, 2);
-      const zoom = 1.1 - local * 0.035 + (this.reduced ? 0 : Math.sin(time * 0.05 + index) * 0.006);
-      const cover = Math.max(w / image.naturalWidth, h / image.naturalHeight) * zoom;
-      const dw = image.naturalWidth * cover;
-      const dh = image.naturalHeight * cover;
-      /* Telefonda şəklin sağ hissəsi (səhnə) görünsün */
-      const focusX = this.compact ? 0.7 : 0.5;
-      const x = (w - dw) * focusX;
-      const y = (h - dh) / 2 - (local - 1) * h * 0.02;
+      const rect = this.photoRect(index, s, time);
       ctx.globalAlpha = alpha;
-      ctx.drawImage(image, x, y, dw, dh);
+      ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
     });
     ctx.globalAlpha = 1;
+  }
+
+  private photoRect(index: number, s: number, time: number) {
+    const image = this.photos[index];
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    const local = clamp(s - index + 1, 0, 2);
+    const zoom = 1.1 - local * 0.035 + (this.reduced ? 0 : Math.sin(time * 0.05 + index) * 0.006);
+    const cover = Math.max(w / image.naturalWidth, h / image.naturalHeight) * zoom;
+    const dw = image.naturalWidth * cover;
+    const dh = image.naturalHeight * cover;
+    /* Telefonda şəklin sağ hissəsi (səhnə) görünsün */
+    const focusX = this.compact ? 0.7 : 0.5;
+    return { x: (w - dw) * focusX, y: (h - dh) / 2 - (local - 1) * h * 0.02, w: dw, h: dh };
+  }
+
+  /* Qüllə konturunda nöqtənin dünyadakı yeri (foto və ya çəkilmiş siluet) */
+  private towerWorld(tower: number, t: number, s: number, time: number, photo: boolean): Vec3 {
+    let screen: [number, number];
+    if (photo) {
+      const rect = this.photoRect(2, s, time);
+      const [u, v] = towerPoint(PHOTO_TOWERS[tower], t);
+      screen = [rect.x + u * rect.w, rect.y + v * rect.h];
+    } else {
+      const shape = this.skyline.towers()[tower];
+      const [u, v] = towerPoint(shape, t);
+      screen = [this.skyOrigin.x + u, this.skyOrigin.y + v];
+    }
+    const scale = (this.focal / (TOWER_DEPTH + CAMERA)) * this.ratio;
+    return [
+      (screen[0] - this.canvas.width * (this.compact ? 0.5 : 0.67)) / scale,
+      (this.canvas.height * 0.5 - screen[1]) / scale,
+      TOWER_DEPTH,
+    ];
   }
 
   private drawFog(time: number, s: number) {
