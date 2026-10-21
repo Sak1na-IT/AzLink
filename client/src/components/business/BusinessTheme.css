@@ -6,6 +6,63 @@
    stillərindən güclü olsun (CSS sırasından asılı olmasın).
    ========================================================= */
 
+/* ---------- Ağ rejim: isti fil sümüyü və qızılı palitra ----------
+   Biznes səhifələrində yaşıl tonlar qızılı-bürünc tonlarla əvəz olunur.
+   body səviyyəsində olduğu üçün yuxarı menyuya da təsir edir. */
+
+:root:not([data-theme="dark"]) body:has(.business-layout) {
+  --color-bg: #f4eee2;
+  --color-surface: #fffdf8;
+  --color-surface-soft: #f2e8d4;
+  --color-surface-muted: #faf5ea;
+
+  --color-primary: #7d5a1c;
+  --color-primary-hover: #664813;
+  --color-primary-soft: #f3e5c6;
+
+  --color-text: #24190b;
+  --color-text-secondary: #504330;
+  --color-text-muted: #847558;
+
+  --color-border: #e8dcc2;
+  --color-border-strong: #d7c39a;
+
+  --color-success: #8a6a1f;
+  --color-gold: #a87a26;
+  --color-gold-soft: rgba(168, 122, 38, 0.16);
+
+  --shadow-xs: 0 1px 2px rgba(70, 48, 12, 0.05);
+  --shadow-sm: 0 1px 2px rgba(70, 48, 12, 0.05), 0 6px 18px rgba(70, 48, 12, 0.07);
+  --shadow-md: 0 2px 4px rgba(70, 48, 12, 0.05), 0 12px 30px rgba(70, 48, 12, 0.09);
+  --shadow-lg: 0 4px 10px rgba(70, 48, 12, 0.06), 0 24px 54px rgba(70, 48, 12, 0.12);
+
+  --deep-panel:
+    radial-gradient(ellipse 55% 90% at 100% 0%, rgba(214, 170, 90, 0.26), transparent 70%),
+    radial-gradient(ellipse 60% 90% at 0% 100%, rgba(168, 122, 38, 0.1), transparent 70%),
+    linear-gradient(160deg, #fffaf0 0%, #f3e7cf 100%);
+  --deep-velvet: var(--deep-panel);
+  --deep-text: #2a1e0d;
+  --deep-title: #22170a;
+  --deep-muted: #74654a;
+  --deep-gold: #9c7022;
+  --deep-gold-strong: #865e18;
+  --deep-glass: rgba(255, 252, 244, 0.78);
+  --deep-glass-hover: rgba(168, 122, 38, 0.1);
+  --deep-shadow: 0 18px 44px rgba(90, 64, 20, 0.12);
+
+  --medal-face: radial-gradient(circle at 50% 35%, #fffdf6 0%, #f7ecd4 55%, #ecdbb6 100%);
+  --medal-ink: #7d5a1c;
+
+  --deep-tile: linear-gradient(160deg, #fbf3e2, #f0e0bd);
+  --deep-tile-ink: #7d5a1c;
+  --deep-tile-muted: #7a6a4c;
+
+  --deep-solid: #7d5a1c;
+  --deep-solid-ink: #fffaf0;
+
+  background: var(--color-bg);
+}
+
 /* ---------- Ortaq: kiçik qızılı başlıq ---------- */
 
 .biz-eyebrow {
