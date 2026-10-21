@@ -190,10 +190,10 @@ function AccountType() {
       <main className="landing__content">
         {/* ================= 1. SEÇİM ================= */}
         <section ref={setSection(0)} className="landing-hero">
-          <h1>{t("Bakıda ustanı tap, növbəni onlayn tut")}</h1>
+          <h1>{t("Bakının ustaları və müştəriləri bir yerdə")}</h1>
 
           <p className="landing-hero__lead">
-            {t("AzLink Bakının ustalarını və salonlarını bir yerə toplayır. Manikür, santexnik, repetitor və ya avtoservis lazımdırsa, qiymətləri və rəyləri müqayisə edin, boş saatı seçib yazılın. Zəng etməyə ehtiyac yoxdur.")}
+            {t("Xidmət axtarırsınız, yoxsa xidmət göstərirsiniz? Seçin və bir dəqiqəyə hesab yaradın.")}
           </p>
 
           <div className="landing-doors">
@@ -206,7 +206,7 @@ function AccountType() {
                 <UserRound size={22} strokeWidth={1.6} />
               </span>
               <strong>{t("Xidmət axtarıram")}</strong>
-              <span>{t("Ustanı tapın, qiymət və rəylərə baxın, uyğun saata onlayn yazılın. Pulsuzdur.")}</span>
+              <span>{t("Usta tapın, müqayisə edin və rezerv edin. Qeydiyyat pulsuzdur.")}</span>
               <em>{t("Müştəri kimi başla")}</em>
             </button>
 
@@ -219,7 +219,7 @@ function AccountType() {
                 <Briefcase size={22} strokeWidth={1.6} />
               </span>
               <strong>{t("Xidmət göstərirəm")}</strong>
-              <span>{t("Ustasınız və ya salonunuz var? Xidmətlərinizi yerləşdirin, müştərilər boş saatlarınıza özləri yazılsın.")}</span>
+              <span>{t("Profilinizi qurun, xidmətlərinizi əlavə edin və onlayn rezerv qəbul edin.")}</span>
               <em>{t("Biznesimi əlavə et")}</em>
             </button>
           </div>
