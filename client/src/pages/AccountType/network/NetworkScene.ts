@@ -101,7 +101,8 @@ interface TowerShape {
   lean: number;
 }
 
-/* 3-cü fotoda (stage-3.jpg) Alov qüllələrinin yeri, şəklin eni və
+/* Çəkilmiş siluetdə qüllələrin konturu üçün forma.
+   PHOTO_TOWERS: 3-cü fotoda (stage-3.jpg) Alov qüllələrinin yeri, şəklin eni və
    hündürlüyünə nisbətdə. Şəbəkə 3-cü mərhələdə bu konturları çəkir. */
 const PHOTO_TOWERS: TowerShape[] = [
   { cx: 0.778, half: 0.0216, top: 0.473, ground: 0.643, lean: 0.45 },
@@ -742,6 +743,15 @@ export class NetworkScene {
       this.skyOrigin = { x: sx + drift, y: sy };
     }
 
+    /* Fotolar varsa səhnəni fotolar özü danışır: üstündə yalnız
+       üzən işıq zərrəcikləri və kino effekti, çəkilmiş xəritə yoxdur */
+    if (photo) {
+      this.drawDust(time, s);
+      ctx.globalCompositeOperation = "source-over";
+      ctx.drawImage(this.overlay, 0, 0);
+      return;
+    }
+
     if (!photo) {
       const drift = this.reduced ? 0 : Math.sin(time * 0.05) * 6 * this.ratio;
       this.skyOrigin = {
@@ -931,7 +941,7 @@ export class NetworkScene {
     const w = this.canvas.width;
     const h = this.canvas.height;
     const local = clamp(s - index + 1, 0, 2);
-    const zoom = 1.1 - local * 0.035 + (this.reduced ? 0 : Math.sin(time * 0.05 + index) * 0.006);
+    const zoom = 1.05 - local * 0.02 + (this.reduced ? 0 : Math.sin(time * 0.05 + index) * 0.006);
     const cover = Math.max(w / image.naturalWidth, h / image.naturalHeight) * zoom;
     const dw = image.naturalWidth * cover;
     const dh = image.naturalHeight * cover;
