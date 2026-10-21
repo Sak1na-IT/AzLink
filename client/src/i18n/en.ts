@@ -779,4 +779,10 @@ export const en: Record<string, string> = {
   "Bizneslər qiymət və iş saatlarının düzgünlüyünə cavabdehdir. Rəylər real təcrübəyə əsaslanmalıdır.": "Businesses are responsible for accurate prices and hours. Reviews must be based on real experience.",
   "Axtardığın xidmət. Doğru əlaqə.": "The service you need. The right connection.",
   "Sənə uyğun xidmətləri tap, seçimlərini müqayisə et və rezervini rahatlıqla yarat. Hamısı bir platformada.": "Find services that suit you, compare your options and book with ease. All on one platform.",
+  "Bütün xidmətlər bir platformada": "All services on one platform",
+  "Etibarlı müştəri rəyləri": "Trusted customer reviews",
+  "Sadə və rahat rezervasiya": "Simple, easy booking",
+  "Gözəllik, ev xidmətləri, təhsil, avtomobil və digər sahələr üzrə mütəxəssisləri asanlıqla tapın. Ehtiyacınıza uyğun xidmətləri bir yerdə kəşf edin.": "Easily find professionals in beauty, home services, education, cars and more. Discover services that fit your needs in one place.",
+  "Xidmətdən yararlanmış müştərilərin rəylərini oxuyun, reytinqləri müqayisə edin və seçiminizi real təcrübələrə əsasən edin.": "Read reviews from customers who used the service, compare ratings and choose based on real experiences.",
+  "Uyğun xidməti, tarixi və saatı seçərək onlayn rezerv yaradın. Rezervlərinizin statusunu izləyin və xidmətlərinizi rahatlıqla planlaşdırın.": "Pick the right service, date and time and book online. Track the status of your bookings and plan with ease.",
 };

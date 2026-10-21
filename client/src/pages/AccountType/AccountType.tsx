@@ -61,23 +61,23 @@ const BUSINESS_STEPS = [
 const WHY = [
   {
     icon: LayoutGrid,
-    title: t("Hamısı bir yerdə"),
+    title: t("Bütün xidmətlər bir platformada"),
     text: t(
-      "Gözəllikdən təmirə, təhsildən avtomobilə qədər 8 sahə. Tanışlardan nömrə soruşmağa və zəng-zəng axtarmağa ehtiyac yoxdur."
+      "Gözəllik, ev xidmətləri, təhsil, avtomobil və digər sahələr üzrə mütəxəssisləri asanlıqla tapın. Ehtiyacınıza uyğun xidmətləri bir yerdə kəşf edin."
     ),
   },
   {
     icon: BadgeCheck,
-    title: t("Real rəylər"),
+    title: t("Etibarlı müştəri rəyləri"),
     text: t(
-      "Rəyi yalnız xidməti həqiqətən almış müştəri yaza bilər. Seçimi başqalarının təcrübəsinə görə edirsiniz."
+      "Xidmətdən yararlanmış müştərilərin rəylərini oxuyun, reytinqləri müqayisə edin və seçiminizi real təcrübələrə əsasən edin."
     ),
   },
   {
     icon: CalendarCheck,
-    title: t("Onlayn rezerv"),
+    title: t("Sadə və rahat rezervasiya"),
     text: t(
-      "Ustanın boş saatlarını görür və bir neçə toxunuşla rezerv edirsiniz. Təsdiq bildirişlə gəlir."
+      "Uyğun xidməti, tarixi və saatı seçərək onlayn rezerv yaradın. Rezervlərinizin statusunu izləyin və xidmətlərinizi rahatlıqla planlaşdırın."
     ),
   },
 ];
@@ -332,22 +332,6 @@ function AccountType() {
                 </article>
               );
             })}
-          </div>
-
-          <div className="landing-glass landing-cta">
-            <p>{t("Hazırsınız? Bir dəqiqəyə başlayın.")}</p>
-            <div>
-              <button type="button" className="landing-button" onClick={() => startAs("user")}>
-                {t("Müştəri kimi başla")}
-              </button>
-              <button
-                type="button"
-                className="landing-button landing-button--primary"
-                onClick={() => startAs("business")}
-              >
-                {t("Biznesimi əlavə et")}
-              </button>
-            </div>
           </div>
         </section>
       </main>
