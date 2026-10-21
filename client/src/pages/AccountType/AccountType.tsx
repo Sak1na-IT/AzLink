@@ -223,10 +223,6 @@ function AccountType() {
             </button>
           </div>
 
-          <p className="landing-hero__login">
-            {t("Artıq hesabınız var?")} <Link to="/login">{t("Daxil olun")}</Link>
-          </p>
-
           <a href="#necə" className="landing-hero__more">
             {t("Necə işləyir?")}
             <ArrowDown size={16} strokeWidth={1.8} />
