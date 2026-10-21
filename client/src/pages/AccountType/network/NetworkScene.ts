@@ -110,6 +110,15 @@ const PHOTO_TOWERS: TowerShape[] = [
   { cx: 0.908, half: 0.0286, top: 0.362, ground: 0.625, lean: 0.5 },
 ];
 
+/* Qaranlıq rejimin fotolarında kameranın yaxınlaşdığı nöqtələr
+   (şəklin eni/hündürlüyünə nisbətdə): "out" — buradan çıxılır,
+   "in" — növbəti şəkil bu nöqtədən açılır */
+const JOURNEY = [
+  { out: { u: 0.685, v: 0.646 }, in: { u: 0.5, v: 0.5 } }, // aşağıdakı parlaq şüşə kürə
+  { out: { u: 0.878, v: 0.418 }, in: { u: 0.655, v: 0.445 } }, // xəritədə Bakı / xəritənin mərkəzi
+  { out: { u: 0.5, v: 0.5 }, in: { u: 0.84, v: 0.53 } }, // Alov qüllələri
+];
+
 /* Ağ rejimin xəritə fotosunda (stage-2-light.jpg) Bakının yeri */
 const BAKU_IN_LIGHT_MAP = { u: 0.855, v: 0.43 };
 
@@ -935,6 +944,10 @@ export class NetworkScene {
     const ctx = this.ctx;
     const w = this.canvas.width;
     const h = this.canvas.height;
+    if (this.palette.dark) {
+      this.drawDarkJourney(s, time);
+      return;
+    }
     void w;
     void h;
     const weights = [1, smooth(clamp(s)), smooth(clamp(s - 1))];
@@ -946,6 +959,78 @@ export class NetworkScene {
       ctx.drawImage(image, rect.x, rect.y, rect.w, rect.h);
     });
     ctx.globalAlpha = 1;
+  }
+
+  /* Qaranlıq rejim: kamera şəkillərin "içindən" keçir.
+     1 → 2: şüşə kürələrdən birinə yaxınlaşır, içində xəritə açılır.
+     2 → 3: xəritədə Bakının parlaq nöqtəsinə yaxınlaşır, o işıq Alov
+     qüllələrinə çevrilir. Geri sürüşdürəndə eyni yolla geri qayıdır. */
+  private drawDarkJourney(s: number, time: number) {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    const center = { x: w * (this.compact ? 0.6 : 0.7), y: h * 0.5 };
+    const drift = this.reduced ? 0 : Math.sin(time * 0.05) * 0.006;
+
+    /* Şəklin "örtük" ölçüsü, sonra lövbər nöqtəsi ətrafında böyütmə */
+    const place = (index: number, k: number, anchor: { u: number; v: number }, to: { x: number; y: number } | null) => {
+      const image = this.photos[index];
+      const cover = Math.max(w / image.naturalWidth, h / image.naturalHeight) * (1.03 + drift);
+      const bw = image.naturalWidth * cover;
+      const bh = image.naturalHeight * cover;
+      const bx = (w - bw) * (this.compact ? 0.7 : 0.5);
+      const by = (h - bh) / 2;
+      const ax = bx + anchor.u * bw;
+      const ay = by + anchor.v * bh;
+      const tx = to ? to.x : ax;
+      const ty = to ? to.y : ay;
+      return { x: tx + (bx - ax) * k, y: ty + (by - ay) * k, w: bw * k, h: bh * k, anchor: { x: ax, y: ay } };
+    };
+
+    const stage = Math.min(Math.floor(s), 1);
+    const t = s >= 2 ? 1 : smooth(clamp(s - stage));
+    if (s <= 0.001) {
+      const r = place(0, 1, JOURNEY[0].out, null);
+      ctx.drawImage(this.photos[0], r.x, r.y, r.w, r.h);
+      return;
+    }
+
+    const from = JOURNEY[stage];
+    const to = JOURNEY[stage + 1];
+
+    /* Gedən şəkil: lövbər nöqtəsinə doğru böyüyür */
+    const natural = place(stage, 1, from.out, null).anchor;
+    const out = place(stage, 1 + 1.8 * t, from.out, {
+      x: lerp(natural.x, center.x, t),
+      y: lerp(natural.y, center.y, t),
+    });
+    ctx.globalAlpha = 1;
+    ctx.drawImage(this.photos[stage], out.x, out.y, out.w, out.h);
+
+    /* Gələn şəkil: böyük başlayır, öz yerinə qayıdır, yavaşca görünür */
+    const fade = smooth(clamp((s - stage - 0.3) / 0.5));
+    if (fade > 0.001) {
+      const home = place(stage + 1, 1, to.in, null).anchor;
+      const incoming = place(stage + 1, 1 + 1.0 * (1 - t), to.in, {
+        x: lerp(center.x, home.x, t),
+        y: lerp(center.y, home.y, t),
+      });
+      ctx.globalAlpha = fade;
+      ctx.drawImage(this.photos[stage + 1], incoming.x, incoming.y, incoming.w, incoming.h);
+      ctx.globalAlpha = 1;
+    }
+
+    /* Keçidin ortasında yumşaq işıq parlaması: "içindən keçmə" hissi */
+    const flash = Math.sin(Math.PI * clamp((s - stage - 0.15) / 0.7)) * (s >= 2 ? 0 : 1);
+    if (flash > 0.01) {
+      const g = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, Math.max(w, h) * 0.5);
+      g.addColorStop(0, `rgba(${stage === 0 ? "120, 230, 180" : "236, 206, 140"}, ${0.22 * flash})`);
+      g.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.globalCompositeOperation = "lighter";
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = "source-over";
+    }
   }
 
   private photoRect(index: number, s: number, time: number) {
