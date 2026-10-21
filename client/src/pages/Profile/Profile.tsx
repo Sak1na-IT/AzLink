@@ -264,18 +264,21 @@ function Profile() {
                   />
                 </label>
 
-                <label>
-                  {t("Email")}
-                  <input type="email" value={email} disabled readOnly />
-                </label>
+                {/* Email ayrıca pəncərədə dəyişdirilir: düymə xananın yanındadır */}
+                <div className="profile-email-field">
+                  <label>
+                    {t("Email")}
+                    <input type="email" value={email} disabled readOnly />
+                  </label>
 
-                <button
-                  type="button"
-                  className="profile-secondary-button"
-                  onClick={() => setIsEmailOpen(true)}
-                >
-                  {t("Emaili dəyiş")}
-                </button>
+                  <button
+                    type="button"
+                    className="profile-secondary-button"
+                    onClick={() => setIsEmailOpen(true)}
+                  >
+                    {t("Emaili dəyiş")}
+                  </button>
+                </div>
 
                 {saveError && (
                   <p

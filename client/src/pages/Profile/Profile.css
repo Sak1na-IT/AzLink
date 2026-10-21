@@ -135,6 +135,33 @@
   gap: 8px;
 }
 
+/* Email xanası və "Emaili dəyiş" düyməsi bir sırada */
+.profile-email-field {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 22px;
+}
+
+.profile-email-field label {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.profile-email-field .profile-secondary-button {
+  flex: 0 0 auto;
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  .profile-email-field {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
 .profile-primary-button,
 .profile-secondary-button,
 .profile-logout-button {
