@@ -996,7 +996,10 @@ export class NetworkScene {
       const cover = Math.max(w / image.naturalWidth, h / image.naturalHeight) * (1.03 + drift);
       const bw = image.naturalWidth * cover;
       const bh = image.naturalHeight * cover;
-      const bx = (w - bw) * (this.compact ? 0.7 : 0.5);
+      /* Xəritə fotosu kompüterdə sağa çəkilir ki, kartların altında qalmasın
+         (şəklin sol tərəfi onsuz da qaranlıqdır, açılan yer fonla eynidir) */
+      const shift = index === 1 && !this.compact ? w * 0.08 : 0;
+      const bx = (w - bw) * (this.compact ? 0.7 : 0.5) + shift;
       const by = (h - bh) / 2;
       const ax = bx + anchor.u * bw;
       const ay = by + anchor.v * bh;
@@ -1009,23 +1012,25 @@ export class NetworkScene {
     const raw = s >= 2 ? 1 : clamp(s - stage);
     const t = smooth(raw);
 
+    ctx.fillStyle = "#010604";
+    ctx.fillRect(0, 0, w, h);
+
     /* 1 → 2: kürələr kiçilərək xəritənin üstünə üzür, hər biri bir
        nöqtədə işıq kimi əriyir. Fon sakitcə qaralır, xəritə bulanıqlıq
        olmadan, yüngülcə yerinə oturaraq aydın şəkildə çıxır. */
     if (stage === 0) {
       const spheres = place(0, 1 + 0.04 * t, { u: 0.7, v: 0.5 }, null);
-      const settle = smooth(clamp((raw - 0.3) / 0.5));
+      const settle = smooth(clamp((raw - 0.15) / 0.6));
       const map = place(1, 1.04 - 0.04 * settle, JOURNEY[1].in, null);
 
-      ctx.fillStyle = "#010604";
-      ctx.fillRect(0, 0, w, h);
-      const backdrop = 1 - smooth(clamp((raw - 0.05) / 0.4));
+      const backdrop = 1 - smooth(clamp((raw - 0.1) / 0.45));
       if (backdrop > 0.005) {
         ctx.globalAlpha = backdrop;
         ctx.drawImage(this.photos[0], spheres.x, spheres.y, spheres.w, spheres.h);
       }
 
-      const reveal = smooth(clamp((raw - 0.3) / 0.45));
+      /* Xəritə kürələrin fonu sönməmiş görünməyə başlayır: boş an olmur */
+      const reveal = smooth(clamp((raw - 0.12) / 0.5));
       if (reveal > 0.005) {
         ctx.globalAlpha = reveal;
         ctx.drawImage(this.photos[1], map.x, map.y, map.w, map.h);
@@ -1043,7 +1048,7 @@ export class NetworkScene {
     const to = JOURNEY[stage + 1];
 
     const point = place(stage, 1, from.out, null).anchor;
-    const out = place(stage, 1 + 1.3 * t, from.out, point);
+    const out = place(stage, 1 + 0.7 * t, from.out, point);
     ctx.globalAlpha = 1;
     ctx.drawImage(this.photos[stage], out.x, out.y, out.w, out.h);
     if (raw <= 0.001) return;
