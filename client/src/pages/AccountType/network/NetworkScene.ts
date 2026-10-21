@@ -62,8 +62,8 @@ interface Palette {
 
 const DARK: Palette = {
   dark: true,
-  bgBase: "#03100c",
-  bgCenter: "#0f4231",
+  bgBase: "#020b08",
+  bgCenter: "#0a3125",
   bgEdge: "#010705",
   glow: "80, 235, 170",
   line: "130, 250, 196",
@@ -109,6 +109,18 @@ const HERO_LINKS: [number, number][] = [
   [2, 5],
   [1, 6],
 ];
+
+type Icon = "user" | "briefcase" | "scissors" | "wrench" | "calendar" | "home";
+
+/* Sadə xətt ikonları (24×24 qutuda) */
+const ICONS: Record<Icon, Path2D> = {
+  user: new Path2D("M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M4 21c0-4 3.6-6 8-6s8 2 8 6"),
+  briefcase: new Path2D("M5 7h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z M9 7V5h6v2 M3 13h18"),
+  scissors: new Path2D("M6 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M8.1 8.1 20 20 M8.1 15.9 20 4"),
+  wrench: new Path2D("M14.7 6.3a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.7-7.7z M14.7 6.3 17 4"),
+  calendar: new Path2D("M5 5h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z M3 10h18 M8 3v4 M16 3v4"),
+  home: new Path2D("M3 11 12 4l9 7v9H3z M10 20v-5h4v5"),
+};
 
 /* ---------- köməkçilər ---------- */
 
@@ -198,6 +210,14 @@ export class NetworkScene {
   private sprite: HTMLCanvasElement;
   private backdrop: HTMLCanvasElement;
   private skyline = new Skyline();
+  /* Şəbəkə ayrıca təbəqədə çəkilir: üstündən bulanıq nüsxə = işıq saçma (bloom) */
+  private net = document.createElement("canvas");
+  private fog = document.createElement("canvas");
+  private overlay = document.createElement("canvas");
+  private main: CanvasRenderingContext2D;
+  private landDots: { local: Vec3; delay: number }[] = [];
+  private landRings: Vec3[][] = [];
+  private badges: { local: Vec3; icon: Icon; city: number; delay: number }[] = [];
   private bokeh: { x: number; y: number; r: number; alpha: number; speed: number; phase: number }[] = [];
   private width = 0;
   private height = 0;
@@ -215,6 +235,7 @@ export class NetworkScene {
     const ctx = canvas.getContext("2d");
     if (!ctx) throw new Error("Canvas 2D dəstəklənmir");
     this.ctx = ctx;
+    this.main = ctx;
     this.sprite = document.createElement("canvas");
     this.backdrop = document.createElement("canvas");
   }
@@ -299,7 +320,7 @@ export class NetworkScene {
 
     /* 3. Daxili düyünlər: əvvəl azı, sonra hamısı */
     const interiorStart = nodes.length;
-    const interiorCount = this.compact ? 26 : 46;
+    const interiorCount = this.compact ? 34 : 78;
     const placed: [number, number][] = [...CITIES.map(toLocal)];
     let tries = 0;
     while (nodes.length - interiorStart < interiorCount && tries < 4000) {
@@ -307,7 +328,7 @@ export class NetworkScene {
       const point: [number, number] = [lerp(-1.1, 1.15, random()), lerp(-0.85, 0.9, random())];
       const inMap = inside(point, mainlandLocal) || inside(point, nakhLocal);
       if (!inMap) continue;
-      if (placed.some((p) => Math.hypot(p[0] - point[0], p[1] - point[1]) < 0.11)) continue;
+      if (placed.some((p) => Math.hypot(p[0] - point[0], p[1] - point[1]) < (this.compact ? 0.1 : 0.082))) continue;
       placed.push(point);
       const early = random() < 0.35;
       nodes.push({
@@ -400,6 +421,43 @@ export class NetworkScene {
       alpha: 0.15 + random() * 0.4,
     }));
 
+    /* Torpaq: ölkənin içi incə nöqtə toru ilə işıqlanır */
+    const step = this.compact ? 0.034 : 0.024;
+    this.landDots = [];
+    for (let y = -0.85; y < 0.9; y += step) {
+      for (let x = -1.15; x < 1.2; x += step) {
+        const point: [number, number] = [x + (random() - 0.5) * step * 0.6, y + (random() - 0.5) * step * 0.6];
+        if (inside(point, mainlandLocal) || inside(point, nakhLocal)) {
+          this.landDots.push({ local: [point[0], point[1], 0], delay: random() });
+        }
+      }
+    }
+    this.landRings = [mainlandLocal, nakhLocal].map((ring) => ring.map(([x, y]) => [x, y, 0] as Vec3));
+
+    /* Xidmət nişanları: xəritənin üstündə üzən şüşə dairələr */
+    const icons: [LonLat, Icon][] = [
+      [[46.1, 40.25], "user"],
+      [[48.2, 41.05], "briefcase"],
+      [[47.55, 39.85], "scissors"],
+      [[49.1, 39.75], "wrench"],
+      [[45.55, 39.45], "calendar"],
+      [[48.95, 40.95], "home"],
+    ];
+    this.badges = (this.compact ? icons.slice(0, 4) : icons).map(([lonLat, icon]) => {
+      const [x, y] = toLocal(lonLat);
+      let city = 0;
+      let best = Infinity;
+      CITIES.forEach((c, index) => {
+        const [cx, cy] = toLocal(c);
+        const d = Math.hypot(cx - x, cy - y);
+        if (d < best) {
+          best = d;
+          city = index;
+        }
+      });
+      return { local: [x, y, -0.14] as Vec3, icon, city, delay: random() * 0.4 };
+    });
+
     /* Fokusdan kənar yumşaq işıq ləkələri: dərinlik və canlılıq */
     this.bokeh = Array.from({ length: this.compact ? 8 : 16 }, () => ({
       x: random(),
@@ -456,6 +514,56 @@ export class NetworkScene {
     bc.fillStyle = fog;
     bc.fillRect(0, 0, w, h);
 
+    this.net.width = w;
+    this.net.height = h;
+
+    /* Duman: kiçik ölçüdə çəkilib böyüdülür, ona görə çox yumşaqdır */
+    const fw = Math.round(w / 6);
+    const fh = Math.round(h / 6);
+    this.fog.width = fw;
+    this.fog.height = fh;
+    const fc = this.fog.getContext("2d")!;
+    fc.clearRect(0, 0, fw, fh);
+    const random = seeded(3);
+    for (let i = 0; i < 70; i += 1) {
+      const x = random() * fw;
+      const y = fh * (0.25 + random() * 0.75);
+      const r = (0.08 + random() * 0.22) * fw;
+      const g2 = fc.createRadialGradient(x, y, 0, x, y, r);
+      const a = (p.dark ? 0.025 : 0.02) + random() * (p.dark ? 0.03 : 0.02);
+      g2.addColorStop(0, p.dark ? `rgba(60, 170, 125, ${a})` : `rgba(40, 140, 100, ${a})`);
+      g2.addColorStop(1, "rgba(0, 0, 0, 0)");
+      fc.fillStyle = g2;
+      fc.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+
+    /* Kino effekti: kənarlarda qaranlıq və çox incə dən */
+    this.overlay.width = w;
+    this.overlay.height = h;
+    const oc = this.overlay.getContext("2d")!;
+    oc.clearRect(0, 0, w, h);
+    const vignette = oc.createRadialGradient(w * 0.6, h * 0.5, Math.min(w, h) * 0.3, w * 0.6, h * 0.5, Math.max(w, h) * 0.8);
+    vignette.addColorStop(0, "rgba(0, 0, 0, 0)");
+    vignette.addColorStop(1, p.dark ? "rgba(0, 0, 0, 0.6)" : "rgba(0, 0, 0, 0)");
+    oc.fillStyle = vignette;
+    oc.fillRect(0, 0, w, h);
+    const tile = document.createElement("canvas");
+    tile.width = 160;
+    tile.height = 160;
+    const tc = tile.getContext("2d")!;
+    const noise = tc.createImageData(160, 160);
+    for (let i = 0; i < noise.data.length; i += 4) {
+      /* Math.random: təkrarlanan naxış (zolaq) yaranmasın */
+      const v = Math.random() * 255;
+      noise.data[i] = v;
+      noise.data[i + 1] = v;
+      noise.data[i + 2] = v;
+      noise.data[i + 3] = p.dark ? 9 : 6;
+    }
+    tc.putImageData(noise, 0, 0);
+    oc.fillStyle = oc.createPattern(tile, "repeat")!;
+    oc.fillRect(0, 0, w, h);
+
     const skyWidth = this.compact ? w : w * 0.62;
     const skyHeight = this.height * (this.compact ? 0.32 : 0.5) * this.ratio;
     this.skyline.setup(skyWidth, skyHeight, this.ratio, p.dark);
@@ -472,7 +580,7 @@ export class NetworkScene {
     return {
       rotX: lerp(0.5, 0.36, t),
       rotY: lerp(-0.18, -0.08, t) + sway,
-      lift: lerp(0.02, this.compact ? 0.3 : 0.5, t),
+      lift: lerp(0.02, this.compact ? 0.32 : 0.6, t),
       depth: lerp(1.0, 1.25, t),
       scale: lerp(big, big * 0.72, t),
     };
@@ -524,14 +632,13 @@ export class NetworkScene {
       const gy = this.canvas.height * 0.45;
       const gr = Math.max(this.canvas.width, this.canvas.height) * 0.45;
       const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr);
-      glow.addColorStop(0, `rgba(${p.glow}, ${(p.dark ? 0.24 : 0.1) * mapGlow})`);
+      glow.addColorStop(0, `rgba(${p.glow}, ${(p.dark ? 0.15 : 0.1) * mapGlow})`);
       glow.addColorStop(1, `rgba(${p.glow}, 0)`);
       ctx.fillStyle = glow;
       ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
 
-    this.drawDust(time, s);
-
+    this.drawFog(time, s);
     this.drawBokeh(time);
 
     /* Uzaqda Bakı siluetı: sağ-aşağıda, aşağıdan yavaşca qalxır */
@@ -570,9 +677,21 @@ export class NetworkScene {
       return { node, pos, radius, alpha, screen: this.project(pos) };
     });
 
+    /* Torpaq: ölkənin forması işıqlı nöqtələrlə dolur */
+    this.drawLand(s, m, swayAll);
+
+    /* Şəbəkə ayrıca təbəqəyə çəkilir */
+    const net = this.net.getContext("2d")!;
+    net.globalCompositeOperation = "source-over";
+    net.globalAlpha = 1;
+    net.clearRect(0, 0, this.net.width, this.net.height);
+    this.ctx = net;
+    const glassQueue: { x: number; y: number; r: number; alpha: number; depth: number; phase: number }[] = [];
+
     /* Xətlər */
-    ctx.globalCompositeOperation = p.dark ? "lighter" : "source-over";
-    ctx.lineCap = "round";
+    ctx.globalCompositeOperation = "source-over";
+    net.globalCompositeOperation = p.dark ? "lighter" : "source-over";
+    net.lineCap = "round";
     const edgeAlpha: number[] = [];
     this.edges.forEach((edge, index) => {
       const state = stageValue(edge.weight, s, edge.delay);
@@ -587,15 +706,15 @@ export class NetworkScene {
       const ex = lerp(a.screen.x, b.screen.x, grow);
       const ey = lerp(a.screen.y, b.screen.y, grow);
       const depthFade = clamp(1.6 - (a.screen.depth + b.screen.depth) / 2 / 4.2, 0.35, 1);
-      ctx.strokeStyle = `rgba(${p.line}, ${alpha * 0.14 * depthFade})`;
-      ctx.lineWidth = 3.6 * this.ratio;
-      ctx.beginPath();
-      ctx.moveTo(a.screen.x, a.screen.y);
-      ctx.lineTo(ex, ey);
-      ctx.stroke();
-      ctx.strokeStyle = `rgba(${p.line}, ${alpha * 0.75 * depthFade})`;
-      ctx.lineWidth = 1 * this.ratio;
-      ctx.stroke();
+      net.strokeStyle = `rgba(${p.line}, ${alpha * 0.14 * depthFade})`;
+      net.lineWidth = 3.6 * this.ratio;
+      net.beginPath();
+      net.moveTo(a.screen.x, a.screen.y);
+      net.lineTo(ex, ey);
+      net.stroke();
+      net.strokeStyle = `rgba(${p.line}, ${alpha * 0.75 * depthFade})`;
+      net.lineWidth = 1 * this.ratio;
+      net.stroke();
     });
 
     /* İşıq impulsları: insanlar və bizneslər arasında hərəkət */
@@ -609,10 +728,10 @@ export class NetworkScene {
         const a = nodeState[edge.a].screen;
         const b = nodeState[edge.b].screen;
         const size = 14 * this.ratio;
-        ctx.globalAlpha = alpha * Math.sin(t * Math.PI);
-        ctx.drawImage(this.sprite, lerp(a.x, b.x, t) - size / 2, lerp(a.y, b.y, t) - size / 2, size, size);
+        net.globalAlpha = alpha * Math.sin(t * Math.PI);
+        net.drawImage(this.sprite, lerp(a.x, b.x, t) - size / 2, lerp(a.y, b.y, t) - size / 2, size, size);
       });
-      ctx.globalAlpha = 1;
+      net.globalAlpha = 1;
     }
 
     /* Düyünlər: uzaqdan yaxına */
@@ -628,17 +747,169 @@ export class NetworkScene {
         }
         /* Böyük kürə şüşədir; kiçildikcə parlaq düyünə çevrilir */
         const glass = clamp((px - 7 * this.ratio) / (12 * this.ratio));
-        if (glass > 0) this.drawGlass(state.screen.x, state.screen.y, px, state.alpha * glass * depthFade, time + state.node.phase);
+        if (glass > 0) {
+          glassQueue.push({
+            x: state.screen.x,
+            y: state.screen.y,
+            r: px,
+            alpha: state.alpha * glass * depthFade,
+            depth: state.screen.depth,
+            phase: time + state.node.phase,
+          });
+        }
         const dot = 1 - glass * 0.85;
         const bright = state.node.kind === "hero" ? 1 : 0.75;
         const size = Math.max(px * 5, 5 * this.ratio) * (state.node.kind === "hero" ? 1.3 : 1);
-        ctx.globalCompositeOperation = p.dark ? "lighter" : "source-over";
-        ctx.globalAlpha = state.alpha * dot * bright * depthFade;
-        ctx.drawImage(this.sprite, state.screen.x - size / 2, state.screen.y - size / 2, size, size);
-        ctx.globalAlpha = 1;
+        net.globalCompositeOperation = p.dark ? "lighter" : "source-over";
+        net.globalAlpha = state.alpha * dot * bright * depthFade;
+        net.drawImage(this.sprite, state.screen.x - size / 2, state.screen.y - size / 2, size, size);
+        net.globalAlpha = 1;
       });
 
+    /* Xidmət nişanları */
+    this.drawBadges(s, m, swayAll, nodeState, time);
+
+    this.ctx = this.main;
+
+    /* Bloom: əvvəl bulanıq nüsxə, sonra iti xətlər */
+    ctx.save();
+    ctx.globalCompositeOperation = p.dark ? "lighter" : "source-over";
+    ctx.filter = `blur(${Math.round(9 * this.ratio)}px)`;
+    ctx.globalAlpha = p.dark ? 0.95 : 0.16;
+    ctx.drawImage(this.net, 0, 0);
+    ctx.filter = "none";
+    ctx.globalAlpha = 1;
+    ctx.drawImage(this.net, 0, 0);
+    ctx.restore();
+
+    /* Şüşə kürələr: fokusdan uzaq olanlar bulanıqdır (dərinlik) */
+    glassQueue.forEach((g) => {
+      const blur = clamp(Math.abs(g.depth - 3.9) * 2.4, 0, 6) * this.ratio;
+      ctx.save();
+      if (blur > 0.6) ctx.filter = `blur(${blur.toFixed(1)}px)`;
+      this.drawGlass(g.x, g.y, g.r, g.alpha, g.phase);
+      ctx.restore();
+    });
+
+    this.drawDust(time, s);
+
     ctx.globalCompositeOperation = "source-over";
+    ctx.drawImage(this.overlay, 0, 0);
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  private drawFog(time: number, s: number) {
+    const ctx = this.ctx;
+    const w = this.canvas.width;
+    const h = this.canvas.height;
+    const strength = 0.7 + s * 0.25;
+    ctx.save();
+    ctx.globalCompositeOperation = this.palette.dark ? "lighter" : "multiply";
+    [0, 1].forEach((layer) => {
+      const speed = layer ? 0.012 : 0.007;
+      const dx = Math.sin(time * speed * 6 + layer * 2) * w * 0.06 - w * 0.1;
+      ctx.globalAlpha = strength * (layer ? 0.7 : 1);
+      ctx.drawImage(this.fog, dx, layer ? h * 0.05 : 0, w * 1.25, h);
+    });
+    ctx.restore();
+  }
+
+  private drawLand(s: number, m: ReturnType<NetworkScene["mapTransform"]>, sway: number) {
+    const ctx = this.ctx;
+    const p = this.palette;
+    const land = smooth(clamp((s - 0.55) / 0.6));
+    if (land < 0.01) return;
+    const place = (local: Vec3) => {
+      const pos = this.toWorld(local, m);
+      const cz = pos[2] - 1;
+      return this.project([pos[0] * Math.cos(sway) + cz * Math.sin(sway), pos[1], -pos[0] * Math.sin(sway) + cz * Math.cos(sway) + 1]);
+    };
+    /* Ölkənin forması: içəridən yumşaq zümrüd işıq */
+    ctx.save();
+    ctx.beginPath();
+    this.landRings.forEach((ring) => {
+      ring.forEach((point, index) => {
+        const pr = place(point);
+        if (index === 0) ctx.moveTo(pr.x, pr.y);
+        else ctx.lineTo(pr.x, pr.y);
+      });
+      ctx.closePath();
+    });
+    const center = place([0, 0, 0]);
+    const fill = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, center.scale * 0.9);
+    fill.addColorStop(0, `rgba(${p.glow}, ${(p.dark ? 0.2 : 0.12) * land})`);
+    fill.addColorStop(1, `rgba(${p.glow}, ${(p.dark ? 0.05 : 0.04) * land})`);
+    ctx.fillStyle = fill;
+    ctx.fill();
+    ctx.restore();
+
+    /* İncə nöqtə toru: ölkə "işıqlı torpaq" kimi görünür */
+    ctx.fillStyle = `rgb(${p.line})`;
+    const size = Math.max(1, 1.1 * this.ratio);
+    this.landDots.forEach((dot) => {
+      const a = smooth(clamp((land - dot.delay * 0.6) / 0.4));
+      if (a < 0.02) return;
+      const pr = place(dot.local);
+      ctx.globalAlpha = a * (p.dark ? 0.32 : 0.35) * clamp(1.6 - pr.depth / 3.6, 0.3, 1);
+      ctx.fillRect(pr.x, pr.y, size, size);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  private drawBadges(
+    s: number,
+    m: ReturnType<NetworkScene["mapTransform"]>,
+    sway: number,
+    nodeState: { screen: { x: number; y: number } }[],
+    time: number
+  ) {
+    const ctx = this.ctx;
+    const p = this.palette;
+    const show = smooth(clamp((s - 1.05) / 0.5));
+    if (show < 0.01) return;
+    this.badges.forEach((badge, index) => {
+      const a = smooth(clamp((show - badge.delay) / 0.6));
+      if (a < 0.01) return;
+      const bob = this.reduced ? 0 : Math.sin(time * 0.8 + index) * 0.012;
+      const pos = this.toWorld([badge.local[0], badge.local[1], badge.local[2] + bob], m);
+      const cz = pos[2] - 1;
+      const pr = this.project([pos[0] * Math.cos(sway) + cz * Math.sin(sway), pos[1], -pos[0] * Math.sin(sway) + cz * Math.cos(sway) + 1]);
+      const city = nodeState[badge.city].screen;
+      const r = (this.compact ? 15 : 19) * this.ratio;
+
+      /* Nişandan şəhərə incə xətt */
+      ctx.save();
+      ctx.globalAlpha = a * 0.5;
+      ctx.strokeStyle = `rgb(${p.line})`;
+      ctx.lineWidth = 0.8 * this.ratio;
+      ctx.setLineDash([3 * this.ratio, 4 * this.ratio]);
+      ctx.beginPath();
+      ctx.moveTo(pr.x, pr.y);
+      ctx.lineTo(city.x, city.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* Şüşə dairə */
+      ctx.globalCompositeOperation = "source-over";
+      ctx.globalAlpha = a;
+      ctx.fillStyle = p.dark ? "rgba(4, 26, 19, 0.82)" : "rgba(255, 255, 255, 0.88)";
+      ctx.beginPath();
+      ctx.arc(pr.x, pr.y, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = p.dark ? "rgba(150, 255, 210, 0.75)" : "rgba(22, 104, 78, 0.6)";
+      ctx.lineWidth = 1.1 * this.ratio;
+      ctx.stroke();
+
+      /* İkon */
+      ctx.translate(pr.x - r * 0.5, pr.y - r * 0.5);
+      ctx.scale(r / 24, r / 24);
+      ctx.strokeStyle = p.dark ? "rgba(200, 255, 230, 0.95)" : "rgba(22, 104, 78, 0.95)";
+      ctx.lineWidth = 1.8;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke(ICONS[badge.icon]);
+      ctx.restore();
+    });
   }
 
   private drawBokeh(time: number) {

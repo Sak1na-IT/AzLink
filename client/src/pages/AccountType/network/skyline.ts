@@ -3,16 +3,16 @@
  * işıqları və Xəzərdə əks. 3-cü mərhələdə ekranın sağ-aşağısında
  * görünür.
  *
- * Qaranlıq rejim: axşam. Qüllələrin fasadında LED ekranda dalğalanan
- * Azərbaycan bayrağı, pəncərələrdə isti işıq.
+ * Qaranlıq rejim: gecə. Qüllələrin fasadında zümrüd LED işığı aşağıdan
+ * yuxarı alov kimi axır; şəhər dumanın içində, pəncərələrdə isti işıq.
  * Açıq rejim: gündüz. Qüllələr mavi şüşə, üzərində işıq əksi gəzir.
  *
  * Dəyişməyən hissələr (göy, uzaq şəhər, binalar) ölçü dəyişəndə bir
  * dəfə çəkilir; hər kadrda yalnız qüllələr, su əksi və işıqlar.
  */
 
-/* LED ekranın rəngləri: bayraq, bir az işıqlı tonda */
-const FLAG = ["#22b8e6", "#e2384b", "#3fa64c"];
+/* Qüllələrin LED işığı: zümrüd tonları */
+const LED = { deep: [16, 96, 70], mid: [60, 220, 160], bright: [200, 255, 230] };
 
 const seeded = (seed: number) => {
   let value = seed;
@@ -96,10 +96,10 @@ export class Skyline {
     /* Üfüqdə axşam işığı (və ya gündüz səması) */
     const sky = c.createLinearGradient(0, 0, 0, this.horizon);
     if (this.dark) {
-      sky.addColorStop(0, "rgba(8, 30, 40, 0)");
-      sky.addColorStop(0.45, "rgba(20, 60, 80, 0.55)");
-      sky.addColorStop(0.78, "rgba(170, 110, 70, 0.55)");
-      sky.addColorStop(1, "rgba(255, 170, 90, 0.7)");
+      sky.addColorStop(0, "rgba(6, 30, 24, 0)");
+      sky.addColorStop(0.55, "rgba(10, 48, 36, 0.35)");
+      sky.addColorStop(0.9, "rgba(30, 100, 76, 0.35)");
+      sky.addColorStop(1, "rgba(70, 150, 115, 0.4)");
     } else {
       sky.addColorStop(0, "rgba(200, 225, 240, 0)");
       sky.addColorStop(0.6, "rgba(190, 220, 238, 0.7)");
@@ -109,7 +109,7 @@ export class Skyline {
     c.fillRect(0, 0, w, this.horizon);
 
     /* Uzaq təpələr və onların üzərində şəhər işıqları */
-    c.fillStyle = this.dark ? "#0b1a22" : "rgba(120, 150, 160, 0.55)";
+    c.fillStyle = this.dark ? "#071612" : "rgba(120, 150, 160, 0.55)";
     c.beginPath();
     c.moveTo(0, h * 0.7);
     for (let x = 0; x <= w; x += w / 12) {
@@ -122,7 +122,7 @@ export class Skyline {
       for (let i = 0; i < 260; i += 1) {
         const x = random() * w;
         const y = h * (0.64 + random() * 0.14);
-        c.fillStyle = random() > 0.3 ? `rgba(255, 196, 120, ${0.3 + random() * 0.5})` : `rgba(255, 240, 210, ${0.4 + random() * 0.4})`;
+        c.fillStyle = random() > 0.45 ? `rgba(255, 205, 140, ${0.25 + random() * 0.4})` : `rgba(150, 255, 210, ${0.3 + random() * 0.4})`;
         c.fillRect(x, y, 1.2 * r, 1.2 * r);
       }
     }
@@ -132,9 +132,9 @@ export class Skyline {
     const tvTop = h * 0.08;
     const tvBase = h * 0.66;
     const body = c.createLinearGradient(tv - 6 * r, 0, tv + 6 * r, 0);
-    body.addColorStop(0, this.dark ? "#3a2a18" : "#9aa7ad");
-    body.addColorStop(0.5, this.dark ? "#d9a24a" : "#e6ecef");
-    body.addColorStop(1, this.dark ? "#3a2a18" : "#8d989e");
+    body.addColorStop(0, this.dark ? "#0c2a20" : "#9aa7ad");
+    body.addColorStop(0.5, this.dark ? "#7fe6b8" : "#e6ecef");
+    body.addColorStop(1, this.dark ? "#0c2a20" : "#8d989e");
     c.fillStyle = body;
     c.beginPath();
     c.moveTo(tv - 7 * r, tvBase);
@@ -156,7 +156,7 @@ export class Skyline {
       const bw = (10 + random() * 22) * r;
       const bh = h * (0.08 + random() * 0.16);
       const by = h * 0.74 - bh;
-      c.fillStyle = this.dark ? "#0d1b24" : "rgba(150, 170, 178, 0.8)";
+      c.fillStyle = this.dark ? "#08171a" : "rgba(150, 170, 178, 0.8)";
       c.fillRect(bx, by, bw, bh + h * 0.06);
       this.windows(c, bx, by, bw, bh, random, 0.35);
     }
@@ -180,9 +180,9 @@ export class Skyline {
       const by = this.horizon - bh;
       const body = c.createLinearGradient(0, by, 0, this.horizon);
       if (this.dark) {
-        body.addColorStop(0, "#4a3418");
-        body.addColorStop(0.18, "#22180c");
-        body.addColorStop(1, "#0e0a05");
+        body.addColorStop(0, "#1d2a22");
+        body.addColorStop(0.2, "#0d1713");
+        body.addColorStop(1, "#050a08");
       } else {
         body.addColorStop(0, "#efe4cc");
         body.addColorStop(1, "#d8c9a8");
@@ -190,11 +190,11 @@ export class Skyline {
       c.fillStyle = body;
       c.fillRect(x, by, bw, bh);
       /* Fasadın yuxarı kənarında işıq xətti */
-      c.fillStyle = this.dark ? "rgba(255, 200, 120, 0.55)" : "rgba(255, 255, 255, 0.7)";
-      c.fillRect(x, by, bw, 1.2 * r);
+      c.fillStyle = this.dark ? "rgba(150, 255, 210, 0.35)" : "rgba(255, 255, 255, 0.7)";
+      c.fillRect(x, by, bw, 1 * r);
       /* Kübbə və ya qüllə: bəzi binalarda */
       if (random() > 0.75) {
-        c.fillStyle = this.dark ? "#3a2812" : "#e3d4b2";
+        c.fillStyle = this.dark ? "#14211b" : "#e3d4b2";
         c.beginPath();
         c.arc(x + bw / 2, by, bw * 0.16, Math.PI, 0);
         c.fill();
@@ -202,7 +202,7 @@ export class Skyline {
       /* Pəncərələr: hündür, nazik, isti */
       for (let wy = by + 5 * r; wy < this.horizon - 4 * r; wy += 7 * r) {
         for (let wx = x + 4 * r; wx < x + bw - 4 * r; wx += 6 * r) {
-          if (random() > (this.dark ? 0.55 : 0.4)) {
+          if (random() > (this.dark ? 0.62 : 0.4)) {
             c.fillStyle = this.dark
               ? `rgba(255, ${190 + Math.round(random() * 40)}, ${110 + Math.round(random() * 50)}, ${0.55 + random() * 0.4})`
               : "rgba(90, 110, 115, 0.35)";
@@ -241,9 +241,10 @@ export class Skyline {
     if (!this.dark) return;
     c.filter = `blur(${18 * this.ratio}px)`;
     TOWERS.forEach((tower, index) => {
+      void index;
       const { path } = this.towerPath(tower);
-      c.fillStyle = FLAG[index % 3];
-      c.globalAlpha = 0.32;
+      c.fillStyle = index === 0 ? "#5cf0b0" : "#3fd69a";
+      c.globalAlpha = 0.6;
       c.fill(path);
     });
     c.filter = "none";
@@ -278,8 +279,8 @@ export class Skyline {
     this.lamps.forEach((lamp, index) => {
       const g = c.createRadialGradient(lamp.x, lamp.y, 0, lamp.x, lamp.y, lamp.size);
       const flicker = 0.85 + Math.sin(time * 2 + index) * 0.05;
-      g.addColorStop(0, this.dark ? `rgba(255, 220, 150, ${0.9 * flicker})` : "rgba(255, 255, 255, 0.5)");
-      g.addColorStop(0.3, this.dark ? "rgba(255, 170, 80, 0.3)" : "rgba(255, 255, 255, 0.1)");
+      g.addColorStop(0, this.dark ? `rgba(255, 225, 165, ${0.75 * flicker})` : "rgba(255, 255, 255, 0.5)");
+      g.addColorStop(0.3, this.dark ? "rgba(255, 190, 110, 0.18)" : "rgba(255, 255, 255, 0.1)");
       g.addColorStop(1, "rgba(0, 0, 0, 0)");
       c.fillStyle = g;
       c.fillRect(lamp.x - lamp.size, lamp.y - lamp.size, lamp.size * 2, lamp.size * 2);
@@ -289,8 +290,8 @@ export class Skyline {
     /* Xəzər: tünd su, şəhərin dalğalanan əksi */
     const horizon = Math.round(this.horizon);
     const water = c.createLinearGradient(0, horizon, 0, h);
-    water.addColorStop(0, this.dark ? "#0a1a22" : "#b9d3dc");
-    water.addColorStop(1, this.dark ? "#03090c" : "#d7e6e8");
+    water.addColorStop(0, this.dark ? "#06201a" : "#b9d3dc");
+    water.addColorStop(1, this.dark ? "#020906" : "#d7e6e8");
     c.fillStyle = water;
     c.fillRect(0, horizon, w, h - horizon);
     const step = Math.max(2, Math.round(2 * r));
@@ -302,6 +303,13 @@ export class Skyline {
       c.drawImage(this.frame, 0, sourceY, w, step, shift, horizon + row, w, step);
     }
     c.globalAlpha = 1;
+
+    /* Şəhərin üstündə duman: dərinlik verir */
+    const haze = c.createLinearGradient(0, h * 0.45, 0, horizon);
+    haze.addColorStop(0, "rgba(0, 0, 0, 0)");
+    haze.addColorStop(1, this.dark ? "rgba(40, 140, 100, 0.14)" : "rgba(255, 255, 255, 0.35)");
+    c.fillStyle = haze;
+    c.fillRect(0, h * 0.45, w, horizon - h * 0.45);
 
     /* Kənarlara doğru əriyən maska: səhnəyə qarışsın */
     c.globalCompositeOperation = "destination-in";
@@ -330,56 +338,44 @@ export class Skyline {
     c.clip(path);
 
     if (this.dark) {
-      /* LED fasad: dalğalanan bayraq */
-      const strip = Math.max(2, Math.round(2.5 * r));
-      for (let x = cx - half * 1.2; x < cx + half * 1.2; x += strip) {
-        const wave = Math.sin((x - cx) / (half * 0.9) * 1.8 + time * 1.3 + index) * height * 0.022;
-        const band = height / 3;
-        FLAG.forEach((color, k) => {
-          c.fillStyle = color;
-          c.fillRect(x, top + band * k + wave - (k === 0 ? height : 0), strip + 0.5, band + (k === 0 ? height : 0) + (k === 2 ? height : 0));
-        });
-      }
-      /* Ay-ulduz: ortadakı qırmızı zolaqda */
-      const sy = top + height / 2 + Math.sin(time * 1.3 + index) * height * 0.022;
-      const moon = half * 0.15;
-      c.fillStyle = "rgba(255, 255, 255, 0.92)";
-      c.beginPath();
-      c.arc(cx - half * 0.12, sy, moon, 0, Math.PI * 2);
-      c.fill();
-      c.fillStyle = FLAG[1];
-      c.beginPath();
-      c.arc(cx - half * 0.06, sy, moon * 0.8, 0, Math.PI * 2);
-      c.fill();
-      /* Səkkizguşəli ulduz */
-      c.fillStyle = "rgba(255, 255, 255, 0.92)";
-      c.beginPath();
-      for (let k = 0; k < 16; k += 1) {
-        const angle = (k / 16) * Math.PI * 2;
-        const radius = k % 2 === 0 ? moon * 0.5 : moon * 0.22;
-        c.lineTo(cx + half * 0.16 + Math.cos(angle) * radius, sy + Math.sin(angle) * radius);
-      }
-      c.fill();
-      /* Yuxarıdan aşağı yumşaq işıq: LED parıltısı */
-      const sheen = c.createLinearGradient(0, top, 0, ground);
-      sheen.addColorStop(0, "rgba(255, 255, 255, 0.18)");
-      sheen.addColorStop(0.5, "rgba(255, 255, 255, 0)");
-      sheen.addColorStop(1, "rgba(0, 0, 0, 0.35)");
-      c.fillStyle = sheen;
+      /* Şüşə gövdə: tünd zümrüd */
+      const glass = c.createLinearGradient(cx - half, 0, cx + half, 0);
+      glass.addColorStop(0, "#03140e");
+      glass.addColorStop(0.55, "#0b3a2a");
+      glass.addColorStop(1, "#021009");
+      c.fillStyle = glass;
       c.fillRect(cx - half * 1.2, top, half * 2.4, height);
-      /* LED sətirləri və şüşə panellər */
-      c.fillStyle = "rgba(0, 0, 0, 0.28)";
-      for (let y = top; y < ground; y += 2.4 * r) c.fillRect(cx - half * 1.2, y, half * 2.4, 0.8 * r);
-      c.fillStyle = "rgba(0, 0, 0, 0.18)";
-      for (let k = -2; k <= 2; k += 1) c.fillRect(cx + k * half * 0.42, top, 1 * r, height);
-      /* Kənarda kölgə: həcm hissi */
+
+      /* LED sətirləri: işıq dalğası aşağıdan yuxarı axır (alov kimi) */
+      const rowGap = 2.6 * r;
+      for (let y = ground; y > top; y -= rowGap) {
+        const k = (ground - y) / height;
+        const wave = 0.5 + 0.5 * Math.sin(k * 9 - time * 2.2 + index * 1.7);
+        const flicker = 0.5 + 0.5 * Math.sin(k * 23 + time * 3.1 + index);
+        const v = Math.pow(wave, 2.2) * 0.85 + flicker * 0.15;
+        const mix = (from: number[], to: number[], t: number) =>
+          from.map((value, i) => Math.round(value + (to[i] - value) * t)).join(", ");
+        const color = v > 0.6 ? mix(LED.mid, LED.bright, (v - 0.6) / 0.4) : mix(LED.deep, LED.mid, v / 0.6);
+        c.fillStyle = `rgba(${color}, ${0.7 + v * 0.3})`;
+        c.fillRect(cx - half * 1.2, y, half * 2.4, 1.2 * r);
+      }
+      /* Şaquli panellər */
+      c.fillStyle = "rgba(0, 0, 0, 0.25)";
+      for (let k = -2; k <= 2; k += 1) c.fillRect(cx + k * half * 0.42, top, 0.8 * r, height);
+      /* Həcm: bir tərəf işıqlı, digəri kölgədə */
       const shade = c.createLinearGradient(cx - half, 0, cx + half, 0);
-      shade.addColorStop(0, "rgba(0, 0, 0, 0.45)");
-      shade.addColorStop(0.35, "rgba(0, 0, 0, 0)");
-      shade.addColorStop(0.75, "rgba(255, 255, 255, 0.08)");
-      shade.addColorStop(1, "rgba(0, 0, 0, 0.35)");
+      shade.addColorStop(0, "rgba(0, 0, 0, 0.55)");
+      shade.addColorStop(0.4, "rgba(0, 0, 0, 0)");
+      shade.addColorStop(0.75, "rgba(200, 255, 230, 0.1)");
+      shade.addColorStop(1, "rgba(0, 0, 0, 0.4)");
       c.fillStyle = shade;
       c.fillRect(cx - half * 1.2, top, half * 2.4, height);
+      /* Ucda daha parlaq */
+      const crown = c.createLinearGradient(0, top, 0, top + height * 0.25);
+      crown.addColorStop(0, "rgba(190, 255, 225, 0.35)");
+      crown.addColorStop(1, "rgba(190, 255, 225, 0)");
+      c.fillStyle = crown;
+      c.fillRect(cx - half * 1.2, top, half * 2.4, height * 0.25);
     } else {
       /* Gündüz: mavi şüşə, üzərindən işıq zolağı keçir */
       const glass = c.createLinearGradient(cx - half, 0, cx + half, 0);
@@ -401,7 +397,7 @@ export class Skyline {
     c.restore();
 
     /* Kənar işığı */
-    c.strokeStyle = this.dark ? "rgba(255, 255, 255, 0.35)" : "rgba(255, 255, 255, 0.8)";
+    c.strokeStyle = this.dark ? "rgba(170, 255, 220, 0.55)" : "rgba(255, 255, 255, 0.8)";
     c.lineWidth = 1 * r;
     c.stroke(path);
   }
