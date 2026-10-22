@@ -8,6 +8,8 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 
 **Biznes axını:** Qoşul → Profilini qur → Xidmət əlavə et → Rezerv qəbul et
 
+**Canlı versiya:** [azlinkwebsite.netlify.app](https://azlinkwebsite.netlify.app) (sayt) · [azlink.onrender.com](https://azlink.onrender.com/api/areas) (API). Demo hesablar aşağıdadır, parol `parol123`.
+
 ---
 
 ## Mündəricat
@@ -28,7 +30,8 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 14. [Hazırkı vəziyyət](#hazırkı-vəziyyət)
 15. [Kod qaydaları](#kod-qaydaları)
 16. [Faydalı əmrlər](#faydalı-əmrlər)
-17. [Git iş qaydası](#git-iş-qaydası)
+17. [Deploy (Netlify + Render)](#deploy-netlify--render)
+18. [Git iş qaydası](#git-iş-qaydası)
 
 ---
 
@@ -489,12 +492,15 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 
 ## Dizayn sistemi
 
-Əsas istiqamət: **zümrüd yaşılı və qızılı**, premium və sakit görünüş.
+Əsas istiqamət: premium və sakit görünüş. Qaranlıq rejim **zümrüd və qızılı**, ağ rejim (hesaba girəndən sonra) **fil sümüyü və qızılı-bürünc**dür.
 
-| Rəng           | Light     | Dark      | Dəyişən           |
-| -------------- | --------- | --------- | ----------------- |
-| Əsas (zümrüd)  | `#17614C` | `#63BE8C` | `--color-primary` |
-| Qızılı accent  | `#a9822f` | `#e6c98a` | `--color-gold`    |
+| Rəng                     | Light (hesabda) | Dark      | Dəyişən           |
+| ------------------------ | --------------- | --------- | ----------------- |
+| Əsas                     | `#7d5a1c`       | `#63BE8C` | `--color-primary` |
+| Qızılı accent            | `#a87a26`       | `#e6c98a` | `--color-gold`    |
+| Fon                      | `#f4eee2`       | —         | `--color-bg`      |
+
+Ağ rejimin qızılı palitrası `styles/variables.css`-in sonundadır və `.app-shell[data-gold]` olanda (yəni giriş etmiş istifadəçinin bütün səhifələrində) işləyir. Giriş ekranı, qeydiyyat və giriş səhifələrinin öz rəngləri var.
 
 Şriftlər: başlıqlar **Cormorant Garamond**, mətn **Onest**. Hər ikisi Azərbaycan hərflərini dəstəkləyir və layihənin içindədir (`assets/fonts/`).
 
@@ -503,13 +509,17 @@ Rayon adları **eyni yazılmalıdır** üç yerdə: `types/area.ts`, `metroStati
 - Rənglər və ölçülər `styles/variables.css`-də toplanıb. Səhifələrin CSS-i rəngləri düz kod kimi yox, `var(--color-surface)`, `var(--color-text)` kimi dəyişənlərlə yazmalıdır.
 - Kateqoriya kartları üçün gradient fonlar `--gradient-teal`, `--gradient-pink`, `--gradient-blue`, `--gradient-purple` dəyişənləri ilə idarə olunur (`utils/categoryVisual.ts`).
 
-### Giriş ekranı: "Xidmət butiki"
+### Ana səhifə (giriş öncəsi)
 
-İlk ekran (`pages/AccountType`) saytın qalanından fərqli, lüks vitrindir:
+İlk ekran (`pages/AccountType`) üç mərhələli "səyahət"dir. Arxa fon `pages/AccountType/network/NetworkScene.ts`-də Canvas 2D ilə çəkilir, mərhələ səhifəni sürüşdürməyə bağlıdır:
 
-- **Vitrin** (`components/brand/VelvetStage.tsx`): tünd zümrüd fon, aşağıda isti "şam işığı" parıltısı, incə dən toxuması, siçanın arxasınca hərəkət edən yumşaq işıq.
-- **Medalyonlar** (`components/brand/ServiceBoutique.tsx`): 8 xidmət sahəsi (`data/categories.ts`) qızılı haşiyəli, zümrüd emallı medalyonlardır və mərkəzdəki AzLink-ə qızılı saplarla bağlıdır. Sadə 2D fizika ilə işləyir: açılışda kənarlardan uçub gəlir, siçan yaxınlaşanda yana çəkilir, medalyonu tutub atmaq olur (digərlərinə dəyib sıçrayır, sap dartılır, sonra yerinə qayıdır). Arxada qızıl tozu süzülür.
-- **Üstünə gələndə** sahədə neçə biznes olduğu və qiymətin neçədən başladığı görünür. **Klikləyəndə** menyu kimi kart açılır: ən sərfəli xidmətlər qiymətləri ilə və "Ustaları gör" düyməsi. Bütün rəqəmlər bazadan (`GET /api/providers`) hesablanır.
+1. **Seçim:** "Axtardığın xidmət. Doğru əlaqə." başlığı və iki qapı: "Xidmət axtarıram" (müştəri) və "Xidmət göstərirəm" (biznes). Arxada qızılı-zümrüd şüşə kürələr.
+2. **Necə işləyir?:** müştəri və biznes üçün üç addım. Kürələr Azərbaycan xəritəsinə keçir.
+3. **Niyə AzLink?:** üç üstünlük. Xəritə Bakıya yaxınlaşır və Alov qüllələri açılır.
+
+Fotolar `client/public/landing/`-dədir (`stage-1/2/3.jpg` qaranlıq, `stage-1/2-light.jpg` ağ rejim). Solda mərhələ göstəricisi var, səhifənin sonunda footer (Kəşf et, İstifadəçilər üçün, Bizneslər üçün, AzLink haqqında; Haqqımızda, Əlaqə, FAQ, Məxfilik və Şərtlər kiçik pəncərədə açılır).
+
+Qeydiyyat və giriş (`components/auth/AuthShell.tsx`): Alov qüllələri fotosu üzərində ortada şüşə kart.
 
 ### Interaktivlik (bütün sayt)
 
@@ -681,7 +691,8 @@ Migration-lar: `init`, `add_savedprovider_business_relation`, `add_business_veri
 - Müştərinin rezervləri (ləğv, silmə), seçilmişlər, rəy yazmaq
 - Biznesim: Dashboard, Profil (canlı önbaxışla), İş saatları, Xidmətlər, Rezervlər (təsdiq/tamamla/ləğv), Portfolio, Müştərilər, Rəylər
 - Biznes vitrini: loqo və üz qabığı yükləmə, üz qabığının yerini sürüşdürərək düzəltmə. Portfolio yalnız iş nümunələri üçündür
-- Premium dizayn: giriş ekranında interaktiv "Xidmət butiki", bütün saytda hərəkət effektləri
+- Premium dizayn: foto əsaslı üç mərhələli ana səhifə və footer, Alov qüllələri fonlu qeydiyyat/giriş, hesabda fil sümüyü-qızılı palitra, bütün saytda hərəkət effektləri
+- Deploy: sayt Netlify-da, API Render-də (aşağıda)
 - Hesab: ad, telefon, şifrə və email dəyişmə (hər iki profil səhifəsində)
 - Bildirişlər: yuxarı naviqasiyada zəng ikonu, oxunmamış sayı, "Hamısı oxundu"
 - "Son baxdıqlarınız" ana səhifədə
@@ -740,6 +751,35 @@ Real ödəniş, mürəkkəb AI, canlı xəritə və məsafəyə görə axtarış
 PowerShell ilə API-ni yoxlayanda Azərbaycan hərfləri düzgün getməsi üçün gövdəni UTF-8 baytlara çevir: `-Body ([System.Text.Encoding]::UTF8.GetBytes($json))` və `-ContentType "application/json; charset=utf-8"`.
 
 Token 15 dəqiqəyə bitir. Test zamanı "Əməliyyat mümkün olmadı" kimi mesaj çıxsa, əvvəl hesabdan çıxıb yenidən daxil ol.
+
+---
+
+## Deploy (Netlify + Render)
+
+Sayt iki hissədən ibarətdir və iki yerdə yerləşir. Hər ikisi GitHub-dakı `main`-ə bağlıdır: `git push`-dan sonra özləri yenilənir (Render-də **Settings → Auto-Deploy** `On Commit` olmalıdır, yoxsa **Manual Deploy → Deploy latest commit**).
+
+### Frontend: Netlify
+
+- Ayarlar kökdəki `netlify.toml`-dadır: build `npm run build` (kökdən, workspaces), nəticə `client/dist`, Node 22, bütün yollar `index.html`-ə (React Router üçün). Netlify-da Base directory **boş** qalmalıdır.
+- Environment variable: `VITE_API_URL = https://azlink.onrender.com/api`. Dəyər build zamanı sayta yazılır, dəyişəndən sonra **Trigger deploy** lazımdır.
+
+### Backend: Render (Web Service, Free)
+
+| Sahə          | Dəyər                  |
+| ------------- | ---------------------- |
+| Root Directory| `server`               |
+| Build Command | `npm run render-build` |
+| Start Command | `npm run render-start` |
+
+Environment variables: `DATABASE_URL=file:./dev.db`, `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET` (uzun təsadüfi mətnlər), `NODE_VERSION=22`.
+
+`render-start` hər açılışda: migration-ları tətbiq edir → seed işlədir (demo hesablar) → `prisma/covers/` və `prisma/portfolio/` şəkillərini yükləyir → serveri açır.
+
+### Bilmək lazımdır
+
+- Pulsuz Render serveri 15 dəqiqə istifadə olunmayanda yatır, ilk sorğu 30–50 saniyə çəkir. Təqdimatdan əvvəl saytı bir dəfə açın.
+- SQLite faylı Render-də daimi deyil: server yenidən başlayanda yeni qeydiyyatlar, rezervlər və saytdan yüklənən şəkillər silinə bilər. Demo məlumat və repodakı şəkillər hər dəfə yenidən yaranır. Daimi saxlama üçün PostgreSQL-ə keçmək lazımdır.
+- Yeni portfolio şəkli saytda daimi qalsın deyə `server/prisma/portfolio/<biznes>/` qovluğuna qoyub push etmək lazımdır.
 
 ---
 
