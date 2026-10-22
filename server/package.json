@@ -8,11 +8,11 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "render-build": "npm install --include=dev && prisma generate && tsc",
-    "render-start": "prisma migrate deploy && npm run seed && node dist/index.js",
+    "render-start": "prisma migrate deploy && npm run seed && (npm run covers || true) && (npm run portfolio || true) && node dist/index.js",
     "seed": "ts-node --project prisma/tsconfig.json prisma/seed.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "covers": "ts-node --project prisma/tsconfig.json prisma/add-covers.ts",
-    "portfolio": "ts-node --project prisma/tsconfig.json prisma/add-portfolio.ts"
+    "covers": "ts-node --transpile-only --project prisma/tsconfig.json prisma/add-covers.ts",
+    "portfolio": "ts-node --transpile-only --project prisma/tsconfig.json prisma/add-portfolio.ts"
   },
   "keywords": [],
   "author": "",
