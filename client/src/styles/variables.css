@@ -340,11 +340,11 @@ a {
 
 
 /* ---------- Ağ rejim: isti fil sümüyü və qızılı palitra ----------
-   Biznes hesabı ilə girəndə bütün səhifələrdə (Biznesim, Rezerv et,
-   Profil) yaşıl tonlar qızılı-bürünc tonlarla əvəz olunur.
+   Hesaba girəndən sonra bütün səhifələrdə (həm müştəri, həm biznes)
+   yaşıl tonlar qızılı-bürünc tonlarla əvəz olunur.
    body səviyyəsində olduğu üçün yuxarı menyuya da təsir edir. */
 
-:root:not([data-theme="dark"]) body:has(.app-shell[data-business]) {
+:root:not([data-theme="dark"]) body:has(.app-shell[data-gold]) {
   --color-bg: #f4eee2;
   --color-surface: #fffdf8;
   --color-surface-soft: #f2e8d4;
@@ -398,7 +398,7 @@ a {
 }
 
 /* Kateqoriya kartlarının medalyonu: yaşıl yerinə tünd bürünc */
-:root:not([data-theme="dark"]) body:has(.app-shell[data-business]) .explore-category-card__icon {
+:root:not([data-theme="dark"]) body:has(.app-shell[data-gold]) .explore-category-card__icon {
   background:
     radial-gradient(circle at 50% 65%, #6a4a16 0%, #2a1c08 100%) padding-box,
     conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;

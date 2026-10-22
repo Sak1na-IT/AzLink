@@ -38,7 +38,7 @@ function AppLayout() {
     !hideNav && isBusiness && isInExploreGroup(location.pathname);
 
   return (
-    <div className="app-shell" data-business={(isBusiness && !hideNav) || undefined}>
+    <div className="app-shell" data-gold={!hideNav || undefined}>
       {/* Kartların əyilməsi, sürüşdürəndə üzə çıxma və s. */}
       <Interactions />
 
