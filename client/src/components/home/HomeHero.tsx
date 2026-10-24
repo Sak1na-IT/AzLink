@@ -127,7 +127,15 @@ function HomeHero({
       <h1 className="home-hero__title">
         {t("Ehtiyacınız olan xidməti")}
         <br />
-        {t("rahatlıqla tapın")}
+        {(() => {
+          /* İkinci sətrin ilk sözü maili vurğu ilə: "rahatlıqla" */
+          const [first, ...rest] = t("rahatlıqla tapın").split(" ");
+          return (
+            <>
+              <em className="home-hero__accent">{first}</em> {rest.join(" ")}
+            </>
+          );
+        })()}
       </h1>
 
       <p className="home-hero__description">

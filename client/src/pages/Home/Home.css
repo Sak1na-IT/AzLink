@@ -1575,3 +1575,50 @@
 .popular-card__price {
   z-index: 2;
 }
+
+
+/* =========================================================
+   Zümrüd palitra: vitrin, rezerv kartları, statuslar
+   ========================================================= */
+
+.home-hero .home-hero__title {
+  color: var(--deep-title);
+}
+
+.home-hero__accent {
+  font-style: italic;
+  color: var(--accent-word);
+}
+
+.home-hero {
+  box-shadow: var(--deep-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+/* Rezerv kartında statusa görə sol zolaq */
+.upcoming-bookings__item {
+  border-left: 3px solid var(--stripe-confirmed);
+}
+
+.upcoming-bookings__item:has(.upcoming-bookings__status--pending) {
+  border-left-color: var(--stripe-pending);
+}
+
+.upcoming-bookings__status--confirmed {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+[data-theme="dark"] .upcoming-bookings__status--confirmed {
+  background: #2f8a66;
+  color: #ffffff;
+}
+
+.upcoming-bookings__status--pending {
+  background: var(--color-gold-soft);
+  color: var(--color-gold);
+}
+
+[data-theme="dark"] .upcoming-bookings__item,
+[data-theme="dark"] .category-showcase__item {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}

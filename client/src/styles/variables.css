@@ -7,23 +7,23 @@
    * İşıqlı rejim: çini ağı fon, ağ kartlar, zümrüd əsas rəng.
    * (Əvvəlki tutqun adaçayı tonlar yerinə daha təmiz və premium.)
    */
-  --color-bg: #F1F2EE;
+  --color-bg: #F4F3EC;
   --color-surface: #FFFFFF;
-  --color-surface-soft: #E8ECE6;
-  --color-surface-muted: #F7F7F4;
+  --color-surface-soft: #E6EEE8;
+  --color-surface-muted: #F8F8F4;
 
-  --color-primary: #17614C;
-  --color-primary-hover: #114E3D;
-  --color-primary-soft: #E2EEE8;
+  --color-primary: #1C6A50;
+  --color-primary-hover: #145340;
+  --color-primary-soft: #E2EEE6;
 
-  --color-text: #12201A;
-  --color-text-secondary: #3E4B45;
-  --color-text-muted: #6B7671;
+  --color-text: #13221B;
+  --color-text-secondary: #475850;
+  --color-text-muted: #7A887F;
 
-  --color-border: #E2E4DE;
-  --color-border-strong: #CBD1C9;
+  --color-border: #DFE5DC;
+  --color-border-strong: #C8D3CA;
 
-  --color-success: #17614C;
+  --color-success: #1C6A50;
   --color-warning: #A86E12;
   --color-danger: #B3403C;
   --color-info: #2F6690;
@@ -126,8 +126,8 @@
      ========================= */
 
   /* Qızılı vurğu (premium detallar: ulduz, nömrə, incə xətt) */
-  --color-gold: #a9822f;
-  --color-gold-soft: rgba(169, 130, 47, 0.14);
+  --color-gold: #a57d2c;
+  --color-gold-soft: rgba(165, 125, 44, 0.14);
 
   /* Yumşaq dayanan hərəkət əyrisi (interaktiv elementlər üçün) */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -153,61 +153,72 @@
      Qaranlıq rejimdə: zümrüd məxmər (aşağıda).
      ========================= */
 
-  --deep-panel:
-    radial-gradient(ellipse 55% 90% at 100% 0%, rgba(214, 178, 110, 0.16), transparent 70%),
-    radial-gradient(ellipse 60% 90% at 0% 100%, rgba(23, 97, 76, 0.07), transparent 70%),
-    linear-gradient(160deg, #fffdf8 0%, #f6f1e6 100%);
+  --deep-panel: 
+    radial-gradient(ellipse 45% 60% at 100% 0%, rgba(214, 176, 98, 0.30), transparent 70%),
+    radial-gradient(ellipse 70% 90% at 0% 100%, rgba(52, 145, 104, 0.34), transparent 70%),
+    radial-gradient(ellipse 80% 70% at 60% 30%, #f9fbf7 0%, #e6f0e9 55%, #d3e6da 100%);
   --deep-velvet: var(--deep-panel);
   --deep-vignette: none;
-  --deep-text: #14241d;
-  --deep-title: #0f2a21;
-  --deep-muted: #5a6862;
-  --deep-gold: #94702c;
-  --deep-gold-strong: #8a6624;
+  --deep-text: #13221b;
+  --deep-title: #0f3a2c;
+  --deep-muted: #3f544a;
+  --deep-gold: #a57d2c;
+  --deep-gold-strong: #8a6420;
   --deep-alert: #b0701a;
-  --deep-glass: rgba(255, 255, 255, 0.72);
-  --deep-glass-hover: rgba(169, 130, 47, 0.08);
-  --deep-field: #ffffff;
-  --deep-shadow: 0 18px 44px rgba(90, 70, 30, 0.08);
+  --deep-glass: rgba(255, 255, 255, 0.82);
+  --deep-glass-hover: rgba(28, 106, 80, 0.08);
+  --deep-field: rgba(255, 255, 255, 0.9);
+  --deep-shadow: 0 30px 60px -34px rgba(28, 106, 80, 0.45);
 
   --medal-face: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f1 55%, #e2ece5 100%);
-  --medal-ink: #17614c;
+  --medal-ink: #1c6a50;
   --medal-inset: inset 0 1px 3px rgba(60, 48, 20, 0.1);
 
-  --deep-tile: linear-gradient(160deg, #eef5f0, #dfebe3);
-  --deep-tile-ink: #17614c;
+  --deep-tile: linear-gradient(160deg, #e6f1ea, #d2e6da);
+  --deep-tile-ink: #0f3a2c;
   --deep-tile-muted: #4f6a5f;
 
-  --deep-solid: #17614c;
+  --deep-solid: linear-gradient(135deg, #227a5c, #145340);
   --deep-solid-ink: #ffffff;
-}
 
+  --page-glow: 
+    radial-gradient(ellipse 60% 30% at 50% -4%, rgba(76, 160, 118, 0.16), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 100% 100%, rgba(201, 165, 92, 0.10), transparent 70%);
+
+  --accent-word: #1c6a50;
+
+  --icon-gradient: linear-gradient(135deg, #2f8a66, #c9a55c);
+
+  --stripe-confirmed: #1c6a50;
+
+  --stripe-pending: #c9a55c;
+}
 
 /* =========================================
    DARK MODE
    ========================================= */
 
 [data-theme="dark"] {
-  --color-gold: #e6c98a;
-  --color-gold-soft: rgba(230, 201, 138, 0.12);
+  --color-gold: #EDCF8E;
+  --color-gold-soft: rgba(237, 207, 142, 0.14);
 
-  --color-bg: #121915;
-  --color-surface: #1B241F;
-  --color-surface-soft: #22372C;
-  --color-surface-muted: #19211C;
+  --color-bg: #15241E;
+  --color-surface: #1D2E27;
+  --color-surface-soft: #26402F;
+  --color-surface-muted: #1A2923;
 
-  --color-primary: #63BE8C;
-  --color-primary-hover: #74C99A;
-  --color-primary-soft: #254133;
+  --color-primary: #7ADBA6;
+  --color-primary-hover: #8EE4B5;
+  --color-primary-soft: #24412F;
 
-  --color-text: #EEF6F1;
-  --color-text-secondary: #A4B1AA;
-  --color-text-muted: #84918A;
+  --color-text: #F3F8F4;
+  --color-text-secondary: #BFCDC4;
+  --color-text-muted: #94A79B;
 
-  --color-border: #2C3932;
-  --color-border-strong: #3A4A41;
+  --color-border: #33493D;
+  --color-border-strong: #41594B;
 
-  --color-success: #63BE8C;
+  --color-success: #7ADBA6;
   --color-warning: #D6A647;
   --color-danger: #E06B6B;
   --color-info: #6F9BCB;
@@ -218,39 +229,50 @@
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.32);
 
   /* Vitrin səthləri: zümrüd məxmər */
-  --deep-panel:
-    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.1), transparent 45%),
-    radial-gradient(circle at 85% 120%, #1d5a49 0%, #0b241d 70%);
-  --deep-velvet:
-    radial-gradient(ellipse 55% 45% at 12% 92%, rgba(214, 162, 92, 0.16), transparent 70%),
-    radial-gradient(ellipse 40% 35% at 88% 18%, rgba(230, 190, 120, 0.07), transparent 70%),
-    radial-gradient(ellipse 90% 70% at 50% 12%, #21594a 0%, #0f2c25 45%, #06130f 100%);
+  --deep-panel: 
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.12), transparent 45%),
+    radial-gradient(circle at 85% 120%, #26715a 0%, #10352b 70%);
+  --deep-velvet: 
+    radial-gradient(ellipse 55% 55% at 10% 100%, rgba(236, 180, 98, 0.34), transparent 70%),
+    radial-gradient(ellipse 45% 45% at 92% 6%, rgba(130, 230, 178, 0.22), transparent 70%),
+    radial-gradient(ellipse 95% 80% at 50% 5%, #338a6e 0%, #1a5444 48%, #0e2f26 100%);
   --deep-vignette: radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, 0.45) 100%);
   --deep-text: #f6f1e7;
   --deep-title: #ffffff;
   --deep-muted: rgba(246, 241, 231, 0.72);
-  --deep-gold: #e6c98a;
-  --deep-gold-strong: #f6e3b4;
+  --deep-gold: #EDCF8E;
+  --deep-gold-strong: #F3DFAE;
   --deep-alert: #ffd27a;
-  --deep-glass: rgba(255, 255, 255, 0.05);
-  --deep-glass-hover: rgba(255, 255, 255, 0.1);
-  --deep-field: rgba(0, 0, 0, 0.22);
+  --deep-glass: rgba(255, 255, 255, 0.08);
+  --deep-glass-hover: rgba(255, 255, 255, 0.13);
+  --deep-field: rgba(255, 255, 255, 0.08);
   --deep-shadow: 0 24px 50px rgba(12, 36, 29, 0.22);
 
   --medal-face: radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%);
   --medal-ink: #f6e3b4;
   --medal-inset: inset 0 2px 8px rgba(0, 0, 0, 0.5);
 
-  --deep-tile:
-    radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.12), transparent 60%),
-    linear-gradient(160deg, #1f5a4a, #0e2c24);
+  --deep-tile: 
+    radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), transparent 60%),
+    linear-gradient(160deg, #3fa380, #185a46);
   --deep-tile-ink: #f6f1e7;
   --deep-tile-muted: rgba(246, 241, 231, 0.7);
 
   --deep-solid: linear-gradient(135deg, #1d5a49, #0d2a22);
   --deep-solid-ink: #f6e3b4;
-}
 
+  --page-glow: 
+    radial-gradient(ellipse 70% 35% at 50% -6%, rgba(110, 205, 150, 0.20), transparent 70%),
+    radial-gradient(ellipse 45% 30% at 100% 100%, rgba(236, 190, 120, 0.10), transparent 70%);
+
+  --accent-word: #F3DFAE;
+
+  --icon-gradient: linear-gradient(135deg, #3fa380, #c9a55c);
+
+  --stripe-confirmed: #7ADBA6;
+
+  --stripe-pending: #EDCF8E;
+}
 
 /* =========================================
    GLOBAL BOX SIZING
@@ -276,7 +298,8 @@ body {
   margin: 0;
   min-width: 320px;
 
-  background: var(--color-bg);
+  background: var(--page-glow), var(--color-bg);
+  background-attachment: fixed;
   color: var(--color-text);
 
   font-family: var(--font-family);
@@ -336,70 +359,4 @@ a {
 ::selection {
   background: var(--color-primary-soft);
   color: var(--color-text);
-}
-
-
-/* ---------- Ağ rejim: isti fil sümüyü və qızılı palitra ----------
-   Hesaba girəndən sonra bütün səhifələrdə (həm müştəri, həm biznes)
-   yaşıl tonlar qızılı-bürünc tonlarla əvəz olunur.
-   body səviyyəsində olduğu üçün yuxarı menyuya da təsir edir. */
-
-:root:not([data-theme="dark"]) body:has(.app-shell[data-gold]) {
-  --color-bg: #f4eee2;
-  --color-surface: #fffdf8;
-  --color-surface-soft: #f2e8d4;
-  --color-surface-muted: #faf5ea;
-
-  --color-primary: #7d5a1c;
-  --color-primary-hover: #664813;
-  --color-primary-soft: #f3e5c6;
-
-  --color-text: #24190b;
-  --color-text-secondary: #504330;
-  --color-text-muted: #847558;
-
-  --color-border: #e8dcc2;
-  --color-border-strong: #d7c39a;
-
-  --color-success: #8a6a1f;
-  --color-gold: #a87a26;
-  --color-gold-soft: rgba(168, 122, 38, 0.16);
-
-  --shadow-xs: 0 1px 2px rgba(70, 48, 12, 0.05);
-  --shadow-sm: 0 1px 2px rgba(70, 48, 12, 0.05), 0 6px 18px rgba(70, 48, 12, 0.07);
-  --shadow-md: 0 2px 4px rgba(70, 48, 12, 0.05), 0 12px 30px rgba(70, 48, 12, 0.09);
-  --shadow-lg: 0 4px 10px rgba(70, 48, 12, 0.06), 0 24px 54px rgba(70, 48, 12, 0.12);
-
-  --deep-panel:
-    radial-gradient(ellipse 55% 90% at 100% 0%, rgba(214, 170, 90, 0.26), transparent 70%),
-    radial-gradient(ellipse 60% 90% at 0% 100%, rgba(168, 122, 38, 0.1), transparent 70%),
-    linear-gradient(160deg, #fffaf0 0%, #f3e7cf 100%);
-  --deep-velvet: var(--deep-panel);
-  --deep-text: #2a1e0d;
-  --deep-title: #22170a;
-  --deep-muted: #74654a;
-  --deep-gold: #9c7022;
-  --deep-gold-strong: #865e18;
-  --deep-glass: rgba(255, 252, 244, 0.78);
-  --deep-glass-hover: rgba(168, 122, 38, 0.1);
-  --deep-shadow: 0 18px 44px rgba(90, 64, 20, 0.12);
-
-  --medal-face: radial-gradient(circle at 50% 35%, #fffdf6 0%, #f7ecd4 55%, #ecdbb6 100%);
-  --medal-ink: #7d5a1c;
-
-  --deep-tile: linear-gradient(160deg, #fbf3e2, #f0e0bd);
-  --deep-tile-ink: #7d5a1c;
-  --deep-tile-muted: #7a6a4c;
-
-  --deep-solid: #7d5a1c;
-  --deep-solid-ink: #fffaf0;
-
-  background: var(--color-bg);
-}
-
-/* Kateqoriya kartlarının medalyonu: yaşıl yerinə tünd bürünc */
-:root:not([data-theme="dark"]) body:has(.app-shell[data-gold]) .explore-category-card__icon {
-  background:
-    radial-gradient(circle at 50% 65%, #6a4a16 0%, #2a1c08 100%) padding-box,
-    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
 }

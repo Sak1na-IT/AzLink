@@ -46,7 +46,8 @@ img {
 
 .app-shell {
   min-height: 100vh;
-  background: var(--color-bg);
+  background: var(--page-glow), var(--color-bg);
+  background-attachment: fixed;
   color: var(--color-text);
 
   transition:
@@ -238,3 +239,20 @@ img {
   }
 }
 
+
+
+/* =========================================================
+   Zümrüd palitra: menyuda seçili bölmə dolu zümrüd
+   ========================================================= */
+
+.top-nav__link.is-active {
+  background: var(--deep-solid);
+  color: #ffffff;
+  box-shadow: 0 8px 18px -10px rgba(28, 106, 80, 0.7);
+}
+
+[data-theme="dark"] .top-nav__link.is-active {
+  background: linear-gradient(135deg, #2f8a66, #1d6a50);
+  color: #ffffff;
+  box-shadow: 0 8px 18px -8px rgba(122, 219, 166, 0.55);
+}
