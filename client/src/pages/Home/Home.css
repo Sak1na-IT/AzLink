@@ -1622,3 +1622,8 @@
 [data-theme="dark"] .category-showcase__item {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
+
+/* Ağ modda tarix blokundakı ay adı oxunaqlı olsun */
+:root:not([data-theme="dark"]) .upcoming-bookings__date span {
+  color: var(--color-gold);
+}

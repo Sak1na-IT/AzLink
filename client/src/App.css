@@ -256,3 +256,35 @@ img {
   color: #ffffff;
   box-shadow: 0 8px 18px -8px rgba(122, 219, 166, 0.55);
 }
+
+
+/* =========================================================
+   Qara modda açıq zümrüd fonlu düymələrdə yazı tünd olsun
+   (ağ yazı açıq yaşıl üzərində oxunmur)
+   ========================================================= */
+
+[data-theme="dark"] .business-layout__tab.is-active,
+[data-theme="dark"] .password-modal__primary,
+[data-theme="dark"] .business-subnav__tab.is-active,
+[data-theme="dark"] .register-submit-button,
+[data-theme="dark"] .login-submit-button,
+[data-theme="dark"] .saved-primary-button,
+[data-theme="dark"] .booking-time.is-selected,
+[data-theme="dark"] .booking-confirm,
+[data-theme="dark"] .booking-success__button--primary,
+[data-theme="dark"] .profile-primary-button,
+[data-theme="dark"] .account-profile__button--primary,
+[data-theme="dark"] .search-empty__button,
+[data-theme="dark"] .bookings-page__new-button,
+[data-theme="dark"] .bookings-page__empty-button,
+[data-theme="dark"] .area-modal__apply,
+[data-theme="dark"] .bookings-switch__tab.is-active,
+[data-theme="dark"] .business-bookings__tab.is-active,
+[data-theme="dark"] .business-booking-card__action--confirm,
+[data-theme="dark"] .provider-primary-button,
+[data-theme="dark"] .business-profile__avatar,
+[data-theme="dark"] .business-profile__save,
+[data-theme="dark"] .business-portfolio__upload-button,
+[data-theme="dark"] .business-hours__save {
+  color: #0c2a1f;
+}
