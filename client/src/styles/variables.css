@@ -170,8 +170,10 @@
   --deep-field: rgba(255, 255, 255, 0.9);
   --deep-shadow: 0 30px 60px -34px rgba(28, 106, 80, 0.45);
 
-  --medal-face: radial-gradient(circle at 50% 35%, #ffffff 0%, #f1f5f1 55%, #e2ece5 100%);
-  --medal-ink: #1c6a50;
+  --medal-face: 
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.35), transparent 55%),
+    linear-gradient(135deg, #2f8a66 0%, #3f9a72 45%, #c9a55c 100%);
+  --medal-ink: #ffffff;
   --medal-inset: inset 0 1px 3px rgba(60, 48, 20, 0.1);
 
   --deep-tile: linear-gradient(160deg, #e6f1ea, #d2e6da);
@@ -248,8 +250,10 @@
   --deep-field: rgba(255, 255, 255, 0.08);
   --deep-shadow: 0 24px 50px rgba(12, 36, 29, 0.22);
 
-  --medal-face: radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%);
-  --medal-ink: #f6e3b4;
+  --medal-face: 
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.28), transparent 55%),
+    linear-gradient(135deg, #3fa380 0%, #2f8a66 45%, #c9a55c 100%);
+  --medal-ink: #ffffff;
   --medal-inset: inset 0 2px 8px rgba(0, 0, 0, 0.5);
 
   --deep-tile: 

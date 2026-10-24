@@ -403,9 +403,9 @@
   height: 46px;
   border-radius: 50%;
   border: 2px solid transparent;
-  color: #f6e3b4;
+  color: var(--medal-ink);
   background:
-    radial-gradient(circle at 50% 65%, #1d5a49 0%, #0b241d 100%) padding-box,
+    var(--medal-face) padding-box,
     conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 }
