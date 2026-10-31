@@ -7,6 +7,7 @@ import "./index.css";
 import "./App.css";
 
 import App from "./App";
+import { startDomTranslation } from "./i18n/translateDom";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -15,3 +16,6 @@ createRoot(document.getElementById("root")!).render(
     </BrowserRouter>
   </StrictMode>
 );
+
+/* İngilis dilində serverdən gələn mətnləri də tərcümə et */
+startDomTranslation();

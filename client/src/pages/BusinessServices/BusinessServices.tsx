@@ -308,7 +308,7 @@ function BusinessServices() {
 
           <div className="business-services__row">
             <div className="business-services__field">
-              <label htmlFor="service-price">Qiymət (₼)</label>
+              <label htmlFor="service-price">{t("Qiymət (₼)")}</label>
 
               <input
                 id="service-price"
@@ -327,7 +327,7 @@ function BusinessServices() {
             </div>
 
             <div className="business-services__field">
-              <label htmlFor="service-duration">Müddət (dəqiqə)</label>
+              <label htmlFor="service-duration">{t("Müddət (dəqiqə)")}</label>
 
               <input
                 id="service-duration"

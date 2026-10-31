@@ -26,7 +26,7 @@ import {
   saveProvider,
   unsaveProvider,
 } from "../../services/savedService";
-import { t } from "../../i18n";
+import { t, getLang } from "../../i18n";
 type PriceFilter = "all" | "under-20" | "20-30" | "30-50" | "50-plus";
 
 const priceLabels: Record<PriceFilter, string> = {
@@ -40,7 +40,8 @@ const priceLabels: Record<PriceFilter, string> = {
 /*
  * Mətnləri müqayisə etmək üçün standart formaya salırıq.
  */
-const normalize = (value: string) => value.toLocaleLowerCase("az").trim();
+const normalize = (value: string) =>
+  value.toLocaleLowerCase(getLang() === "en" ? "en" : "az").trim();
 
 const isSimilar = (a: string, b: string) =>
   a === b || a.includes(b) || b.includes(a);
@@ -221,7 +222,10 @@ function SearchResults() {
           provider.area,
           ...(provider.categories ?? []),
           ...(provider.services ?? []).map((service) => service.name),
-        ].join(" ")
+        ]
+          /* ingilis dilində ingiliscə sözlə də tapılsın: "manicure" → Manikür */
+          .flatMap((value) => (value ? [value, t(value)] : []))
+          .join(" ")
       );
 
       const queryWords = normalizedQuery.split(/\s+/).filter(Boolean);
@@ -461,7 +465,7 @@ function SearchResults() {
                   : activeCategory
                     ? t(activeCategory.name)
                     : query
-                      ? `“${query}”`
+                      ? `“${t(query)}”`
                       : t("Bütün xidmətlər")}
               </h1>
 
@@ -524,7 +528,7 @@ function SearchResults() {
             </div>
 
             <div className="search-filter-group">
-              <span>Qiymət:</span>
+              <span>{t("Qiymət:")}</span>
 
               {(Object.entries(priceLabels) as [PriceFilter, string][]).map(
                 ([value, label]) => (

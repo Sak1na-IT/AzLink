@@ -141,7 +141,7 @@ function ChangePasswordModal({ onClose }: ChangePasswordModalProps) {
             </label>
 
             <label className="password-modal__field">
-              <span>Yeni şifrə (təkrar)</span>
+              <span>{t("Yeni şifrə (təkrar)")}</span>
               <input
                 type="password"
                 autoComplete="new-password"

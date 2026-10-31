@@ -3,7 +3,7 @@
  * dilində onları məlum şablonlara görə çeviririk; tanınmayan mətn
  * olduğu kimi göstərilir.
  */
-import { getLang } from "./index";
+import { getLang, t } from "./index";
 
 const MONTHS: Record<string, string> = {
   yan: "Jan", fev: "Feb", mar: "Mar", apr: "Apr", may: "May", iyn: "Jun",
@@ -29,8 +29,13 @@ export const translateNotification = (message: string) => {
   if (getLang() !== "en") return message;
 
   for (const [pattern, replacement] of PATTERNS) {
-    if (pattern.test(message)) {
-      return translateDate(message.replace(pattern, replacement));
+    const match = message.match(pattern);
+
+    if (match) {
+      /* $1, $2... içindəki xidmət adları da tərcümə olunur ("Gel lak" → "Gel polish") */
+      const text = replacement.replace(/\$(\d)/g, (_, n: string) => t(match[Number(n)] ?? ""));
+
+      return translateDate(text);
     }
   }
 

@@ -76,7 +76,7 @@ function HomeHero({
         return;
       }
 
-      const word = placeholderExamples[example % placeholderExamples.length];
+      const word = t(placeholderExamples[example % placeholderExamples.length]);
 
       letters += deleting ? -1 : 1;
       input.placeholder = `${t("Məsələn:")} ${word.slice(0, letters)}`;
@@ -176,7 +176,7 @@ function HomeHero({
 
       <div className="quick-searches">
         <span className="quick-searches__label">
-          Məsələn:
+          {t("Məsələn:")}
         </span>
 
         {quickSearches.map((item) => {
@@ -190,7 +190,7 @@ function HomeHero({
               onClick={() => onSearch(item)}
             >
               <Icon size={14} strokeWidth={1.8} />
-              {item}
+              {t(item)}
             </button>
           );
         })}
