@@ -38,7 +38,7 @@ export const signin = async (input: {
 }): Promise<AuthResponse> => {
   const result = await apiRequest<AuthResponse>("/auth/signin", {
     method: "POST",
-    body: input,
+    body: { ...input, email: input.email.trim().toLowerCase() },
     auth: false,
   });
 

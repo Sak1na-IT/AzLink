@@ -26,7 +26,9 @@ const toPublicUser = (user: {
 });
 
 export const signupHandler = async (req: Request, res: Response) => {
-  const { name, email, password, role, phone } = req.body;
+  const { name, password, role, phone } = req.body;
+  const email =
+    typeof req.body.email === "string" ? req.body.email.trim().toLowerCase() : "";
 
   if (!name || !email || !password || !role) {
     return res
@@ -69,14 +71,24 @@ export const signupHandler = async (req: Request, res: Response) => {
 };
 
 export const signinHandler = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
+  const { password } = req.body;
+  /* "Sakinapasha@..." və ya sonda boşluq: telefon klaviaturası belə yazır */
+  const typedEmail = typeof req.body.email === "string" ? req.body.email.trim() : "";
+  const email = typedEmail.toLowerCase();
 
   if (!email || !password) {
     return res.status(400).json({ message: "Email və şifrə vacibdir" });
   }
 
   try {
-    const { user, tokens } = await authService.signin({ email, password });
+    /* Əvvəllər böyük hərflə qeydiyyatdan keçənlər üçün yazıldığı kimi də yoxlanılır */
+    const { user, tokens } = await authService
+      .signin({ email, password })
+      .catch((error) =>
+        typedEmail !== email
+          ? authService.signin({ email: typedEmail, password })
+          : Promise.reject(error)
+      );
 
     res.json({
       user: toPublicUser(user),
