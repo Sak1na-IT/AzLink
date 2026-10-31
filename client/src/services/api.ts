@@ -10,7 +10,17 @@ import { t } from "../i18n";
  * geri qaytarılır (çağıran tərəf giriş səhifəsinə yönləndirməlidir).
  */
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000/api";
+/*
+ * Server ünvanı: .env-dəki VITE_API_URL, yoxdursa kompüterdə lokal server,
+ * internetdə (Vercel, Netlify) Render-dəki canlı server.
+ */
+const isLocalHost =
+  typeof location !== "undefined" &&
+  /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+
+const BASE_URL =
+  import.meta.env.VITE_API_URL ??
+  (isLocalHost ? "http://localhost:4000/api" : "https://azlink.onrender.com/api");
 
 const ACCESS_TOKEN_KEY = "azlink-access-token";
 const REFRESH_TOKEN_KEY = "azlink-refresh-token";
