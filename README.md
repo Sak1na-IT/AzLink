@@ -8,7 +8,7 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 
 **Biznes axını:** Qoşul → Profilini qur → Xidmət əlavə et → Rezerv qəbul et
 
-**Canlı versiya:** [azlinkwebsite.netlify.app](https://azlinkwebsite.netlify.app) (sayt) · [azlink.onrender.com](https://azlink.onrender.com/api/areas) (API). Demo hesablar aşağıdadır, parol `parol123`.
+**Canlı versiya:** [azlink.vercel.app](https://azlink.vercel.app) (sayt) · [azlink.onrender.com](https://azlink.onrender.com/api/areas) (API). Demo hesablar aşağıdadır, parol `parol123`.
 
 ---
 
@@ -30,7 +30,7 @@ Platforma yalnız bir kateqoriyaya fokuslanmır. Gözəllik, ev xidmətləri, t�
 14. [Hazırkı vəziyyət](#hazırkı-vəziyyət)
 15. [Kod qaydaları](#kod-qaydaları)
 16. [Faydalı əmrlər](#faydalı-əmrlər)
-17. [Deploy (Netlify + Render)](#deploy-netlify--render)
+17. [Deploy (Vercel + Render)](#deploy-vercel--render)
 18. [Git iş qaydası](#git-iş-qaydası)
 
 ---
@@ -754,14 +754,16 @@ Token 15 dəqiqəyə bitir. Test zamanı "Əməliyyat mümkün olmadı" kimi mes
 
 ---
 
-## Deploy (Netlify + Render)
+## Deploy (Vercel + Render)
 
 Sayt iki hissədən ibarətdir və iki yerdə yerləşir. Hər ikisi GitHub-dakı `main`-ə bağlıdır: `git push`-dan sonra özləri yenilənir (Render-də **Settings → Auto-Deploy** `On Commit` olmalıdır, yoxsa **Manual Deploy → Deploy latest commit**).
 
-### Frontend: Netlify
+### Frontend: Vercel
 
-- Ayarlar kökdəki `netlify.toml`-dadır: build `npm run build` (kökdən, workspaces), nəticə `client/dist`, Node 22, bütün yollar `index.html`-ə (React Router üçün). Netlify-da Base directory **boş** qalmalıdır.
-- Environment variable: `VITE_API_URL = https://azlink.onrender.com/api`. Dəyər build zamanı sayta yazılır, dəyişəndən sonra **Trigger deploy** lazımdır.
+- Ünvan: [azlink.vercel.app](https://azlink.vercel.app). GitHub-dakı `main`-ə bağlıdır, hər `git push`-dan sonra özü yenilənir.
+- Ayarlar kökdəki `vercel.json`-dadır: build `npm run build` (kökdən, workspaces), nəticə `client/dist`, bütün yollar `index.html`-ə (React Router üçün). Vercel-də Root Directory `./`, Application Preset **Other** olmalıdır.
+- Environment variable lazım deyil: sayt internetdə açılanda `https://azlink.onrender.com/api`-yə, kompüterdə isə `http://localhost:4000/api`-yə qoşulur (`client/src/services/api.ts`). Başqa server lazım olsa, `VITE_API_URL` təyin edilə bilər.
+- Əvvəlki Netlify versiyası (azlinkwebsite.netlify.app) artıq yenilənmir.
 
 ### Backend: Render (Web Service, Free)
 
