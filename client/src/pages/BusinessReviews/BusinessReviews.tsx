@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MessageSquareText, Star } from "lucide-react";
+import { ChevronDown, MessageSquareText, Star } from "lucide-react";
 
 import {
   getBusinessReviews,
@@ -34,10 +34,15 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
+/* Bir dəfəyə göstərilən rəy sayı */
+const REVIEWS_STEP = 5;
+
 function BusinessReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  /* Rəylər hissə-hissə açılır: əvvəlcə 5, "Daha çox" ilə növbəti 5 */
+  const [visibleCount, setVisibleCount] = useState(REVIEWS_STEP);
 
   useEffect(() => {
     getBusinessReviews()
@@ -126,7 +131,7 @@ function BusinessReviews() {
           </section>
 
           <section className="business-reviews__list">
-            {reviews.map((review) => (
+            {reviews.slice(0, visibleCount).map((review) => (
               <article key={review.id} className="business-review-card">
                 <div className="business-review-card__top">
                   <div className="business-review-card__avatar">
@@ -152,6 +157,19 @@ function BusinessReviews() {
                 )}
               </article>
             ))}
+
+            {reviews.length > visibleCount && (
+              <button
+                type="button"
+                className="business-reviews__more"
+                onClick={() => setVisibleCount((count) => count + REVIEWS_STEP)}
+              >
+                {t("Daha çox rəy ({count})", {
+                  count: Math.min(REVIEWS_STEP, reviews.length - visibleCount),
+                })}
+                <ChevronDown size={16} strokeWidth={1.8} />
+              </button>
+            )}
           </section>
         </>
       )}

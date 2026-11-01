@@ -196,3 +196,30 @@
     flex-wrap: wrap;
   }
 }
+
+/* "Daha çox rəy": hər basışda növbəti 5 rəy açılır */
+.business-reviews__more {
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 10px 20px;
+  border: 1px solid rgba(217, 184, 116, 0.45);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-gold);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease;
+}
+
+.business-reviews__more:hover {
+  border-color: var(--color-gold);
+  background: var(--color-gold-soft);
+}
+

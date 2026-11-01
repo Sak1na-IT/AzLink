@@ -3370,7 +3370,7 @@
   /* ================= BİZNESİM: ORTAQ ================= */
   /* Menyu ilə başlıq arasında artıq boşluq olmasın */
   .business-layout > main {
-    padding-top: 0;
+    padding-top: 6px;
   }
 
   /* Səhifə başlıqları: qızılı kiçik başlıq və izah cümləsi yoxdur */
@@ -3839,15 +3839,306 @@
     font-size: 12.5px;
   }
 
-  /* ================= BİZNESİM: DİGƏR SƏHİFƏLƏR ================= */
-  .business-layout .business-review-card,
-  .business-layout .business-customer-card {
+  /* ================= BİZNESİM: PORTFOLIO ================= */
+  /* İzah xanası və "Şəkil yüklə" alt-alta, kartın bütün enində */
+  .business-layout .business-portfolio__upload {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 12px;
+  }
+
+  .business-layout .business-portfolio__upload input[type="text"] {
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .business-layout .business-portfolio__upload-button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .business-layout .business-portfolio__hint {
+    display: none;
+  }
+
+  .business-layout .business-portfolio__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
 
-  .business-layout .business-reviews__list,
-  .business-layout .business-customers__list {
+  .business-layout .business-portfolio__empty {
+    padding: 28px 16px;
+    border-radius: 18px;
+  }
+
+  .business-layout .business-portfolio__empty p {
+    font-size: 13px;
+  }
+
+  /* ================= BİZNESİM: RƏYLƏR ================= */
+  /* Orta bal solda kiçik, ulduz zolaqları sağda — bir kart */
+  .business-layout .business-reviews__summary {
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+
+  .business-layout .business-reviews__average {
+    gap: 4px;
+  }
+
+  .business-layout .business-reviews__average strong {
+    font-size: 44px;
+  }
+
+  .business-layout .business-reviews__average span {
+    font-size: 11.5px;
+  }
+
+  .business-layout .business-reviews__average .business-reviews__stars svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .business-layout .business-reviews__bars {
+    gap: 5px;
+  }
+
+  .business-layout .business-reviews__bar-row {
+    grid-template-columns: 10px 1fr 18px;
+    gap: 8px;
+    font-size: 11px;
+  }
+
+  .business-layout .business-reviews__bar {
+    height: 6px;
+  }
+
+  .business-layout .business-reviews__list {
+    gap: 8px;
+  }
+
+  .business-layout .business-review-card {
+    padding: 12px 14px;
+    border-radius: 16px;
+  }
+
+  .business-layout .business-review-card__top {
+    flex-wrap: nowrap;
     gap: 10px;
+  }
+
+  .business-layout .business-review-card__avatar {
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
+  }
+
+  .business-layout .business-review-card__name h3 {
+    overflow: hidden;
+    margin: 0;
+    font-size: 18px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .business-layout .business-review-card__name span {
+    font-size: 11px;
+  }
+
+  .business-layout .business-review-card__top .business-reviews__stars svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .business-layout .business-review-card__comment {
+    margin-top: 8px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .business-reviews__more {
+    padding: 9px 16px;
+    font-size: 13px;
+  }
+
+  /* ================= BİZNESİM: MÜŞTƏRİLƏR ================= */
+  .business-layout .business-customers__search {
+    min-height: 44px;
+    margin: 0 0 12px;
+    padding: 0 14px;
+    border-radius: 999px;
+  }
+
+  .business-layout .business-customers__search svg {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+  }
+
+  .business-layout .business-customers__search input {
+    min-width: 0;
+    font-size: 14px;
+  }
+
+  .business-layout .business-customers__top {
+    margin-bottom: 12px;
+  }
+
+  .business-layout .business-customers__top-grid {
+    gap: 6px;
+  }
+
+  .business-layout .business-customers__top-card {
+    padding: 8px 10px;
+  }
+
+  .business-layout .business-customers__list {
+    gap: 8px;
+  }
+
+  /* Kart: ad və status yuxarıda, üç rəqəm altda bir sırada */
+  .business-layout .business-customer-card {
+    padding: 12px 14px;
+    border-radius: 16px;
+  }
+
+  .business-layout .business-customer-card__top {
+    gap: 10px;
+  }
+
+  .business-layout .business-customer-card__avatar {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .business-layout .business-customer-card__name {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .business-layout .business-customer-card__name h3 {
+    overflow: hidden;
+    margin: 0;
+    font-size: 17px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .business-layout .business-customer-card__name span {
+    font-size: 11px;
+  }
+
+  .business-layout .business-customer-card__status {
+    flex: 0 0 auto;
+    gap: 3px;
+    padding: 3px 8px;
+    font-size: 10.5px;
+  }
+
+  .business-layout .business-customer-card__status svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .business-layout .business-customer-card__stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+  .business-layout .business-customer-card__stat {
+    gap: 0;
+    min-width: 0;
+  }
+
+  .business-layout .business-customer-card__stat svg {
+    display: none;
+  }
+
+  .business-layout .business-customer-card__stat span {
+    display: block;
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+
+  .business-layout .business-customer-card__stat strong {
+    font-size: 17px;
+  }
+
+  /* ================= BİZNESİM: İŞ SAATLARI ================= */
+  /* Hər gün bir sırada: açar · gün · açılış – bağlanış */
+  .business-layout .business-hours__card {
+    margin-top: 0;
+    padding: 2px 10px;
+  }
+
+  .business-layout .business-hours__row {
+    flex-wrap: nowrap;
+    gap: 6px;
+    min-height: 54px;
+    padding: 0;
+  }
+
+  .business-layout .business-hours__day {
+    flex: 1;
+    gap: 7px;
+    min-width: 0;
+    font-size: 12.5px;
+  }
+
+  .business-layout .business-hours__day span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .business-layout .business-hours__day input {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 22px;
+  }
+
+  .business-layout .business-hours__day input::after {
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+  }
+
+  .business-layout .business-hours__day input:checked::after {
+    transform: translateX(14px);
+  }
+
+  .business-layout .business-hours__times {
+    flex: 0 0 auto;
+    gap: 3px;
+  }
+
+  .business-layout .business-hours__select {
+    width: 62px;
+    height: 36px;
+    padding: 0 2px 0 6px;
+    border-radius: 10px;
+    font-size: 12.5px;
+  }
+
+  .business-layout .business-hours__closed {
+    flex: 0 0 auto;
+    font-size: 12px;
+  }
+
+  .business-layout .business-hours__footer {
+    margin-top: 12px;
   }
 }
 
