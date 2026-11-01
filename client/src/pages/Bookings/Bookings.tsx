@@ -220,8 +220,6 @@ function Bookings() {
             <span className="bookings-page__eyebrow">{t("Rezervlər")}</span>
 
             <h1>{t("Rezervlərim")}</h1>
-
-            <p>{t("Yaratdığınız rezervləri buradan idarə edə bilərsiniz.")}</p>
           </div>
 
           <button

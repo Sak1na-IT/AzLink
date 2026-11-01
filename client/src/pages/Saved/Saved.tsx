@@ -75,10 +75,6 @@ function Saved() {
           <span className="saved-header__eyebrow">AzLink</span>
 
           <h1>{t("Seçilmişlər")}</h1>
-
-          <p>
-            {t("Bəyəndiyiniz xidmət göstərən profilləri burada saxlaya bilərsiniz.")}
-          </p>
         </div>
 
         <div className="saved-header__actions">

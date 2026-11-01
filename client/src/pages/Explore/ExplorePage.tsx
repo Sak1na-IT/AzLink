@@ -86,10 +86,6 @@ function ExplorePage() {
           <span className="explore-header__eyebrow">AzLink</span>
 
           <h1>{t("Hansı xidmətə ehtiyacınız var?")}</h1>
-
-          <p>
-            {t("Kateqoriya seçin, o sahədəki bütün ustaları dərhal görün.")}
-          </p>
         </div>
       </header>
 

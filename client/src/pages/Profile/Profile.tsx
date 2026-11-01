@@ -224,8 +224,6 @@ function Profile() {
           <span className="profile-page__eyebrow">AzLink</span>
 
           <h1>{t("Profilim")}</h1>
-
-          <p>{t("Hesabınızı və fəaliyyətinizi idarə edin.")}</p>
         </div>
       </div>
 
