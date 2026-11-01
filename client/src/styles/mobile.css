@@ -2029,26 +2029,15 @@
   }
 
   /*
-   * Redaktə rejimi (tətbiqlərdəki kimi): şəkil yuxarıda ortada, böyük,
-   * altında xanalar. Çıxış düyməsi redaktə vaxtı gizlənir.
+   * Redaktə rejimi: sadə forma — yalnız xanalar və düymələr.
+   * Şəkil və çıxış düyməsi redaktə vaxtı gizlənir.
    */
   .profile-card:has(.profile-card__content label) {
     display: block;
-    padding: 20px 16px 16px;
+    padding: 16px;
   }
 
-  .profile-card:has(.profile-card__content label) .profile-avatar {
-    width: 76px;
-    height: 76px;
-    margin: 0 auto 18px;
-    border-width: 3px;
-    font-size: 28px;
-    box-shadow:
-      var(--medal-inset),
-      0 0 0 6px rgba(217, 184, 116, 0.08),
-      0 0 32px rgba(240, 205, 140, 0.16);
-  }
-
+  .profile-card:has(.profile-card__content label) .profile-avatar,
   .profile-card:has(.profile-card__content label) .profile-card__logout {
     display: none;
   }
