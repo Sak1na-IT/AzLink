@@ -110,10 +110,6 @@ function BusinessPortfolio() {
         <div>
           <span className="biz-eyebrow">{t("Portfolio")}</span>
           <h1>{t("İş nümunələri")}</h1>
-
-          <p>
-            {t("İş nümunələrinizi əlavə edin. Müştərilər bunları profil səhifənizdə görəcək.")}
-          </p>
         </div>
       </section>
 

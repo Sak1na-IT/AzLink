@@ -1054,3 +1054,27 @@ body .account-profile__logout:hover {
     display: none;
   }
 }
+
+/* ---------- Kompüter: başlıq ilə məzmun arası hər səhifədə eyni ---------- */
+@media (min-width: 641px) {
+  .business-layout .business-profile__header,
+  .business-layout .business-services__header,
+  .business-layout .business-bookings__header,
+  .business-layout .business-portfolio__header,
+  .business-layout .business-reviews__header,
+  .business-layout .business-customers__header,
+  .business-layout .business-hours__header {
+    align-items: center;
+    margin-bottom: 32px;
+  }
+
+  .business-layout .business-profile__header + *,
+  .business-layout .business-services__header + *,
+  .business-layout .business-bookings__header + *,
+  .business-layout .business-portfolio__header + *,
+  .business-layout .business-reviews__header + *,
+  .business-layout .business-customers__header + *,
+  .business-layout .business-hours__header + * {
+    margin-top: 0;
+  }
+}

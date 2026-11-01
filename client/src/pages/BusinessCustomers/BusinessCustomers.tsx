@@ -76,10 +76,6 @@ function BusinessCustomers() {
         <div>
           <span className="biz-eyebrow">{t("Müştərilər")}</span>
           <h1>{t("Müştərilər")}</h1>
-
-          <p>
-            {t("Sizdən rezerv edən müştərilərin siyahısı və rezerv tarixçəsi.")}
-          </p>
         </div>
       </section>
 

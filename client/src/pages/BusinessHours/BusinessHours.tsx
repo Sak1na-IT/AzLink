@@ -139,7 +139,6 @@ function BusinessHours() {
       <section className="business-hours__header">
         <span className="biz-eyebrow">{t("İş saatları")}</span>
         <h1>{t("İş saatları")}</h1>
-        <p>{t("Müştərilərin hansı gün və saatlarda rezerv edə biləcəyini seçin.")}</p>
       </section>
 
       <section className="business-hours__card">

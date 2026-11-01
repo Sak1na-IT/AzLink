@@ -262,7 +262,6 @@ function BusinessProfile() {
         <div>
           <span className="biz-eyebrow">{t("Profil")}</span>
           <h1>{t("Biznes profili")}</h1>
-          <p>{t("Müştərilərin sizin haqqınızda gördüyü məlumatlar.")}</p>
         </div>
 
         {profile.id && (

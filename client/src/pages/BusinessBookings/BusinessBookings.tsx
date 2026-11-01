@@ -201,10 +201,6 @@ function BusinessBookings({ embedded = false }: BusinessBookingsProps) {
             <span className="biz-eyebrow">{t("Rezervlər")}</span>
 
             <h1>{t("Rezervləri idarə edin")}</h1>
-
-            <p>
-              {t("Statusa görə seçin: gözləyən rezervi təsdiqləyin, təsdiqlənmiş işi tamamlayın.")}
-            </p>
           </div>
 
           {summary}

@@ -90,7 +90,6 @@ function BusinessReviews() {
       <header className="business-reviews__header">
         <span className="biz-eyebrow">{t("Rəylər")}</span>
         <h1>{t("Müştəri rəyləri")}</h1>
-        <p>{t("Müştərilərin tamamlanmış rezervlərdən sonra yazdığı rəylər.")}</p>
       </header>
 
       {reviews.length === 0 ? (

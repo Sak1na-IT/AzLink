@@ -248,10 +248,6 @@ function BusinessServices() {
         <div>
           <span className="biz-eyebrow">{t("Xidmətlər")}</span>
           <h1>{t("Xidmət menyusu")}</h1>
-
-          <p>
-            {t("Müştərilər rezerv edərkən bu xidmətlərdən birini seçir. Dəyişikliklər dərhal rezerv səhifəsində görünür.")}
-          </p>
         </div>
 
         {!formOpen && (
