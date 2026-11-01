@@ -162,6 +162,11 @@
     color var(--transition-fast);
 }
 
+/* Kompüterdə görünmür, telefonda styles/mobile.css açır */
+.quick-searches__more {
+  display: none;
+}
+
 .quick-searches__item:hover {
   border-color: var(--color-primary);
   background: var(--color-primary-soft);

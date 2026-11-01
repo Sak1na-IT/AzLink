@@ -711,7 +711,7 @@
   }
 
   .home-hero .home-hero__title {
-    font-size: 29px;
+    font-size: 27px;
     line-height: 1.08;
   }
 
@@ -720,26 +720,87 @@
     display: none;
   }
 
+  /* Axtarış və ərazi bir sırada: ərazi kiçik düymədir */
   .home-search {
-    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px;
     margin-top: 16px;
   }
 
   .home-hero .home-search__input,
   .home-hero .home-search__area {
-    min-height: 46px;
+    min-height: 48px;
     border-radius: 14px;
   }
 
-  .home-hero .quick-searches {
-    margin: 12px -14px 0;
-    padding: 0 14px 2px;
-    gap: 6px;
+  .home-hero .home-search__input {
+    gap: 8px;
+    padding: 0 12px;
   }
 
-  .home-hero .quick-searches__item {
-    padding: 6px 11px;
+  .home-hero .home-search__input svg {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+  }
+
+  .home-hero .home-search__input input {
+    font-size: 14.5px;
+  }
+
+  .home-hero .home-search__area {
+    min-width: 0;
+    max-width: 118px;
+    gap: 5px;
+    padding: 0 11px;
+  }
+
+  .home-hero .home-search__area > svg:first-child {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    color: var(--velvet-gold);
+  }
+
+  .home-hero .home-search__area strong {
+    font-size: 13px;
+  }
+
+  .home-hero .home-search__area small,
+  .home-hero .home-search__area > svg:last-child {
+    display: none;
+  }
+
+  /* Üç sahə və "Daha çox" (Kəşf et-ə aparır), sürüşdürmədən bir sıra */
+  .home-hero .quick-searches {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 5px;
+    margin-top: 12px;
+    overflow: visible;
+  }
+
+  .home-hero .quick-searches__item:nth-of-type(n + 4),
+  .home-hero .quick-searches__item svg {
+    display: none;
+  }
+
+  .home-hero .quick-searches__item,
+  .home-hero .quick-searches__more {
+    flex: 0 0 auto;
+    padding: 7px 11px;
     font-size: 12.5px;
+    line-height: 1.2;
+  }
+
+  .home-hero .quick-searches__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    color: var(--velvet-gold);
+    font-weight: 600;
   }
 
   .home-section {
@@ -960,5 +1021,90 @@
   .helpful-info__link {
     padding-top: 6px;
     font-size: 13px;
+  }
+
+  /* ================= NAVİQASİYA ================= */
+  /* Yuxarıda yalnız loqo, bildiriş və mövzu; bölmələr aşağıda, baş barmağın altında */
+  .top-nav__inner {
+    min-height: 56px;
+    gap: 8px;
+    padding: 0 16px;
+  }
+
+  .top-nav__brand {
+    margin-right: auto;
+    font-size: 21px;
+  }
+
+  .top-nav .notification-bell__button,
+  .top-nav__theme {
+    width: 40px;
+    height: 40px;
+  }
+
+  .top-nav__links {
+    position: fixed;
+    z-index: 120;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex: none;
+    justify-content: space-around;
+    gap: 0;
+    margin: 0;
+    padding: 6px 6px max(8px, env(safe-area-inset-bottom));
+    overflow: visible;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+    box-shadow: 0 -8px 24px -16px rgba(0, 0, 0, 0.35);
+  }
+
+  .top-nav__link {
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 3px;
+    width: auto;
+    min-width: 0;
+    max-width: 92px;
+    min-height: 52px;
+    padding: 6px 2px 4px;
+    border-radius: 14px;
+    font-size: 10.5px;
+    line-height: 1.1;
+  }
+
+  .top-nav__link svg {
+    width: 21px;
+    height: 21px;
+  }
+
+  .top-nav__link span {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .top-nav__link.is-active,
+  [data-theme="dark"] .top-nav__link.is-active {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+    box-shadow: none;
+  }
+
+  [data-theme="dark"] .top-nav__link.is-active {
+    background: rgba(122, 219, 166, 0.12);
+    color: #7adba6;
+  }
+
+  /* Aşağı menyu məzmunu örtməsin */
+  .app-content {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom));
+  }
+
+  .notification-bell__panel {
+    top: 64px;
   }
 }

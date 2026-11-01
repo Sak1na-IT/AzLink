@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import { MapPin, Search, ChevronRight } from "lucide-react";
 
 import VelvetStage from "../brand/VelvetStage";
@@ -194,6 +195,12 @@ function HomeHero({
             </button>
           );
         })}
+
+        {/* Yalnız telefonda görünür: qalan sahələr Kəşf et-də */}
+        <Link to="/explore" className="quick-searches__more">
+          {t("Daha çox")}
+          <ChevronRight size={14} strokeWidth={1.9} />
+        </Link>
       </div>
     </VelvetStage>
   );
