@@ -2028,6 +2028,71 @@
     font-size: 10px;
   }
 
+  /* Redaktə rejimi: şəkil yuxarıda, xanalar kartın bütün enində */
+  .profile-card:has(.profile-card__content label) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  .profile-card:has(.profile-card__content label) .profile-avatar {
+    align-self: center;
+    width: 52px;
+    height: 52px;
+    flex-basis: 52px;
+    font-size: 20px;
+  }
+
+  .profile-card:has(.profile-card__content label) .profile-card__content {
+    padding-right: 0;
+  }
+
+  .profile-card__content label {
+    gap: 5px;
+    margin-bottom: 10px;
+    font-size: 12px;
+  }
+
+  .profile-card__content input {
+    min-height: 46px;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-size: 14.5px;
+  }
+
+  /* Email xanası və "Emaili dəyiş" bir sırada */
+  .profile-email-field {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .profile-card__content .profile-email-field label {
+    margin-bottom: 0;
+  }
+
+  .profile-card .profile-email-field .profile-secondary-button {
+    flex: 0 0 auto;
+    min-height: 46px;
+    padding: 0 14px;
+    border-radius: 12px;
+    font-size: 12.5px;
+  }
+
+  .profile-actions {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .profile-card .profile-actions .profile-primary-button,
+  .profile-card .profile-actions .profile-secondary-button {
+    flex: 1;
+    min-height: 46px;
+    font-size: 14px;
+  }
+
   /* Hesabım: içəridə artıq boşluq yoxdur */
   .profile-menu {
     gap: 0;
