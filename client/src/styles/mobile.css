@@ -1232,17 +1232,20 @@
     font-size: 30px;
   }
 
+  /* "Yeni rezerv yarat": başlığın yanında kiçik qızılı "+" düyməsi */
   .bookings-page__new-button {
-    width: auto;
-    min-height: 38px;
-    padding: 0 14px;
-    gap: 5px;
-    font-size: 13px;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    gap: 0;
+    font-size: 0;
   }
 
   .bookings-page__new-button svg {
-    width: 15px;
-    height: 15px;
+    width: 20px;
+    height: 20px;
   }
 
   .bookings-page__filters {
@@ -1708,5 +1711,297 @@
     padding: 0 22px;
     border-radius: 999px;
     font-size: 14px;
+  }
+
+  /* ================= SEÇİLMİŞLƏR ================= */
+  .saved-page {
+    width: 100%;
+    padding: 4px 4px 8px;
+  }
+
+  .saved-header {
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .saved-header__eyebrow,
+  .saved-header p {
+    display: none;
+  }
+
+  .saved-header h1 {
+    font-size: 30px;
+    white-space: nowrap;
+  }
+
+  .saved-header__actions {
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+
+  .saved-header__add,
+  .saved-header__count {
+    min-height: 36px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  .saved-header__add {
+    gap: 5px;
+    padding: 0 12px;
+  }
+
+  .saved-header__add svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .saved-header__count {
+    min-width: 0;
+    gap: 4px;
+    padding: 0 10px;
+  }
+
+  .saved-header__count svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ================= PROFİLİM ================= */
+  .profile-page {
+    width: 100%;
+    padding: 4px 4px 8px;
+  }
+
+  .profile-page__header {
+    margin-bottom: 14px;
+  }
+
+  .profile-page__eyebrow,
+  .profile-page__header p,
+  .profile-section__header span {
+    display: none;
+  }
+
+  .profile-page__header h1 {
+    font-size: 30px;
+  }
+
+  .profile-content {
+    gap: 12px;
+  }
+
+  /* Üzvlük kartı: şəkil solda, ad və email sağda */
+  .profile-card {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .profile-avatar {
+    width: 58px;
+    height: 58px;
+    flex-basis: 58px;
+    border-width: 2px;
+    font-size: 22px;
+    box-shadow: var(--medal-inset), 0 0 0 5px rgba(217, 184, 116, 0.06);
+  }
+
+  .profile-card__content {
+    padding-right: 36px;
+  }
+
+  .profile-card__name-row {
+    gap: 6px;
+  }
+
+  .profile-card__name-row h2 {
+    font-size: 24px;
+  }
+
+  .profile-status {
+    gap: 3px;
+    padding: 2px 7px;
+    font-size: 10px;
+  }
+
+  .profile-status svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .profile-card__email {
+    gap: 5px;
+    margin: 4px 0 10px;
+    font-size: 12.5px;
+    word-break: break-all;
+  }
+
+  .profile-card__email svg {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+  }
+
+  .profile-card .profile-secondary-button,
+  .profile-card .profile-primary-button {
+    min-height: 34px;
+    padding: 0 12px;
+    gap: 5px;
+    font-size: 12.5px;
+  }
+
+  .profile-card .profile-secondary-button svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .profile-card__logout {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .profile-card__logout svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .profile-section {
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+
+  .profile-section__header {
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .profile-section__header h2 {
+    font-size: 22px;
+  }
+
+  .profile-section__link {
+    font-size: 13px;
+  }
+
+  .profile-stats {
+    gap: 8px;
+  }
+
+  .profile-stat {
+    gap: 4px;
+    padding: 12px 6px 10px;
+    border-radius: 14px;
+  }
+
+  .profile-stat strong {
+    font-size: 28px;
+  }
+
+  .profile-stat span {
+    font-size: 9.5px;
+  }
+
+  /* Son rezervlər: iki sətir, status və qiymət sağda */
+  .profile-booking-list {
+    gap: 6px;
+  }
+
+  .profile-booking-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 10px 16px;
+    border-radius: 14px;
+  }
+
+  .profile-booking-item::before {
+    top: 10px;
+    bottom: 10px;
+  }
+
+  .profile-booking-item__left {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2px 4px;
+  }
+
+  .profile-booking-item__left strong {
+    flex-basis: 100%;
+    font-size: 14px;
+  }
+
+  .profile-booking-item__left span {
+    font-size: 12px;
+  }
+
+  .profile-booking-item__left span + span::before {
+    content: "· ";
+    color: var(--color-text-muted);
+  }
+
+  .profile-booking-item__right {
+    flex-direction: column;
+    align-items: flex-end;
+    width: auto;
+    gap: 4px;
+  }
+
+  .profile-booking-item__right strong {
+    font-size: 20px;
+  }
+
+  .profile-booking-status {
+    padding: 2px 7px;
+    font-size: 10px;
+  }
+
+  /* Hesabım: içəridə artıq boşluq yoxdur */
+  .profile-menu {
+    gap: 0;
+  }
+
+  .profile-menu__item {
+    gap: 12px;
+    padding: 9px 2px;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .profile-menu__item + .profile-menu__item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .profile-menu__icon {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  .profile-menu__icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .profile-menu__item > div:not(.profile-menu__icon) {
+    min-width: 0;
+    gap: 1px;
+  }
+
+  .profile-menu__item strong {
+    font-size: 14px;
+  }
+
+  .profile-menu__item span {
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
