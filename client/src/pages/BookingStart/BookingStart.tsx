@@ -22,7 +22,6 @@ import { t } from "../../i18n";
 type Category = {
   id: string;
   title: string;
-  description: string;
   icon: React.ReactNode;
   subcategories: string[];
 };
@@ -31,7 +30,6 @@ const categories: Category[] = [
   {
     id: "beauty",
     title: t("Gözəllik"),
-    description: t("Saç, dırnaq, makiyaj və digər xidmətlər"),
     icon: <Sparkles size={25} strokeWidth={1.8} />,
     subcategories: [
       "Dırnaq",
@@ -45,7 +43,6 @@ const categories: Category[] = [
   {
     id: "home",
     title: t("Ev və məişət"),
-    description: t("Təmizlik, təmir və ev xidmətləri"),
     icon: <Home size={25} strokeWidth={1.8} />,
     subcategories: [
       "Təmizlik",
@@ -59,7 +56,6 @@ const categories: Category[] = [
   {
     id: "auto",
     title: "Avtomobil",
-    description: t("Avtoyuma, servis və avtomobil xidmətləri"),
     icon: <Car size={25} strokeWidth={1.8} />,
     subcategories: [
       "Avtoyuma",
@@ -72,7 +68,6 @@ const categories: Category[] = [
   {
     id: "education",
     title: t("Təhsil"),
-    description: t("Repetitor, dil və digər təhsil xidmətləri"),
     icon: <GraduationCap size={25} strokeWidth={1.8} />,
     subcategories: [
       "Repetitor",
@@ -85,7 +80,6 @@ const categories: Category[] = [
   {
     id: "events",
     title: t("Foto və tədbir"),
-    description: t("Fotoqraf, video və tədbir xidmətləri"),
     icon: <Camera size={25} strokeWidth={1.8} />,
     subcategories: [
       "Fotoqraf",
@@ -99,7 +93,6 @@ const categories: Category[] = [
   {
     id: "pets",
     title: "Heyvanlar",
-    description: t("Ev heyvanları üçün xidmətlər"),
     icon: <PawPrint size={25} strokeWidth={1.8} />,
     subcategories: [
       "Grooming",
@@ -111,7 +104,6 @@ const categories: Category[] = [
   {
     id: "personal",
     title: t("Fərdi xidmətlər"),
-    description: t("Şəxsi inkişaf və gündəlik xidmətlər"),
     icon: <UserRound size={25} strokeWidth={1.8} />,
     subcategories: [
       "Fərdi məşqçi",
@@ -124,7 +116,6 @@ const categories: Category[] = [
   {
     id: "fitness",
     title: t("İdman"),
-    description: t("Məşq və idman xidmətləri"),
     icon: <Dumbbell size={25} strokeWidth={1.8} />,
     subcategories: [
       "Trainer",
@@ -163,24 +154,28 @@ function BookingStart() {
     };
   }, []);
 
-  const getCover = (categoryId: string) => {
+  /* Sahə üzrə bizneslər: dairəvi şəkil üçün üz qabığı və say */
+  const getCategoryInfo = (categoryId: string) => {
     const entry = catalog.find((item) => item.id === categoryId);
 
     if (!entry) {
-      return undefined;
+      return { cover: undefined, count: 0 };
     }
 
     const wanted = [entry.name, ...entry.services].map((name) =>
       name.toLocaleLowerCase("az")
     );
 
-    return providers.find(
-      (provider) =>
-        provider.image &&
-        [provider.service, ...(provider.categories ?? [])].some((name) =>
-          wanted.includes((name ?? "").toLocaleLowerCase("az"))
-        )
-    )?.image;
+    const inCategory = providers.filter((provider) =>
+      [provider.service, ...(provider.categories ?? [])].some((name) =>
+        wanted.includes((name ?? "").toLocaleLowerCase("az"))
+      )
+    );
+
+    return {
+      cover: inCategory.find((provider) => provider.image)?.image,
+      count: inCategory.length,
+    };
   };
 
   const handleCategorySelect = (category: Category) => {
@@ -229,53 +224,52 @@ function BookingStart() {
               ? t("{title} xidmətini seçin", { title: t(selectedCategory.title) })
               : t("Hansı xidmətə ehtiyacınız var?")}
           </h1>
-
-          <p>
-            {selectedCategory
-              ? t("Davam etmək üçün sizə lazım olan xidməti seçin.")
-              : t("Kateqoriya seçin və sizə uyğun biznesləri tapın.")}
-          </p>
         </section>
 
         {!selectedCategory ? (
           <section className="booking-start__categories">
             {categories.map((category) => {
-              const cover = getCover(category.id);
+              const { cover, count } = getCategoryInfo(category.id);
 
               return (
-              <button
-                type="button"
-                key={category.id}
-                className="booking-start__category"
-                onClick={() =>
-                  handleCategorySelect(category)
-                }
-              >
-                {cover ? (
-                  <img
-                    className="booking-start__category-photo"
-                    src={cover}
-                    alt=""
-                    loading="lazy"
+                <button
+                  type="button"
+                  key={category.id}
+                  className="booking-start__category"
+                  onClick={() => handleCategorySelect(category)}
+                >
+                  {/* Dairəvi şəkil, küncündə sahənin nişanı */}
+                  <span className="booking-start__category-media">
+                    {cover ? (
+                      <img src={cover} alt="" loading="lazy" />
+                    ) : (
+                      category.icon
+                    )}
+
+                    {cover ? (
+                      <span className="booking-start__category-icon">
+                        {category.icon}
+                      </span>
+                    ) : null}
+                  </span>
+
+                  <span className="booking-start__category-content">
+                    <strong>{t(category.title)}</strong>
+                    <small>
+                      {count === 0
+                        ? t("Hələ usta yoxdur")
+                        : count === 1
+                          ? t("1 usta")
+                          : t("{count} usta", { count })}
+                    </small>
+                  </span>
+
+                  <ArrowRight
+                    className="booking-start__category-arrow"
+                    size={18}
+                    strokeWidth={1.8}
                   />
-                ) : null}
-                <span className="booking-start__category-shade" />
-
-                <div className="booking-start__category-icon">
-                  {category.icon}
-                </div>
-
-                <div className="booking-start__category-content">
-                  <h2>{t(category.title)}</h2>
-                  <p>{category.description}</p>
-                </div>
-
-                <ArrowRight
-                  className="booking-start__category-arrow"
-                  size={19}
-                  strokeWidth={1.8}
-                />
-              </button>
+                </button>
               );
             })}
           </section>
