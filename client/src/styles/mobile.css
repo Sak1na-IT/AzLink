@@ -1,0 +1,256 @@
+/*
+ * TELEFON GÖRÜNÜŞÜ
+ *
+ * Bu fayldakı bütün qaydalar yalnız 640px-dən dar ekranlarda işləyir.
+ * Kompüter və planşet görünüşünə heç bir təsiri yoxdur.
+ *
+ * Telefon standartları:
+ *  - əsas mətn 14–15px, köməkçi mətn 13px, başlıqlar 26–32px
+ *  - kənar boşluq 16px, bloklar arası 32–40px
+ *  - toxunma sahəsi ən azı 40–44px
+ *  - bölmələr ekranın tam hündürlüyünü tutmur, məzmun qədər yer alır
+ */
+
+@media (max-width: 640px) {
+  /* ================= AÇILIŞ SƏHİFƏSİ (/) ================= */
+
+  /* Yuxarı zolaq */
+  .landing-bar {
+    padding: 10px 16px;
+  }
+
+  .landing-bar__brand {
+    font-size: 19px;
+  }
+
+  .landing-bar__actions {
+    gap: 6px;
+  }
+
+  .landing-bar__icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .landing-bar__login {
+    height: 36px;
+    padding: 0 14px;
+    font-size: 13px;
+  }
+
+  .landing__content {
+    padding: 0 16px;
+  }
+
+  /* Hero: tam ekran yox, məzmun qədər */
+  .landing-hero {
+    min-height: 0;
+    padding: 92px 0 8px;
+  }
+
+  .landing-hero h1 {
+    font-size: 34px;
+    line-height: 1.06;
+  }
+
+  .landing-hero__lead {
+    margin-top: 12px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+
+  /* İki seçim kartı: yığcam sətir kimi */
+  .landing-doors {
+    margin-top: 24px;
+    gap: 10px;
+  }
+
+  .landing-door {
+    grid-template-columns: 40px 1fr;
+    column-gap: 14px;
+    row-gap: 2px;
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+
+  .landing-door .landing-icon {
+    grid-row: 1 / span 3;
+    align-self: center;
+  }
+
+  .landing-door strong {
+    font-size: 20px;
+    line-height: 1.15;
+  }
+
+  .landing-door span:not(.landing-icon) {
+    font-size: 13px;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .landing-door em {
+    grid-column: 2;
+    grid-row: auto;
+    margin-top: 4px;
+    font-size: 13px;
+  }
+
+  .landing-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .landing-icon svg {
+    width: 19px;
+    height: 19px;
+  }
+
+  .landing-hero__more {
+    margin-top: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  /* Bölmələr: aralarda böyük boşluq yoxdur */
+  .landing-section {
+    min-height: 0;
+    padding: 48px 0 8px;
+  }
+
+  .landing-section--last {
+    padding-bottom: 48px;
+  }
+
+  .landing-section__title {
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    font-size: 30px;
+  }
+
+  /* Necə işləyir: addımlar nömrə + mətn kimi yan-yana */
+  .landing-paths {
+    gap: 10px;
+  }
+
+  .landing-path {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .landing-path h3 {
+    gap: 8px;
+    font-size: 21px;
+  }
+
+  .landing-path h3 svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .landing-path ol {
+    margin-top: 12px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .landing-path li {
+    grid-template-columns: 26px 1fr;
+    column-gap: 12px;
+    row-gap: 2px;
+  }
+
+  .landing-path li::before {
+    grid-row: 1 / span 2;
+    width: 26px;
+    height: 26px;
+    font-size: 15px;
+  }
+
+  .landing-path li strong {
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .landing-path li span {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  /* Niyə AzLink */
+  .landing-why {
+    gap: 10px;
+  }
+
+  .landing-why__item {
+    grid-template-columns: 36px 1fr;
+    column-gap: 12px;
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+
+  .landing-why__item .landing-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  .landing-why__item .landing-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .landing-why__item h3 {
+    font-size: 19px;
+    line-height: 1.2;
+  }
+
+  .landing-why__item p {
+    font-size: 13px;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Footer */
+  .landing-footer__inner {
+    padding: 28px 16px 20px;
+    gap: 22px 16px;
+  }
+
+  .landing-footer__brand {
+    font-size: 22px;
+  }
+
+  .landing-footer__brand p {
+    margin-top: 6px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .landing-footer__links {
+    gap: 8px;
+  }
+
+  .landing-footer__links h4 {
+    margin: 0 0 2px;
+    font-size: 12.5px;
+  }
+
+  .landing-footer__links a,
+  .landing-footer__links button {
+    font-size: 13px;
+  }
+
+  .landing-footer__bottom {
+    padding: 14px 16px 18px;
+    gap: 8px;
+    font-size: 12px;
+  }
+}
