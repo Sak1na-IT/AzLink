@@ -469,3 +469,9 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Medalyon telefonda görünür (styles/mobile.css) */
+.booking-start__subcategory-icon {
+  display: none;
+}
+

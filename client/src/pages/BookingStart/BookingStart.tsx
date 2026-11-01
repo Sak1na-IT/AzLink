@@ -287,7 +287,14 @@ function BookingStart() {
                     )
                   }
                 >
-                  <span>{t(subcategory)}</span>
+                  {/* Telefonda solda sahənin medalyonu (kompüterdə gizli) */}
+                  <span className="booking-start__subcategory-icon">
+                    {selectedCategory.icon}
+                  </span>
+
+                  <span className="booking-start__subcategory-name">
+                    {t(subcategory)}
+                  </span>
 
                   <ArrowRight
                     size={18}

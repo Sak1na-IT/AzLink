@@ -106,6 +106,12 @@ export const weekdayShort = (date: Date) =>
 export const monthShort = (date: Date) =>
   months()[date.getMonth()].slice(0, 3);
 
+/* "Noyabr 2026" / "November 2026" (ay seçicisi üçün) */
+export const monthYear = (date: Date) => {
+  const name = months()[date.getMonth()];
+  return `${name.charAt(0).toLocaleUpperCase("az")}${name.slice(1)} ${date.getFullYear()}`;
+};
+
 /* "cümə axşamı, 24 sentyabr" / "Thursday, 24 September" */
 export const formatReadable = (date: Date) =>
   getLang() === "en"

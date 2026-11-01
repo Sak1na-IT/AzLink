@@ -4,6 +4,8 @@ import {
   ArrowLeft,
   CalendarDays,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Clock3,
   MapPin,
   Star,
@@ -33,15 +35,23 @@ import {
 } from "../../types/schedule";
 import type { ProviderService } from "../../types/provider";
 import { formatDuration } from "../../utils/formatDuration";
-import { formatReadable, monthShort, weekdayShort } from "../../utils/formatDate";
+import { formatReadable, monthShort, monthYear, weekdayShort } from "../../utils/formatDate";
 import "./Booking.css";
 import { t } from "../../i18n";
 
 /* Saatlar arasındakı addım (dəqiqə) */
 const SLOT_STEP_MINUTES = 30;
 
-/* Neçə gün irəli rezerv etmək olar (tarix kartları və dolu saatlar üçün) */
+/* Kompüterdə göstərilən günlər (iki həftə) */
 const BOOKING_DAYS_AHEAD = 14;
+
+/*
+ * Telefonda tarixlər ay-ay seçilir: bu gündən başlayaraq təxminən iki ay.
+ * Dolu saatlar da bu aralıq üçün yüklənir (serverdə ən çox 62 gün).
+ */
+const PHONE_DAYS_AHEAD = 60;
+
+const PHONE_QUERY = "(max-width: 640px)";
 
 /* Backend-dəki iş saatı: dayOfWeek 0 = Bazar ... 6 = Şənbə */
 type AvailabilitySlot = {
@@ -304,6 +314,21 @@ function Booking() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
 
+  /* Telefonda tarixlər ay-ay göstərilir (0 = bu ay, 1 = növbəti ay ...) */
+  const [isPhone, setIsPhone] = useState(
+    () => window.matchMedia(PHONE_QUERY).matches
+  );
+  const [monthOffset, setMonthOffset] = useState(0);
+
+  useEffect(() => {
+    const query = window.matchMedia(PHONE_QUERY);
+    const onChange = () => setIsPhone(query.matches);
+
+    query.addEventListener("change", onChange);
+
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
   /*
    * DİQQƏT: bütün hook-lar (useState, useEffect, useMemo, useCallback)
    * aşağıdakı erkən "return" sətirlərindən ƏVVƏL olmalıdır.
@@ -322,7 +347,7 @@ function Booking() {
     today.setHours(0, 0, 0, 0);
 
     const last = new Date(today);
-    last.setDate(today.getDate() + BOOKING_DAYS_AHEAD - 1);
+    last.setDate(today.getDate() + PHONE_DAYS_AHEAD - 1);
 
     try {
       const slots = await getBusySlots(
@@ -393,15 +418,16 @@ function Booking() {
   );
 
   /*
-   * Növbəti 14 gün üçün tarixlər.
+   * Tarixlər: kompüterdə növbəti 14 gün, telefonda seçilmiş ay
+   * (bu aydırsa bu gündən başlayır).
    */
-  const availableDates = useMemo(() => {
+  const allDates = useMemo(() => {
     const dates: Date[] = [];
     const today = new Date();
 
     today.setHours(0, 0, 0, 0);
 
-    for (let i = 0; i < BOOKING_DAYS_AHEAD; i++) {
+    for (let i = 0; i < PHONE_DAYS_AHEAD; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
       dates.push(date);
@@ -409,6 +435,35 @@ function Booking() {
 
     return dates;
   }, []);
+
+  /* Telefondakı ay seçicisi üçün aylar (hər ayın ilk tarixi) */
+  const phoneMonths = useMemo(() => {
+    const seen = new Map<string, Date>();
+
+    for (const date of allDates) {
+      const key = `${date.getFullYear()}-${date.getMonth()}`;
+
+      if (!seen.has(key)) {
+        seen.set(key, date);
+      }
+    }
+
+    return Array.from(seen.values());
+  }, [allDates]);
+
+  const activeMonth = phoneMonths[Math.min(monthOffset, phoneMonths.length - 1)];
+
+  const availableDates = useMemo(() => {
+    if (!isPhone) {
+      return allDates.slice(0, BOOKING_DAYS_AHEAD);
+    }
+
+    return allDates.filter(
+      (date) =>
+        date.getFullYear() === activeMonth.getFullYear() &&
+        date.getMonth() === activeMonth.getMonth()
+    );
+  }, [allDates, isPhone, activeMonth]);
 
   /* =========================================================
      YÜKLƏNMƏ / TAPILMADI / ÖZ BİZNESİ
@@ -808,6 +863,37 @@ function Booking() {
                 {t("Dolu / Bağlı")}
               </span>
             </div>
+
+            {/* Ay seçicisi: yalnız telefonda görünür */}
+            {isPhone && (
+              <div className="booking-month">
+                <button
+                  type="button"
+                  className="booking-month__arrow"
+                  onClick={() => setMonthOffset((value) => Math.max(0, value - 1))}
+                  disabled={monthOffset === 0}
+                  aria-label={t("Əvvəlki ay")}
+                >
+                  <ChevronLeft size={18} strokeWidth={1.9} />
+                </button>
+
+                <strong>{monthYear(activeMonth)}</strong>
+
+                <button
+                  type="button"
+                  className="booking-month__arrow"
+                  onClick={() =>
+                    setMonthOffset((value) =>
+                      Math.min(phoneMonths.length - 1, value + 1)
+                    )
+                  }
+                  disabled={monthOffset >= phoneMonths.length - 1}
+                  aria-label={t("Növbəti ay")}
+                >
+                  <ChevronRight size={18} strokeWidth={1.9} />
+                </button>
+              </div>
+            )}
 
             <div className="booking-date-grid">
               {availableDates.map((date) => {
