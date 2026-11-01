@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Lock, LogOut, Mail, Pencil, UserRound } from "lucide-react";
+import { Bell, ChevronRight, Lock, LogOut, Mail, Pencil, UserRound } from "lucide-react";
 
 import "./BusinessAccountProfile.css";
 import "../../components/business/BusinessTheme.css";
@@ -15,12 +15,17 @@ import {
 } from "../../services/accountService";
 import { getMe, logout } from "../../services/authService";
 import { t } from "../../i18n";
+import {
+  getNotificationPrefs,
+  setNotificationPref,
+  type NotificationKind,
+} from "../../utils/notificationPrefs";
 
-/* Yuxarıdakı zəng ikonunda görünən bildirişlər */
-const notificationRows = [
-  t("Yeni rezervlər"),
-  t("Müştərinin ləğv etdiyi rezervlər"),
-  t("Yeni rəylər"),
+/* Yuxarıdakı zəng ikonunda görünən bildirişlər: hər biri açılıb-bağlanır */
+const notificationRows: { kind: NotificationKind; label: string }[] = [
+  { kind: "booking", label: t("Yeni rezervlər") },
+  { kind: "cancel", label: t("Müştərinin ləğv etdiyi rezervlər") },
+  { kind: "review", label: t("Yeni rəylər") },
 ];
 
 const PHONE_PATTERN = /^\+?[0-9\s()-]{7,20}$/;
@@ -40,6 +45,7 @@ function BusinessAccountProfile() {
   const [notice, setNotice] = useState("");
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isEmailOpen, setIsEmailOpen] = useState(false);
+  const [notificationPrefs, setNotificationPrefs] = useState(getNotificationPrefs);
 
   useEffect(() => {
     let cancelled = false;
@@ -261,65 +267,66 @@ function BusinessAccountProfile() {
         )}
       </section>
 
-      {/* ===== TƏHLÜKƏSİZLİK ===== */}
+      {/* ===== TƏHLÜKƏSİZLİK: menyu sətirləri ===== */}
       <section className="account-profile__card">
         <div className="account-profile__card-header">
           <h2>{t("Təhlükəsizlik")}</h2>
         </div>
 
-        <ul className="account-profile__list">
-          <li>
-            <span className="account-profile__list-label">
-              <Lock size={18} strokeWidth={1.8} />
-              {t("Şifrə")}
+        <div className="account-profile__menu">
+          <button
+            type="button"
+            className="account-profile__menu-row"
+            onClick={() => setIsPasswordOpen(true)}
+          >
+            <span className="account-profile__menu-icon">
+              <Lock size={17} strokeWidth={1.8} />
             </span>
+            <span className="account-profile__menu-text">{t("Şifrəni dəyiş")}</span>
+            <ChevronRight className="account-profile__menu-chevron" size={18} strokeWidth={1.8} />
+          </button>
 
-            <button
-              type="button"
-              className="account-profile__button"
-              onClick={() => setIsPasswordOpen(true)}
-            >
-              {t("Şifrəni dəyiş")}
-            </button>
-          </li>
-
-          <li>
-            <span className="account-profile__list-label">
-              <Mail size={18} strokeWidth={1.8} />
-              {t("Email")}
+          <button
+            type="button"
+            className="account-profile__menu-row"
+            onClick={() => setIsEmailOpen(true)}
+          >
+            <span className="account-profile__menu-icon">
+              <Mail size={17} strokeWidth={1.8} />
             </span>
-
-            <button
-              type="button"
-              className="account-profile__button"
-              onClick={() => setIsEmailOpen(true)}
-            >
-              {t("Emaili dəyiş")}
-            </button>
-          </li>
-        </ul>
+            <span className="account-profile__menu-text">{t("Emaili dəyiş")}</span>
+            <ChevronRight className="account-profile__menu-chevron" size={18} strokeWidth={1.8} />
+          </button>
+        </div>
       </section>
 
-      {/* ===== BİLDİRİŞLƏR ===== */}
+      {/* ===== BİLDİRİŞLƏR: açıb-bağlamaq olur ===== */}
       <section className="account-profile__card">
         <div className="account-profile__card-header">
           <h2>{t("Bildirişlər")}</h2>
         </div>
 
-        <ul className="account-profile__list">
-          {notificationRows.map((label) => (
-            <li key={label}>
-              <span className="account-profile__list-label">
-                <Bell size={18} strokeWidth={1.8} />
-                {label}
+        <div className="account-profile__menu">
+          {notificationRows.map(({ kind, label }) => (
+            <label className="account-profile__menu-row" key={kind}>
+              <span className="account-profile__menu-icon">
+                <Bell size={17} strokeWidth={1.8} />
               </span>
-
-              <span className="account-profile__soon account-profile__soon--on">
-                {t("Aktiv")}
-              </span>
-            </li>
+              <span className="account-profile__menu-text">{label}</span>
+              <input
+                type="checkbox"
+                role="switch"
+                className="account-profile__switch"
+                checked={notificationPrefs[kind]}
+                onChange={(event) =>
+                  setNotificationPrefs(
+                    setNotificationPref(kind, event.target.checked)
+                  )
+                }
+              />
+            </label>
           ))}
-        </ul>
+        </div>
       </section>
 
       {isPasswordOpen && (

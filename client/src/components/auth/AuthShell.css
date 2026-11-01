@@ -313,8 +313,12 @@
   }
 
   .auth-shell .register-card {
-    width: min(720px, 100%);
     padding: 24px 34px 22px;
+  }
+
+  /* Biznes qeydiyyatında xana çoxdur: iki sütun. İstifadəçidə ardıcıl qalır. */
+  .auth-shell .register-card--business {
+    width: min(720px, 100%);
   }
 
   .auth-shell .register-card .auth-brand::after {
@@ -330,10 +334,14 @@
   }
 
   .auth-shell .register-form {
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .auth-shell .register-card--business .register-form {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px 16px;
-    margin-top: 18px;
   }
 
   .auth-shell .register-input-wrapper {
@@ -341,7 +349,7 @@
   }
 
   /* Xəta və düymə iki sütunun hamısını tutur */
-  .auth-shell .register-form > :not(.register-field) {
+  .auth-shell .register-card--business .register-form > :not(.register-field) {
     grid-column: 1 / -1;
   }
 

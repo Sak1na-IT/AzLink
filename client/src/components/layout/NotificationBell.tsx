@@ -6,6 +6,11 @@ import "./NotificationBell.css";
 import { locale, t } from "../../i18n";
 import { translateNotification } from "../../i18n/notifications";
 import {
+  getNotificationPrefs,
+  isNotificationVisible,
+  PREFS_CHANGED_EVENT,
+} from "../../utils/notificationPrefs";
+import {
   getNotifications,
   getUnreadCount,
   markAllNotificationsRead,
@@ -47,13 +52,38 @@ function NotificationBell() {
 
   const wrapRef = useRef<HTMLDivElement>(null);
 
+  /* Profildə söndürülən bildiriş növləri zəngdə görünmür */
+  const [prefs, setPrefs] = useState(getNotificationPrefs);
+
+  useEffect(() => {
+    const onChange = () => setPrefs(getNotificationPrefs());
+    window.addEventListener(PREFS_CHANGED_EVENT, onChange);
+    return () => window.removeEventListener(PREFS_CHANGED_EVENT, onChange);
+  }, []);
+
+  const hasHiddenKinds = !prefs.booking || !prefs.cancel || !prefs.review;
+
   const refreshCount = useCallback(() => {
+    /* Bəzi növlər söndürülübsə sayı görünən bildirişlərdən hesablayırıq */
+    if (hasHiddenKinds) {
+      getNotifications()
+        .then((result) =>
+          setUnreadCount(
+            result.items.filter(
+              (item) => !item.isRead && isNotificationVisible(item.message, prefs)
+            ).length
+          )
+        )
+        .catch(() => undefined);
+      return;
+    }
+
     getUnreadCount()
       .then((result) => setUnreadCount(result.unreadCount))
       .catch(() => {
         /* sayı göstərə bilməsək, zəng sadəcə nişansız qalır */
       });
-  }, []);
+  }, [hasHiddenKinds, prefs]);
 
   /* Səhifə dəyişəndə və müəyyən aralıqla sayı yenilə */
   useEffect(() => {
@@ -96,8 +126,13 @@ function NotificationBell() {
 
     try {
       const result = await getNotifications();
-      setItems(result.items);
-      setUnreadCount(result.unreadCount);
+      const current = getNotificationPrefs();
+      const visible = result.items.filter((item) =>
+        isNotificationVisible(item.message, current)
+      );
+
+      setItems(visible);
+      setUnreadCount(visible.filter((item) => !item.isRead).length);
     } catch {
       setLoadError(t("Bildirişləri yükləmək mümkün olmadı."));
     } finally {

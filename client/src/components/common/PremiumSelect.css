@@ -65,6 +65,12 @@
   pointer-events: none;
 }
 
+/* Panel <body>-də ayrıca qatdadır: heç bir kart onu kəsmir */
+.premium-select-layer {
+  position: relative;
+  z-index: 400;
+}
+
 .premium-select__backdrop {
   position: fixed;
   inset: 0;
@@ -76,18 +82,16 @@
 }
 
 .premium-select__panel {
-  position: absolute;
+  position: fixed;
   z-index: 1;
-  top: calc(100% + 8px);
-  left: 0;
-  right: 0;
   padding: 8px;
-  border: 1px solid rgba(217, 184, 116, 0.28);
+  border: 1px solid rgba(217, 184, 116, 0.3);
   border-radius: 18px;
   background:
     radial-gradient(ellipse 80% 60% at 0% 0%, var(--color-gold-soft), transparent 70%),
     var(--color-surface);
-  box-shadow: 0 24px 50px rgba(8, 26, 21, 0.28);
+  box-shadow: 0 24px 50px rgba(8, 26, 21, 0.32);
+  font-family: inherit;
   animation: premium-select-in 160ms ease-out;
 }
 
@@ -112,7 +116,7 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 4px;
-  max-height: 300px;
+  max-height: 280px;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(217, 184, 116, 0.35) transparent;
@@ -149,3 +153,39 @@
 .premium-select__option.is-selected svg {
   color: #e6c98a;
 }
+
+.premium-select__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-gold);
+}
+
+.premium-select__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Qeydiyyat kartında: digər xanalarla eyni görünüş */
+.auth-shell .premium-select--auth .premium-select__button {
+  min-height: 50px;
+  gap: 10px;
+  padding: 0 14px;
+  border-color: var(--auth-line);
+  background: var(--auth-field);
+  color: var(--auth-ink);
+  font-family: inherit;
+  font-size: 15px;
+}
+
+.auth-shell .premium-select--auth .premium-select__placeholder {
+  color: var(--auth-muted);
+}
+
+.auth-shell .premium-select--auth .premium-select__icon,
+.auth-shell .premium-select--auth .premium-select__caret {
+  color: var(--auth-gold);
+}
+

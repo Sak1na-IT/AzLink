@@ -24,6 +24,7 @@ import {
 } from "../../services/businessService";
 import AuthBackLink from "../../components/auth/AuthBackLink";
 import AuthShell from "../../components/auth/AuthShell";
+import PremiumSelect from "../../components/common/PremiumSelect";
 import "./Register.css";
 import { t } from "../../i18n";
 
@@ -124,7 +125,7 @@ function Register() {
 
   return (
     <AuthShell>
-      <div className="register-card">
+      <div className={`register-card${isBusiness ? " register-card--business" : ""}`}>
         <AuthBackLink />
 
         <div className="register-header">
@@ -202,30 +203,22 @@ function Register() {
                 </div>
               </label>
 
-              <label className="register-field">
+              <div className="register-field">
                 <span>{t("Rayon")}</span>
 
-                <div className="register-input-wrapper">
-                  <MapPin size={18} strokeWidth={1.8} />
-
-                  <select
-                    className="register-select"
-                    value={areaId}
-                    onChange={(event) => setAreaId(event.target.value)}
-                    required
-                  >
-                    <option value="" disabled>
-                      {t("Xidmət ərazinizi seçin")}
-                    </option>
-
-                    {areas.map((area) => (
-                      <option key={area.id} value={area.id}>
-                        {area.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </label>
+                <PremiumSelect
+                  className="premium-select--auth"
+                  value={areaId}
+                  onChange={setAreaId}
+                  placeholder={t("Xidmət ərazinizi seçin")}
+                  required
+                  icon={<MapPin size={18} strokeWidth={1.8} />}
+                  options={areas.map((area) => ({
+                    value: area.id,
+                    label: area.name,
+                  }))}
+                />
+              </div>
 
               <label className="register-field">
                 <span>{t("Telefon")}</span>
