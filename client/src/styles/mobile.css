@@ -3759,12 +3759,21 @@
     overflow: visible;
   }
 
+  /* Filtrlər bərabər paylanır, aralarında nəfəs yeri qalır */
+  .business-layout .business-bookings__tabs,
+  .business-layout .business-bookings__subtabs {
+    justify-content: space-between;
+    gap: 0;
+    padding: 4px;
+  }
+
   .business-layout .business-bookings__tab,
   .business-layout .business-bookings__subtab {
     flex: 1 1 auto;
     min-width: 0;
-    padding: 8px 4px;
-    font-size: 11px;
+    padding: 8px 5px;
+    font-size: 10.5px;
+    letter-spacing: 0;
     text-align: center;
     white-space: nowrap;
   }
@@ -3814,6 +3823,11 @@
   /* Saat sətri ilə xidmət adı arasında aydın boşluq */
   .business-layout .business-booking-card__content .business-booking-card__when {
     margin-bottom: 6px;
+  }
+
+  /* Xidmət adı ilə müştəri adı arasında da boşluq */
+  .business-layout .business-booking-card__content h3 + span {
+    margin-top: 4px;
   }
 
   .business-layout .business-booking-card__content h3 {
