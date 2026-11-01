@@ -18,6 +18,8 @@ import {
 import { signup } from "../../services/authService";
 import { ApiError } from "../../services/api";
 import { getAreas, type Area } from "../../services/areasService";
+import { getCategories } from "../../services/categoriesService";
+import { categories as standardCategories } from "../../data/categories";
 import {
   saveBusinessProfile,
   defaultWeeklySchedule,
@@ -50,6 +52,10 @@ function Register() {
   const [step, setStep] = useState<1 | 2>(1);
   const [phone, setPhone] = useState("");
   const [areas, setAreas] = useState<Area[]>([]);
+  /* Standart kateqoriyalar (serverdən; alınmasa saytdakı 8 sahə) */
+  const [categoryNames, setCategoryNames] = useState<string[]>(
+    () => standardCategories.map((item) => item.name)
+  );
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +68,20 @@ function Register() {
     getAreas()
       .then(setAreas)
       .catch(() => setAreas([]));
+
+    getCategories()
+      .then((result) => {
+        const names = result
+          .filter((item) => !item.parentId)
+          .map((item) => item.name);
+
+        if (names.length > 0) {
+          setCategoryNames(names);
+        }
+      })
+      .catch(() => {
+        /* standart siyahı qalır */
+      });
   }, [isBusiness]);
 
   const handleSubmit = async (
@@ -70,20 +90,13 @@ function Register() {
     event.preventDefault();
     setError("");
 
-    if (isBusiness && step === 1) {
-      if (!name.trim() || !category.trim() || !areaId || !phone.trim()) {
-        setError(
-          t("Zəhmət olmasa kateqoriya, rayon və telefon nömrəsini doldurun.")
-        );
-        return;
-      }
-
-      setStep(2);
+    if (password !== confirmPassword) {
+      setError(t("Şifrələr uyğun gəlmir."));
       return;
     }
 
-    if (password !== confirmPassword) {
-      setError(t("Şifrələr uyğun gəlmir."));
+    if (isBusiness && step === 1) {
+      setStep(2);
       return;
     }
 
@@ -162,17 +175,17 @@ function Register() {
           <ol className="register-steps" aria-label={t("Addımlar")}>
             <li className={step === 1 ? "is-active" : "is-done"}>
               <span>1</span>
-              {t("Biznes məlumatları")}
+              {t("Hesab məlumatları")}
             </li>
             <li className={step === 2 ? "is-active" : ""}>
               <span>2</span>
-              {t("Hesab məlumatları")}
+              {t("Biznes məlumatları")}
             </li>
           </ol>
         )}
 
         <form className="register-form" onSubmit={handleSubmit}>
-          {(!isBusiness || step === 1) && (
+          {(!isBusiness || step === 2) && (
           <label className="register-field">
             <span>{isBusiness ? t("Biznes adı") : t("Ad və soyad")}</span>
 
@@ -198,7 +211,7 @@ function Register() {
           </label>
           )}
 
-          {(!isBusiness || step === 2) && (
+          {(!isBusiness || step === 1) && (
           <label className="register-field">
             <span>{t("Email")}</span>
 
@@ -216,23 +229,24 @@ function Register() {
           </label>
           )}
 
-          {isBusiness && step === 1 && (
+          {isBusiness && step === 2 && (
             <>
-              <label className="register-field">
+              <div className="register-field">
                 <span>{t("Kateqoriya")}</span>
 
-                <div className="register-input-wrapper">
-                  <Tag size={18} strokeWidth={1.8} />
-
-                  <input
-                    type="text"
-                    placeholder={t("Məsələn: Dırnaq baxımı")}
-                    value={category}
-                    onChange={(event) => setCategory(event.target.value)}
-                    required
-                  />
-                </div>
-              </label>
+                <PremiumSelect
+                  className="premium-select--auth"
+                  value={category}
+                  onChange={setCategory}
+                  placeholder={t("Kateqoriya seçin")}
+                  required
+                  icon={<Tag size={18} strokeWidth={1.8} />}
+                  options={categoryNames.map((item) => ({
+                    value: item,
+                    label: t(item),
+                  }))}
+                />
+              </div>
 
               <div className="register-field">
                 <span>{t("Rayon")}</span>
@@ -269,7 +283,7 @@ function Register() {
             </>
           )}
 
-          {(!isBusiness || step === 2) && (
+          {(!isBusiness || step === 1) && (
           <>
           <label className="register-field">
             <span>{t("Şifrə")}</span>
