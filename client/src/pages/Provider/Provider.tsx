@@ -552,7 +552,9 @@ function Provider() {
             <button
               type="button"
               className="provider-primary-button provider-primary-button--full"
-              onClick={() => navigate(`/booking/${provider.id}`)}
+              onClick={() =>
+                navigate(`/booking/${provider.id}`, { state: { fromProvider: true } })
+              }
             >
               <CalendarDays size={18} strokeWidth={1.8} />
               {t("Rezerv et")}

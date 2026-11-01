@@ -1121,8 +1121,8 @@
   /* Bildirişlər paneli: yığcam sətirlər, uzun mətn iki sətrə qədər */
   .notification-bell__panel {
     top: 62px;
-    left: 10px;
-    right: 10px;
+    left: 16px;
+    right: 16px;
     max-height: min(420px, 62vh);
     border-radius: 16px;
   }
@@ -2476,23 +2476,429 @@
     display: none;
   }
 
-  .booking-start__subcategory {
-    min-height: 58px;
-    padding: 10px 10px 10px 16px;
-    border-radius: 16px;
-    font-size: 18px;
+  /* Xidmət seçimi: bir kartın içində menyu sətirləri */
+  .booking-start__subcategories {
+    grid-template-columns: 1fr;
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid rgba(217, 184, 116, 0.24);
+    border-radius: 18px;
+    background:
+      radial-gradient(ellipse 80% 60% at 0% 0%, var(--color-gold-soft), transparent 70%),
+      var(--color-surface);
+  }
+
+  .booking-start__subcategory,
+  .booking-start__subcategory:hover {
+    min-height: 56px;
+    padding: 0 14px 0 16px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-size: 19px;
+    transform: none;
+  }
+
+  .booking-start__subcategory + .booking-start__subcategory {
+    border-top: 1px solid var(--color-border);
   }
 
   .booking-start__subcategory::before {
-    top: 14px;
-    bottom: 14px;
+    display: none;
   }
 
   .booking-start__subcategory svg {
     flex: 0 0 auto;
-    width: 28px;
-    height: 28px;
-    padding: 6px;
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+  }
+
+  /* ================= ƏRAZİ SEÇİMİ ================= */
+  /* Aşağıdan açılan vərəq, ərazilər iki sütunlu kiçik düymələr */
+  .area-selector {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .area-selector__panel {
+    max-height: 84vh;
+    border-bottom: 0;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .area-selector__panel::before {
+    content: "";
+    display: block;
+    flex: 0 0 auto;
+    width: 38px;
+    height: 4px;
+    margin: 8px auto 0;
+    border-radius: 4px;
+    background: rgba(120, 150, 136, 0.35);
+  }
+
+  .area-selector__header {
+    align-items: center;
+    padding: 8px 16px 10px;
+    border-bottom: 0;
+  }
+
+  .area-selector__eyebrow,
+  .area-selector__header p,
+  .area-selector__option-icon,
+  .area-selector__option-content small {
+    display: none;
+  }
+
+  .area-selector__header h2 {
+    font-size: 18px;
+  }
+
+  .area-selector__close {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+  }
+
+  .area-selector__search {
+    min-height: 44px;
+    margin: 0 16px;
+    border-radius: 999px;
+  }
+
+  .area-selector__search input {
+    font-size: 14.5px;
+  }
+
+  .area-selector__selected {
+    margin: 10px 16px 0;
+    padding: 10px;
+  }
+
+  .area-selector__content {
+    padding: 14px 16px 12px;
+  }
+
+  .area-selector__group {
+    margin-bottom: 14px;
+  }
+
+  .area-selector__group-title {
+    margin-bottom: 7px;
+    font-size: 10.5px;
+  }
+
+  .area-selector__options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .area-selector__option {
+    gap: 8px;
+    min-height: 42px;
+    padding: 0 8px 0 12px;
+    border-radius: 12px;
+  }
+
+  .area-selector__option:hover {
+    transform: none;
+  }
+
+  .area-selector__option-content strong {
+    font-size: 13.5px;
+  }
+
+  .area-selector__check {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+  }
+
+  .area-selector__check svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .area-selector__footer {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px max(12px, env(safe-area-inset-bottom));
+  }
+
+  .area-selector__count {
+    flex: 0 0 auto;
+    font-size: 12px;
+  }
+
+  .area-selector__footer-actions {
+    flex: 1;
+    width: auto;
+    gap: 8px;
+  }
+
+  .area-selector__cancel,
+  .area-selector__apply {
+    flex: 1;
+    min-height: 44px;
+    border-radius: 999px;
+  }
+
+  /* ================= REZERV ET (biznesdə) ================= */
+  /* Yığcam bölmələr, tarixlər yana sürüşən zolaq, təsdiq düyməsi aşağıda */
+  .booking-page {
+    min-height: 0;
+    padding: 4px 4px 96px;
+  }
+
+  .booking-page__top {
+    margin-bottom: 10px;
+  }
+
+  .booking-back-button {
+    min-height: 34px;
+    gap: 6px;
+    padding: 0 12px 0 10px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  .booking-back-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .booking-section {
+    margin-bottom: 10px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .booking-section__header {
+    margin-bottom: 10px;
+  }
+
+  .booking-section__header p,
+  .booking-date-card small {
+    display: none;
+  }
+
+  .booking-section__header h1 {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.05;
+  }
+
+  .booking-section__header h2 {
+    font-size: 16px;
+  }
+
+  .booking-provider {
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .booking-provider__avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    font-size: 15px;
+  }
+
+  .booking-provider__name strong {
+    font-size: 15px;
+  }
+
+  .booking-provider__service {
+    margin-top: 1px;
+    font-size: 12px;
+  }
+
+  .booking-provider__location {
+    margin-top: 3px;
+    font-size: 11.5px;
+  }
+
+  /* Xidmətlər: ad solda, qiymət sağda */
+  .booking-services {
+    gap: 6px;
+  }
+
+  .booking-service {
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    min-height: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+
+  .booking-service:hover {
+    transform: none;
+  }
+
+  .booking-service__info {
+    gap: 2px;
+  }
+
+  .booking-service__name {
+    font-size: 14px;
+  }
+
+  .booking-service__description {
+    overflow: hidden;
+    font-size: 11.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .booking-service__price {
+    align-self: center;
+    font-size: 14px;
+  }
+
+  .booking-date-legend {
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .booking-date-legend > span {
+    font-size: 10.5px;
+  }
+
+  /* Tarixlər: kiçik kartlardan yana sürüşən zolaq */
+  .booking-date-grid {
+    display: flex;
+    gap: 6px;
+    margin: 0 -14px;
+    padding: 2px 14px 4px;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .booking-date-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .booking-date-card {
+    flex: 0 0 58px;
+    gap: 2px;
+    min-width: 0;
+    min-height: 0;
+    padding: 8px 4px 7px;
+    border-radius: 14px;
+    scroll-snap-align: start;
+  }
+
+  .booking-date-card:hover:not(:disabled) {
+    transform: none;
+  }
+
+  .booking-date-card__weekday,
+  .booking-date-card__month {
+    font-size: 10px;
+  }
+
+  .booking-date-card__day {
+    font-size: 20px;
+  }
+
+  .booking-date-card__dot {
+    width: 6px;
+    height: 6px;
+    margin-top: 2px;
+  }
+
+  /* Saatlar: dörd sütun kiçik düymə */
+  .booking-times {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .booking-time {
+    flex-direction: column;
+    gap: 0;
+    min-height: 40px;
+    padding: 0 4px;
+    border-radius: 10px;
+    font-size: 13px;
+  }
+
+  .booking-time svg {
+    display: none;
+  }
+
+  .booking-time__booked {
+    font-size: 8.5px;
+    line-height: 1;
+  }
+
+  .booking-time-empty {
+    padding: 12px;
+    font-size: 12.5px;
+  }
+
+  /* Xülasə əvəzinə aşağı menyunun üstündə qiymət və təsdiq düyməsi */
+  .booking-summary__title,
+  .booking-summary__item,
+  .booking-summary__divider,
+  .booking-hint:not([style]) {
+    display: none;
+  }
+
+  .booking-summary {
+    position: fixed;
+    z-index: 110;
+    left: 0;
+    right: 0;
+    bottom: calc(59px + max(8px, env(safe-area-inset-bottom)));
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+    padding: 10px 16px;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface);
+    box-shadow: 0 -10px 24px -18px rgba(0, 0, 0, 0.5);
+  }
+
+  .booking-summary__price {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    margin: 0 auto 0 0;
+  }
+
+  .booking-summary__price span {
+    font-size: 11px;
+  }
+
+  .booking-summary__price strong {
+    font-size: 20px;
+  }
+
+  .booking-confirm {
+    order: 3;
+    width: auto;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 999px;
+    font-size: 14px;
+  }
+
+  .booking-summary .booking-hint[style] {
+    order: 4;
+    flex-basis: 100%;
+    margin: 0;
+    font-size: 11.5px;
   }
 }
 

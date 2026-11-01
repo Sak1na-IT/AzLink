@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   CalendarDays,
@@ -280,6 +280,7 @@ const getBookingErrorText = (error: unknown) => {
 function Booking() {
   const { providerId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const currentUser = getStoredUser();
   const isBusinessUser = currentUser?.role === "BUSINESS";
@@ -681,7 +682,18 @@ function Booking() {
         <button
           type="button"
           className="booking-back-button"
-          onClick={() => navigate(`/provider/${provider.id}`)}
+          onClick={() => {
+            /*
+             * Profildən gəlibsə geri qayıdırıq (yeni səhifə açmırıq), yoxsa
+             * "Geri" yenə rezerv səhifəsini açardı. Birbaşa linklə gəlibsə
+             * bu səhifəni profillə əvəz edirik.
+             */
+            if ((location.state as { fromProvider?: boolean } | null)?.fromProvider) {
+              navigate(-1);
+            } else {
+              navigate(`/provider/${provider.id}`, { replace: true });
+            }
+          }}
         >
           <ArrowLeft size={18} strokeWidth={1.8} />
           <span>{t("Profilə qayıt")}</span>
