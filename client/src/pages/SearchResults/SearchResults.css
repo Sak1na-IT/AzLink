@@ -1239,3 +1239,20 @@
   background: var(--color-gold-soft);
 }
 
+/* Hələ biznesi olmayan xidmət: seçmək olur, amma sönük görünür */
+.search-menu__option.is-empty:not(.is-selected) {
+  opacity: 0.55;
+}
+
+.search-menu__option.is-empty:not(.is-selected):hover {
+  opacity: 0.85;
+}
+
+/* Xidmətlər çox olanda menyu ekrana sığsın */
+.search-menu__panel--grid {
+  max-height: min(520px, calc(100vh - 220px));
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(217, 184, 116, 0.35) transparent;
+}
+

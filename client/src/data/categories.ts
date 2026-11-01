@@ -15,9 +15,9 @@ export interface ServiceCategory {
   name: string;
   icon: LucideIcon;
   /*
-   * providers.ts-dəki provider.service dəyərləri ilə dəqiq
-   * üst-üstə düşməlidir. Yeni xidmət növü əlavə edəndə
-   * (providers.ts-də) bura da əlavə edilməlidir.
+   * Sahənin xidmətləri (axtarışdakı kateqoriya menyusunda göstərilir).
+   * Biznesin provider.service dəyəri bunlardan biri ilə dəqiq
+   * üst-üstə düşəndə həmin sahəyə aid sayılır.
    */
   services: string[];
 }
@@ -27,48 +27,95 @@ export const categories: ServiceCategory[] = [
     id: "beauty",
     name: "Gözəllik",
     icon: Sparkles,
-    services: ["Dırnaq", "Saç", "Makiyaj"],
+    services: [
+      "Dırnaq",
+      "Saç",
+      "Makiyaj",
+      "Qaş və kirpik",
+      "Dəriyə qulluq",
+      "Masaj",
+    ],
   },
   {
     id: "home",
     name: "Ev və məişət",
     icon: House,
-    services: ["Təmizlik", "Santexnik"],
+    services: [
+      "Təmizlik",
+      "Santexnik",
+      "Elektrik",
+      "Təmir",
+      "Daşıma",
+      "Kondisioner",
+    ],
   },
   {
     id: "auto",
     name: "Avtomobil",
     icon: CarFront,
-    services: ["Avtoyuma", "Avtoservis"],
+    services: [
+      "Avtoyuma",
+      "Avtoservis",
+      "Detaylinq",
+      "Təkər xidməti",
+      "Açar xidməti",
+    ],
   },
   {
     id: "education",
     name: "Təhsil",
     icon: GraduationCap,
-    services: ["Repetitor"],
+    services: [
+      "Repetitor",
+      "Dil dərsləri",
+      "Proqramlaşdırma",
+      "İmtahan hazırlığı",
+      "Musiqi",
+    ],
   },
   {
     id: "events",
     name: "Foto və tədbir",
     icon: Camera,
-    services: ["Fotoqraf"],
+    services: [
+      "Fotoqraf",
+      "Videoqraf",
+      "Dekor",
+      "Tort",
+      "Gül",
+      "DJ",
+    ],
   },
   {
     id: "pets",
     name: "Heyvanlar",
     icon: PawPrint,
-    services: ["Grooming"],
+    services: [
+      "Grooming",
+      "Baytar",
+      "Pet sitter",
+      "İt gəzdirilməsi",
+    ],
   },
   {
     id: "tech",
     name: "Texnologiya",
     icon: Smartphone,
-    services: ["Telefon təmiri"],
+    services: [
+      "Telefon təmiri",
+      "Kompüter təmiri",
+    ],
   },
   {
     id: "fitness",
     name: "İdman",
     icon: Dumbbell,
-    services: ["Trainer", "Yoga"],
+    services: [
+      "Trainer",
+      "Yoga",
+      "Fitness",
+      "Pilates",
+      "Boks",
+    ],
   },
 ];

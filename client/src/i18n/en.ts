@@ -12,6 +12,7 @@ export const en: Record<string, string> = {
   "Ərazi seçimi": "Area selection",
   "Bakı şəhəri daxilində rayon və ya metro stansiyası seçin.": "Choose a district or metro station in Baku.",
   "Bağla": "Close",
+  "Kompüter təmiri": "Computer repair",
   "Əvvəlki ay": "Previous month",
   "Növbəti ay": "Next month",
   "Axtar": "Search",

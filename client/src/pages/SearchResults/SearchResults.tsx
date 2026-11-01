@@ -308,6 +308,16 @@ function SearchResults() {
         return false;
       }
 
+      /* Xidmət kateqoriyanın içindən seçilibsə, başqa sahədən oxşar adlar düşməsin
+         (məs. Ev → Təmir seçiləndə "Telefon təmiri" görünməsin) */
+      if (
+        selectedService &&
+        activeCategory &&
+        !matchesCategory(provider, activeCategory)
+      ) {
+        return false;
+      }
+
       /*
        * CATEGORY (yalnız konkret xidmət seçilməyibsə tətbiq olunur —
        * Explore-dan gəlir, BookingStart isə birbaşa service göndərir)
@@ -465,10 +475,14 @@ function SearchResults() {
       (provider) => !(currentUserId && provider.ownerId === currentUserId)
     );
 
+    const inCategory = visible.filter((provider) =>
+      matchesCategory(provider, activeCategory)
+    );
+
     return Object.fromEntries(
       activeCategory.services.map((service) => [
         service,
-        visible.filter((provider) => matchesService(provider, service)).length,
+        inCategory.filter((provider) => matchesService(provider, service)).length,
       ])
     ) as Record<string, number>;
   }, [providers, currentUserId, activeCategory]);
@@ -664,8 +678,16 @@ function SearchResults() {
                       <small>{categoryCounts[activeCategory.id] ?? 0}</small>
                     </button>
 
-                    {activeCategory.services.map((service) => {
+                    {/* Biznesi olan xidmətlər əvvəldə, qalanları sönük */}
+                    {[...activeCategory.services]
+                      .sort(
+                        (a, b) =>
+                          Number((serviceCounts[b] ?? 0) > 0) -
+                          Number((serviceCounts[a] ?? 0) > 0)
+                      )
+                      .map((service) => {
                       const Icon = getCategoryVisual(service).icon;
+                      const count = serviceCounts[service] ?? 0;
                       const isSelected =
                         normalize(selectedService) === normalize(service);
 
@@ -673,14 +695,14 @@ function SearchResults() {
                         <button
                           type="button"
                           key={service}
-                          className={`search-menu__option${isSelected ? " is-selected" : ""}`}
+                          className={`search-menu__option${isSelected ? " is-selected" : ""}${count === 0 ? " is-empty" : ""}`}
                           onClick={() => updateService(service)}
                         >
                           <span className="search-menu__icon">
                             <Icon size={15} strokeWidth={1.8} />
                           </span>
                           <span>{t(service)}</span>
-                          <small>{serviceCounts[service] ?? 0}</small>
+                          <small>{count}</small>
                         </button>
                       );
                     })}
