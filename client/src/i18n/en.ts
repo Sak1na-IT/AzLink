@@ -12,6 +12,8 @@ export const en: Record<string, string> = {
   "Ərazi seçimi": "Area selection",
   "Bakı şəhəri daxilində rayon və ya metro stansiyası seçin.": "Choose a district or metro station in Baku.",
   "Bağla": "Close",
+  "Ardını oxu": "Read more",
+  "Gizlət": "Show less",
   "Məsələn: Nərimanov, Gənclik, 28 May...": "e.g. Narimanov, Ganjlik, 28 May...",
   "Axtarışı təmizlə": "Clear search",
   "Seçilmiş ərazilər": "Selected areas",

@@ -59,6 +59,7 @@ function Provider() {
   const [loadError, setLoadError] = useState("");
 
   const [isSaved, setIsSaved] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -353,10 +354,19 @@ function Provider() {
               <h2>{t("Haqqında")}</h2>
             </div>
 
-            <p className="provider-description">
+            <p className={`provider-description${isAboutOpen ? " is-open" : ""}`}>
               {provider.description?.trim() ||
                 t("{name} — {service} xidməti üzrə AzLink platformasında yerləşdirilmiş profildir. Xidmət ərazisi {area} olaraq göstərilir. Başlanğıc qiymət {priceFrom} ₼-dir.", { name: provider.name, service: provider.service, area: provider.area, priceFrom: provider.priceFrom })}
             </p>
+
+            {/* Telefonda mətn qısa göstərilir, bu düymə ilə tam açılır */}
+            <button
+              type="button"
+              className="provider-description__more"
+              onClick={() => setIsAboutOpen((open) => !open)}
+            >
+              {isAboutOpen ? t("Gizlət") : t("Ardını oxu")}
+            </button>
           </section>
 
           <section className="provider-section">

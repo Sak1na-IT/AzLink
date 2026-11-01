@@ -1308,37 +1308,43 @@
     height: 13px;
   }
 
+  /* Tarix, saat və qiymət bir sətirdə; ərazi və başlıqlar gizli */
   .booking-card__details {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px 12px;
-    margin-top: 12px;
-    padding: 12px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+    margin-top: 10px;
+    padding: 9px 0;
   }
 
   .booking-card__detail {
-    gap: 8px;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .booking-card__detail:nth-child(3),
+  .booking-card__detail span,
+  .booking-card__detail > div > small {
+    display: none;
   }
 
   .booking-card__detail > svg {
     width: 15px;
     height: 15px;
-  }
-
-  .booking-card__detail span {
-    margin-bottom: 2px;
-    font-size: 10px;
+    margin-top: 0;
   }
 
   .booking-card__detail strong {
     font-size: 13.5px;
   }
 
-  .booking-card__detail > div > small {
-    font-size: 11px;
+  .booking-card__detail:last-child {
+    margin-left: auto;
   }
 
   .booking-card__detail strong.booking-card__price {
-    font-size: 21px;
+    font-size: 20px;
   }
 
   /* Düymələr yan-yana, barmaqla rahat basılır */
@@ -1366,5 +1372,341 @@
     flex: 1 1 0;
     justify-content: center;
     font-size: 12.5px;
+  }
+
+  /* ================= BİZNES PROFİLİ ================= */
+  /* Az yazı, yığcam bloklar; "Rezerv et" həmişə əl altında */
+  .provider-page {
+    width: 100%;
+    padding: 4px 4px 84px;
+  }
+
+  .provider-page__top {
+    margin-bottom: 10px;
+  }
+
+  .provider-back-button {
+    min-height: 34px;
+    padding: 0 12px 0 10px;
+    gap: 6px;
+    border-radius: 999px;
+    font-size: 13px;
+  }
+
+  .provider-back-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .provider-hero-card {
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border-radius: 18px;
+  }
+
+  .provider-avatar-large {
+    width: 64px;
+    height: 64px;
+    flex-basis: 64px;
+    border-radius: 14px;
+    font-size: 19px;
+  }
+
+  .provider-hero-content {
+    padding-right: 40px;
+  }
+
+  .provider-name-row {
+    gap: 6px;
+  }
+
+  .provider-name-row h1 {
+    font-size: 20px;
+  }
+
+  .provider-verified {
+    gap: 3px;
+    padding: 3px 7px;
+    font-size: 10.5px;
+  }
+
+  .provider-verified svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .provider-service {
+    margin: 3px 0 5px;
+    font-size: 13px;
+  }
+
+  /* Ərazi və reytinq bir sətirdə */
+  .provider-location,
+  .provider-rating-row {
+    display: inline-flex;
+    gap: 4px;
+    margin: 0;
+    font-size: 12px;
+    vertical-align: middle;
+  }
+
+  .provider-rating-row {
+    margin-left: 10px;
+  }
+
+  .provider-location svg,
+  .provider-rating svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .provider-rating strong {
+    font-size: 12.5px;
+  }
+
+  .provider-save-button {
+    top: 12px;
+    right: 12px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .provider-save-button svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .provider-section {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .provider-section__header {
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .provider-section__header h2 {
+    font-size: 17px;
+  }
+
+  .provider-section__subtitle {
+    display: none;
+  }
+
+  /* Haqqında: üç sətir, "Ardını oxu" ilə tam açılır */
+  .provider-description {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 13.5px;
+    line-height: 1.6;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .provider-description.is-open {
+    display: block;
+  }
+
+  .provider-description__more {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 2px 0;
+    border: 0;
+    background: none;
+    color: var(--color-gold);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Xidmətlər: menyu kimi sətirlər, ad solda, qiymət sağda */
+  .provider-services-list {
+    gap: 0;
+  }
+
+  .provider-service-item {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-height: 0;
+    padding: 11px 2px;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .provider-service-item:first-child {
+    padding-top: 2px;
+    border-top: 0;
+  }
+
+  .provider-service-item:last-child {
+    padding-bottom: 2px;
+  }
+
+  .provider-service-item > div span {
+    display: none;
+  }
+
+  .provider-service-price {
+    align-self: center;
+  }
+
+  .provider-portfolio {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .provider-portfolio__item {
+    border-radius: 11px;
+  }
+
+  .provider-portfolio__caption {
+    display: none;
+  }
+
+  .provider-muted-text {
+    margin-top: 0;
+    font-size: 12.5px;
+  }
+
+  /* Rəylər: şəkil solda, ad və ulduzlar yanında, mətn altında */
+  .provider-reviews-heading {
+    gap: 8px;
+  }
+
+  .provider-reviews-badge {
+    padding: 3px 8px;
+    font-size: 11.5px;
+  }
+
+  .provider-section__header .provider-secondary-button {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 34px;
+    padding: 0 12px;
+    gap: 5px;
+    border-radius: 999px;
+    font-size: 12.5px;
+  }
+
+  .provider-section__header .provider-secondary-button svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .provider-review-list {
+    gap: 0;
+  }
+
+  .provider-review-card {
+    flex-direction: row;
+    gap: 10px;
+    padding: 12px 0;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .provider-review-card:first-child {
+    padding-top: 2px;
+    border-top: 0;
+  }
+
+  .provider-review-card__avatar {
+    width: 34px;
+    height: 34px;
+    flex-basis: 34px;
+    font-size: 12px;
+  }
+
+  .provider-review-card__top strong {
+    font-size: 13.5px;
+  }
+
+  .provider-review-card__stars svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .provider-review-card__body p {
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .provider-reviews-more {
+    margin-top: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  /* Sağ panel: təkrar məlumat gizli, rezerv paneli aşağı menyunun üstündə */
+  .provider-sidebar {
+    gap: 0;
+  }
+
+  .provider-sidebar-card,
+  .provider-booking-card__divider,
+  .provider-booking-card .provider-info-row,
+  .provider-booking-card .provider-phone-button {
+    display: none;
+  }
+
+  .provider-booking-card {
+    position: fixed;
+    z-index: 110;
+    left: 0;
+    right: 0;
+    bottom: calc(59px + max(8px, env(safe-area-inset-bottom)));
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    border-radius: 0;
+    background: var(--color-surface);
+    box-shadow: 0 -10px 24px -18px rgba(0, 0, 0, 0.5);
+  }
+
+  .provider-booking-card__price {
+    gap: 0;
+    margin-right: auto;
+  }
+
+  .provider-booking-card__price span {
+    font-size: 11px;
+  }
+
+  .provider-booking-card__price strong {
+    font-size: 21px;
+  }
+
+  .provider-booking-card .provider-secondary-button--full {
+    flex: 0 0 44px;
+    width: 44px;
+    min-height: 44px;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    border-radius: 50%;
+    font-size: 0;
+  }
+
+  .provider-booking-card .provider-primary-button--full {
+    order: 3;
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 0 22px;
+    border-radius: 999px;
+    font-size: 14px;
   }
 }

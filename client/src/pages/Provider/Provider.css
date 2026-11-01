@@ -248,6 +248,11 @@
   line-height: 1.85;
 }
 
+/* Kompüterdə mətn tam görünür, düymə yalnız telefonda (styles/mobile.css) */
+.provider-description__more {
+  display: none;
+}
+
 .provider-description strong {
   color: var(--color-text);
 }
