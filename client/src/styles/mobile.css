@@ -1302,7 +1302,7 @@
 
   .bookings-page__filters {
     gap: 2px;
-    margin-bottom: 14px;
+    margin-bottom: 20px;
     padding: 4px;
   }
 
@@ -2083,8 +2083,7 @@
   }
 
   .search-results-eyebrow,
-  .search-results-title p,
-  .search-filter-label {
+  .search-results-title p {
     display: none;
   }
 
@@ -2100,75 +2099,137 @@
     white-space: nowrap;
   }
 
-  .search-summary {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
+  /* Axtarış paneli: çərçivəsiz, filtrlər bir sırada, menyu aşağıdan açılır */
+  /* Vərəq aşağı menyunun da üstündə açılsın deyə burada qat yaratmırıq */
+  .search-toolbar,
+  .search-menu,
+  .search-menu:has(.search-menu__panel) {
+    position: static;
+    z-index: auto;
   }
 
-  .search-summary__count {
-    margin-right: auto;
-    font-size: 13px;
-  }
-
-  .search-summary__count strong {
-    font-size: 16px;
-  }
-
-  .search-area-tag {
-    padding: 5px 8px;
-    font-size: 12px;
-  }
-
-  .search-area-add {
-    order: 3;
-    padding: 6px 12px;
-    border-radius: 999px;
-    font-size: 12.5px;
-  }
-
-  .search-filters {
-    gap: 8px;
-    margin-bottom: 14px;
+  .search-toolbar {
+    gap: 10px;
+    margin-bottom: 12px;
     padding: 0;
     border: 0;
+    border-radius: 0;
     background: transparent;
+    box-shadow: none;
   }
 
-  /* Hər filtr qrupu bir sıradır */
-  .search-filter-group {
+  .search-toolbar__search {
+    min-height: 46px;
+    gap: 9px;
+    padding: 0 6px 0 14px;
+    background: var(--color-surface);
+  }
+
+  .search-toolbar__search svg {
+    flex: 0 0 auto;
+    width: 17px;
+    height: 17px;
+  }
+
+  .search-toolbar__search input {
+    font-size: 14.5px;
+  }
+
+  .search-toolbar__clear {
+    width: 30px;
+    height: 30px;
+  }
+
+  .search-toolbar__filters {
     flex-wrap: nowrap;
-    width: calc(100% + 20px);
-    margin-right: -20px;
-    padding-right: 20px;
+    gap: 6px;
+    margin: 0 -20px;
+    padding: 2px 20px 4px;
     overflow-x: auto;
     scrollbar-width: none;
   }
 
-  .search-filter-group::-webkit-scrollbar {
+  .search-toolbar__filters::-webkit-scrollbar {
     display: none;
   }
 
-  .search-filter-group > span {
+  .search-chip {
     flex: 0 0 auto;
-    min-width: 54px;
-    font-size: 12px;
+    gap: 5px;
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 13px;
   }
 
-  .search-filter {
-    flex: 0 0 auto;
-    min-height: 32px;
-    padding: 0 11px;
-    font-size: 12.5px;
-    white-space: nowrap;
+  .search-chip > svg:first-child {
+    width: 14px;
+    height: 14px;
   }
 
-  .search-clear {
-    min-height: 28px;
-    padding: 0;
+  .search-toolbar__reset {
+    flex: 0 0 auto;
+    margin-left: 0;
     font-size: 12.5px;
+  }
+
+  /* Menyu: ekranın altından çıxan vərəq */
+  .search-menu__backdrop {
+    z-index: 300;
+    background: rgba(5, 14, 11, 0.55);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  .search-menu__panel {
+    position: fixed;
+    z-index: 310;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: auto;
+    max-height: 72vh;
+    padding: 8px 12px max(16px, env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid var(--color-border);
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.35);
+    animation: search-sheet-in 220ms var(--ease-out, ease-out);
+  }
+
+  @keyframes search-sheet-in {
+    from {
+      translate: 0 40px;
+      opacity: 0;
+    }
+  }
+
+  .search-menu__panel::before {
+    content: "";
+    display: block;
+    width: 38px;
+    height: 4px;
+    margin: 2px auto 6px;
+    border-radius: 4px;
+    background: var(--color-border-strong, var(--color-border));
+  }
+
+  .search-menu__title {
+    padding: 4px 8px 8px;
+  }
+
+  .search-menu__option {
+    min-height: 48px;
+    font-size: 15px;
+  }
+
+  .search-results-count {
+    margin: 0 0 10px 2px;
+    font-size: 13px;
+  }
+
+  .search-results-count strong {
+    font-size: 15px;
   }
 
   .search-provider-grid {

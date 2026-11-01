@@ -68,15 +68,6 @@ function Saved() {
     }
   };
 
-  /*
-   * Telefonda bütün profillərin uzun siyahısı əvəzinə əvvəlcə sahə seçilir
-   * (Kəşf et), sonra yalnız o sahənin profilləri açılır. Kompüterdə olduğu kimi qalır.
-   */
-  const openFinder = () => {
-    const isPhone = window.matchMedia("(max-width: 640px)").matches;
-    navigate(isPhone ? "/explore" : "/search");
-  };
-
   return (
     <div className="saved-page">
       <header className="saved-header">
@@ -94,7 +85,7 @@ function Saved() {
           <button
             type="button"
             className="saved-header__add"
-            onClick={openFinder}
+            onClick={() => navigate("/search")}
           >
             <Search size={16} strokeWidth={1.8} />
             {t("Profil əlavə et")}
@@ -126,7 +117,7 @@ function Saved() {
           <button
             type="button"
             className="saved-primary-button"
-            onClick={openFinder}
+            onClick={() => navigate("/search")}
           >
             <Search size={17} strokeWidth={1.8} />
             {t("Xidmət axtar")}

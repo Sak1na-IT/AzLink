@@ -1,12 +1,13 @@
 import {
   ArrowLeft,
   Check,
-  Filter,
+  ChevronDown,
   Heart,
+  LayoutGrid,
   MapPin,
-  Plus,
   Search,
   Star,
+  Wallet,
   X,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -28,6 +29,13 @@ import {
 } from "../../services/savedService";
 import { t, getLang } from "../../i18n";
 type PriceFilter = "all" | "under-20" | "20-30" | "30-50" | "50-plus";
+type FilterMenu = "category" | "price" | "rating";
+
+const ratingOptions = [
+  { value: 0, label: t("Hamısı") },
+  { value: 4, label: "4.0+" },
+  { value: 4.5, label: "4.5+" },
+];
 
 const priceLabels: Record<PriceFilter, string> = {
   all: t("Bütün qiymətlər"),
@@ -85,6 +93,9 @@ function SearchResults() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [isAreaSelectorOpen, setIsAreaSelectorOpen] = useState(false);
+
+  /* Açıq olan filtr menyusu: kateqoriya, qiymət və ya reytinq */
+  const [openMenu, setOpenMenu] = useState<FilterMenu | null>(null);
 
   const [providers, setProviders] = useState<Provider[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -154,6 +165,51 @@ function SearchResults() {
   const selectedPrice = (searchParams.get("price") as PriceFilter) || "all";
 
   const minimumRating = Number(searchParams.get("rating") ?? "0");
+
+  /*
+   * Axtarış xanası: yazdıqca nəticələr dərhal süzülür (URL-də q).
+   * Boşluqla bitən mətni silməmək üçün yalnız fərq olanda URL-dən götürürük.
+   */
+  const [searchText, setSearchText] = useState(query);
+
+  useEffect(() => {
+    setSearchText((current) => (current.trim() === query ? current : query));
+  }, [query]);
+
+  const updateQuery = (value: string) => {
+    setSearchText(value);
+
+    const next = new URLSearchParams(searchParams);
+
+    if (value.trim()) {
+      next.set("q", value);
+    } else {
+      next.delete("q");
+    }
+
+    setSearchParams(next, { replace: true });
+  };
+
+  /* Menyu Esc ilə bağlanır */
+  useEffect(() => {
+    if (!openMenu) {
+      return;
+    }
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpenMenu(null);
+      }
+    };
+
+    window.addEventListener("keydown", onKey);
+
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openMenu]);
+
+  const toggleMenu = (menu: FilterMenu) => {
+    setOpenMenu((current) => (current === menu ? null : menu));
+  };
 
   /*
    * URL-dəki ərazi adlarını Area obyektlərinə çeviririk.
@@ -337,6 +393,7 @@ function SearchResults() {
     }
 
     setSearchParams(next);
+    setOpenMenu(null);
   };
 
   /*
@@ -353,25 +410,41 @@ function SearchResults() {
     }
 
     setSearchParams(next);
+    setOpenMenu(null);
   };
 
   /*
-   * AREA SİL
+   * KATEQORİYA SEÇ (səhifədən çıxmadan)
    */
 
-  const removeArea = (areaToRemove: string) => {
+  const updateCategory = (categoryId: string | null) => {
     const next = new URLSearchParams(searchParams);
 
-    next.delete("area");
+    next.delete("service");
 
-    selectedAreas
-      .filter((area) => area !== areaToRemove)
-      .forEach((area) => {
-        next.append("area", area);
-      });
+    if (categoryId) {
+      next.set("category", categoryId);
+    } else {
+      next.delete("category");
+    }
 
     setSearchParams(next);
+    setOpenMenu(null);
   };
+
+  /* Hər kateqoriyada neçə biznes var (menyuda göstərilir) */
+  const categoryCounts = useMemo(() => {
+    const visible = providers.filter(
+      (provider) => !(currentUserId && provider.ownerId === currentUserId)
+    );
+
+    return Object.fromEntries(
+      categories.map((category) => [
+        category.id,
+        visible.filter((provider) => matchesCategory(provider, category)).length,
+      ])
+    ) as Record<string, number>;
+  }, [providers, currentUserId]);
 
   /*
    * AREA SEÇ / ƏLAVƏ ET
@@ -405,20 +478,27 @@ function SearchResults() {
   const clearFilters = () => {
     const next = new URLSearchParams();
 
-    if (query) {
-      next.set("q", query);
-    }
-
-    if (selectedCategory) {
-      next.set("category", selectedCategory);
-    }
-
     if (selectedService) {
       next.set("service", selectedService);
     }
 
+    setSearchText("");
     setSearchParams(next);
   };
+
+  const hasFilters =
+    Boolean(query) ||
+    Boolean(selectedCategory) ||
+    selectedPrice !== "all" ||
+    minimumRating > 0 ||
+    selectedAreas.length > 0;
+
+  const areaLabel =
+    selectedAreas.length === 0
+      ? t("Ərazi")
+      : selectedAreas.length === 1
+        ? selectedAreas[0]
+        : t("{count} ərazi", { count: selectedAreas.length });
 
   /*
    * PROVIDER PROFİLİ
@@ -479,106 +559,204 @@ function SearchResults() {
             </div>
           </header>
 
-          {/* SUMMARY */}
+          {/* AXTARIŞ VƏ FİLTRLƏR */}
 
-          <section className="search-summary">
-            <div className="search-summary__count">
-              <strong>{filteredProviders.length}</strong>
+          <section className="search-toolbar">
+            <label className="search-toolbar__search">
+              <Search size={19} strokeWidth={1.8} />
 
-              <span>{" "}{t("nəticə")}</span>
-            </div>
+              <input
+                type="search"
+                value={searchText}
+                onChange={(event) => updateQuery(event.target.value)}
+                placeholder={t("Xidmət və ya biznes axtarın, məs. manikür")}
+                aria-label={t("Axtar")}
+                enterKeyHint="search"
+              />
 
-            {selectedAreas.length > 0 && (
-              <div className="search-summary__areas">
-                {selectedAreas.map((area) => (
-                  <span key={area} className="search-area-tag">
-                    <MapPin size={12} />
+              {searchText && (
+                <button
+                  type="button"
+                  className="search-toolbar__clear"
+                  onClick={() => updateQuery("")}
+                  aria-label={t("Axtarışı təmizlə")}
+                >
+                  <X size={15} strokeWidth={2} />
+                </button>
+              )}
+            </label>
 
-                    {area}
+            <div className="search-toolbar__filters">
+              {/* Kateqoriya */}
+              <div className="search-menu">
+                <button
+                  type="button"
+                  className={`search-chip${activeCategory ? " is-set" : ""}${openMenu === "category" ? " is-open" : ""}`}
+                  onClick={() => toggleMenu("category")}
+                  aria-expanded={openMenu === "category"}
+                >
+                  <LayoutGrid size={15} strokeWidth={1.8} />
+                  <span>
+                    {activeCategory ? t(activeCategory.name) : t("Kateqoriya")}
+                  </span>
+                  <ChevronDown className="search-chip__caret" size={14} strokeWidth={2} />
+                </button>
+
+                {openMenu === "category" && (
+                  <div className="search-menu__panel" role="listbox">
+                    <strong className="search-menu__title">{t("Kateqoriya")}</strong>
 
                     <button
                       type="button"
-                      onClick={() => removeArea(area)}
-                      aria-label={t("{area} sil", { area })}
+                      className={`search-menu__option${!activeCategory ? " is-selected" : ""}`}
+                      onClick={() => updateCategory(null)}
                     >
-                      <X size={11} />
+                      <span className="search-menu__icon">
+                        <LayoutGrid size={15} strokeWidth={1.8} />
+                      </span>
+                      <span>{t("Bütün kateqoriyalar")}</span>
+                      {!activeCategory && <Check className="search-menu__check" size={16} />}
                     </button>
-                  </span>
-                ))}
+
+                    {categories.map((category) => {
+                      const Icon = category.icon;
+                      const isSelected = activeCategory?.id === category.id;
+
+                      return (
+                        <button
+                          type="button"
+                          key={category.id}
+                          className={`search-menu__option${isSelected ? " is-selected" : ""}`}
+                          onClick={() => updateCategory(category.id)}
+                        >
+                          <span className="search-menu__icon">
+                            <Icon size={15} strokeWidth={1.8} />
+                          </span>
+                          <span>{t(category.name)}</span>
+                          <small>{categoryCounts[category.id] ?? 0}</small>
+                          {isSelected && <Check className="search-menu__check" size={16} />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
-            )}
 
-            <button
-              type="button"
-              className="search-area-add"
-              onClick={() => setIsAreaSelectorOpen(true)}
-            >
-              <Plus size={14} strokeWidth={2} />
+              {/* Qiymət */}
+              <div className="search-menu">
+                <button
+                  type="button"
+                  className={`search-chip${selectedPrice !== "all" ? " is-set" : ""}${openMenu === "price" ? " is-open" : ""}`}
+                  onClick={() => toggleMenu("price")}
+                  aria-expanded={openMenu === "price"}
+                >
+                  <Wallet size={15} strokeWidth={1.8} />
+                  <span>
+                    {selectedPrice !== "all" ? priceLabels[selectedPrice] : t("Qiymət")}
+                  </span>
+                  <ChevronDown className="search-chip__caret" size={14} strokeWidth={2} />
+                </button>
 
-              {selectedAreas.length > 0 ? t("Ərazi əlavə et") : t("Ərazi seç")}
-            </button>
-          </section>
+                {openMenu === "price" && (
+                  <div className="search-menu__panel" role="listbox">
+                    <strong className="search-menu__title">{t("Qiymət")}</strong>
 
-          {/* FILTERS */}
+                    {(Object.entries(priceLabels) as [PriceFilter, string][]).map(
+                      ([value, label]) => (
+                        <button
+                          type="button"
+                          key={value}
+                          className={`search-menu__option${selectedPrice === value ? " is-selected" : ""}`}
+                          onClick={() => updatePrice(value)}
+                        >
+                          <span>{label}</span>
+                          {selectedPrice === value && (
+                            <Check className="search-menu__check" size={16} />
+                          )}
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+              </div>
 
-          <section className="search-filters">
-            <div className="search-filter-label">
-              <Filter size={16} />
-              {t("Filtrlər")}
-            </div>
+              {/* Reytinq */}
+              <div className="search-menu">
+                <button
+                  type="button"
+                  className={`search-chip${minimumRating > 0 ? " is-set" : ""}${openMenu === "rating" ? " is-open" : ""}`}
+                  onClick={() => toggleMenu("rating")}
+                  aria-expanded={openMenu === "rating"}
+                >
+                  <Star size={15} strokeWidth={1.8} />
+                  <span>
+                    {minimumRating > 0 ? `${minimumRating.toFixed(1)}+` : t("Reytinq")}
+                  </span>
+                  <ChevronDown className="search-chip__caret" size={14} strokeWidth={2} />
+                </button>
 
-            <div className="search-filter-group">
-              <span>{t("Qiymət:")}</span>
+                {openMenu === "rating" && (
+                  <div className="search-menu__panel" role="listbox">
+                    <strong className="search-menu__title">{t("Reytinq")}</strong>
 
-              {(Object.entries(priceLabels) as [PriceFilter, string][]).map(
-                ([value, label]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    className={`search-filter ${
-                      selectedPrice === value ? "is-active" : ""
-                    }`}
-                    onClick={() => updatePrice(value)}
-                  >
-                    {label}
-                  </button>
-                )
+                    {ratingOptions.map((item) => (
+                      <button
+                        type="button"
+                        key={item.value}
+                        className={`search-menu__option${minimumRating === item.value ? " is-selected" : ""}`}
+                        onClick={() => updateRating(item.value)}
+                      >
+                        {item.value > 0 && (
+                          <Star className="search-menu__star" size={14} fill="currentColor" strokeWidth={0} />
+                        )}
+                        <span>{item.label}</span>
+                        {minimumRating === item.value && (
+                          <Check className="search-menu__check" size={16} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Ərazi */}
+              <button
+                type="button"
+                className={`search-chip${selectedAreas.length > 0 ? " is-set" : ""}`}
+                onClick={() => {
+                  setOpenMenu(null);
+                  setIsAreaSelectorOpen(true);
+                }}
+              >
+                <MapPin size={15} strokeWidth={1.8} />
+                <span>{areaLabel}</span>
+              </button>
+
+              {hasFilters && (
+                <button
+                  type="button"
+                  className="search-toolbar__reset"
+                  onClick={clearFilters}
+                >
+                  {t("Təmizlə")}
+                </button>
               )}
             </div>
 
-            <div className="search-filter-group">
-              <span>Reytinq:</span>
-
-              {[
-                { value: 0, label: t("Hamısı") },
-                { value: 4, label: "4.0+" },
-                { value: 4.5, label: "4.5+" },
-              ].map((item) => (
-                <button
-                  key={item.value}
-                  type="button"
-                  className={`search-filter ${
-                    minimumRating === item.value ? "is-active" : ""
-                  }`}
-                  onClick={() => updateRating(item.value)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            {(selectedPrice !== "all" ||
-              minimumRating > 0 ||
-              selectedAreas.length > 0) && (
+            {/* Menyu açıqdır: kənara basanda bağlanır (telefonda arxa fon tündləşir) */}
+            {openMenu && (
               <button
                 type="button"
-                className="search-clear"
-                onClick={clearFilters}
-              >
-                {t("Təmizlə")}
-              </button>
+                className="search-menu__backdrop"
+                aria-label={t("Bağla")}
+                onClick={() => setOpenMenu(null)}
+              />
             )}
           </section>
+
+          <p className="search-results-count">
+            <strong>{filteredProviders.length}</strong> {t("nəticə")}
+          </p>
 
           {/* RESULTS */}
 
