@@ -244,10 +244,6 @@ function AccountType() {
         <section ref={setSection(0)} className="landing-hero">
           <h1>{t("Axtardığın xidmət. Doğru əlaqə.")}</h1>
 
-          <p className="landing-hero__lead">
-            {t("Sənə uyğun xidmətləri tap, seçimlərini müqayisə et və rezervini rahatlıqla yarat. Hamısı bir platformada.")}
-          </p>
-
           <div className="landing-doors">
             <button
               type="button"
