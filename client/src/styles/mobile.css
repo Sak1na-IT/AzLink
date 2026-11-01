@@ -12,6 +12,12 @@
  */
 
 @media (max-width: 640px) {
+  /* Telefonda səhifə heç vaxt yana sürüşməsin */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
   /* ================= AÇILIŞ SƏHİFƏSİ (/) ================= */
 
   /* Yuxarı zolaq */
@@ -3085,7 +3091,7 @@
 
   /* Vitrin: salam, ad və dörd rəqəm bir sırada */
   .biz-hero {
-    padding: 16px 16px 0;
+    padding: 18px 16px 16px;
     border-radius: 22px;
   }
 
@@ -3121,26 +3127,25 @@
     display: none;
   }
 
+  /* Dörd rəqəm: kartın içində 2×2 kiçik xanalar, kənarlara yapışmır */
   .biz-hero__stats {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin: 14px -16px 0;
-  }
-
-  .biz-hero__stats button {
-    padding: 12px 6px 12px 10px;
-  }
-
-  .biz-hero__stats button:nth-child(n) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 16px 0 0;
     border-top: 0;
-    border-left: 1px solid rgba(217, 184, 116, 0.18);
   }
 
+  .biz-hero__stats button,
+  .biz-hero__stats button:nth-child(n),
   .biz-hero__stats button:first-child {
-    border-left: 0;
+    padding: 12px 14px;
+    border: 1px solid rgba(217, 184, 116, 0.16);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.035);
   }
 
   .biz-hero__stats dt {
-    font-size: 26px;
+    font-size: 28px;
   }
 
   /* Dar xanada uzun söz ("Təsdiqlənmiş") sığsın deyə böyük hərf yox */
@@ -3760,8 +3765,8 @@
   .business-layout .business-booking-card {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
-    padding: 12px;
+    gap: 12px;
+    padding: 14px;
     border-radius: 16px;
   }
 
@@ -3788,13 +3793,14 @@
 
   .business-layout .business-booking-card__content {
     min-width: 0;
-    gap: 1px;
+    gap: 5px;
   }
 
   .business-layout .business-booking-card__content h3 {
     overflow: hidden;
-    margin-top: 1px;
+    margin: 0;
     font-size: 19px;
+    line-height: 1.15;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -3824,11 +3830,25 @@
     grid-column: 1 / -1;
   }
 
+  /* Status və düymələr ayrıca alt sırada, nazik xətt ilə ayrılır */
+  .business-layout .business-booking-card:has(.business-booking-card__actions) {
+    row-gap: 0;
+  }
+
+  .business-layout .business-booking-card:has(.business-booking-card__actions) .business-booking-card__main {
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(217, 184, 116, 0.12);
+  }
+
+  .business-layout .business-booking-card:has(.business-booking-card__actions) .business-booking-card__status {
+    margin-top: 12px;
+  }
+
   .business-layout .business-booking-card__actions {
     flex-wrap: nowrap;
     justify-content: flex-end;
-    gap: 6px;
-    margin: 0;
+    gap: 8px;
+    margin: 12px 0 0;
     padding: 0;
     border-top: 0;
   }

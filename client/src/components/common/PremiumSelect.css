@@ -55,13 +55,22 @@
 }
 
 /* Formanın yoxlaması üçün gizli, amma DOM-da qalır */
-.premium-select__native {
+/* Gizli yerli siyahı yalnız forma yoxlaması üçündür. Səhifənin başqa
+   qaydaları onu enləndirməsin, yoxsa telefonda ekran yana sürüşür. */
+.premium-select .premium-select__native {
   position: absolute;
   left: 50%;
   bottom: 0;
-  width: 1px;
-  height: 1px;
+  width: 1px !important;
+  min-width: 0 !important;
+  max-width: 1px !important;
+  height: 1px !important;
+  min-height: 0 !important;
+  margin: 0;
+  padding: 0;
+  border: 0;
   opacity: 0;
+  clip-path: inset(50%);
   pointer-events: none;
 }
 
