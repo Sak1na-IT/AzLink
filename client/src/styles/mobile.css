@@ -1112,7 +1112,7 @@
   /* Bütün sahələr bir baxışda: iki sütunlu kiçik şəkilli kartlar */
   .explore-page {
     width: 100%;
-    padding: 4px 0 8px;
+    padding: 4px 4px 8px;
   }
 
   /* Aşağı menyu var, "Geri" lazım deyil */
@@ -1203,5 +1203,168 @@
   .explore-empty {
     min-height: 180px;
     padding: 22px;
+  }
+
+  /* ================= REZERVLƏRİM ================= */
+  /* Başlıq və düymə bir sırada, kartlar yığcam bilet kimi */
+  .bookings-page {
+    min-height: 0;
+    padding: 4px 4px 8px;
+  }
+
+  .bookings-switch {
+    padding: 4px 4px 0;
+  }
+
+  .bookings-page__header {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .bookings-page__eyebrow,
+  .bookings-page__header p {
+    display: none;
+  }
+
+  .bookings-page__header h1 {
+    font-size: 30px;
+  }
+
+  .bookings-page__new-button {
+    width: auto;
+    min-height: 38px;
+    padding: 0 14px;
+    gap: 5px;
+    font-size: 13px;
+  }
+
+  .bookings-page__new-button svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .bookings-page__filters {
+    gap: 2px;
+    margin-bottom: 14px;
+    padding: 4px;
+  }
+
+  .bookings-page__filter {
+    flex: 1 0 auto;
+    min-height: 34px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+
+  .bookings-page__list {
+    gap: 12px;
+  }
+
+  .booking-card {
+    padding: 14px 14px 12px 18px;
+    border-radius: 18px;
+  }
+
+  .booking-card::before {
+    top: 16px;
+    bottom: 16px;
+  }
+
+  .booking-card__top {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .booking-card__provider {
+    gap: 10px;
+  }
+
+  .booking-card__avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 17px;
+  }
+
+  .booking-card__provider h2 {
+    margin-bottom: 2px;
+    font-size: 20px;
+  }
+
+  .booking-card__provider span {
+    font-size: 12.5px;
+  }
+
+  .booking-card__status {
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .booking-card__status svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .booking-card__details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 12px;
+    margin-top: 12px;
+    padding: 12px 0;
+  }
+
+  .booking-card__detail {
+    gap: 8px;
+  }
+
+  .booking-card__detail > svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .booking-card__detail span {
+    margin-bottom: 2px;
+    font-size: 10px;
+  }
+
+  .booking-card__detail strong {
+    font-size: 13.5px;
+  }
+
+  .booking-card__detail > div > small {
+    font-size: 11px;
+  }
+
+  .booking-card__detail strong.booking-card__price {
+    font-size: 21px;
+  }
+
+  /* Düymələr yan-yana, barmaqla rahat basılır */
+  .booking-card__bottom {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  .booking-card__provider-button,
+  .booking-card__cancel-button,
+  .booking-card__delete-button {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  .booking-card__reviewed {
+    flex: 1 1 0;
+    justify-content: center;
+    font-size: 12.5px;
   }
 }
