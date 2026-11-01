@@ -240,12 +240,6 @@ function Profile() {
           <div className="profile-card__content">
             {isEditing ? (
               <>
-                {/* Telefonda şəklin yanında başlıq (kompüterdə gizli) */}
-                <div className="profile-edit-head">
-                  <strong>{t("Profili redaktə et")}</strong>
-                  <span>{t("Məlumatlarınızı yeniləyin")}</span>
-                </div>
-
                 <label>
                   {t("Ad və soyad")}
                   <input

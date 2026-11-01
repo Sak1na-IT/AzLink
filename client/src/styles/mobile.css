@@ -2029,58 +2029,21 @@
   }
 
   /*
-   * Redaktə rejimi: yuxarıda şəkil və başlıq bir sırada,
-   * altında xanalar kartın bütün enində
+   * Redaktə rejimi: yalnız xanalar və düymələr. Şəkil və çıxış düyməsi
+   * gizlənir ("Ləğv et" onsuz da var), kart sadə forma kimi görünür.
    */
   .profile-card:has(.profile-card__content label) {
-    display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
-    align-items: center;
-    column-gap: 12px;
+    display: block;
     padding: 16px;
   }
 
+  .profile-card:has(.profile-card__content label) .profile-avatar,
+  .profile-card:has(.profile-card__content label) .profile-card__logout {
+    display: none;
+  }
+
   .profile-card:has(.profile-card__content label) .profile-card__content {
-    display: contents;
-  }
-
-  .profile-card:has(.profile-card__content label) .profile-card__content > * {
-    grid-column: 1 / -1;
-  }
-
-  .profile-card:has(.profile-card__content label) .profile-avatar {
-    grid-column: 1;
-    grid-row: 1;
-    width: 48px;
-    height: 48px;
-    flex-basis: 48px;
-    margin-bottom: 16px;
-    font-size: 18px;
-    box-shadow: var(--medal-inset), 0 0 0 4px rgba(217, 184, 116, 0.08);
-  }
-
-  .profile-card:has(.profile-card__content label) .profile-card__content > .profile-edit-head {
-    grid-column: 2;
-    grid-row: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-    margin-bottom: 16px;
-    padding-right: 40px;
-  }
-
-  .profile-edit-head strong {
-    color: var(--deep-title);
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.05;
-  }
-
-  .profile-edit-head span {
-    color: var(--deep-muted);
-    font-size: 12px;
+    padding-right: 0;
   }
 
   .profile-card__content label {

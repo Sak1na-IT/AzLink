@@ -907,8 +907,3 @@
   margin-left: auto;
 }
 
-/* Redaktə başlığı yalnız telefonda görünür (styles/mobile.css) */
-.profile-edit-head {
-  display: none;
-}
-
