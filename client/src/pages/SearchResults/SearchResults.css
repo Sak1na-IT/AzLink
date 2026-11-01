@@ -1215,3 +1215,27 @@
   color: #e6c98a;
 }
 
+/* Xidmətlərdən bütün kateqoriyalara keçid */
+.search-menu__switch {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 40px;
+  margin-top: 4px;
+  border: 1px dashed rgba(217, 184, 116, 0.45);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-gold);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.search-menu__switch:hover {
+  border-style: solid;
+  background: var(--color-gold-soft);
+}
+

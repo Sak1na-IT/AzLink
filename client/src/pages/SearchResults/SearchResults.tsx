@@ -28,6 +28,7 @@ import {
   unsaveProvider,
 } from "../../services/savedService";
 import { t, getLang } from "../../i18n";
+import { getCategoryVisual } from "../../utils/categoryVisual";
 type PriceFilter = "all" | "under-20" | "20-30" | "30-50" | "50-plus";
 type FilterMenu = "category" | "price" | "rating";
 
@@ -96,6 +97,9 @@ function SearchResults() {
 
   /* Açıq olan filtr menyusu: kateqoriya, qiymət və ya reytinq */
   const [openMenu, setOpenMenu] = useState<FilterMenu | null>(null);
+
+  /* Kateqoriya menyusunda: seçilmiş sahənin xidmətləri və ya bütün kateqoriyalar */
+  const [showAllCategories, setShowAllCategories] = useState(false);
 
   const [providers, setProviders] = useState<Provider[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -208,6 +212,8 @@ function SearchResults() {
   }, [openMenu]);
 
   const toggleMenu = (menu: FilterMenu) => {
+    /* Kateqoriya seçilibsə menyu əvvəlcə onun xidmətləri ilə açılır */
+    setShowAllCategories(false);
     setOpenMenu((current) => (current === menu ? null : menu));
   };
 
@@ -432,6 +438,41 @@ function SearchResults() {
     setOpenMenu(null);
   };
 
+  /*
+   * XİDMƏT SEÇ (seçilmiş kateqoriyanın içindən, məs. Gözəllik → Dırnaq).
+   * null: kateqoriyanın bütün xidmətləri.
+   */
+  const updateService = (service: string | null) => {
+    const next = new URLSearchParams(searchParams);
+
+    if (service) {
+      next.set("service", service);
+    } else {
+      next.delete("service");
+    }
+
+    setSearchParams(next);
+    setOpenMenu(null);
+  };
+
+  /* Seçilmiş kateqoriyanın hər xidmətində neçə biznes var */
+  const serviceCounts = useMemo(() => {
+    if (!activeCategory) {
+      return {} as Record<string, number>;
+    }
+
+    const visible = providers.filter(
+      (provider) => !(currentUserId && provider.ownerId === currentUserId)
+    );
+
+    return Object.fromEntries(
+      activeCategory.services.map((service) => [
+        service,
+        visible.filter((provider) => matchesService(provider, service)).length,
+      ])
+    ) as Record<string, number>;
+  }, [providers, currentUserId, activeCategory]);
+
   /* Hər kateqoriyada neçə biznes var (menyuda göstərilir) */
   const categoryCounts = useMemo(() => {
     const visible = providers.filter(
@@ -597,12 +638,65 @@ function SearchResults() {
                 >
                   <LayoutGrid size={15} strokeWidth={1.8} />
                   <span>
-                    {activeCategory ? t(activeCategory.name) : t("Kateqoriya")}
+                    {selectedService
+                      ? t(selectedService)
+                      : activeCategory
+                        ? t(activeCategory.name)
+                        : t("Kateqoriya")}
                   </span>
                   <ChevronDown className="search-chip__caret" size={14} strokeWidth={2} />
                 </button>
 
-                {openMenu === "category" && (
+                {/* Kateqoriya seçilibsə: əvvəlcə onun xidmətləri */}
+                {openMenu === "category" && activeCategory && !showAllCategories && (
+                  <div className="search-menu__panel search-menu__panel--grid" role="listbox">
+                    <strong className="search-menu__title">{t(activeCategory.name)}</strong>
+
+                    <button
+                      type="button"
+                      className={`search-menu__option${!selectedService ? " is-selected" : ""}`}
+                      onClick={() => updateService(null)}
+                    >
+                      <span className="search-menu__icon">
+                        <activeCategory.icon size={15} strokeWidth={1.8} />
+                      </span>
+                      <span>{t("Hamısı")}</span>
+                      <small>{categoryCounts[activeCategory.id] ?? 0}</small>
+                    </button>
+
+                    {activeCategory.services.map((service) => {
+                      const Icon = getCategoryVisual(service).icon;
+                      const isSelected =
+                        normalize(selectedService) === normalize(service);
+
+                      return (
+                        <button
+                          type="button"
+                          key={service}
+                          className={`search-menu__option${isSelected ? " is-selected" : ""}`}
+                          onClick={() => updateService(service)}
+                        >
+                          <span className="search-menu__icon">
+                            <Icon size={15} strokeWidth={1.8} />
+                          </span>
+                          <span>{t(service)}</span>
+                          <small>{serviceCounts[service] ?? 0}</small>
+                        </button>
+                      );
+                    })}
+
+                    <button
+                      type="button"
+                      className="search-menu__switch"
+                      onClick={() => setShowAllCategories(true)}
+                    >
+                      <LayoutGrid size={15} strokeWidth={1.8} />
+                      {t("Bütün kateqoriyalar")}
+                    </button>
+                  </div>
+                )}
+
+                {openMenu === "category" && (!activeCategory || showAllCategories) && (
                   <div className="search-menu__panel search-menu__panel--grid" role="listbox">
                     <strong className="search-menu__title">{t("Kateqoriya")}</strong>
 
