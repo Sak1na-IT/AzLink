@@ -692,4 +692,273 @@
     margin-top: 12px;
     font-size: 12.5px;
   }
+
+  /* Geri düyməsi ilə "AzLink" arasında nəfəs yeri */
+  .auth-shell .auth-back-link {
+    margin-bottom: 14px;
+  }
+
+  /* ================= ANA SƏHİFƏ (daxil olduqdan sonra) ================= */
+  /* Az söz, kiçik kartlar, yana sürüşən sıralar */
+  .home-hero.velvet-stage {
+    padding: 24px 14px 18px;
+    border-radius: 22px;
+  }
+
+  .home-hero .home-hero__eyebrow {
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+
+  .home-hero .home-hero__title {
+    font-size: 29px;
+    line-height: 1.08;
+  }
+
+  .home-hero .home-hero__description,
+  .home-hero .quick-searches__label {
+    display: none;
+  }
+
+  .home-search {
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .home-hero .home-search__input,
+  .home-hero .home-search__area {
+    min-height: 46px;
+    border-radius: 14px;
+  }
+
+  .home-hero .quick-searches {
+    margin: 12px -14px 0;
+    padding: 0 14px 2px;
+    gap: 6px;
+  }
+
+  .home-hero .quick-searches__item {
+    padding: 6px 11px;
+    font-size: 12.5px;
+  }
+
+  .home-section {
+    margin-top: 28px;
+  }
+
+  .home-section__header {
+    margin-bottom: 10px;
+  }
+
+  .home-section__header h2 {
+    font-size: 22px;
+  }
+
+  .home-section__link {
+    font-size: 13px;
+  }
+
+  /* Son baxdıqlarınız və Yaxınlıqda populyar: üfüqi sıra */
+  .popular-list {
+    display: flex;
+    gap: 10px;
+    margin: 0 -16px;
+    padding: 2px 16px 6px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 16px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .popular-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .popular-card {
+    flex: 0 0 62%;
+    max-width: 250px;
+    border-radius: 16px;
+    scroll-snap-align: start;
+  }
+
+  .popular-card__image {
+    height: 96px;
+  }
+
+  .popular-card__emblem {
+    width: 46px;
+    height: 46px;
+  }
+
+  .popular-card__emblem svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .popular-card__verified,
+  .popular-card__price {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+
+  .popular-card__verified {
+    top: 8px;
+    left: 8px;
+  }
+
+  .popular-card__price {
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .popular-card__body {
+    gap: 2px;
+    padding: 10px 12px 12px;
+  }
+
+  .popular-card__title-row strong {
+    overflow: hidden;
+    font-size: 14.5px;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .popular-card__rating {
+    font-size: 12.5px;
+  }
+
+  .popular-card__rating em {
+    display: none;
+  }
+
+  .popular-card__meta {
+    overflow: hidden;
+    font-size: 12.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Bütün kart onsuz da basılır, ayrıca yazıya ehtiyac yoxdur */
+  .popular-card__cta,
+  .popular-caption {
+    display: none;
+  }
+
+  .popular-empty {
+    padding: 18px;
+  }
+
+  /* Platforma rəqəmləri: yığcam */
+  .today-overview {
+    gap: 12px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  /* Başlıq onsuz da "Platforma" deyir, uzun cümləyə ehtiyac yoxdur */
+  .today-overview__text {
+    display: none;
+  }
+
+  .today-overview__stats strong {
+    font-size: 26px;
+  }
+
+  .today-overview__stats span {
+    font-size: 11.5px;
+  }
+
+  /* Necə işləyir: üç qısa sətir */
+  .how-it-works {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-surface);
+  }
+
+  .how-it-works__item {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .how-it-works__item + .how-it-works__item {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .how-it-works__head {
+    width: auto;
+  }
+
+  .how-it-works__number {
+    width: 26px;
+    height: 26px;
+    font-size: 15px;
+    box-shadow: none;
+  }
+
+  .how-it-works__icon,
+  .how-it-works__item p {
+    display: none;
+  }
+
+  .how-it-works__item strong {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* Faydalı məlumatlar: yana sürüşən kiçik kartlar */
+  .helpful-info {
+    display: flex;
+    gap: 10px;
+    margin: 0 -16px;
+    padding: 2px 16px 6px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 0 16px;
+    scrollbar-width: none;
+  }
+
+  .helpful-info::-webkit-scrollbar {
+    display: none;
+  }
+
+  .helpful-info__card {
+    flex: 0 0 72%;
+    padding: 14px;
+    border-radius: 16px;
+    scroll-snap-align: start;
+  }
+
+  .helpful-info__icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+  }
+
+  .helpful-info__card strong {
+    font-size: 14.5px;
+  }
+
+  .helpful-info__card p {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 12.5px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .helpful-info__link {
+    padding-top: 6px;
+    font-size: 13px;
+  }
 }
