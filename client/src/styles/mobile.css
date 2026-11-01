@@ -606,4 +606,90 @@
   .auth-shell__perks {
     display: none;
   }
+
+  /* ================= GİRİŞ VƏ QEYDİYYAT: DAHA YIĞCAM ================= */
+  .auth-shell__content {
+    padding: 58px 10px 20px;
+  }
+
+  /* Kart: haşiyəsiz, kölgəsiz, dar */
+  .auth-shell .login-card,
+  .auth-shell .register-card {
+    padding: 14px 14px 16px;
+    border-color: transparent;
+    border-radius: 18px;
+    box-shadow: none;
+  }
+
+  .auth-shell .auth-back-link {
+    margin-bottom: 2px;
+    font-size: 12.5px;
+  }
+
+  .auth-brand {
+    font-size: 16px;
+  }
+
+  .auth-brand::after {
+    margin: 6px auto 10px;
+  }
+
+  .auth-shell .login-header h1,
+  .auth-shell .register-header h1 {
+    font-size: 23px;
+  }
+
+  .auth-shell .login-header p,
+  .auth-shell .register-header p {
+    margin-top: 4px;
+    font-size: 12.5px;
+  }
+
+  .auth-shell .login-form,
+  .auth-shell .register-form {
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .auth-shell .login-field,
+  .auth-shell .register-field {
+    gap: 4px;
+  }
+
+  .auth-shell .login-field > span,
+  .auth-shell .register-field > span {
+    font-size: 12px;
+  }
+
+  .auth-shell .login-input-wrapper,
+  .auth-shell .register-input-wrapper {
+    min-height: 44px;
+    padding: 0 11px;
+    border-radius: 11px;
+  }
+
+  .auth-shell .login-input-wrapper svg,
+  .auth-shell .register-input-wrapper svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* iPhone xanaya basanda səhifəni böyütməsin deyə index.html-də maximum-scale=1 var */
+  .auth-shell .login-input-wrapper input,
+  .auth-shell .register-input-wrapper input,
+  .auth-shell .register-select {
+    font-size: 14.5px;
+  }
+
+  .auth-shell .login-submit-button,
+  .auth-shell .register-submit-button {
+    min-height: 46px;
+    font-size: 14.5px;
+  }
+
+  .auth-shell .login-footer,
+  .auth-shell .register-footer {
+    margin-top: 12px;
+    font-size: 12.5px;
+  }
 }
