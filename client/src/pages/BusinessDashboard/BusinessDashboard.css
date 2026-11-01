@@ -737,3 +737,10 @@
   color: var(--color-danger);
   font-size: 14px;
 }
+
+/* Kompüter: rəqəm və yazı öz xanasının ortasında */
+@media (min-width: 641px) {
+  .biz-hero__stats button {
+    text-align: center;
+  }
+}

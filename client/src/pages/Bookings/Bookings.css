@@ -862,3 +862,10 @@
     font-size: 23px;
   }
 }
+
+/* Biznes hesabında yuxarıdakı menyu ilə başlıq arası Seçilmişlər səhifəsindəki kimi */
+@media (min-width: 641px) {
+  .business-explore-shell .bookings-page {
+    padding-top: 34px;
+  }
+}
