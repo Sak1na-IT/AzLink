@@ -453,6 +453,47 @@ function Booking() {
 
   const activeMonth = phoneMonths[Math.min(monthOffset, phoneMonths.length - 1)];
 
+  /*
+   * Kompüter: seçilmiş ayın təqvimi (B.e.-dən başlayır). Keçmiş günlər
+   * və rezerv aralığından kənar günlər sönük görünür, seçilmir.
+   */
+  const lastBookableKey = formatDateKey(allDates[allDates.length - 1]);
+  const todayKey = formatDateKey(allDates[0]);
+
+  const calendarCells = useMemo(() => {
+    const first = new Date(
+      activeMonth.getFullYear(),
+      activeMonth.getMonth(),
+      1
+    );
+    const daysInMonth = new Date(
+      activeMonth.getFullYear(),
+      activeMonth.getMonth() + 1,
+      0
+    ).getDate();
+    const leading = (first.getDay() + 6) % 7;
+    const cells: (Date | null)[] = Array.from({ length: leading }, () => null);
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      cells.push(
+        new Date(activeMonth.getFullYear(), activeMonth.getMonth(), day)
+      );
+    }
+
+    return cells;
+  }, [activeMonth]);
+
+  /* Həftə günlərinin qısa adları: B.e. ... B. */
+  const weekdayLabels = useMemo(() => {
+    const monday = new Date(2024, 0, 1);
+
+    return Array.from({ length: 7 }, (_, index) => {
+      const date = new Date(monday);
+      date.setDate(monday.getDate() + index);
+      return getWeekDay(date);
+    });
+  }, []);
+
   const availableDates = useMemo(() => {
     if (!isPhone) {
       return allDates.slice(0, BOOKING_DAYS_AHEAD);
@@ -864,7 +905,26 @@ function Booking() {
               </span>
             </div>
 
-            {/* Ay seçicisi: yalnız telefonda görünür */}
+            {/* Ay seçicisi: kompüterdə aylar düymə kimi, telefonda oxlarla */}
+            {!isPhone && (
+              <div className="booking-months" role="tablist">
+                {phoneMonths.map((month, index) => (
+                  <button
+                    type="button"
+                    role="tab"
+                    key={month.toISOString()}
+                    aria-selected={index === monthOffset}
+                    className={`booking-months__item${
+                      index === monthOffset ? " is-active" : ""
+                    }`}
+                    onClick={() => setMonthOffset(index)}
+                  >
+                    {monthYear(month)}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {isPhone && (
               <div className="booking-month">
                 <button
@@ -895,6 +955,68 @@ function Booking() {
               </div>
             )}
 
+            {!isPhone && (
+              <div className="booking-calendar">
+                {weekdayLabels.map((label) => (
+                  <span className="booking-calendar__weekday" key={label}>
+                    {label}
+                  </span>
+                ))}
+
+                {calendarCells.map((date, index) => {
+                  if (!date) {
+                    return <span key={`blank-${index}`} aria-hidden="true" />;
+                  }
+
+                  const dateKey = formatDateKey(date);
+                  const isOutside =
+                    dateKey < todayKey || dateKey > lastBookableKey;
+
+                  if (isOutside) {
+                    return (
+                      <span
+                        key={dateKey}
+                        className="booking-calendar__day is-outside"
+                        aria-hidden="true"
+                      >
+                        {getDayNumber(date)}
+                      </span>
+                    );
+                  }
+
+                  const schedule = getScheduleForDate(weeklySchedule, dateKey);
+                  const status = getDateStatus(dateKey, currentDuration);
+                  const isSelected = selectedDate === dateKey;
+                  const statusText =
+                    status === "empty"
+                      ? t("Boş")
+                      : status === "partial"
+                        ? t("Qismən dolu")
+                        : schedule.isOpen
+                          ? t("Dolu")
+                          : t("Bağlı");
+
+                  return (
+                    <button
+                      type="button"
+                      key={dateKey}
+                      disabled={status === "full"}
+                      title={statusText}
+                      aria-label={`${formatReadableDate(dateKey)} · ${statusText}`}
+                      className={`booking-calendar__day booking-calendar__day--${status}${
+                        isSelected ? " is-selected" : ""
+                      }${dateKey === todayKey ? " is-today" : ""}`}
+                      onClick={() => handleDateSelect(dateKey)}
+                    >
+                      {getDayNumber(date)}
+                      <i />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {isPhone && (
             <div className="booking-date-grid">
               {availableDates.map((date) => {
                 const dateKey = formatDateKey(date);
@@ -939,6 +1061,7 @@ function Booking() {
                 );
               })}
             </div>
+            )}
           </section>
 
           <section className="booking-section">
