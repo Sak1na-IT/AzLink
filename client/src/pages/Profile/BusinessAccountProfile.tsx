@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, Lock, LogOut, Mail, UserRound } from "lucide-react";
+import { Bell, Lock, LogOut, Mail, Pencil, UserRound } from "lucide-react";
 
 import "./BusinessAccountProfile.css";
 import "../../components/business/BusinessTheme.css";
@@ -15,7 +15,6 @@ import {
 } from "../../services/accountService";
 import { getMe, logout } from "../../services/authService";
 import { t } from "../../i18n";
-import LanguageSwitch from "../../i18n/LanguageSwitch";
 
 /* Yuxarıdakı zəng ikonunda görünən bildirişlər */
 const notificationRows = [
@@ -158,44 +157,20 @@ function BusinessAccountProfile() {
   return (
     <main className="account-profile">
       <section className="account-profile__header">
-        <span className="biz-eyebrow">{t("Hesab")}</span>
         <h1>{t("Profil")}</h1>
-        <p>{t("Hesabınızı və şəxsi parametrlərinizi idarə edin.")}</p>
       </section>
 
-      {/* ===== HESAB KARTI ===== */}
-      <section className="account-profile__card account-profile__identity">
+      {/* ===== HESAB KARTI: müştəri profilindəki kimi; redaktə də burada ===== */}
+      <section
+        className={`account-profile__card account-profile__identity${isEditing ? " is-editing" : ""}`}
+        ref={personalRef}
+      >
         <div className="account-profile__avatar">
           {initials || <UserRound size={30} strokeWidth={1.7} />}
         </div>
 
-        <div className="account-profile__identity-info">
-          <h2>{account.name || "—"}</h2>
-          <span>{account.email}</span>
-          <em className="account-profile__role">{t("Biznes sahibi")}</em>
-        </div>
-
-        <button
-          type="button"
-          className="account-profile__icon-button"
-          onClick={handleLogout}
-          aria-label={t("Hesabdan çıx")}
-          title={t("Hesabdan çıx")}
-        >
-          <LogOut size={18} strokeWidth={1.9} />
-        </button>
-      </section>
-
-      {/* ===== ŞƏXSİ MƏLUMATLAR ===== */}
-      <section className="account-profile__card" ref={personalRef}>
-        <div className="account-profile__card-header">
-          <h2>{t("Şəxsi məlumatlar")}</h2>
-          <p>{t("Hesab məlumatlarınızı yeniləyin.")}</p>
-        </div>
-
-        {notice && <p className="account-profile__notice">{notice}</p>}
-
         {isEditing ? (
+          /* Solda profil şəkli, sağda dəyişdiriləcək məlumatlar */
           <form className="account-profile__form" onSubmit={handleSave}>
             <label className="account-profile__field">
               <span>{t("Ad və soyad")}</span>
@@ -213,14 +188,6 @@ function BusinessAccountProfile() {
             </label>
 
             <label className="account-profile__field">
-              <span>{t("Email")}</span>
-              <input type="email" value={account.email} disabled readOnly />
-              <small className="account-profile__hint">
-                {t('Emaili aşağıdakı "Təhlükəsizlik" bölməsindən dəyişə bilərsiniz.')}
-              </small>
-            </label>
-
-            <label className="account-profile__field">
               <span>{t("Telefon")}</span>
               <input
                 type="tel"
@@ -233,6 +200,11 @@ function BusinessAccountProfile() {
                   }))
                 }
               />
+            </label>
+
+            <label className="account-profile__field">
+              <span>{t("Email")}</span>
+              <input type="email" value={account.email} disabled readOnly />
             </label>
 
             {formError && <p className="account-profile__error">{formError}</p>}
@@ -258,32 +230,33 @@ function BusinessAccountProfile() {
           </form>
         ) : (
           <>
-            <dl className="account-profile__rows">
-              <div className="account-profile__row">
-                <dt>{t("Ad və soyad")}</dt>
-                <dd>{account.name || "—"}</dd>
-              </div>
+            <div className="account-profile__identity-info">
+              <h2>{account.name || "—"}</h2>
+              <span>{account.email}</span>
+              {account.phone && <span>{account.phone}</span>}
+              <em className="account-profile__role">{t("Biznes sahibi")}</em>
 
-              <div className="account-profile__row">
-                <dt>{t("Email")}</dt>
-                <dd>{account.email || "—"}</dd>
-              </div>
+              {notice && <p className="account-profile__notice">{notice}</p>}
 
-              <div className="account-profile__row">
-                <dt>{t("Telefon")}</dt>
-                <dd>{account.phone || t("Əlavə edilməyib")}</dd>
-              </div>
-            </dl>
-
-            <div className="account-profile__actions">
               <button
                 type="button"
-                className="account-profile__button"
+                className="account-profile__edit-button"
                 onClick={openEdit}
               >
-                {t("Redaktə et")}
+                <Pencil size={15} strokeWidth={1.8} />
+                {t("Profili redaktə et")}
               </button>
             </div>
+
+            <button
+              type="button"
+              className="account-profile__icon-button account-profile__logout-icon"
+              onClick={handleLogout}
+              aria-label={t("Hesabdan çıx")}
+              title={t("Hesabdan çıx")}
+            >
+              <LogOut size={18} strokeWidth={1.9} />
+            </button>
           </>
         )}
       </section>
@@ -347,33 +320,6 @@ function BusinessAccountProfile() {
             </li>
           ))}
         </ul>
-      </section>
-
-      {/* ===== HESAB ===== */}
-      <section className="account-profile__card">
-        <div className="account-profile__card-header">
-          <h2>{t("Hesab")}</h2>
-        </div>
-
-        <dl className="account-profile__rows">
-          <div className="account-profile__row">
-            <dt>{t("Dil")}</dt>
-            <dd>
-              <LanguageSwitch />
-            </dd>
-          </div>
-        </dl>
-
-        <div className="account-profile__actions">
-          <button
-            type="button"
-            className="account-profile__logout"
-            onClick={handleLogout}
-          >
-            <LogOut size={17} strokeWidth={1.9} />
-            {t("Hesabdan çıx")}
-          </button>
-        </div>
       </section>
 
       {isPasswordOpen && (

@@ -58,7 +58,8 @@ function BusinessCustomers() {
     return [...customers]
       .sort((a, b) => b.bookingCount - a.bookingCount)
       .slice(0, 3)
-      .filter((customer) => customer.bookingCount > 3);
+      /* ən azı iki dəfə gələnlər "sadiq müştəri" sayılır */
+      .filter((customer) => customer.bookingCount >= 2);
   }, [customers]);
 
   if (isLoading) {

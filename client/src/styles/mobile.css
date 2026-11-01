@@ -3986,16 +3986,67 @@
     font-size: 14px;
   }
 
+  /* Ən çox gələnlər: üç kiçik kart bir sırada */
   .business-layout .business-customers__top {
     margin-bottom: 12px;
+    padding: 12px;
+  }
+
+  .business-layout .business-customers__top-header {
+    gap: 6px;
+    margin-bottom: 8px;
+    color: var(--color-gold);
+  }
+
+  .business-layout .business-customers__top-header svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .business-layout .business-customers__top-header h2 {
+    color: var(--color-text);
+    font-size: 18px;
   }
 
   .business-layout .business-customers__top-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 6px;
   }
 
   .business-layout .business-customers__top-card {
-    padding: 8px 10px;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding: 10px 4px 8px;
+    border-radius: 14px;
+    text-align: center;
+  }
+
+  .business-layout .business-customers__top-card .business-customer-card__avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .business-layout .business-customers__top-card > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .business-layout .business-customers__top-card strong {
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .business-layout .business-customers__top-card span {
+    color: var(--color-gold);
+    font-size: 10.5px;
+    font-weight: 600;
   }
 
   .business-layout .business-customers__list {
@@ -4139,6 +4190,227 @@
 
   .business-layout .business-hours__footer {
     margin-top: 12px;
+  }
+
+  /* ================= BİZNES HESABI: PROFİL ================= */
+  .account-profile {
+    gap: 12px;
+    padding: 4px 4px 8px;
+  }
+
+  .account-profile__header {
+    margin-bottom: 2px;
+  }
+
+  .account-profile__header h1,
+  body .account-profile__header h1 {
+    font-size: 30px;
+  }
+
+  .account-profile__card {
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+
+  /* Hesab kartı: şəkil solda, ad, email və "Profili redaktə et" sağda */
+  body .account-profile__identity {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 52px 16px 16px;
+    border-radius: 20px;
+  }
+
+  body .account-profile__identity .account-profile__avatar {
+    width: 58px;
+    height: 58px;
+    flex-basis: 58px;
+    border-width: 2px;
+    font-size: 22px;
+  }
+
+  .account-profile__identity-info {
+    gap: 4px;
+  }
+
+  body .account-profile__identity-info h2 {
+    font-size: 24px;
+  }
+
+  body .account-profile__identity-info > span {
+    font-size: 12.5px;
+    word-break: break-all;
+  }
+
+  .account-profile__role {
+    padding: 2px 8px;
+    font-size: 10.5px;
+  }
+
+  body .account-profile__identity .account-profile__edit-button {
+    min-height: 34px;
+    margin-top: 6px;
+    padding: 0 12px;
+    gap: 5px;
+    font-size: 12.5px;
+  }
+
+  .account-profile__logout-icon {
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .account-profile__logout-icon svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* Redaktə: solda şəkil, sağda xanalar */
+  body .account-profile__identity.is-editing {
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+
+  body .account-profile__identity.is-editing .account-profile__avatar {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+    font-size: 18px;
+  }
+
+  .account-profile__form {
+    gap: 10px;
+  }
+
+  .account-profile__field > span {
+    margin-bottom: 5px;
+    font-size: 12px;
+  }
+
+  .account-profile__field input {
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 14.5px;
+  }
+
+  .account-profile__form-actions {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .account-profile__form-actions .account-profile__button {
+    flex: 1;
+    width: auto;
+    min-height: 44px;
+  }
+
+  /* Təhlükəsizlik və bildirişlər: yığcam siyahı */
+  .account-profile__card-header h2,
+  body .account-profile__card-header h2 {
+    font-size: 21px;
+  }
+
+  .account-profile__card-header p {
+    display: none;
+  }
+
+  .account-profile__list li {
+    gap: 10px;
+    min-height: 48px;
+    padding: 6px 0;
+    font-size: 13.5px;
+  }
+
+  .account-profile__list-label {
+    gap: 8px;
+    font-size: 13.5px;
+  }
+
+  .account-profile__list-label svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .account-profile__list .account-profile__button {
+    min-height: 34px;
+    padding: 0 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+  }
+
+  .account-profile__soon {
+    padding: 3px 8px;
+    font-size: 10.5px;
+  }
+
+  /* ================= BİZNESİM: REZERV KARTINDA SƏTİRLƏR ================= */
+  .business-layout .business-booking-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .business-layout .business-booking-card__content > * {
+    margin: 0;
+    line-height: 1.25;
+  }
+
+  .business-layout .business-booking-card__content h3 {
+    margin: 1px 0;
+    line-height: 1.1;
+  }
+
+  /* ================= PREMİUM SEÇİCİ: aşağıdan vərəq ================= */
+  .premium-select__backdrop {
+    z-index: 300;
+    background: rgba(5, 14, 11, 0.55);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  .premium-select__panel {
+    position: fixed;
+    z-index: 310;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 8px 12px max(16px, env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid rgba(217, 184, 116, 0.28);
+    border-radius: 22px 22px 0 0;
+    box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.35);
+    animation: premium-sheet-in 220ms ease-out;
+  }
+
+  @keyframes premium-sheet-in {
+    from {
+      translate: 0 40px;
+      opacity: 0;
+    }
+  }
+
+  .premium-select__panel::before {
+    content: "";
+    display: block;
+    width: 38px;
+    height: 4px;
+    margin: 2px auto 8px;
+    border-radius: 4px;
+    background: var(--color-border-strong, var(--color-border));
+  }
+
+  .premium-select__options {
+    max-height: 60vh;
+  }
+
+  .premium-select__option {
+    min-height: 46px;
+    font-size: 14.5px;
   }
 }
 

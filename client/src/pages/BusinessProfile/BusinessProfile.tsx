@@ -16,6 +16,7 @@ import {
 import { Link } from "react-router-dom";
 
 import "./BusinessProfile.css";
+import PremiumSelect from "../../components/common/PremiumSelect";
 import { getAreas } from "../../services/areasService";
 import {
   getCategories,
@@ -501,23 +502,20 @@ function BusinessProfile() {
               />
             </label>
 
-            <label className="business-profile__field">
+            <div className="business-profile__field">
               <span>{t("Kateqoriya")}</span>
 
-              <select
+              <PremiumSelect
                 value={profile.category}
-                onChange={(event) => update("category", event.target.value)}
+                onChange={(value) => update("category", value)}
+                placeholder={t("Kateqoriya seçin")}
                 required
-              >
-                <option value="">{t("Kateqoriya seçin")}</option>
-
-                {categories.map((category) => (
-                  <option key={category.id} value={category.name}>
-                    {t(category.name)}
-                  </option>
-                ))}
-              </select>
-            </label>
+                options={categories.map((category) => ({
+                  value: category.name,
+                  label: t(category.name),
+                }))}
+              />
+            </div>
           </div>
         </section>
 
@@ -540,23 +538,20 @@ function BusinessProfile() {
               />
             </label>
 
-            <label className="business-profile__field">
+            <div className="business-profile__field">
               <span>{t("Ərazi")}</span>
 
-              <select
+              <PremiumSelect
                 value={profile.areaId}
-                onChange={(event) => update("areaId", event.target.value)}
+                onChange={(value) => update("areaId", value)}
+                placeholder={t("Ərazi seçin")}
                 required
-              >
-                <option value="">{t("Ərazi seçin")}</option>
-
-                {areas.map((area) => (
-                  <option key={area.id} value={area.id}>
-                    {area.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+                options={areas.map((area) => ({
+                  value: area.id,
+                  label: area.name,
+                }))}
+              />
+            </div>
           </div>
         </section>
 

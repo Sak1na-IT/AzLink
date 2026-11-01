@@ -459,3 +459,65 @@
   background: var(--color-primary-soft);
   color: var(--color-primary);
 }
+
+/* =========================================================
+   Hesab kartı: məlumat və redaktə eyni kartda
+   (redaktədə solda şəkil, sağda xanalar)
+   ========================================================= */
+
+body .account-profile__identity .account-profile__edit-button {
+  margin-top: 4px;
+  border-color: rgba(217, 184, 116, 0.4);
+  border-radius: 999px;
+  background: var(--deep-glass);
+  color: var(--deep-text);
+}
+
+body .account-profile__identity .account-profile__edit-button:hover:not(:disabled) {
+  border-color: var(--deep-gold);
+  background: rgba(217, 184, 116, 0.14);
+}
+
+body .account-profile__identity .account-profile__notice {
+  margin: 0;
+}
+
+body .account-profile__identity.is-editing {
+  align-items: flex-start;
+  padding-right: 28px;
+}
+
+body .account-profile__identity.is-editing .account-profile__form {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+  gap: 12px;
+}
+
+body .account-profile__identity.is-editing .account-profile__field > span {
+  color: var(--deep-muted);
+}
+
+body .account-profile__identity.is-editing .account-profile__field input {
+  border-color: rgba(217, 184, 116, 0.3);
+  background: var(--deep-field);
+  color: var(--deep-title);
+}
+
+body .account-profile__identity.is-editing .account-profile__field input:disabled {
+  color: var(--deep-muted);
+}
+
+body .account-profile__identity.is-editing .account-profile__button {
+  border-color: rgba(217, 184, 116, 0.4);
+  border-radius: 999px;
+  background: var(--deep-glass);
+  color: var(--deep-text);
+}
+
+body .account-profile__identity.is-editing .account-profile__button--primary {
+  border: 0;
+  background: linear-gradient(180deg, #f6e3b4, #d9b874);
+  color: #1c160a;
+}
+
