@@ -603,14 +603,6 @@ function SearchResults() {
                       ? `“${t(query)}”`
                       : t("Bütün xidmətlər")}
               </h1>
-
-              <p>
-                {selectedService
-                  ? t("{selectedService} xidməti göstərən bizneslər", { selectedService: t(selectedService) })
-                  : activeCategory
-                    ? t("{name} sahəsində bütün bizneslər", { name: t(activeCategory.name) })
-                    : t("Sizə uyğun xidmətləri tapın")}
-              </p>
             </div>
           </header>
 

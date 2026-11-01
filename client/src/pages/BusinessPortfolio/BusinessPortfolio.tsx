@@ -141,10 +141,6 @@ function BusinessPortfolio() {
         </button>
 
         {error && <small className="business-portfolio__error">{error}</small>}
-
-        <small className="business-portfolio__hint">
-          {t("Ən çox {size}MB. Şəkillər serverdə saxlanılır və profilinizdə hər kəsə görünür.", { size: MAX_FILE_SIZE_MB })}
-        </small>
       </section>
 
       {images.length === 0 ? (

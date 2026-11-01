@@ -172,10 +172,6 @@ function AreaSelector({
             <span className="area-selector__eyebrow">{t("Ərazi seçimi")}</span>
 
             <h2 id="area-selector-title">{t("Harada xidmət axtarırsınız?")}</h2>
-
-            <p>
-              {t("Bakı şəhəri daxilində rayon və ya metro stansiyası seçin.")}
-            </p>
           </div>
 
           <button

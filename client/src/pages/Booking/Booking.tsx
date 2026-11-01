@@ -801,10 +801,6 @@ function Booking() {
           <section className="booking-section">
             <div className="booking-section__header">
               <h1>{t("Rezerv et")}</h1>
-
-              <p>
-                {t("Xidmət, tarix və uyğun saat seçərək rezervinizi yaradın.")}
-              </p>
             </div>
 
             <div className="booking-provider">
@@ -882,10 +878,6 @@ function Booking() {
           <section className="booking-section">
             <div className="booking-section__header">
               <h2>{t("2. Tarix seçin")}</h2>
-
-              <p>
-                {t("Biznesin iş günləri və artıq dolu olan saatlar nəzərə alınır.")}
-              </p>
             </div>
 
             <div className="booking-date-legend">
@@ -1067,10 +1059,6 @@ function Booking() {
           <section className="booking-section">
             <div className="booking-section__header">
               <h2>{t("3. Saat seçin")}</h2>
-
-              <p>
-                {t("Saatlar seçdiyiniz xidmətin müddətinə və biznesin iş qrafikinə görə hesablanır.")}
-              </p>
             </div>
 
             {!selectedService ? (

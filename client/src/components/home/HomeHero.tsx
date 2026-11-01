@@ -139,10 +139,6 @@ function HomeHero({
         })()}
       </h1>
 
-      <p className="home-hero__description">
-        {t("Xidmət və ya mütəxəssis axtarın, ərazinizi seçin və uyğun profillərə baxın.")}
-      </p>
-
       <form
         className="home-search"
         onSubmit={handleSubmit}

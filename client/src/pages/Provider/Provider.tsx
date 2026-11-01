@@ -373,9 +373,6 @@ function Provider() {
             <div className="provider-section__header">
               <div>
                 <h2>{t("Xidmətlər")}</h2>
-                <span className="provider-section__subtitle">
-                  {t("Biznesin təqdim etdiyi xidmətlər")}
-                </span>
               </div>
             </div>
 
@@ -658,10 +655,6 @@ function Provider() {
                 <div className="provider-section__header">
                   <div>
                     <h2>{t("WhatsApp-da yazın")}</h2>
-
-                    <span className="provider-section__subtitle">
-                      {t("Mesajınız WhatsApp-da hazır açılacaq, sadəcə göndərin")}
-                    </span>
                   </div>
                 </div>
 
