@@ -4,7 +4,6 @@ import {
   Bell,
   CheckCircle2,
   ChevronRight,
-  Languages,
   LogOut,
   Mail,
   Pencil,
@@ -28,7 +27,6 @@ import { formatDayMonth } from "../../utils/formatDate";
 import "./Profile.css";
 import { OPEN_NOTIFICATIONS_EVENT } from "../../components/layout/NotificationBell";
 import { t } from "../../i18n";
-import LanguageSwitch from "../../i18n/LanguageSwitch";
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING: t("Gözləyir"),
@@ -527,20 +525,6 @@ function Profile() {
                 strokeWidth={1.8}
               />
             </button>
-
-            {/* Dil: telefonda naviqasiyada yer olmadığı üçün burada da var */}
-            <div className="profile-menu__item profile-menu__item--static">
-              <div className="profile-menu__icon">
-                <Languages size={19} strokeWidth={1.8} />
-              </div>
-
-              <div>
-                <strong>{t("Dil")}</strong>
-                <span>{t("Saytın dili")}</span>
-              </div>
-
-              <LanguageSwitch />
-            </div>
           </div>
         </section>
       </div>

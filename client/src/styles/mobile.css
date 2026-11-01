@@ -1042,6 +1042,20 @@
     height: 40px;
   }
 
+  /* Dil seçimi yuxarı paneldə (Profildə artıq yoxdur) */
+  .top-nav .language-switch {
+    height: 36px;
+    padding: 2px;
+    border-radius: 11px;
+  }
+
+  .top-nav .language-switch button {
+    min-width: 28px;
+    padding: 0 5px;
+    border-radius: 8px;
+    font-size: 11px;
+  }
+
   .top-nav__links {
     position: fixed;
     z-index: 120;
@@ -2377,4 +2391,90 @@
     min-height: 220px;
     padding: 24px 18px;
   }
+
+  /* ================= YENİ REZERV ================= */
+  .booking-start {
+    min-height: 0;
+    padding: 4px 4px 8px;
+  }
+
+  .booking-start__back {
+    min-height: 34px;
+    margin-bottom: 14px;
+    padding: 0 12px 0 10px;
+    font-size: 13px;
+  }
+
+  .booking-start__hero {
+    margin-bottom: 16px;
+  }
+
+  .booking-start__eyebrow,
+  .booking-start__hero p {
+    display: none;
+  }
+
+  .booking-start__hero h1 {
+    font-size: 28px;
+    line-height: 1.08;
+  }
+
+  .booking-start__categories,
+  .booking-start__subcategories {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .booking-start__category {
+    min-height: 128px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .booking-start__category-icon {
+    top: 10px;
+    left: 10px;
+    width: 34px;
+    height: 34px;
+  }
+
+  .booking-start__category-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .booking-start__category-content {
+    padding-right: 0;
+  }
+
+  .booking-start__category-content h2 {
+    margin-bottom: 0;
+    font-size: 19px;
+    line-height: 1.05;
+  }
+
+  .booking-start__category-content p,
+  .booking-start__category-arrow {
+    display: none;
+  }
+
+  .booking-start__subcategory {
+    min-height: 58px;
+    padding: 10px 10px 10px 16px;
+    border-radius: 16px;
+    font-size: 18px;
+  }
+
+  .booking-start__subcategory::before {
+    top: 14px;
+    bottom: 14px;
+  }
+
+  .booking-start__subcategory svg {
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    padding: 6px;
+  }
 }
+

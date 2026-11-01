@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  ArrowLeft,
   ArrowRight,
   Car,
   GraduationCap,
@@ -13,6 +14,9 @@ import {
 } from "lucide-react";
 
 import "./BookingStart.css";
+import { categories as catalog } from "../../data/categories";
+import { getProviders } from "../../services/providersService";
+import type { Provider } from "../../types/provider";
 import { t } from "../../i18n";
 
 type Category = {
@@ -138,6 +142,47 @@ function BookingStart() {
   const [selectedCategory, setSelectedCategory] =
     useState<Category | null>(null);
 
+  /* Kartların fonu üçün: hər sahədə şəkli olan ilk biznesin üz qabığı */
+  const [providers, setProviders] = useState<Provider[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    getProviders()
+      .then((result) => {
+        if (!cancelled) {
+          setProviders(result);
+        }
+      })
+      .catch(() => {
+        /* şəkil yüklənməsə kart zümrüd fonla qalır */
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const getCover = (categoryId: string) => {
+    const entry = catalog.find((item) => item.id === categoryId);
+
+    if (!entry) {
+      return undefined;
+    }
+
+    const wanted = [entry.name, ...entry.services].map((name) =>
+      name.toLocaleLowerCase("az")
+    );
+
+    return providers.find(
+      (provider) =>
+        provider.image &&
+        [provider.service, ...(provider.categories ?? [])].some((name) =>
+          wanted.includes((name ?? "").toLocaleLowerCase("az"))
+        )
+    )?.image;
+  };
+
   const handleCategorySelect = (category: Category) => {
     setSelectedCategory(category);
   };
@@ -170,7 +215,8 @@ function BookingStart() {
           className="booking-start__back"
           onClick={handleBack}
         >
-          {t("← Geri")}
+          <ArrowLeft size={16} strokeWidth={1.9} />
+          {t("Geri")}
         </button>
 
         <section className="booking-start__hero">
@@ -193,7 +239,10 @@ function BookingStart() {
 
         {!selectedCategory ? (
           <section className="booking-start__categories">
-            {categories.map((category) => (
+            {categories.map((category) => {
+              const cover = getCover(category.id);
+
+              return (
               <button
                 type="button"
                 key={category.id}
@@ -202,6 +251,16 @@ function BookingStart() {
                   handleCategorySelect(category)
                 }
               >
+                {cover ? (
+                  <img
+                    className="booking-start__category-photo"
+                    src={cover}
+                    alt=""
+                    loading="lazy"
+                  />
+                ) : null}
+                <span className="booking-start__category-shade" />
+
                 <div className="booking-start__category-icon">
                   {category.icon}
                 </div>
@@ -217,7 +276,8 @@ function BookingStart() {
                   strokeWidth={1.8}
                 />
               </button>
-            ))}
+              );
+            })}
           </section>
         ) : (
           <section className="booking-start__subcategories">

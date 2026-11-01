@@ -56,10 +56,3 @@
     padding: 0 6px;
   }
 }
-
-/* Telefonda naviqasiya dolu olur: dil Profil səhifəsindən seçilir */
-@media (max-width: 760px) {
-  .top-nav .language-switch {
-    display: none;
-  }
-}
