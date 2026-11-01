@@ -2189,6 +2189,7 @@
     bottom: 0;
     width: auto;
     max-height: 72vh;
+    overflow-y: auto;
     padding: 8px 12px max(16px, env(safe-area-inset-bottom));
     border: 0;
     border-top: 1px solid var(--color-border);
@@ -2221,6 +2222,27 @@
   .search-menu__option {
     min-height: 48px;
     font-size: 15px;
+  }
+
+  .search-menu__panel--grid {
+    width: auto;
+    gap: 6px;
+  }
+
+  .search-menu__panel--grid::before {
+    grid-column: 1 / -1;
+  }
+
+  .search-menu__panel--grid .search-menu__option {
+    min-height: 50px;
+    padding: 0 10px 0 7px;
+    gap: 8px;
+    font-size: 13.5px;
+  }
+
+  .search-menu__panel--grid .search-menu__icon {
+    width: 32px;
+    height: 32px;
   }
 
   .search-results-count {

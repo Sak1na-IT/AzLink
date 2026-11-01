@@ -603,7 +603,7 @@ function SearchResults() {
                 </button>
 
                 {openMenu === "category" && (
-                  <div className="search-menu__panel" role="listbox">
+                  <div className="search-menu__panel search-menu__panel--grid" role="listbox">
                     <strong className="search-menu__title">{t("Kateqoriya")}</strong>
 
                     <button

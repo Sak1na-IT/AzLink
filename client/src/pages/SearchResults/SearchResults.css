@@ -1088,3 +1088,130 @@
   color: var(--color-text);
   font-size: 16px;
 }
+
+/* =========================================================
+   Açılan menyu — premium görünüş
+   Kateqoriyalar iki sütunlu kartlar kimi, sürüşdürmə yoxdur
+   ========================================================= */
+
+.search-menu__panel {
+  width: 250px;
+  max-height: none;
+  overflow: visible;
+  padding: 10px;
+  border-color: rgba(217, 184, 116, 0.28);
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse 80% 60% at 0% 0%, var(--color-gold-soft), transparent 70%),
+    var(--color-surface);
+  box-shadow:
+    0 28px 60px rgba(8, 26, 21, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.search-menu__title {
+  padding: 4px 8px 10px;
+  color: var(--color-gold);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+}
+
+.search-menu__option {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.search-menu__option:hover {
+  border-color: rgba(217, 184, 116, 0.35);
+  background: var(--color-surface-muted);
+}
+
+.search-menu__option.is-selected {
+  border-color: transparent;
+  background: var(--deep-solid);
+  color: var(--deep-solid-ink, #fff);
+  font-weight: 600;
+}
+
+.search-menu__option.is-selected .search-menu__check {
+  color: #e6c98a;
+}
+
+/* Kateqoriya menyusu: iki sütun */
+.search-menu__panel--grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  width: 470px;
+}
+
+.search-menu__panel--grid .search-menu__title {
+  grid-column: 1 / -1;
+}
+
+.search-menu__panel--grid .search-menu__option {
+  gap: 10px;
+  min-height: 54px;
+  padding: 0 12px 0 8px;
+  border-color: var(--color-border);
+  background: var(--color-surface-muted);
+}
+
+.search-menu__panel--grid .search-menu__option:hover {
+  border-color: rgba(217, 184, 116, 0.6);
+  background: var(--color-surface-muted);
+}
+
+.search-menu__panel--grid .search-menu__option.is-selected {
+  border-color: transparent;
+  background: var(--deep-solid);
+}
+
+/* Seçilmiş kart rəngi ilə seçilir, ayrıca işarə lazım deyil */
+.search-menu__panel--grid .search-menu__check {
+  display: none;
+}
+
+.search-menu__panel--grid .search-menu__option > span:nth-child(2) {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* İkon: qızılı haşiyəli medalyon (Kəşf et-dəki kimi) */
+.search-menu__panel--grid .search-menu__icon {
+  width: 36px;
+  height: 36px;
+  border: 2px solid transparent;
+  background:
+    var(--medal-face) padding-box,
+    conic-gradient(from 200deg, #f6e3b4, #a8823f, #d9b874, #6f5427, #f6e3b4) border-box;
+  color: var(--medal-ink);
+}
+
+.search-menu__panel--grid .search-menu__option small {
+  display: grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--color-gold-soft);
+  color: var(--color-gold);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.search-menu__panel--grid .search-menu__option.is-selected small {
+  background: rgba(230, 201, 138, 0.18);
+  color: #e6c98a;
+}
+
