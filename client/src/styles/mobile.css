@@ -3039,7 +3039,7 @@
   }
 
   /* ================= BİZNESİM: MENYU ================= */
-  /* 8 bölmə bir baxışda: 4 sütunlu ikon düymələri, sürüşdürmə yoxdur */
+  /* Bölmələr ekranın kənarına qədər sürüşən yığcam zolaq */
   .business-layout__subnav-inner {
     padding-top: 4px;
   }
@@ -3049,42 +3049,32 @@
   }
 
   .business-layout__tabs {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 4px;
-    margin: 0 0 14px;
-    padding: 4px;
-    overflow: visible;
-    border-radius: 18px;
+    gap: 6px;
+    margin: 0 -14px 14px;
+    padding: 2px 14px 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    scroll-padding: 0 14px;
   }
 
   .business-layout__tab {
-    flex-direction: column;
-    justify-content: center;
-    gap: 3px;
-    height: auto;
-    min-width: 0;
-    min-height: 50px;
-    padding: 6px 2px;
-    border-radius: 14px;
-    font-size: 10.5px;
-    line-height: 1.15;
+    height: 36px;
+    padding: 0 13px;
+    gap: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    font-size: 12.5px;
   }
 
   .business-layout__tab svg {
-    width: 17px;
-    height: 17px;
+    width: 15px;
+    height: 15px;
   }
 
-  .business-layout__tab span {
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .business-layout__tab:not(.is-active) svg {
-    color: var(--color-gold);
+  .business-layout__tab.is-active {
+    border-color: transparent;
   }
 
   /* ================= BİZNESİM: DASHBOARD ================= */
