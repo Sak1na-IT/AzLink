@@ -3037,5 +3037,334 @@
     margin: 0;
     font-size: 11.5px;
   }
+
+  /* ================= BİZNESİM: MENYU ================= */
+  /* Bölmələr ekranın kənarına qədər sürüşən yığcam zolaq */
+  .business-layout__subnav-inner {
+    padding-top: 4px;
+  }
+
+  .business-layout__title {
+    display: none;
+  }
+
+  .business-layout__tabs {
+    gap: 6px;
+    margin: 0 -14px 14px;
+    padding: 2px 14px 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    scroll-padding: 0 14px;
+  }
+
+  .business-layout__tab {
+    height: 36px;
+    padding: 0 13px;
+    gap: 6px;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    font-size: 12.5px;
+  }
+
+  .business-layout__tab svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .business-layout__tab.is-active {
+    border-color: transparent;
+  }
+
+  /* ================= BİZNESİM: DASHBOARD ================= */
+  .business-dashboard {
+    gap: 12px;
+    padding: 0 0 8px;
+  }
+
+  /* Vitrin: salam, ad və dörd rəqəm bir sırada */
+  .biz-hero {
+    padding: 16px 16px 0;
+    border-radius: 22px;
+  }
+
+  .biz-hero::after {
+    right: -140px;
+    top: -170px;
+  }
+
+  .biz-hero__top {
+    flex-direction: row;
+    gap: 0;
+  }
+
+  .biz-hero__eyebrow {
+    gap: 8px;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+  }
+
+  .biz-hero__eyebrow::after {
+    width: 24px;
+  }
+
+  .biz-hero h1 {
+    margin-top: 6px;
+    font-size: 30px;
+  }
+
+  /* Uzun izah və "Yeni xidmət" düyməsi telefonda lazım deyil:
+     gözləyən rezervlər aşağıda xəbərdarlıqda, yeni xidmət sürətli düymələrdə */
+  .biz-hero p,
+  .biz-hero__top .biz-gold-button {
+    display: none;
+  }
+
+  .biz-hero__stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 14px -16px 0;
+  }
+
+  .biz-hero__stats button {
+    padding: 12px 6px 12px 10px;
+  }
+
+  .biz-hero__stats button:nth-child(n) {
+    border-top: 0;
+    border-left: 1px solid rgba(217, 184, 116, 0.18);
+  }
+
+  .biz-hero__stats button:first-child {
+    border-left: 0;
+  }
+
+  .biz-hero__stats dt {
+    font-size: 26px;
+  }
+
+  /* Dar xanada uzun söz ("Təsdiqlənmiş") sığsın deyə böyük hərf yox */
+  .biz-hero__stats dd {
+    margin-top: 4px;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.25;
+    text-transform: none;
+  }
+
+  /* Xəbərdarlıq: bir sıra */
+  .biz-alert {
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 16px;
+  }
+
+  .biz-alert__icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .biz-alert__icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .biz-alert__text strong {
+    font-size: 13px;
+    line-height: 1.3;
+  }
+
+  .biz-alert__cta {
+    padding: 7px 12px;
+    font-size: 12.5px;
+  }
+
+  /* Sürətli əməliyyatlar: tətbiq ikonları kimi dörd sütun */
+  .biz-quick {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .biz-quick__item {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+    padding: 12px 4px 10px;
+    border-radius: 16px;
+    text-align: center;
+  }
+
+  .biz-quick__item:hover {
+    transform: none;
+  }
+
+  .biz-quick__item .biz-medal {
+    width: 38px;
+    height: 38px;
+  }
+
+  .biz-quick__text {
+    justify-items: center;
+  }
+
+  .biz-quick__text strong {
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .biz-quick__text span {
+    display: none;
+  }
+
+  /* Kartlar */
+  .biz-layout,
+  .biz-side {
+    gap: 12px;
+  }
+
+  .biz-card {
+    padding: 14px 16px;
+    border-radius: 18px;
+  }
+
+  .biz-card__header {
+    margin-bottom: 10px;
+  }
+
+  .biz-card h2 {
+    font-size: 22px;
+  }
+
+  .biz-link {
+    font-size: 13px;
+  }
+
+  .biz-empty {
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .biz-empty .biz-medal {
+    width: 36px;
+    height: 36px;
+  }
+
+  .biz-empty strong {
+    font-size: 14px;
+  }
+
+  .biz-empty p {
+    display: none;
+  }
+
+  /* Bugünkü rezervlər: saat solda, kart sağda */
+  .biz-timeline {
+    gap: 8px;
+  }
+
+  .biz-timeline__item {
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .biz-timeline__time {
+    font-size: 19px;
+  }
+
+  .biz-timeline__card {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 10px 10px 10px 12px;
+    border-radius: 12px;
+  }
+
+  .biz-timeline__info strong {
+    overflow: hidden;
+    font-size: 13.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .biz-timeline__info span {
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .biz-status {
+    padding: 3px 8px;
+    font-size: 10.5px;
+  }
+
+  .biz-chip {
+    min-height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  /* Statusu olan və təsdiq düyməsi olan kartda status gizlənir:
+     düymə onsuz da "gözləyir" deməkdir */
+  .biz-timeline__card:has(.biz-chip) .biz-status {
+    display: none;
+  }
+
+  /* Profil: kiçik halqa və bir sətirlik mətn */
+  .biz-profile {
+    gap: 14px;
+  }
+
+  .biz-ring {
+    width: 64px;
+    height: 64px;
+  }
+
+  .biz-ring__inner {
+    inset: 5px;
+  }
+
+  .biz-ring__inner strong {
+    font-size: 19px;
+  }
+
+  .biz-ring__inner span {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+  }
+
+  .biz-profile__body h2 {
+    margin-bottom: 2px;
+  }
+
+  .biz-profile p {
+    display: -webkit-box;
+    overflow: hidden;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  /* Xidmətlər: menyu */
+  .biz-menu {
+    gap: 10px;
+  }
+
+  .biz-menu li {
+    font-size: 14px;
+  }
+
+  .biz-menu b {
+    font-size: 19px;
+  }
+
+  .biz-actions__note {
+    margin-top: 10px;
+    font-size: 12px;
+  }
 }
 
