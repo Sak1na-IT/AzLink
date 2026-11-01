@@ -46,6 +46,8 @@ function Register() {
   /* Yalnız biznes qeydiyyatında istifadə olunur */
   const [category, setCategory] = useState("");
   const [areaId, setAreaId] = useState("");
+  /* Biznes qeydiyyatı iki addımdır: 1) biznes, 2) hesab — səhifə uzun olmasın */
+  const [step, setStep] = useState<1 | 2>(1);
   const [phone, setPhone] = useState("");
   const [areas, setAreas] = useState<Area[]>([]);
 
@@ -67,6 +69,18 @@ function Register() {
   ) => {
     event.preventDefault();
     setError("");
+
+    if (isBusiness && step === 1) {
+      if (!name.trim() || !category.trim() || !areaId || !phone.trim()) {
+        setError(
+          t("Zəhmət olmasa kateqoriya, rayon və telefon nömrəsini doldurun.")
+        );
+        return;
+      }
+
+      setStep(2);
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError(t("Şifrələr uyğun gəlmir."));
@@ -144,7 +158,21 @@ function Register() {
           </p>
         </div>
 
+        {isBusiness && (
+          <ol className="register-steps" aria-label={t("Addımlar")}>
+            <li className={step === 1 ? "is-active" : "is-done"}>
+              <span>1</span>
+              {t("Biznes məlumatları")}
+            </li>
+            <li className={step === 2 ? "is-active" : ""}>
+              <span>2</span>
+              {t("Hesab məlumatları")}
+            </li>
+          </ol>
+        )}
+
         <form className="register-form" onSubmit={handleSubmit}>
+          {(!isBusiness || step === 1) && (
           <label className="register-field">
             <span>{isBusiness ? t("Biznes adı") : t("Ad və soyad")}</span>
 
@@ -168,7 +196,9 @@ function Register() {
               />
             </div>
           </label>
+          )}
 
+          {(!isBusiness || step === 2) && (
           <label className="register-field">
             <span>{t("Email")}</span>
 
@@ -184,8 +214,9 @@ function Register() {
               />
             </div>
           </label>
+          )}
 
-          {isBusiness && (
+          {isBusiness && step === 1 && (
             <>
               <label className="register-field">
                 <span>{t("Kateqoriya")}</span>
@@ -238,6 +269,8 @@ function Register() {
             </>
           )}
 
+          {(!isBusiness || step === 2) && (
+          <>
           <label className="register-field">
             <span>{t("Şifrə")}</span>
 
@@ -307,6 +340,8 @@ function Register() {
               </button>
             </div>
           </label>
+          </>
+          )}
 
           {error && <p className="register-error">{error}</p>}
 
@@ -315,8 +350,25 @@ function Register() {
             className="register-submit-button"
             disabled={isSubmitting}
           >
-            {isSubmitting ? t("Göndərilir...") : t("Qeydiyyatdan keç")}
+            {isBusiness && step === 1
+              ? t("Davam et")
+              : isSubmitting
+                ? t("Göndərilir...")
+                : t("Qeydiyyatdan keç")}
           </button>
+
+          {isBusiness && step === 2 && (
+            <button
+              type="button"
+              className="register-step-back"
+              onClick={() => {
+                setError("");
+                setStep(1);
+              }}
+            >
+              {t("← Geri")}
+            </button>
+          )}
         </form>
 
         <div className="register-footer">
