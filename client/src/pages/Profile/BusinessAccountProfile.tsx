@@ -243,26 +243,30 @@ function BusinessAccountProfile() {
               <em className="account-profile__role">{t("Biznes sahibi")}</em>
 
               {notice && <p className="account-profile__notice">{notice}</p>}
+            </div>
+
+            {/* Sağ üst küncdə iki ikon: redaktə və çıxış (kart hündür olmasın) */}
+            <div className="account-profile__identity-actions">
+              <button
+                type="button"
+                className="account-profile__icon-button account-profile__edit-icon"
+                onClick={openEdit}
+                aria-label={t("Profili redaktə et")}
+                title={t("Profili redaktə et")}
+              >
+                <Pencil size={17} strokeWidth={1.9} />
+              </button>
 
               <button
                 type="button"
-                className="account-profile__edit-button"
-                onClick={openEdit}
+                className="account-profile__icon-button account-profile__logout-icon"
+                onClick={handleLogout}
+                aria-label={t("Hesabdan çıx")}
+                title={t("Hesabdan çıx")}
               >
-                <Pencil size={15} strokeWidth={1.8} />
-                {t("Profili redaktə et")}
+                <LogOut size={18} strokeWidth={1.9} />
               </button>
             </div>
-
-            <button
-              type="button"
-              className="account-profile__icon-button account-profile__logout-icon"
-              onClick={handleLogout}
-              aria-label={t("Hesabdan çıx")}
-              title={t("Hesabdan çıx")}
-            >
-              <LogOut size={18} strokeWidth={1.9} />
-            </button>
           </>
         )}
       </section>

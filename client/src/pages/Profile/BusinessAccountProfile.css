@@ -644,3 +644,41 @@ body .account-profile__identity .account-profile__edit-button {
   margin-top: 10px;
 }
 
+
+/* =========================================================
+   Redaktə və çıxış: kartın sağ üst küncündə iki ikon
+   (mətnli "Profili redaktə et" düyməsi kartı hündür edirdi)
+   ========================================================= */
+.account-profile__identity-actions {
+  position: absolute;
+  z-index: 1;
+  top: 22px;
+  right: 22px;
+  display: flex;
+  gap: 8px;
+}
+
+.account-profile__identity-actions .account-profile__logout-icon {
+  position: static;
+}
+
+body .account-profile__identity:not(.is-editing) {
+  padding-right: 116px;
+}
+
+body .account-profile__identity .account-profile__edit-icon {
+  color: var(--deep-gold-strong);
+}
+
+body .account-profile__identity .account-profile__edit-icon:hover {
+  border-color: var(--deep-gold);
+  background: rgba(217, 184, 116, 0.14);
+  color: var(--deep-gold-strong);
+}
+
+@media (max-width: 600px) {
+  .account-profile__identity-actions {
+    top: 16px;
+    right: 16px;
+  }
+}

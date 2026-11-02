@@ -4257,7 +4257,7 @@
     flex-direction: row;
     align-items: center;
     gap: 14px;
-    padding: 16px 52px 16px 16px;
+    padding: 14px 56px 14px 14px;
     border-radius: 20px;
   }
 
@@ -4287,24 +4287,26 @@
     font-size: 10.5px;
   }
 
-  body .account-profile__identity .account-profile__edit-button {
-    min-height: 34px;
-    margin-top: 8px;
-    padding: 0 12px;
-    gap: 5px;
-    font-size: 12.5px;
+  body .account-profile__identity:not(.is-editing) {
+    padding-right: 58px;
   }
 
-  .account-profile__logout-icon {
+  /* Redaktə və çıxış ikonları sağ küncdə üst-üstə: kart alçaq qalır */
+  .account-profile__identity-actions {
     top: 12px;
     right: 12px;
-    width: 32px;
-    height: 32px;
+    flex-direction: column;
+    gap: 6px;
   }
 
-  .account-profile__logout-icon svg {
-    width: 15px;
-    height: 15px;
+  body .account-profile__identity .account-profile__icon-button {
+    width: 34px;
+    height: 34px;
+  }
+
+  body .account-profile__identity .account-profile__icon-button svg {
+    width: 16px;
+    height: 16px;
   }
 
   /* Redaktə: solda şəkil, sağda xanalar */
@@ -4536,3 +4538,80 @@
   }
 }
 
+
+/*
+ * VAHİD YAN BOŞLUQ (bütün telefonlarda eyni)
+ *
+ * Əvvəl yan boşluq bir neçə qatdan yığılırdı: .app-content (16px)
+ * + Biznesim/alt-naviqasiya qutusu (14px) + səhifənin öz boşluğu (4px).
+ * Nəticədə kartlar ekranın kənarından ~30px içəridə dururdu.
+ * İndi boşluğu yalnız .app-content verir, qalan qatlar sıfırdır.
+ */
+@media (max-width: 640px) {
+  :root {
+    --m-gutter: 12px;
+  }
+
+  html body .app-shell .app-content {
+    padding-left: var(--m-gutter);
+    padding-right: var(--m-gutter);
+  }
+
+  /* Ara qutular: öz yan boşluğu yoxdur */
+  html body .app-content .business-layout__subnav-inner,
+  html body .app-content .business-layout > main,
+  html body .app-content .business-explore-shell .business-subnav__inner,
+  html body .app-content .business-explore-shell > :not(.business-subnav) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Səhifələrin kökü: kənar boşluğu .app-content verir */
+  html body .app-content .home-page,
+  html body .app-content .explore-page,
+  html body .app-content .bookings-page,
+  html body .app-content .saved-page,
+  html body .app-content .profile-page,
+  html body .app-content .account-profile,
+  html body .app-content .provider-page,
+  html body .app-content .search-results-page,
+  html body .app-content .booking-page,
+  html body .app-content .booking-start,
+  html body .app-content .business-dashboard,
+  html body .app-content .business-bookings,
+  html body .app-content .business-services,
+  html body .app-content .business-profile,
+  html body .app-content .business-customers,
+  html body .app-content .business-portfolio,
+  html body .app-content .business-hours,
+  html body .app-content .business-reviews {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Ekranın kənarına qədər sürüşən zolaqlar yeni boşluğa uyğun */
+  html body .app-content .popular-list,
+  html body .app-content .helpful-info,
+  html body .app-content .category-showcase,
+  html body .app-content .search-toolbar__filters,
+  html body .app-content .business-layout__tabs,
+  html body .app-content .business-subnav__tabs {
+    margin-left: calc(-1 * var(--m-gutter));
+    margin-right: calc(-1 * var(--m-gutter));
+    padding-left: var(--m-gutter);
+    padding-right: var(--m-gutter);
+    scroll-padding: 0 var(--m-gutter);
+  }
+
+  /* Yuxarı panel də eyni xətt üzrə */
+  html body .top-nav__inner {
+    padding-left: var(--m-gutter);
+    padding-right: var(--m-gutter);
+  }
+
+  /* Açılış səhifəsi (naviqasiyasız) kənarlara qədər uzanır */
+  html body .app-content .landing {
+    margin-left: calc(-1 * var(--m-gutter));
+    margin-right: calc(-1 * var(--m-gutter));
+  }
+}
