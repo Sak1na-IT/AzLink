@@ -4566,12 +4566,12 @@
  *
  * Əvvəl yan boşluq bir neçə qatdan yığılırdı: .app-content (16px)
  * + Biznesim/alt-naviqasiya qutusu (14px) + səhifənin öz boşluğu (4px).
- * Nəticədə kartlar ekranın kənarından ~30px içəridə dururdu (indi 8px).
+ * Nəticədə kartlar ekranın kənarından ~30px içəridə dururdu (indi 12px).
  * İndi boşluğu yalnız .app-content verir, qalan qatlar sıfırdır.
  */
 @media (max-width: 640px) {
   :root {
-    --m-gutter: 8px;
+    --m-gutter: 12px;
   }
 
   html body .app-shell .app-content {
